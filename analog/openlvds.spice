@@ -1,0 +1,283 @@
+* SPDX-License-Identifier: GPL-3.0-only
+* SKY130 circuits. Geometry is in microns, as required by the PDK subcircuits.
+* IREF is an external 35 uA current SINK, VREF an external buffered 1.2 V reference.
+* No ideal active components are used in the implementation subcircuits.
+
+.subckt lvds_inv18 A Y VDD VSS
+XP Y A VDD VDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
+XN Y A VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
+.ends lvds_inv18
+
+.subckt lvds_inv18_drive A Y VDD VSS
+XP Y A VDD VDD sky130_fd_pr__pfet_01v8 w=16 l=0.15
+XN Y A VSS VSS sky130_fd_pr__nfet_01v8 w=8 l=0.15
+.ends lvds_inv18_drive
+
+.subckt lvds_inv18_boost A Y VDD VSS
+XP Y A VDD VDD sky130_fd_pr__pfet_01v8 w=64 l=0.15
+XN Y A VSS VSS sky130_fd_pr__nfet_01v8 w=32 l=0.15
+.ends lvds_inv18_boost
+
+.subckt lvds_inv33 A Y VDD VSS
+* Threshold balances the CML drain swing, preserving complementary duty.
+XP Y A VDD VDD sky130_fd_pr__pfet_g5v0d10v5 w=48 l=0.5
+XN Y A VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
+.ends lvds_inv33
+
+.subckt lvds_inv33_small A Y VDD VSS
+XP Y A VDD VDD sky130_fd_pr__pfet_g5v0d10v5 w=64 l=0.5
+XN Y A VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=16 l=0.5
+.ends lvds_inv33_small
+
+.subckt lvds_shift18_33 A Q QB NB VDDIO VDDD VSS
+* Differential current-mode level conversion avoids a regenerative latch's
+* unequal recovery times at 800 Mb/s. Every 3.3 V node uses thick-oxide FETs.
+XIN0 A INB VDDD VSS lvds_inv18_drive
+XIN1 INB AD VDDD VSS lvds_inv18_boost
+XI AD AB VDDD VSS lvds_inv18_boost
+XNA0 L AD T VSS sky130_fd_pr__nfet_g5v0d10v5 w=80 l=0.5
+XNA1 L AD T VSS sky130_fd_pr__nfet_g5v0d10v5 w=80 l=0.5
+XNB0 R AB T VSS sky130_fd_pr__nfet_g5v0d10v5 w=80 l=0.5
+XNB1 R AB T VSS sky130_fd_pr__nfet_g5v0d10v5 w=80 l=0.5
+XTAIL0 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL1 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL2 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL3 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL4 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL5 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL6 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL7 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL8 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL9 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL10 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XTAIL11 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+* Two approximately 2 kohm resistors in parallel on each drain.
+XRL0 VDDIO L VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRL1 VDDIO L VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRR0 VDDIO R VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRR1 VDDIO R VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XB0 L Q VDDIO VSS lvds_inv33
+XB1 R QB VDDIO VSS lvds_inv33
+XCDP Q VSS sky130_fd_pr__cap_mim_m3_1 w=4 l=4.5
+XCDN QB VSS sky130_fd_pr__cap_mim_m3_1 w=4 l=4.5
+.ends lvds_shift18_33
+
+.subckt lvds_bias IREF NB VDDIO VSS
+XPREF IREF IREF VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=2 l=1
+XPM NB IREF VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=2 l=1
+XNREF NB NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=2 l=1
+* Local reference storage reduces switching feedthrough into the shared bias.
+XCBP IREF VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
+XCBN NB VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
+.ends lvds_bias
+
+.subckt lvds_cmfb PLUS MINUS OUT NB VDDIO VSS
+XNP L PLUS T VSS sky130_fd_pr__nfet_g5v0d10v5 w=8 l=1
+XNM OUT MINUS T VSS sky130_fd_pr__nfet_g5v0d10v5 w=8 l=1
+XNT T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=2 l=1
+XPL L L VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=4 l=1
+XPR OUT L VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=4 l=1
+XCCOMP0 OUT VSS sky130_fd_pr__cap_mim_m3_1 w=29 l=29
+XCCOMP1 OUT VSS sky130_fd_pr__cap_mim_m3_1 w=29 l=29
+XCCOMP2 OUT VSS sky130_fd_pr__cap_mim_m3_1 w=29 l=29
+XCCOMP3 OUT VSS sky130_fd_pr__cap_mim_m3_1 w=29 l=29
+XCCOMP4 OUT VSS sky130_fd_pr__cap_mim_m3_1 w=29 l=29
+XCCOMP5 OUT VSS sky130_fd_pr__cap_mim_m3_1 w=29 l=29
+.ends lvds_cmfb
+
+.subckt openlvds_driver_core D OUTP OUTN VREF PB NB VDDIO VDDD VSS
+XLS D DP DN NB VDDIO VDDD VSS lvds_shift18_33
+* 100:1 PMOS mirror establishes approximately 3.5 mA steering current.
+XIT0 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT1 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT2 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT3 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT4 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT5 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT6 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT7 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT8 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT9 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XPL OUTP DN TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XPR OUTN DP TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XNL OUTP DN BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
+XNR OUTN DP BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
+XIB0 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB1 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB2 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB3 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB4 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB5 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB6 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB7 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB8 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB9 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+* A 0.96 feedback divider centers the output near 1.25 V using VREF=1.2 V.
+XRCP OUTP CM VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=10.25
+XRCN OUTN CM VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=10.25
+XRCM0 CM CMS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=60
+XRCM1 CMS VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=60
+* Local symmetric MIM loads bound switch-feedthrough common-mode ripple.
+XCOUTP OUTP VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
+XCOUTN OUTN VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
+XCM CM VREF SINK NB VDDIO VSS lvds_cmfb
+.ends openlvds_driver_core
+
+.subckt openlvds_driver D OUTP OUTN VREF IREF VDDIO VDDD VSS
+XB IREF NB VDDIO VSS lvds_bias
+XCORE D OUTP OUTN VREF IREF NB VDDIO VDDD VSS openlvds_driver_core
+.ends openlvds_driver
+
+.subckt openlvds_receiver_core INP INN Q VREF PB NB VDDIO VDDD VSS
+* Complementary input pairs with mirrored differential current summation.
+* Input-pair drains remain inside the thick-oxide device domain.
+XNT NT NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=12 l=1
+XNP NL INP NT VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
+XNN NR INN NT VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
+XNDL NL NL VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
+XNDR NR NR VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
+XNML PP NL VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
+XNMR PN NR VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
+XPT PT PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=12 l=1
+XPP PL INP PT VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
+XPN PR INN PT VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
+XPDL PL PL VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
+XPDR PR PR VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
+XPML PP PL VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
+XPMR PN PR VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
+XRLP0 PP VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLP1 PP VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLN0 PN VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLN1 PN VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+* The externally buffered reference sinks/sources common-mode imbalance.
+XPCB NBC PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=2 l=1
+XNCB NBC NBC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XCT CT NBC VSS VSS sky130_fd_pr__nfet_01v8 w=16 l=0.5
+XC0 CL PN CT VSS sky130_fd_pr__nfet_01v8 w=8 l=0.15
+XC1 CO PP CT VSS sky130_fd_pr__nfet_01v8 w=8 l=0.15
+XCD CL CL VDDD VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
+XCM CO CL VDDD VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
+* Restore at the actual capture-clock load, not just an unloaded pad probe.
+XI CO Q VDDD VSS lvds_inv18_drive
+.ends openlvds_receiver_core
+
+.subckt openlvds_receiver INP INN Q VREF IREF VDDIO VDDD VSS
+XB IREF NB VDDIO VSS lvds_bias
+XCORE INP INN Q VREF IREF NB VDDIO VDDD VSS openlvds_receiver_core
+.ends openlvds_receiver
+
+.subckt lvds_delay_inv A Y CTRL PCTRL VDDD VSS
+* Symmetric current starvation preserves the clock duty cycle.
+XH T PCTRL VDDD VDDD sky130_fd_pr__pfet_01v8 w=32 l=0.5
+XP Y A T VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
+XN Y A F VSS sky130_fd_pr__nfet_01v8 w=4 l=0.15
+XC F CTRL VSS VSS sky130_fd_pr__nfet_01v8 w=16 l=0.5
+XCL Y VSS sky130_fd_pr__cap_mim_m3_1 w=2 l=2
+.ends lvds_delay_inv
+
+.subckt lvds_delay_section A Y CTRL VDDD VSS
+* Local matched current mirror supplies the complementary header bias.
+XBP PCTRL PCTRL VDDD VDDD sky130_fd_pr__pfet_01v8 w=32 l=0.5
+XBN PCTRL CTRL VSS VSS sky130_fd_pr__nfet_01v8 w=16 l=0.5
+X0 A N CTRL PCTRL VDDD VSS lvds_delay_inv
+X1 N S CTRL PCTRL VDDD VSS lvds_delay_inv
+XB0 S B VDDD VSS lvds_inv18_drive
+XB1 B Y VDDD VSS lvds_inv18_drive
+.ends lvds_delay_section
+
+.subckt openlvds_delay_line A P90 P180 P270 P360 CTRL VDDD VSS
+X0 A P90 CTRL VDDD VSS lvds_delay_section
+X1 P90 P180 CTRL VDDD VSS lvds_delay_section
+X2 P180 P270 CTRL VDDD VSS lvds_delay_section
+X3 P270 P360 CTRL VDDD VSS lvds_delay_section
+.ends openlvds_delay_line
+
+.subckt lvds_ctrl_buffer IN OUT PB VDDIO VSS
+* PMOS inputs on 3.3 V retain headroom at the fast-corner control voltage.
+* Long-channel mirror loads reduce systematic follower offset.
+XPP L IN T VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=8 l=1
+XPM OUT OUT T VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=8 l=1
+XPT T PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=4 l=2.5
+XNL L L VSS VSS sky130_fd_pr__nfet_01v8 w=4 l=1
+XNR OUT L VSS VSS sky130_fd_pr__nfet_01v8 w=4 l=1
+XCC OUT VSS sky130_fd_pr__cap_mim_m3_1 w=20 l=25
+.ends lvds_ctrl_buffer
+
+.subckt openlvds_dll_analog CLK PD_ENABLE PH0 PH90 PH180 PH270 FB PD_REF PHASE_BAD UP DN ERR PB VDDIO VDDD VSS
+* Reference and delay-line outputs have restored, matched edge slew.
+XR0 CLK R0 VDDD VSS lvds_inv18_drive
+XR1 R0 PH0 VDDD VSS lvds_inv18_drive
+XL PH0 PH90 PH180 PH270 FB CTRL VDDD VSS openlvds_delay_line
+* Match the last tap's input loading to the other three sections.
+XREPL FB DUMMY CTRL VDDD VSS lvds_delay_section
+* Invert the reference and compare it to the half-period tap. This excludes
+* zero-delay acquisition and keeps feedback outside the reset blind interval.
+XPDINV PH0 PD_REF VDDD VSS lvds_inv18
+* PFD reset is also held during bring-up by the negative-edge controller.
+* A common UP/DN reset pulse is excluded from phase-error qualification.
+XRF ERR FILTER VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XCF FILTER VSS sky130_fd_pr__cap_mim_m3_1 w=2 l=2
+XF0 FILTER FILTB VDDD VSS lvds_inv18
+XF1 FILTB PHASE_BAD VDDD VSS lvds_inv18
+* Bias conversion from the externally supplied IREF sink to 1.8 V mirrors.
+XBR NC PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=2 l=1
+* Five identical reference units and one output unit on each side avoid
+* narrow-width model differences between fractional-width current mirrors.
+XBN0 NC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XBN1 NC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XBN2 NC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XBN3 NC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XBN4 NC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XBP0 PC PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XBP1 PC PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XBP2 PC PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XBP3 PC PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XBP4 PC PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XBPN0 PC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XBPN1 PC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XBPN2 PC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XBPN3 PC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XBPN4 PC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+* Two matched output units per branch provide approximately 14 uA.
+* The 2 pF storage capacitor retains switching-feedthrough suppression.
+XCPU U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XCPU1 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XCU CTRL UPB U VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
+XUPINV UP UPB VDDD VSS lvds_inv18
+XCD CTRL DN D VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
+XCPD D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XCPD1 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+* Keep both current-source drains near VCTRL while their main switches are
+* off. This suppresses charge sharing from floating U/D nodes every cycle.
+XVCOPY CTRL VCOPY PB VDDIO VSS lvds_ctrl_buffer
+XCUDUMP VCOPY UP U VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
+XDNB DN DNB VDDD VSS lvds_inv18
+XCDDUMP VCOPY DNB D VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
+XCC0 CTRL VSS sky130_fd_pr__cap_mim_m3_1 w=30 l=30
+XCC1 CTRL VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
+* Start at minimum delay to exclude multiple-period acquisition.
+* A resistor and transmission gate precharge the real loop capacitor.
+XRP0 VDDD PRE VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XEN PD_ENABLE ENB VDDD VSS lvds_inv18
+XPREN CTRL ENB PRE VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
+XPREP CTRL PD_ENABLE PRE VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
+.ends openlvds_dll_analog
+
+.subckt lvds_pfd REF FB RESET_N PD_ENABLE UP DN ERR VDDD VSS
+XCLR RESET_N PD_ENABLE VSS VSS VDDD VDDD ALLOW sky130_fd_sc_hd__and2_1
+XAND UP DN VSS VSS VDDD VDDD BOTH sky130_fd_sc_hd__and2_4
+XRST BOTH ALLOW VSS VSS VDDD VDDD CLEAR_B sky130_fd_sc_hd__and2b_4
+XU REF VDDD CLEAR_B VSS VSS VDDD VDDD UP sky130_fd_sc_hd__dfrtp_4
+XD FB VDDD CLEAR_B VSS VSS VDDD VDDD DN sky130_fd_sc_hd__dfrtp_4
+XERR UP DN VSS VSS VDDD VDDD ERR sky130_fd_sc_hd__xor2_1
+.ends lvds_pfd
+
+.subckt openlvds_dll_core CLK RESET_N PD_ENABLE PH0 PH90 PH180 PH270 FB PHASE_BAD UP DN PB VDDIO VDDD VSS
+XA CLK PD_ENABLE PH0 PH90 PH180 PH270 FB PD_REF PHASE_BAD UP DN ERR PB VDDIO VDDD VSS openlvds_dll_analog
+XPFD PD_REF PH180 RESET_N PD_ENABLE UP DN ERR VDDD VSS lvds_pfd
+.ends openlvds_dll_core
+
+.subckt openlvds_dll CLK RESET_N PD_ENABLE PH0 PH90 PH180 PH270 FB PHASE_BAD UP DN VREF IREF VDDIO VDDD VSS
+XB IREF NB VDDIO VSS lvds_bias
+XCORE CLK RESET_N PD_ENABLE PH0 PH90 PH180 PH270 FB PHASE_BAD UP DN IREF VDDIO VDDD VSS openlvds_dll_core
+.ends openlvds_dll
