@@ -1,0 +1,3 @@
+[submodule "thirdparties/OpenPLL"]
+	path = thirdparties/OpenPLL
+	url = https://github.com/virtualsecureplatform/OpenPLL.git
