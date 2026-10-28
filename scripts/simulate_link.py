@@ -299,7 +299,7 @@ def main():
                 f'LR{base} {base}F {rx} 1n',f'CR{base} {rx} 0 2p'])
         lines.append(f'RTERM{tag} {tag}0F {tag}1F 100')
     lines.extend([f'.tran 20p {total:g}n 0 100p',
-        '.print tran V(RP) V(RN) V(RCP) V(RCN) V(RXDATA) V(RXCLOCK) V(Q0) V(Q1) V(RXVALID) V(TXREADY) V(TP) V(TN) V(CP) V(CN)',
+        '.print tran V(RP) V(RN) V(RCP) V(RCN) V(RXDATA) V(RXCLOCK) V(Q0) V(Q1) V(RXVALID) V(TXREADY) V(TP) V(TN) V(CP) V(CN) V(TXDATA) V(TXCLOCK) V(CLK0) V(CLK90)',
         '.end'])
     deck=out/'bench.cir';deck.write_text('\n'.join(lines)+'\n')
     result=subprocess.run(spice_command(out/(engine()+'.log'),deck),cwd=out,capture_output=True,text=True)
