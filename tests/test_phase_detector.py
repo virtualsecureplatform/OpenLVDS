@@ -4,7 +4,7 @@ import sys
 import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from verify_phase_detector import metrics,pulse_metrics
+from verify_phase_detector import metrics,pulse_metrics,response_cases,library_ports
 
 
 class PhaseErrorResponse(unittest.TestCase):
@@ -50,6 +50,35 @@ class PhaseErrorResponse(unittest.TestCase):
         self.assertTrue(response['passed'])
         self.assertGreater(response['reference_cycles'],5)
         self.assertFalse(pulse_metrics(time,wave[:,2],wave[:,7])['passed'])
+
+    def long_wave(self):
+        t=np.linspace(0,160e-9,160001);w=np.zeros((len(t),8));w[:,0]=np.arange(len(t));w[:,1]=t
+        w[:,2]=1.8*(np.mod(t-5e-9,2.5e-9)<1.25e-9)
+        w[:,3]=1.8*(np.mod(t-5.15e-9,2.5e-9)<1.25e-9)
+        w[:,7]=1.8*(t>100e-9)
+        return w
+
+    def test_settled_window_accepts_late_fault_but_rejects_startup_only_fault(self):
+        wave=self.long_wave()
+        self.assertTrue(metrics(wave,150,120e-9,160e-9)['passed'])
+        self.assertFalse(metrics(wave,150)['passed'])
+        wave[:,7]=1.8-wave[:,7]
+        self.assertFalse(metrics(wave,150,120e-9,160e-9)['passed'])
+
+    def test_long_window_requires_complete_transient(self):
+        self.assertFalse(metrics(self.long_wave()[:-20],150,120e-9,160e-9)['passed'])
+
+    def test_phase_matrices_cover_process_temperature_and_slew(self):
+        self.assertEqual(len(response_cases()),7)
+        corners=response_cases(corners=True);slews=response_cases(slew_corners=True)
+        self.assertEqual(len(set(corners)),105)
+        self.assertEqual(len(set(slews)),70)
+        self.assertEqual({(r[3],r[4]) for r in slews},{(20,200),(200,20)})
+
+    def test_pin_binding_reads_exact_subcircuit_and_continuations(self):
+        lib=b'.subckt lvds_pfd_physical WRONG\n.ends\n.subckt lvds_pfd REF FB\n+ QREF QFB QWIN\n.ends\n'
+        self.assertEqual(library_ports(lib,'lvds_pfd'),['REF','FB','QREF','QFB','QWIN'])
+        with self.assertRaises(ValueError):library_ports(lib,'missing')
 
 
 if __name__=='__main__':unittest.main()

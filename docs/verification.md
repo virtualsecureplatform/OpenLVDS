@@ -96,3 +96,12 @@ control source from a coincident clock breakpoint at non-integer periods.
 The original 420 MHz, 55% duty case stopped at the enable source with a
 sub-femtosecond timestep; the delayed-enable retry advances beyond that point.
 Phase, tracking-error, and acquisition limits remain unchanged.
+
+The phase-response runner now defaults to 120 ns settling followed by a 40 ns
+measurement window, allowing the averaged indicator to settle. `--corners`
+selects 105 process/temperature/offset cases; `--slew-corners` selects the 70
+extreme-PVT cases with 20/200 ps and 200/20 ps reference/feedback edges. Feedback
+source timing compensates the slew difference so the requested phase remains
+the voltage-midpoint offset. The runner reads macro terminal names from the
+captured library and supports the separate sense/filter ports for fault injection.
+A startup-only fault or an incomplete settled window cannot qualify detection.
