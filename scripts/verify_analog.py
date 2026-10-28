@@ -119,6 +119,44 @@ def run_deck(name,deck):
         return out,wave,{}
     except (OSError,ValueError) as e: return out,None,dict(passed=False,error=str(e))
 
+def driver_metrics(wave,window_start_ns=2510):
+    t=wave[:,1];inp=wave[:,2];vod=wave[:,3]-wave[:,4];vcm=(wave[:,3]+wave[:,4])/2
+    window=t>window_start_ns*1e-9
+    def crossings(y,level):
+        high=y>=level;i=np.flatnonzero(high[1:]!=high[:-1])
+        times=t[i]+(level-y[i])*(t[i+1]-t[i])/(y[i+1]-y[i])
+        return times,high[i+1]
+    ie,idir=crossings(inp,.9);oe,odir=crossings(vod,0)
+    # Pair transitions from the first driven edge, preserving their order.
+    # The most recent input edge aliases a valid delay longer than one UI
+    # into an apparent inversion. The initial DC polarity distinguishes a
+    # delayed noninverting driver from a genuinely inverting driver.
+    baseline=False
+    if len(ie):
+        before=ie[0]-.1e-9
+        baseline=bool((np.interp(before,t,inp)>.9)==(np.interp(before,t,vod)>0))
+        keep=oe>=ie[0];oe=oe[keep];odir=odir[keep]
+    count=min(len(ie),len(oe));lag=oe[:count]-ie[:count]
+    correct=bool(baseline and count and np.all(idir[:count]==odir[:count]) and np.all(lag>=0))
+    cadence=bool(count>1 and np.all(abs(np.diff(oe[:count])-np.diff(ie[:count]))<.5*np.min(np.diff(ie[:count]))))
+    scored=oe>window_start_ns*1e-9;ve=oe[scored];directions=odir[scored]
+    centers=(ve[:-1]+ve[1:])/2;samples=np.interp(centers,t,vod)
+    polarity=np.where(directions[:-1],1.,-1.)
+    delays=lag[oe[:count]>window_start_ns*1e-9]*1e12
+    transitions_ok=bool(cadence and len(ve)>=20 and abs(len(ie[ie>window_start_ns*1e-9])-len(ve))<=1)
+    return dict(passed=bool(correct and transitions_ok and len(samples) and np.any(window) and
+        np.all(samples*polarity>=REQ['tx_differential_min_v']) and
+        np.all(np.abs(samples)<=REQ['tx_differential_max_v']) and
+        np.all(vcm[window]>=REQ['tx_common_mode_min_v']) and np.all(vcm[window]<=REQ['tx_common_mode_max_v'])),
+        transitions_ok=transitions_ok,polarity_ok=correct,initial_polarity_ok=baseline,edge_cadence_ok=cadence,
+        propagation_min_ps=float(delays.min()) if len(delays) else None,
+        propagation_max_ps=float(delays.max()) if len(delays) else None,
+        differential_min_v=float(np.min(samples*polarity)) if len(samples) else None,
+        differential_max_v=float(np.max(np.abs(samples))) if len(samples) else None,
+        common_mode_min_v=float(np.min(vcm[window])) if np.any(window) else None,
+        common_mode_max_v=float(np.max(vcm[window])) if np.any(window) else None,
+        sink_bias_v=float(np.mean(wave[window,5])) if np.any(window) else None)
+
 def driver(corner,temp):
     name=f'driver_{corner}_{temp}'
     deck=header(corner,temp)+'''IREF IREF 0 PWL(0 0 1n 35u)
@@ -132,41 +170,7 @@ CN N 0 2p
 .end
 '''
     out,wave,res=run_deck(name,deck)
-    if wave is not None:
-        t=wave[:,1]; inp,p,n=wave[:,2],wave[:,3],wave[:,4]
-        window=t>2510e-9
-        vod=p-n; vcm=(p+n)/2
-        # Propagation delay is not a shortened unit interval. Measure the
-        # driven eye at centers between OUTPUT crossings, and verify polarity
-        # and the one-to-one mapping of input and output transitions separately.
-        ii=np.where((inp[:-1]-.9)*(inp[1:]-.9)<0)[0]
-        vi=np.where(vod[:-1]*vod[1:]<0)[0]
-        ie=t[ii]+(.9-inp[ii])*(t[ii+1]-t[ii])/(inp[ii+1]-inp[ii])
-        ve=t[vi]-vod[vi]*(t[vi+1]-t[vi])/(vod[vi+1]-vod[vi])
-        keep=ve>2510e-9
-        vi=vi[keep];ve=ve[keep]
-        centers=(ve[:-1]+ve[1:])/2
-        samples=np.interp(centers,t,vod)
-        polarity=np.sign(vod[vi[:-1]+1])
-        delays=[]; correct=True
-        for index,edge in zip(vi,ve):
-            past=np.where(ie<edge)[0]
-            if len(past):
-                j=past[-1];delays.append((edge-ie[j])*1e12)
-                correct &= bool((inp[ii[j]+1]>.9)==(vod[index+1]>0))
-        transitions_ok=len(ve)>=20 and abs(len(ie[ie>2510e-9])-len(ve))<=1
-        res=dict(passed=bool(correct and transitions_ok and len(samples) and
-            np.all(samples*polarity>=REQ['tx_differential_min_v']) and
-            np.all(np.abs(samples)<=REQ['tx_differential_max_v']) and
-            np.all(vcm[window]>=REQ['tx_common_mode_min_v']) and
-            np.all(vcm[window]<=REQ['tx_common_mode_max_v'])),
-            transitions_ok=transitions_ok,polarity_ok=correct,
-            propagation_min_ps=min(delays) if delays else None,
-            propagation_max_ps=max(delays) if delays else None,
-            differential_min_v=float(np.min(samples*polarity)) if len(samples) else None,
-            differential_max_v=float(np.max(np.abs(samples))) if len(samples) else None,
-            common_mode_min_v=float(np.min(vcm[window])),common_mode_max_v=float(np.max(vcm[window])),
-            sink_bias_v=float(np.mean(wave[window,5])))
+    if wave is not None:res=driver_metrics(wave)
     return name,save(out,res,deck)
 
 def receiver(corner,temp):

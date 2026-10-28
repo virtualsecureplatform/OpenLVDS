@@ -27,7 +27,10 @@ transistor tests. The RTL matrix exercises all 27 clock/duty/skew combinations,
 
 Driver benches check differential amplitude, common mode, polarity, transition
 count and propagation delay after settling. Output eye centers are measured
-between output crossings, accounting for propagation delay. Receiver benches
+between output crossings, accounting for propagation delay. Input/output edges
+are paired in order from the first driven transition, with the initial DC
+polarity and edge cadence checked. This distinguishes a valid delay longer than
+one bit interval from inversion or lost transitions. Receiver benches
 check ±100 mV decisions from 0.05 to 2.35 V common mode, keeping both input pins
 within 0–2.4 V. Separate `--test receiver-rate` benches exercise the minimum
 250 mV link swing at 420 MHz (840 Mb/s) with 100 fF output loading. They reject
