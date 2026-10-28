@@ -14,10 +14,10 @@ The latest completed checks on 2026-10-28 include:
   amplitude, common mode, and propagation measurements.
 - The compact receiver passes all 15 full-RC static and 15 full-RC rate corners. The rate test uses 840 Mb/s,
   250 mV differential input, and 100 fF output load.
-- Physical checks: five analog macros and three digital macros pass DRC/LVS;
-  all five current analog extracted networks also pass an independent
-  connectivity audit. The compact receiver passes DRC/LVS and extraction.
-- Unit tests: 52 pass, including stale-evidence rejection, parallel input timing,
+- Previous physical revisions of five analog macros and three digital macros
+  passed DRC/LVS and independent connectivity audits. The newly integrated
+  phase-qualifier DLL and PFD require fresh physical and electrical evidence.
+- Unit tests: 71 pass, including stale-evidence rejection, parallel input timing,
   link measurement boundaries, driver latency/polarity, physical port policy, and RC trace provenance.
 
 Extracted DLL qualification and the complete full/approximate RC
@@ -163,3 +163,17 @@ buf_8 PFD output drivers. The physical policy retains direct reference clocks
 and explicitly verifies both drivers and buffered reset coincidence. The phase
 qualifier component is preserved for the next integration step. This source
 revision still requires its own physical and extracted qualification.
+
+The averaged qualifier is now connected in the canonical DLL and native PFD.
+The analog macro has 22 terminals and the PFD has 12; the public DLL core and
+PHY ports are unchanged. Sense inputs remain independently drivable in the
+phase-fault bench. The reference inverter now has 16/8 µm drive, and PH270/FB
+carry matched passive sensing loads. The physical policy verifies each native
+qualifier cell and connection, including the two-buffer window, independently
+of the UP/DN steering paths. Full RTL regression passes 2,373,576 bits in 54
+cases, and all 71 unit tests pass. The regenerated analog DLL passes DRC
+(zero errors), LVS, exact RC extraction with the expected 22 ports, and an
+independent RC connectivity audit. Native PFD physical checks and complete
+extracted nominal, PVT, phase-fault, clock-duty, RC-comparison, and link release
+evidence remains outstanding. Earlier prototype results do not qualify this
+integrated source.

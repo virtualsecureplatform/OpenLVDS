@@ -19,6 +19,8 @@
     output wire PH0, output wire PH90, output wire PH180, output wire PH270,
     output wire FB, output wire PD_REF, output wire PHASE_BAD, input wire UP, input wire DN,
     input wire ERR, input wire PB,
-    inout wire VDDIO, inout wire VDDD, inout wire VSS
+    inout wire VDDIO, inout wire VDDD, inout wire VSS,
+    output wire QREF, output wire QFB, output wire QWIN,
+    input wire SENSE_REF, input wire SENSE_FB, input wire SENSE_WINDOW
 ); endmodule
 `default_nettype wire

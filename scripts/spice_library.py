@@ -74,8 +74,10 @@ def library(extracted=False,digital=False,fast=False,designs=None):
             manifest=json.loads((ROOT/'build/extracted/digital.json').read_text())
             info=selected('lvds_pfd',digital_current('lvds_pfd',manifest['designs']['lvds_pfd']));body=checked_netlist(info)
             body=re.sub(r'(?im)^(\.subckt[ \t]+)lvds_pfd\b',r'\1lvds_pfd_physical',body)
-            expected=['REF','FB','RESET_N','PD_ENABLE','UP','DN','ERR','VDDD','VSS']
+            expected=re.search(r'(?im)^\.subckt lvds_pfd ([^\n]+)',text)[1].split()
             mapping={x:x for x in expected};mapping.update(VPWR='VDDD',VGND='VSS')
+            if {mapping.get(x) for x in info['ports']}!=set(expected) or len(info['ports'])!=len(expected):
+                raise ValueError('lvds_pfd: extracted terminals differ from the schematic')
             pins=[mapping[x] for x in info['ports']]
             adapter='.subckt lvds_pfd '+' '.join(expected)+'\nXPHYS '+' '.join(pins)+' lvds_pfd_physical\n.ends lvds_pfd'
             text=replace(text,'lvds_pfd',body+'\n'+adapter)

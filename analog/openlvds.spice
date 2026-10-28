@@ -255,7 +255,7 @@ XNR OUT L VSS VSS sky130_fd_pr__nfet_01v8 w=32.0 l=1
 XCC OUT VSS sky130_fd_pr__cap_mim_m3_1 w=25 l=40
 .ends lvds_ctrl_buffer
 
-.subckt openlvds_dll_analog CLK PD_ENABLE PH0 PH90 PH180 PH270 FB PD_REF PHASE_BAD UP DN ERR PB VDDIO VDDD VSS
+.subckt openlvds_dll_analog CLK PD_ENABLE PH0 PH90 PH180 PH270 FB PD_REF PHASE_BAD UP DN ERR PB VDDIO VDDD VSS QREF QFB QWIN SENSE_REF SENSE_FB SENSE_WINDOW
 * Reference and delay-line outputs have restored, matched edge slew.
 XR0 CLK R0 VDDD VSS lvds_inv18_drive
 XR1 R0 PH0 VDDD VSS lvds_inv18_drive
@@ -264,13 +264,15 @@ XL PH0 PH90 PH180 PH270 FB CTRL VDDD VSS openlvds_delay_line
 XREPL FB DUMMY CTRL VDDD VSS lvds_delay_section
 * Invert the reference and compare it to the half-period tap. This excludes
 * zero-delay acquisition and keeps feedback outside the reset blind interval.
-XPDINV PH0 PD_REF VDDD VSS lvds_inv18
-* PFD reset is also held during bring-up by the negative-edge controller.
-* A common UP/DN reset pulse is excluded from phase-error qualification.
-XRF ERR FILTER VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
-XCF FILTER VSS sky130_fd_pr__cap_mim_m3_1 w=2 l=2
-XF0 FILTER FILTB VDDD VSS lvds_inv18
-XF1 FILTB PHASE_BAD VDDD VSS lvds_inv18
+XPDINV PH0 PD_REF VDDD VSS lvds_inv18_drive
+* Sense terminals are tied to PD_REF/PH180/PH90 in the assembled core.
+* Standalone fault tests may drive them independently of the DLL loop.
+XQUAL SENSE_REF SENSE_FB SENSE_WINDOW ERR PHASE_BAD QREF QFB QWIN PC VDDD VSS lvds_phase_qualifier
+* Match the passive sensing load on the remaining delay-line taps.
+XQ270R PH270 Q270 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XQ270C Q270 VSS sky130_fd_pr__cap_mim_m3_1 w=5 l=12
+XQFBR FB QLAST VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XQFBC QLAST VSS sky130_fd_pr__cap_mim_m3_1 w=5 l=12
 * Bias conversion from the externally supplied IREF sink to 1.8 V mirrors.
 XBR NC PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=2 l=1
 * Five identical reference units and one output unit on each side avoid
@@ -379,7 +381,7 @@ XADDCP29 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
 XADDCN29 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
 .ends openlvds_dll_analog
 
-.subckt lvds_pfd REF FB RESET_N PD_ENABLE UP DN ERR VDDD VSS
+.subckt lvds_pfd REF FB RESET_N PD_ENABLE UP DN ERR VDDD VSS QREF QFB QWIN
 XCLR RESET_N PD_ENABLE VSS VSS VDDD VDDD ALLOW sky130_fd_sc_hd__and2_1
 XAND UP DN VSS VSS VDDD VDDD BOTH sky130_fd_sc_hd__and2_4
 XRST BOTH ALLOW VSS VSS VDDD VDDD CLEAR_B sky130_fd_sc_hd__and2b_4
@@ -387,12 +389,20 @@ XU REF VDDD CLEAR_B VSS VSS VDDD VDDD RU sky130_fd_sc_hd__dfrtp_4
 XD FB VDDD CLEAR_B VSS VSS VDDD VDDD RD sky130_fd_sc_hd__dfrtp_4
 XUPBUF RU VSS VSS VDDD VDDD UP sky130_fd_sc_hd__buf_8
 XDNBUF RD VSS VSS VDDD VDDD DN sky130_fd_sc_hd__buf_8
-XERR UP DN VSS VSS VDDD VDDD ERR sky130_fd_sc_hd__xor2_1
+XRB QREF VSS VSS VDDD VDDD RI sky130_fd_sc_hd__buf_8
+XFB QFB VSS VSS VDDD VDDD FI sky130_fd_sc_hd__buf_8
+XWB QWIN VSS VSS VDDD VDDD WM sky130_fd_sc_hd__buf_8
+XWB2 WM VSS VSS VDDD VDDD WI sky130_fd_sc_hd__buf_8
+XRI RI VSS VSS VDDD VDDD REFB sky130_fd_sc_hd__inv_4
+XFI FI VSS VSS VDDD VDDD FBB sky130_fd_sc_hd__inv_4
+XCMP RI FBB FI REFB VSS VSS VDDD VDDD RAW_N sky130_fd_sc_hd__a22oi_4
+XDRV RAW_N VSS VSS VDDD VDDD RAW sky130_fd_sc_hd__inv_16
+XMASK RAW WI VSS VSS VDDD VDDD ERR sky130_fd_sc_hd__and2_4
 .ends lvds_pfd
 
 .subckt openlvds_dll_core CLK RESET_N PD_ENABLE PH0 PH90 PH180 PH270 FB PHASE_BAD UP DN PB VDDIO VDDD VSS
-XA CLK PD_ENABLE PH0 PH90 PH180 PH270 FB PD_REF PHASE_BAD UP DN ERR PB VDDIO VDDD VSS openlvds_dll_analog
-XPFD PD_REF PH180 RESET_N PD_ENABLE UP DN ERR VDDD VSS lvds_pfd
+XA CLK PD_ENABLE PH0 PH90 PH180 PH270 FB PD_REF PHASE_BAD UP DN ERR PB VDDIO VDDD VSS QREF QFB QWIN PD_REF PH180 PH90 openlvds_dll_analog
+XPFD PD_REF PH180 RESET_N PD_ENABLE UP DN ERR VDDD VSS QREF QFB QWIN lvds_pfd
 .ends openlvds_dll_core
 
 .subckt openlvds_dll CLK RESET_N PD_ENABLE PH0 PH90 PH180 PH270 FB PHASE_BAD UP DN VREF IREF VDDIO VDDD VSS

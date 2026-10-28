@@ -18,7 +18,28 @@ def pfd_paths_retained(netlist):
         if buf.get('A')!=ff['Q'] or buf.get('X')!=output:return False
         raw.append(ff['Q'])
     coincidence=pins('and2_4','coincidence')
-    return len(set(raw))==2 and set(raw).isdisjoint({'UP','DN'}) and {coincidence.get('A'),coincidence.get('B')}=={'UP','DN'}
+    if not (len(set(raw))==2 and set(raw).isdisjoint({'UP','DN'}) and
+            {coincidence.get('A'),coincidence.get('B')}=={'UP','DN'}):return False
+    # Require the restored raw-clock qualifier, independently of the PFD Qs.
+    nodes={}
+    for kind,name,inputs,output in [
+        ('buf_8','qual_ref',{'A':'QREF'},'X'),
+        ('buf_8','qual_fb',{'A':'QFB'},'X'),
+        ('buf_8','qual_window_first',{'A':'QWIN'},'X'),
+        ('buf_8','qual_window_second',{'A':'qual_window_first'},'X'),
+        ('inv_4','qual_ref_inv',{'A':'qual_ref'},'Y'),
+        ('inv_4','qual_fb_inv',{'A':'qual_fb'},'Y'),
+        ('a22oi_4','qual_compare',{'A1':'qual_ref','A2':'qual_fb_inv',
+                               'B1':'qual_fb','B2':'qual_ref_inv'},'Y'),
+        ('inv_16','qual_error_drive',{'A':'qual_compare'},'Y'),
+        ('and2_4','qual_mask',{'A':'qual_error_drive','B':'qual_window_second'},'X')]:
+        cell=pins(kind,name)
+        if any(cell.get(pin)!=nodes.get(net,net) for pin,net in inputs.items()):return False
+        net=cell.get(output)
+        if not net or net in set(nodes.values())|set(raw)|{'UP','DN','QREF','QFB','QWIN'}:return False
+        if (name=='qual_mask')!=(net=='ERR'):return False
+        nodes[name]=net
+    return True
 
 
 def tx_cells_retained(netlist):

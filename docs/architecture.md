@@ -71,13 +71,25 @@ asserting `tx_ready`. Supply and reference sources must already be operating.
 
 The DLL has four current-starved delay sections, a standard-cell phase/frequency
 detector, charge pump, physical MIM loop capacitor, startup control preset, and
-a filtered pulse-width error indicator. Each delay section uses matched NMOS
+an averaged rising-edge phase-error indicator. Each delay section uses matched NMOS
 footer and PMOS header currents so both clock edges are delayed. A buffered
 control-voltage replica steers idle charge-pump current away from the storage
 capacitor, avoiding floating switch-node charge sharing. Reference and feedback buffer replicas
 reduce detector loading asymmetry. The `PD_REF` output is the inverted PH0
 detector reference; `FB` remains the fourth delay tap for observation. Its analog block and PFD are separate physical
 macros connected by `rtl/openlvds_dll_core.v`.
+
+The phase qualifier senses the inverted reference, half-period tap, and
+quarter-period window through identical resistor/MIM input filters. Matched
+native buffers restore the reference and feedback; a raw-clock XOR expression
+is masked by the restored window. This excludes the PFD reset coincidence
+pulse. A 10 kΩ / 1 pF average is compared with a 100 mV reference made from
+18 identical resistor units, using the DLL's mirrored bias. The comparator
+restores `PHASE_BAD` to a logic level. Passive sensing loads on PH270 and FB
+balance the remaining taps. The private analog macro exposes three filtered
+sense signals and three independent sense inputs for fault injection; the
+assembled core ties them internally, so the public PHY interface is unchanged.
+The filtered sense signals do not enter the charge-pump PFD clock paths.
 
 The TX uses a resistively loaded, thick-oxide differential current-mode level
 converter followed by 3.3 V output buffers. It consumes static bias current to
