@@ -23,7 +23,7 @@ module tb_link;
     openlvds_ddr_rx rx(line_clk,rx_reset_n,line_data,rx_data,rx_valid);
     reg [31:0] prbs=32'h1274dba9;
     reg [31:0] jitter_rng=32'h13579bdf;
-    reg expected_bit=0, expected_held=0;
+    reg expected_bit=0, expected_first=0, expected_held=0;
     reg expected_line=0;
     always @(expected_bit) expected_line <= #(1.2+skew_ns) expected_bit;
     reg rx_first=0, rx_second=0;
@@ -55,14 +55,17 @@ module tb_link;
         prbs={prbs[30:0],prbs[31]^prbs[21]^prbs[1]^prbs[0]};
         tx_data=prbs[1:0];
     end
-    always @(clk) begin
+    always @(posedge clk) begin
+        if (tx.data_run) begin expected_first=tx_data[0]; expected_held=tx_data[1]; end
+        else begin expected_first=0; expected_held=0; end
+    end
+    always @(clk90) begin
         edge_time=$realtime;
         if (tx.data_run) begin
-            if (clk) begin expected_bit=tx_data[0]; expected_held=tx_data[1]; end
-            else expected_bit=expected_held;
+            expected_bit=clk90 ? expected_first : expected_held;
             #0.005;
             if (serial !== expected_bit) $fatal(1,"DDR serialization error at %t",$time);
-        end else begin expected_bit=0; expected_held=0; end
+        end else expected_bit=0;
     end
     always @(serial) begin
         if (ready && reset_n && ($realtime-edge_time)>0.002)

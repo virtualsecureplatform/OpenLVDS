@@ -4,11 +4,11 @@
 module sky130_fd_sc_hd__inv_4(input wire A,output wire Y);
     assign Y=~A;
 endmodule
-module sky130_fd_sc_hd__xor2_1(input wire A,B,output wire X);
-    assign X=A^B;
+module sky130_fd_sc_hd__buf_4(input wire A,output wire X);
+    assign X=A;
 endmodule
-module sky130_fd_sc_hd__xor2_4(input wire A,B,output wire X);
-    assign X=A^B;
+module sky130_fd_sc_hd__mux2_4(input wire A0,A1,S,output wire X);
+    assign X=S ? A1 : A0;
 endmodule
 module sky130_fd_sc_hd__dfrtp_4(input wire CLK,D,RESET_B,output reg Q);
     always @(posedge CLK or negedge RESET_B)

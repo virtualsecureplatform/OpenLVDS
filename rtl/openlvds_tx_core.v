@@ -11,12 +11,14 @@ module openlvds_tx_core (
     openlvds_reset data_release(.clk(clk_400), .reset_n(qualified_reset_n), .run(data_run));
     openlvds_reset clock_release(.clk(clk_90), .reset_n(qualified_reset_n), .run(clock_run));
     (* keep_hierarchy = "yes", dont_touch = "true" *)
-    openlvds_ddr_tx data_launch(.clk(clk_400), .reset_n(data_run),
+    openlvds_ddr_tx data_launch(.clk(clk_400), .select_clk(clk_90), .reset_n(data_run),
                                .data(tx_data), .serial(tx_serial));
-    // Constant-input clock replica is intentionally retained during hardening.
+    // Swapped capture/select phases balance clock loading. The 10 pair makes
+    // the same mux invert PH0, centering its rising edge in the D0 interval.
+    // Native capture cells are retained even for these constant inputs.
     (* keep_hierarchy = "yes", dont_touch = "true" *)
-    openlvds_ddr_tx clock_launch(.clk(clk_90), .reset_n(clock_run),
-                                .data(2'b01), .serial(forwarded_clock));
+    openlvds_ddr_tx clock_launch(.clk(clk_90), .select_clk(clk_400), .reset_n(clock_run),
+                                .data(2'b10), .serial(forwarded_clock));
     assign tx_ready = data_run & clock_run;
 endmodule
 `default_nettype wire

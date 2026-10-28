@@ -31,9 +31,9 @@ module tb_phy;
     end
     always @(posedge clk) if (reset_n && ready) begin
         queue[wr]=tx_data;
-        // Fixture latency: one pair-assembly cycle + quarter-cycle clock
-        // centering + 50ps model clock buffer + 2*200ps I/O + 1.2ns channel.
-        due[wr]=$realtime+4.775;
+        // Fixture latency: one pair-assembly cycle + half-cycle sampling
+        // phase + 50ps model clock buffer + 2*200ps I/O + 1.2ns channel.
+        due[wr]=$realtime+5.400;
         wr=wr+1;
     end
     always @(posedge rx_clk) begin

@@ -5,7 +5,7 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 The latest completed checks on 2026-10-28 include:
 
-- RTL: 2,373,624 bits across 54 cases: 1,186,812 each for generic RTL and native
+- RTL: 2,373,576 bits across 54 cases: 1,186,788 each for generic RTL and native
   SKY130 serializer cells, plus DLL control and generic/native PHY assembly.
 - Schematic characterization previously passed all 60 cases. The revised receiver
   passes 15 static and 15 rate canonical cases at tt/ff/ss/fs/sf and 0, 25, and
@@ -17,7 +17,7 @@ The latest completed checks on 2026-10-28 include:
 - Physical checks: five analog macros and three digital macros pass DRC/LVS;
   all five current analog extracted networks also pass an independent
   connectivity audit. The compact receiver passes DRC/LVS and extraction.
-- Unit tests: 49 pass, including stale-evidence rejection, parallel input timing,
+- Unit tests: 52 pass, including stale-evidence rejection, parallel input timing,
   link measurement boundaries, driver latency/polarity, physical port policy, and RC trace provenance.
 
 Extracted DLL qualification and the complete full/approximate RC
@@ -102,23 +102,26 @@ error for an unchanged ladder. Disabling those reductions preserves each
 connection and resistor length check: the compact layout passes, and a
 controlled doubled-length resistor is rejected. Property errors remain fatal.
 
-The native transmitter retains two XOR input gates, a driven output XOR, three
-positive-edge sampling cells, and a local falling-clock inverter in each data
-and clock-replica lane. This preserves the existing serializer algorithm while
-replacing the decomposed NAND paths. Its clock domains use local routing, with
-post-route setup/hold repair and explicit 100 ps port slew. The native macro
-passes DRC/LVS and the unchanged timing constraints; worst reported setup slack
-is 7 ps and hold slack is 88 ps. Native cell types and their state connections
-are checked independently. Fresh electrical timing evidence is still required
-for this transmitter revision.
+The preceding native XOR transmitter passed DRC/LVS and timing (7 ps setup
+slack, 88 ps hold slack), but its 32-bit extracted-channel payload has only
+140 ps setup and 126 ps hold margin, despite zero bit errors. Data common mode
+also dips to 1.12265 V, below 1.125 V. These measurements are from the completed
+payload window of a still-running diagnostic transient, not release evidence.
+Internal traces show alternating clock launch delays of 786–999 ps and data
+launch delays of 750–987 ps. Pattern-dependent encoded-state delay is too large.
+
+The revised transmitter uses three plain sampling registers and a PH90-selected
+mux for data, with an identical PH0-selected constant-input clock replica.
+Both input bits still belong to the same rising-edge capture. Generic and
+native RTL pass the full 54-case regression and functional PHY assembly.
+Physical hardening and fresh extracted electrical checks remain required.
 
 The compact receiver with the preceding transmitter revision completes a
 32-bit extracted-channel diagnostic with zero errors, 202 ps setup margin,
 and 257 ps hold margin. That run uses shortened training and no injected
 jitter; it does not qualify the revised native transmitter or the link matrix.
-The native transmitter's fresh full/approximate RC comparison passes, with
-maximum edge error 3.31 ps and plateau error 2.29 mV. Four of the six comparison
-fixtures currently pass; the complete certificate remains outstanding.
+The preceding XOR transmitter's full/approximate RC comparison passes, with
+maximum edge error 3.31 ps and plateau error 2.29 mV. That comparison does not qualify the new mux transmitter; the complete certificate remains outstanding.
 
 DLL experiments with stronger charge-pump branches reduce settled nominal
 feedback error to 67 ps (8 times the original current) and 48 ps (16 times).

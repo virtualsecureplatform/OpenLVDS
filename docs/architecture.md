@@ -11,7 +11,7 @@ SKY130 MOSFETs, precision poly resistors and MIM capacitors.
 flowchart LR
   PLL[OpenPLL 400 MHz] --> DLL[Quarter-cycle DLL]
   DATA[TX two-bit words] --> DDR[DDR launch]
-  PLL --> DDR
+  DLL --> DDR
   DDR --> TX[LVDS data driver]
   DLL --> FWD[Matched DDR clock launch]
   FWD --> CTX[LVDS clock driver]
@@ -24,15 +24,25 @@ flowchart LR
   CAP --> WORDS[RX two-bit words and valid]
 ```
 
-TX bit 0 launches on the rising edge and bit 1 on the following falling edge.
-Both parallel bits are captured together on the rising edge. The physical input
-contract assumes an upstream register with at most 250 ps clock-to-output delay
-after the preceding rising edge, as specified by `constraints/tx.sdc`. The link
-bench uses that timing; its bus holds each complete pair through capture.
-The XOR launch circuit changes only one stored operand per edge, avoiding a
-combinational raw-clock multiplexer. The identical clock launch circuit sends
-the constant word `01`, delayed by the DLL nominal quarter period (625 ps).
-This centers the forwarded clock within the data unit intervals.
+Both parallel bits are captured together on the PH0 rising edge. Bit 0 stays
+in its rising-edge register; bit 1 moves from the pair's hold register into a
+falling-edge register at the PH0 falling edge. A mux selected by PH90 emits bit
+0 while PH90 is high and bit 1 while it is low. Each capture therefore settles
+for a nominal quarter period before selection. Changing the input bus after
+capture cannot change the current pair.
+
+The physical input contract assumes an upstream register with at most 250 ps
+clock-to-output delay after the preceding rising edge, as specified by
+`constraints/tx.sdc`. The link bench holds each complete pair through capture.
+
+The clock replica uses the same three sampling cells, falling-clock inverter,
+select buffer, and output mux. Its capture clock is PH90, its select clock is
+PH0, and its constant word is `10`. The resulting inverted PH0 clock has its
+rising edge centered in bit 0 and its falling edge centered in bit 1. Swapping
+the capture/select clock connections also balances the two clock-port loads.
+Only the existing PH0/PH90 clocks are needed. Native cells remain explicit for
+the constant-input lane. This replaces XOR feedback, whose encoded internal
+state produced alternating clock-to-output delays in extracted simulation.
 
 RX samples both clock edges. At a rising edge it publishes the **previous**
 complete pair with bit 0 from the previous rising sample and bit 1 from the
