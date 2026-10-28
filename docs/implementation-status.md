@@ -18,6 +18,9 @@ The latest completed checks on 2026-10-28 include:
   DRC/LVS. The integrated phase-qualifier DLL and PFD pass fresh physical
   checks and exact RC extraction. All five analog networks pass independent
   RC connectivity audits. Electrical qualification of the new DLL is pending.
+- The completed steering-only DLL baseline passes its 1500 ns exact-RC nominal
+  test at tt, 25 °C, 400 MHz, and 50% duty. The integrated phase-qualifier
+  revision is now undergoing its own nominal test.
 - Unit tests: 72 pass, including stale-evidence rejection, parallel input timing,
   link measurement boundaries, driver latency/polarity, physical port policy, and RC trace provenance.
 
@@ -227,3 +230,20 @@ experimental schematic passes. A controlled transient is queued only if the
 exact-driver replay confirms a swing failure with a complete, correctly decoded
 payload and valid common mode. The PHY continues to instantiate the existing
 driver. This experiment has no electrical or GDS qualification yet.
+
+The steering-only repair completes its full 1500 ns exact-RC nominal transient.
+Scoring 117 cycles in the settled window gives 43.53 ps maximum feedback error,
+29.35 mV maximum control-copy error, and 687.43–687.70 ps quarter-cycle delay.
+These meet the unchanged 100 ps feedback, 50 mV copy, and 625 ± 100 ps phase
+limits. The run uses fixed 3.3/1.8 V supplies, a 1.2 V reference, a 35 µA sink,
+and the pinned native ngspice engine at tt/25 °C. An independent audit verifies
+file hashes, the completed waveform, engine and conditions, and recomputes all
+settled metrics.
+
+This is the preceding 16-terminal analog DLL / 9-terminal PFD circuit, with
+exact network hashes `7cb9f30e214c` and `d2b3f284fdde`. Its archived evidence is
+under `build/diagnostics/phase_integration/steering_baseline/`. Scope validation
+accepts that evidence for its own circuit and rejects it for the integrated
+22/12-terminal revision. The latter's fresh full-RC nominal transient has
+started. Its complete nominal result, PVT/clock matrices, and phase-fault
+reports remain required for release.
