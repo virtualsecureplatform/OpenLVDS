@@ -18,6 +18,31 @@ REQ=json.loads((ROOT/'requirements.json').read_text())
 OFFSETS_PS=(0,50,-50,150,-150,300,-300)
 
 
+def pulse_metrics(time,reference,bad):
+    def crossings(values,level,rising):
+        high=values>=level
+        i=np.flatnonzero((~high[:-1]&high[1:]) if rising else (high[:-1]&~high[1:]))
+        return time[i]+(level-values[i])*(time[i+1]-time[i])/(values[i+1]-values[i])
+    ref=crossings(reference,.9,True)
+    if len(ref)<3:return dict(passed=False,error='Missing reference cycles')
+    period=float(np.median(np.diff(ref)))
+    anchors=ref[(ref>20e-9+period/2)&(ref<40e-9-period/2)]
+    starts=list(crossings(bad,1.44,True));ends=list(crossings(bad,1.44,False))
+    if bad[0]>=1.44:starts.insert(0,float(time[0]))
+    if bad[-1]>=1.44:ends.append(float(time[-1]))
+    segments=list(zip(starts,ends));events=crossings(bad,.9,True)
+    counts=[];valid=[];widths=[]
+    for at in anchors:
+        lo,hi=at-period/2,at+period/2
+        counts.append(int(((events>=lo)&(events<hi)).sum()))
+        overlapping=[(end-start)*1e12 for start,end in segments if start<hi and end>lo]
+        valid.append(bool(overlapping) and min(overlapping)>=200)
+        widths.extend(overlapping)
+    return dict(passed=bool(len(anchors) and all(valid) and max(counts)<=1),
+        reference_cycles=len(anchors),events_per_cycle_max=max(counts) if counts else None,
+        valid_high_min_ps=min(widths) if widths else None)
+
+
 def metrics(wave,offset_ps):
     """A <=50 ps error is accepted; >=150 ps must produce a valid BAD high."""
     if (wave.ndim!=2 or wave.shape[1]!=8 or len(wave)<2 or
@@ -37,7 +62,9 @@ def metrics(wave,offset_ps):
         return dict(passed=False,error='Detector input phase differs from the requested case')
     bad=a[:,7];expect_bad=abs(offset_ps)>=150
     low=float(bad.min());high=float(bad.max())
-    return dict(passed=bool(high>1.44 if expect_bad else high<.36),
+    pulses=pulse_metrics(wave[:,1],wave[:,2],wave[:,7]) if expect_bad else None
+    return dict(passed=bool(high>1.44 and pulses['passed'] if expect_bad else high<.36),
+        pulse_response=pulses,
         expected_bad=expect_bad,bad_min_v=low,bad_max_v=high,
         up_max_v=float(a[:,4].max()),dn_max_v=float(a[:,5].max()),
         error_max_v=float(a[:,6].max()))

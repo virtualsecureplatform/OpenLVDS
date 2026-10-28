@@ -40,8 +40,11 @@ within 0–2.4 V. Separate `--test receiver-rate` benches exercise the minimum
 250 mV link swing at 420 MHz (840 Mb/s) with 100 fF output loading. They reject
 missing clock edges and require both valid CMOS levels to persist for at least
 two 200 ps margin intervals. DLL benches check acquisition, quarter-cycle phase, feedback
-error and the error indicator. All use actual SKY130 process models at the three
-requested temperatures. `--settled-start` solves DC bias at the fixed supplies
+error and the error indicator. The standalone `verify_phase_detector.py` response
+bench also rejects missed error cycles, multiple fault edges per reference cycle,
+and fault highs shorter than 200 ps. A continuously asserted valid fault level
+is accepted because it blocks lock directly. All use actual SKY130 process models
+at the three requested temperatures. `--settled-start` solves DC bias at the fixed supplies
 before reset and clock stimuli, matching the stable lab supply contract. The
 Makefile uses this mode. Direct runner invocation without the flag also tests
 a 1 ns supply/reference startup ramp; it is not a supply sweep.
