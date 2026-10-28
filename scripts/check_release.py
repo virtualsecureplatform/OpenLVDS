@@ -57,7 +57,7 @@ def main():
         netlist=ROOT/evidence.get('run','build/physical/missing')/'final/nl'/f'{name}.nl.v'
         text=netlist.read_text() if netlist.is_file() else ''
         check(kind+' no clock-delay buffers',bool(text) and delay_cells_absent(text))
-        if kind=='pfd':check('PFD direct clocks and matched pulse drivers',pfd_paths_retained(text))
+        if kind=='pfd':check('PFD direct clocks, matched drivers and phase qualifier',pfd_paths_retained(text))
         if kind=='tx':check('TX native serializer cells and connections',tx_cells_retained(text))
         files=[ROOT/'rtl/openlvds_reset.v',ROOT/f'rtl/{name}.v']
         if kind=='tx':files.extend([ROOT/'rtl/openlvds_ddr_tx.v',ROOT/'sky130/tx_blackboxes.v'])

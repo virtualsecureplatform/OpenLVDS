@@ -14,9 +14,10 @@ The latest completed checks on 2026-10-28 include:
   amplitude, common mode, and propagation measurements.
 - The compact receiver passes all 15 full-RC static and 15 full-RC rate corners. The rate test uses 840 Mb/s,
   250 mV differential input, and 100 fF output load.
-- Previous physical revisions of five analog macros and three digital macros
-  passed DRC/LVS and independent connectivity audits. The newly integrated
-  phase-qualifier DLL and PFD require fresh physical and electrical evidence.
+- Physical checks: all five analog macros and three digital macros pass
+  DRC/LVS. The integrated phase-qualifier DLL and PFD pass fresh physical
+  checks and exact RC extraction. All five analog networks pass independent
+  RC connectivity audits. Electrical qualification of the new DLL is pending.
 - Unit tests: 71 pass, including stale-evidence rejection, parallel input timing,
   link measurement boundaries, driver latency/polarity, physical port policy, and RC trace provenance.
 
@@ -173,7 +174,24 @@ qualifier cell and connection, including the two-buffer window, independently
 of the UP/DN steering paths. Full RTL regression passes 2,373,576 bits in 54
 cases, and all 71 unit tests pass. The regenerated analog DLL passes DRC
 (zero errors), LVS, exact RC extraction with the expected 22 ports, and an
-independent RC connectivity audit. Native PFD physical checks and complete
-extracted nominal, PVT, phase-fault, clock-duty, RC-comparison, and link release
-evidence remains outstanding. Earlier prototype results do not qualify this
-integrated source.
+independent RC connectivity audit. The native PFD also passes DRC/LVS and
+its explicit cell-path policy, and its 12-terminal exact RC extraction assembles
+with the DLL by terminal name. Complete extracted nominal, PVT, phase-fault,
+clock-duty, RC-comparison, and link release evidence remains outstanding.
+Earlier prototype results do not qualify this integrated source.
+
+The integrated DLL has 329 devices, zero DRC errors, and exact RC network hash
+`00bdf5fce102`; the PFD exact network hash is `2dce4c008a2d`. The fresh
+0.1 ps TICER models remain unqualified until comparison with these exact
+networks completes. The release checker accepts the current physical and RTL
+evidence and rejects missing phase-fault, DLL, and complete link qualification.
+A queued nominal test preserves the preceding steering-only baseline and starts
+the integrated full-RC test only after that baseline completes successfully.
+
+The completed stressed 32-bit diagnostic at 420 MHz, 45% duty, +100 ps data
+skew, and 100 ps peak-to-peak jitter has zero bit errors but fails the current
+margin and dynamic transmitter-level checks: setup margin −47 ps and minimum
+loaded data/clock eye-center amplitudes 179/225 mV. Receiver sample amplitude
+remains above 100 mV. These are diagnostics with ideal DLL phases and shortened
+training, not a release result. The captured-waveform driver replay remains
+in progress; output-level and aperture requirements have not been relaxed.
