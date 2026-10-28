@@ -12,18 +12,22 @@ The latest completed checks on 2026-10-28 include:
   test uses 840 Mb/s, 250 mV differential input, and 100 fF output load.
 - Physical checks: five analog macros and three digital macros pass DRC/LVS;
   the five analog extracted networks also pass an independent connectivity audit.
-- Unit tests: 27 pass, including stale-evidence rejection, parallel input timing,
-  link measurement boundaries, and binding results to their required regression cases.
+- Unit tests: 33 pass, including stale-evidence rejection, parallel input timing,
+  link measurement boundaries, driver latency/polarity, and physical port policy.
 
 Extracted driver and DLL corner simulations and the full/approximate RC
 comparison are still running. Completed driver cases are recorded individually
 under `build/analog_extracted/`. No approximate network is qualified until the
 complete comparison certificate passes.
 
-A partial extracted DLL trace shows approximately 508 ps quarter-cycle delay
-and 310 ps detector-input error. Its physical netlist contains automatically
-inserted clock-delay buffers on the phase detector's inputs and outputs.
-The physical flow is being corrected before restarting the affected DLL tests.
+An archived partial extracted DLL trace showed approximately 508 ps quarter-cycle
+delay and 310 ps detector-input error. Automatically inserted clock-delay buffers
+were found on the phase detector's inputs and outputs. All three digital macros
+have been rebuilt without those cells and pass physical checks; the phase
+detector additionally preserves direct clock and UP/DN connections. With equal
+45 fF loads, its isolated extracted output pulses now reach approximately 1.82 V,
+versus 1.29–1.35 V before the correction. DLL and link checks with the rebuilt
+macros are in progress; the isolated pulse test is diagnostic evidence.
 
 A short extracted link diagnostic with late parallel input changes shows payload
 ordering errors. The earlier receiver clock-load problem was corrected and

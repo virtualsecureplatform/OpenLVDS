@@ -2,6 +2,10 @@
 
 Every runner archives decks, tool logs and JSON results under `build/`. Read
 the current manifests instead of inferring success from an artifact's existence.
+Digital hardening excludes intentional clock-delay cells from general buffering.
+The final PFD netlist must connect REF/FB directly to its two clock pins and
+UP/DN directly to their flip-flop outputs. Physical and release checks reject
+inserted port buffers on that detector interface.
 
 | Evidence | Location |
 | --- | --- |

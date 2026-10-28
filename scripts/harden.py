@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+from physical_policy import delay_cells_absent,pfd_ports_direct
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -42,6 +43,9 @@ def main():
         # Ordinary fillers maintain well/rail continuity without populating a
         # small lab macro with hundreds of unrequested MOS decap cells.
         config['DECAP_CELLS']=[]
+        # OpenROAD can otherwise select intentional clock-delay cells as
+        # general port buffers, distorting PFD pulses and DDR launch timing.
+        config['EXTRA_EXCLUDED_CELLS']=['sky130_fd_sc_hd__clkdlybuf*']
         if which=='rx':
             # Six local clock loads are driven directly by the analog clock
             # receiver. Avoid an unnecessary two-level tree and its sampling skew.
@@ -58,6 +62,9 @@ def main():
                 EXTRA_VERILOG_MODELS=[str(ROOT/'thirdparties/OpenPLL/sky130/sky130_fd_sc_hd_pll_blackbox.v'),
                                       str(ROOT/'sky130/pfd_blackboxes.v')],
                 RUN_CTS=False,RUN_POST_CTS_RESIZER_TIMING=False,
+                DESIGN_REPAIR_BUFFER_INPUT_PORTS=False,
+                DESIGN_REPAIR_BUFFER_OUTPUT_PORTS=False,
+                RUN_POST_GRT_DESIGN_REPAIR=False,
                 RUN_POST_GRT_RESIZER_TIMING=False,
                 RUN_MCSTA=False,RUN_EQY=False,
                 LINTER_DISABLE_WARNINGS_BLACKBOX=['UNDRIVEN','UNUSEDSIGNAL','PINMISSING','TIMESCALEMOD'])
@@ -77,9 +84,14 @@ def main():
         metrics=runs/'final/metrics.json'
         data=json.loads(metrics.read_text()) if metrics.exists() else {}
         unchanged=all(path.read_bytes()==data for path,data in captured.items())
-        results[which]=dict(passed=result.returncode==0 and unchanged,returncode=result.returncode,
+        netlist=runs/'final/nl'/f'{design}.nl.v'
+        text=netlist.read_text() if netlist.exists() else ''
+        no_delay=bool(text) and delay_cells_absent(text)
+        interface=which!='pfd' or pfd_ports_direct(text)
+        results[which]=dict(passed=result.returncode==0 and unchanged and no_delay and interface,returncode=result.returncode,
             run=str(runs.relative_to(ROOT)),metrics=data,
             source_sha256=stamp,inputs_unchanged=unchanged,
+            delay_cells_absent=no_delay,interface_verified=interface,
             input_archive=str(archive.relative_to(ROOT)))
         if not unchanged:results[which]['error']='Inputs changed during the physical flow; regenerate'
         (out/'summary.json').write_text(json.dumps(results[which],indent=2)+'\n')

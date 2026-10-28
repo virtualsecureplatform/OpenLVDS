@@ -13,6 +13,7 @@ from evidence_scope import matches as evidence_matches
 from link_evidence import matches as link_matches
 from openpll_clock import rtl_sources
 from spice_engine import engine,provenance
+from physical_policy import delay_cells_absent,pfd_ports_direct
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -52,6 +53,10 @@ def main():
         evidence=read(f'build/physical/{kind}/summary.json')
         check(kind+' digital physical flow',evidence.get('passed'))
         name={'tx':'openlvds_tx_core','rx':'openlvds_ddr_rx','pfd':'lvds_pfd'}[kind]
+        netlist=ROOT/evidence.get('run','build/physical/missing')/'final/nl'/f'{name}.nl.v'
+        text=netlist.read_text() if netlist.is_file() else ''
+        check(kind+' no clock-delay buffers',bool(text) and delay_cells_absent(text))
+        if kind=='pfd':check('PFD direct clock and pulse ports',pfd_ports_direct(text))
         files=[ROOT/'rtl/openlvds_reset.v',ROOT/f'rtl/{name}.v']
         if kind=='tx':files.append(ROOT/'rtl/openlvds_ddr_tx.v')
         if kind=='pfd':files=[ROOT/'sky130/lvds_pfd.v']
