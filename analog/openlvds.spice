@@ -134,31 +134,39 @@ XCORE D OUTP OUTN VREF IREF NB VDDIO VDDD VSS openlvds_driver_core
 XNT NT NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=12 l=1
 XNP NL INP NT VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
 XNN NR INN NT VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
-XNDL NL NL VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
-XNDR NR NR VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
-XNML PP NL VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
-XNMR PN NR VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
+XNDL NL NL VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=10 l=0.5
+XNDR NR NR VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=10 l=0.5
+XNML PP NL VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=10 l=0.5
+XNMR PN NR VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=10 l=0.5
 XPT PT PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=12 l=1
 XPP PL INP PT VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
 XPN PR INN PT VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
-XPDL PL PL VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
-XPDR PR PR VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
-XPML PP PL VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
-XPMR PN PR VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=0.5
-XRLP0 PP VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
-XRLP1 PP VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
-XRLN0 PN VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
-XRLN1 PN VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
-* The externally buffered reference sinks/sources common-mode imbalance.
+XPDL PL PL VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=10 l=0.5
+XPDR PR PR VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=10 l=0.5
+XPML PP PL VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=10 l=0.5
+XPMR PN PR VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=10 l=0.5
+* Each input load is 2k || 4k to VREF and 4k to ground.
+* Its Thevenin equivalent is 1k at 0.9 V for a 1.2 V external reference.
+* This preserves differential gain while retaining decision-stage headroom.
 XPCB NBC PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=2 l=1
 XNCB NBC NBC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
-XCT CT NBC VSS VSS sky130_fd_pr__nfet_01v8 w=16 l=0.5
+XCT CT NBC VSS VSS sky130_fd_pr__nfet_01v8 w=64 l=0.5
 XC0 CL PN CT VSS sky130_fd_pr__nfet_01v8 w=8 l=0.15
 XC1 CO PP CT VSS sky130_fd_pr__nfet_01v8 w=8 l=0.15
 XCD CL CL VDDD VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
 XCM CO CL VDDD VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
 * Restore at the actual capture-clock load, not just an unloaded pad probe.
 XI CO Q VDDD VSS lvds_inv18_drive
+XRLPPA PP VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLPPB PP PPRT VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLPPC PPRT VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLPPD PP PPRB VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLPPE PPRB VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLPNA PN VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLPNB PN PNRT VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLPNC PNRT VREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLPND PN PNRB VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRLPNE PNRB VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
 .ends openlvds_receiver_core
 
 .subckt openlvds_receiver INP INN Q VREF IREF VDDIO VDDD VSS

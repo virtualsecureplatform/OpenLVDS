@@ -6,14 +6,17 @@ The SKY130 macro implementation and reproducible build flows are present.
 The latest completed checks on 2026-10-28 include:
 
 - RTL: 1,186,812 bits across 27 clock/duty/skew cases, plus DLL control and PHY assembly.
-- Schematic electrical characterization: all 60 driver, receiver, receiver-rate,
-  and DLL cases across tt/ff/ss/fs/sf at 0, 25, and 40 °C.
+- Schematic characterization previously passed all 60 cases. The revised receiver
+  passed 15 static and 15 rate diagnostic cases at tt/ff/ss/fs/sf and 0, 25, and
+  40 °C; canonical characterization is being regenerated.
 - Extracted driver: all 15 corners pass, including edge identity, polarity,
   amplitude, common mode, and propagation measurements.
-- Extracted receiver: all 15 static corners and all 15 rate corners. The rate
-  test uses 840 Mb/s, 250 mV differential input, and 100 fF output load.
+- The preceding extracted receiver passed 15 static and 15 rate corners. Those
+  results do not qualify the revised receiver. The rate test uses 840 Mb/s,
+  250 mV differential input, and 100 fF output load.
 - Physical checks: five analog macros and three digital macros pass DRC/LVS;
-  the five analog extracted networks also pass an independent connectivity audit.
+  the five preceding analog extracted networks also passed an independent
+  connectivity audit. The revised receiver needs fresh physical checks and extraction.
 - Unit tests: 42 pass, including stale-evidence rejection, parallel input timing,
   link measurement boundaries, driver latency/polarity, physical port policy, and RC trace provenance.
 
@@ -32,8 +35,11 @@ were found on the phase detector's inputs and outputs. All three digital macros
 have been rebuilt without those cells and pass physical checks; the phase
 detector additionally preserves direct clock and UP/DN connections. With equal
 45 fF loads, its isolated extracted output pulses now reach approximately 1.82 V,
-versus 1.29–1.35 V before the correction. DLL and link checks with the rebuilt
-macros are in progress; the isolated pulse test is diagnostic evidence.
+versus 1.29–1.35 V before the correction. The completed extracted DLL run with the rebuilt PFD fails: quarter-cycle delay
+  spans 814–845 ps and detector-input error reaches 405 ps. The isolated pulse
+  test is diagnostic evidence. The new schematic response bench also shows the
+  existing indicator staying low at ±150 and ±300 ps error; a low indicator
+  alone cannot establish lock.
 
 A short extracted link diagnostic with late parallel input changes shows payload
 ordering errors. The earlier receiver clock-load problem was corrected and
@@ -72,3 +78,13 @@ with the real DLL analog loading and a 20 fF indicator load. It checks that
 the indicator stays low at small offsets and reaches a valid high for large
 errors; a stuck-low flag cannot pass. It is a standalone diagnostic and does
 not replace DLL acquisition or complete link qualification.
+
+The revised receiver uses 10 µm input-mirror devices and a 64 µm decision tail.
+Each decision input now has 2 kΩ in parallel with 4 kΩ to VREF, and 4 kΩ to
+ground. Its Thevenin equivalent remains 1 kΩ, with a 0.9 V bias derived from the
+external 1.2 V reference. This restores decision-stage headroom across the static
+corner matrix. A 32-bit replay using this schematic receiver and extracted
+capture logic gives zero errors, approximately 174 ps setup margin and 268 ps
+hold margin. The setup result still fails the 200 ps target; it is an intermediate
+improvement over the preceding approximately 35 ps result. Fresh receiver layout,
+RC extraction, and end-to-end checks remain required.
