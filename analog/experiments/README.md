@@ -13,10 +13,12 @@ while absorbing returning waves. The additional current and switching load
 require fresh electrical and physical characterization.
 
 The diagnostic test circuit retains extracted finger geometry and diffusion
-parameters. Its LVS comparison against this schematic passes. The queued
-transient test runs only after a complete, correctly decoded exact-driver replay
-confirms an output-swing failure. A margin-only failure does not start this
-experiment. All diagnostic artifacts reside under
+parameters. Its LVS comparison against this schematic passes. The controlled
+transient test ran after a complete, correctly decoded exact-driver replay
+confirmed an output-swing failure. It completed 32 bits with zero errors and
+passing electrical levels (281 mV minimum data, 259 mV minimum clock), but its
+11.61 ps setup margin fails the unchanged 200 ps target. The original receiver,
+bias, and capture networks remain approximate in this diagnostic. All diagnostic artifacts reside under
 `build/diagnostics/driver_stress_replay/source_terminated_driver/`.
 
 Promotion requires loaded-channel results, fixed-supply process/temperature

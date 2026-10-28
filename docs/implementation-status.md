@@ -247,3 +247,21 @@ accepts that evidence for its own circuit and rejects it for the integrated
 22/12-terminal revision. The latter's fresh full-RC nominal transient has
 started. Its complete nominal result, PVT/clock matrices, and phase-fault
 reports remain required for release.
+
+The current integrated 22/12-terminal DLL completes its full 1500 ns exact-RC
+nominal test at tt/25 °C: feedback error 28.34 ps, control-copy error 29.92 mV,
+quarter-cycle delay 666.73–666.96 ps, and maximum settled PHASE_BAD 0.624 mV.
+All nominal gates pass. The same current extraction also passes tt/0 °C;
+tt/40 °C is running in the sequential, fail-fast PVT queue. These are two of
+the required 15 PVT cases. Extracted standalone phase-fault testing has started
+in the second simulation slot; the full 105/70 fault matrices remain required.
+
+The completed exact-driver replay reproduces the stressed swing failure with
+zero errors over 32 bits: minimum data/clock eye-center amplitudes 179/224 mV
+and setup margin −47.58 ps. The source-terminated, routing-free extracted-device
+experiment also completes 32 bits with zero errors and passes electrical levels:
+minimum data/clock amplitudes 281/259 mV and receiver decision voltage 247 mV.
+Its setup margin is only 11.61 ps against the unchanged 200 ps target; hold
+margin is 499.09 ps. It is not promoted to the PHY. Timing diagnosis and fresh
+physical/PVT qualification are still needed; electrical success in this
+mixed-model diagnostic cannot establish release.
