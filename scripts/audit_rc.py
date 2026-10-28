@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from lvs_utils import clean_match
+from lvs_utils import clean_match,strict_setup
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -54,7 +54,8 @@ def main():
         out=ROOT/'build/rc_audit'/info['netlist_sha256'][:12];out.mkdir(parents=True,exist_ok=True)
         net=out/'wire_collapsed.spice';net.write_text(collapse(source.read_text()))
         schematic=(ROOT/physical[name]['gds']).with_suffix('.sch.spice');report=out/'lvs.log'
-        r=subprocess.run(['netgen','-batch','lvs',f'{net} {name}',f'{schematic} {name}',str(setup),str(report)],capture_output=True,text=True,cwd=out)
+        local_setup=strict_setup(out/'lvs_setup.tcl',setup)
+        r=subprocess.run(['netgen','-batch','lvs',f'{net} {name}',f'{schematic} {name}',str(local_setup),str(report)],capture_output=True,text=True,cwd=out)
         (out/'console.log').write_text(r.stdout+r.stderr)
         results[name]=dict(passed=clean_match(report.read_text() if report.exists() else '',r.returncode),
             netlist_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),report=str(report.relative_to(ROOT)),

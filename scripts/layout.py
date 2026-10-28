@@ -17,7 +17,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-from lvs_utils import schematic_parameters,clean_match
+from lvs_utils import schematic_parameters,clean_match,strict_setup
 
 ROOT=Path(__file__).resolve().parents[1]
 GRID=.005
@@ -122,7 +122,7 @@ class Geometry:
 
 def draw_macro(out,top,ports,devices,library):
     geometry=Geometry();uses=[];drops=defaultdict(list);cursor=10.;ymax=0.
-    left_gap,right_gap=(2.5,2.5) if top in ['openlvds_dll_analog','openlvds_delay_line'] else (5.,6.)
+    left_gap,right_gap=(2.5,2.5) if top in ['openlvds_dll_analog','openlvds_delay_line','openlvds_receiver_core'] else (5.,6.)
     for i,d in enumerate(devices):
         cell,info=library[primitive_key(d)];bb=info['bbox'];pw=info['ports']
         cx=cursor-bb[0]+left_gap;cursor=cx+bb[2]+right_gap;ymax=max(ymax,bb[3])
@@ -169,8 +169,8 @@ def draw_macro(out,top,ports,devices,library):
     fast_suffixes=['__DP','__DN','__XLS__L','__XLS__R','__XLS__AD','__XLS__AB','__XLS__INB','__XLS__L1','__XLS__R1']
     def priority(net):
         return next((i for i,s in enumerate(fast_suffixes) if net.endswith(s)),len(fast_suffixes)),net
-    compact_internal=top in ['openlvds_driver_core','openlvds_dll_analog','openlvds_delay_line']
-    local_ports=top in ['openlvds_dll_analog','openlvds_delay_line']
+    compact_internal=top in ['openlvds_driver_core','openlvds_dll_analog','openlvds_delay_line','openlvds_receiver_core']
+    local_ports=top in ['openlvds_dll_analog','openlvds_delay_line','openlvds_receiver_core']
     net_order=list(ports)+sorted(internal,key=priority if compact_internal else None)
     labels=[];public={};y=origin
     # An unrelated PCell from another selected macro must not move this bus.
@@ -247,6 +247,7 @@ ext2spice -o {top}.lvs.spice {top}_flat.ext
 '''
     invoke_magic(out,body,'extract_'+top)
     tech=Path(os.environ['PDK_ROOT'])/'sky130A/libs.tech/netgen/sky130A_setup.tcl'
+    tech=strict_setup(out/(top+'.lvs_setup.tcl'),tech)
     report=out/(top+'.lvs.log')
     command=['netgen','-batch','lvs',f'{out}/{top}.lvs.spice {top}_flat',
              f'{out}/{top}.sch.spice {top}',str(tech),str(report)]
@@ -267,6 +268,7 @@ def main():
     a=p.parse_args()
     source=(ROOT/'analog/openlvds.spice').read_bytes()
     fingerprint=hashlib.sha256(source+Path(__file__).read_bytes()+
+                 (ROOT/'scripts/lvs_utils.py').read_bytes()+
                  (ROOT/'requirements.json').read_bytes()).hexdigest()
     out=ROOT/'build/layout'/fingerprint[:16];out.mkdir(parents=True,exist_ok=True)
     defs=circuits(source.decode());designs={}

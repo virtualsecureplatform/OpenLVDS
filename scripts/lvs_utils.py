@@ -15,3 +15,15 @@ def schematic_parameters(device):
 def clean_match(report,returncode=0):
     return returncode==0 and 'Circuits match uniquely.' in report and not re.search(
         r'property errors (?:were found|found)|with property errors|do not match',report,re.I)
+
+
+def strict_setup(path,pdk_setup):
+    # Compare fixed-width poly resistors one by one. Netgen's mixed series /
+    # parallel reduction can depend on extraction order for a resistor ladder.
+    # Keeping its individual cells retains every connection and length check.
+    path.write_text(f'source {{{pdk_setup}}}\n'+'''foreach side {-circuit1 -circuit2} {
+    property "$side sky130_fd_pr__res_high_po_0p35" series disable
+    property "$side sky130_fd_pr__res_high_po_0p35" parallel disable
+}
+''')
+    return path

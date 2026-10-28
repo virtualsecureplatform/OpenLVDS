@@ -7,16 +7,16 @@ The latest completed checks on 2026-10-28 include:
 
 - RTL: 1,186,812 bits across 27 clock/duty/skew cases, plus DLL control and PHY assembly.
 - Schematic characterization previously passed all 60 cases. The revised receiver
-  passed 15 static and 15 rate diagnostic cases at tt/ff/ss/fs/sf and 0, 25, and
-  40 °C; canonical characterization is being regenerated.
+  passes 15 static and 15 rate canonical cases at tt/ff/ss/fs/sf and 0, 25, and
+  40 °C.
 - Extracted driver: all 15 corners pass, including edge identity, polarity,
   amplitude, common mode, and propagation measurements.
-- The preceding extracted receiver passed 15 static and 15 rate corners. Those
-  results do not qualify the revised receiver. The rate test uses 840 Mb/s,
+- The revised receiver with its initial wide routing passed 15 full-RC static
+  and 15 full-RC rate corners. The subsequent compact routing needs fresh checks. The rate test uses 840 Mb/s,
   250 mV differential input, and 100 fF output load.
 - Physical checks: five analog macros and three digital macros pass DRC/LVS;
-  the five preceding analog extracted networks also passed an independent
-  connectivity audit. The revised receiver needs fresh physical checks and extraction.
+  all five current analog extracted networks also pass an independent
+  connectivity audit. The compact receiver passes DRC/LVS and extraction.
 - Unit tests: 42 pass, including stale-evidence rejection, parallel input timing,
   link measurement boundaries, driver latency/polarity, physical port policy, and RC trace provenance.
 
@@ -86,5 +86,17 @@ external 1.2 V reference. This restores decision-stage headroom across the stati
 corner matrix. A 32-bit replay using this schematic receiver and extracted
 capture logic gives zero errors, approximately 174 ps setup margin and 268 ps
 hold margin. The setup result still fails the 200 ps target; it is an intermediate
-improvement over the preceding approximately 35 ps result. Fresh receiver layout,
-RC extraction, and end-to-end checks remain required.
+improvement over the preceding approximately 35 ps result. End-to-end timing checks remain required.
+
+Receiver routing now uses 5 µm total inter-cell clearance, local internal buses,
+and local signal-pin escapes. Its width drops from 985 to 607 µm. Extracted
+coupling-capacitance sums incident on Q decrease from 130 to 23 fF, PP from
+121 to 68 fF, PN from 128 to 72 fF, and CO from 43 to 24 fF. These are network
+capacitance sums, not independent grounded loads. Fresh compact-layout PVT,
+full/approximate RC comparison, and whole-link diagnostics are running.
+
+Analog LVS now compares fixed-width poly resistors individually. The PDK's
+mixed series/parallel reduction gave an extraction-order-dependent property
+error for an unchanged ladder. Disabling those reductions preserves each
+connection and resistor length check: the compact layout passes, and a
+controlled doubled-length resistor is rejected. Property errors remain fatal.
