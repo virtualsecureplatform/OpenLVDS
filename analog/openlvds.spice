@@ -200,6 +200,50 @@ X2 P180 P270 CTRL VDDD VSS lvds_delay_section
 X3 P270 P360 CTRL VDDD VSS lvds_delay_section
 .ends openlvds_delay_line
 
+* Rising-edge phase qualification. The digital detector restores QREF/QFB/QWIN
+* and returns a rising-window-masked raw-clock XOR on ERR. PC is the DLL
+* seven-microamp PMOS mirror bias. This block does not use UP/DN pulse widths.
+.subckt lvds_phase_qualifier REF FB WINDOW ERR BAD QREF QFB QWIN PC VDDD VSS
+XQRR REF QREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XQRC QREF VSS sky130_fd_pr__cap_mim_m3_1 w=5 l=12
+XQFR FB QFB VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XQFC QFB VSS sky130_fd_pr__cap_mim_m3_1 w=5 l=12
+XQWR WINDOW QWIN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XQWC QWIN VSS sky130_fd_pr__cap_mim_m3_1 w=5 l=12
+* Average the error pulses before comparison; do not require a short pulse
+* to propagate through a digital latch at the slow process corner.
+XRF ERR FILTER VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XCF FILTER VSS sky130_fd_pr__cap_mim_m3_1 w=20 l=25
+* Seventeen upper units and one lower unit give VDDD/18 = 100 mV.
+* Identical resistor units retain the ratio including PDK end resistance.
+XFR0 VDDD FR0 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR1 FR0 FR1 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR2 FR1 FR2 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR3 FR2 FR3 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR4 FR3 FR4 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR5 FR4 FR5 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR6 FR5 FR6 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR7 FR6 FR7 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR8 FR7 FR8 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR9 FR8 FR9 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR10 FR9 FR10 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR11 FR10 FR11 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR12 FR11 FR12 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR13 FR12 FR13 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR14 FR13 FR14 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR15 FR14 FR15 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFR16 FR15 FREF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFRB FREF VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XFRC FREF VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
+XAT FTAIL PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XAP FLOAD FILTER FTAIL VDDD sky130_fd_pr__pfet_01v8 w=8 l=1
+XAM PCO FREF FTAIL VDDD sky130_fd_pr__pfet_01v8 w=8 l=1
+XANL FLOAD FLOAD VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=1
+XANR PCO FLOAD VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=1
+XF0 PCO FBAD_B VDDD VSS lvds_inv18_drive
+XF1 FBAD_B BAD VDDD VSS lvds_inv18_drive
+.ends lvds_phase_qualifier
+
 .subckt lvds_ctrl_buffer IN OUT PB VDDIO VSS
 * PMOS inputs on 3.3 V retain headroom at the fast-corner control voltage.
 * Long-channel mirror loads reduce systematic follower offset.
