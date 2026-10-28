@@ -105,3 +105,11 @@ source timing compensates the slew difference so the requested phase remains
 the voltage-midpoint offset. The runner reads macro terminal names from the
 captured library and supports the separate sense/filter ports for fault injection.
 A startup-only fault or an incomplete settled window cannot qualify detection.
+
+Release requires both complete extracted phase-fault reports: 105 uniform-slew
+PVT cases and 70 extreme-PVT unequal-slew cases. The runner publishes hashed
+current-report pointers after completion. Release validation checks every case,
+current DLL/PFD/bias bindings, simulator and producer fingerprints, captured
+files, and actual waveform response. It also verifies reference frequency and
+requested input slew. A passed aggregate label cannot replace missing cases or
+a valid measured fault response. Schematic reports cannot satisfy this gate.

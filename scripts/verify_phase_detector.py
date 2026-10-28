@@ -169,6 +169,11 @@ CB BAD 0 20f
     summary=dict(passed=unchanged and all(x['passed'] for x in results.values()),extracted=a.extracted,
         corners=a.corners,slew_corners=a.slew_corners,cases=results,artifact=str(base.relative_to(ROOT)))
     (base/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+    mode='slew' if a.slew_corners else 'corners' if a.corners else 'nominal'
+    pointer=dict(report=str((base/'summary.json').relative_to(ROOT)),
+                 sha256=hashlib.sha256((base/'summary.json').read_bytes()).hexdigest())
+    target=ROOT/'build/phase_detector'/f"current_{'extracted' if a.extracted else 'schematic'}_{mode}.json"
+    temporary=target.with_name(target.name+f'.{os.getpid()}.tmp');temporary.write_text(json.dumps(pointer,indent=2)+'\n');temporary.replace(target)
     raise SystemExit(0 if summary['passed'] else 1)
 
 

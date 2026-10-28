@@ -13,6 +13,7 @@ from evidence_scope import matches as evidence_matches
 from link_evidence import matches as link_matches
 from openpll_clock import rtl_sources
 from spice_engine import engine,provenance
+from phase_evidence import valid as valid_phase_evidence
 from physical_policy import delay_cells_absent,pfd_paths_retained,tx_cells_retained
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -70,6 +71,12 @@ def main():
         check('distributed RC networks and port bindings',True)
     except (ValueError,KeyError,FileNotFoundError) as error:
         exact={};expected_rc=None;check('distributed RC networks and port bindings',False,str(error))
+    try:phase_library,phase_inputs,_=library(extracted=True,designs={'openlvds_dll_analog','lvds_bias'})
+    except (ValueError,KeyError,FileNotFoundError):phase_library=None;phase_inputs={}
+    for mode in ['corners','slew']:
+        pointer=read(f'build/phase_detector/current_extracted_{mode}.json')
+        check('extracted phase-fault response/'+mode,phase_library is not None and
+              valid_phase_evidence(ROOT,pointer,phase_library,phase_inputs,requirements,engine(),simulator_stamp,mode))
     audit=read('build/rc_audit/summary.json')
     for name in ['openlvds_driver_core','openlvds_receiver_core','openlvds_dll_analog','openlvds_delay_line','lvds_bias']:
         evidence=audit.get('designs',{}).get(name,{})
