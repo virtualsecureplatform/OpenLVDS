@@ -188,7 +188,7 @@ evidence and rejects missing phase-fault, DLL, and complete link qualification.
 A queued nominal test preserves the preceding steering-only baseline and starts
 the integrated full-RC test only after that baseline completes successfully.
 
-The completed stressed 32-bit diagnostic at 420 MHz, 45% duty, +100 ps data
+The completed stressed 32-bit TICER approximate-RC diagnostic at 420 MHz, 45% duty, +100 ps data
 skew, and 100 ps peak-to-peak jitter has zero bit errors but fails the current
 margin and dynamic transmitter-level checks: setup margin −47 ps and minimum
 loaded data/clock eye-center amplitudes 179/225 mV. Receiver sample amplitude
@@ -200,3 +200,11 @@ The full/fast DLL fixture now includes the same 40 fF PH0 and PH90 launch
 loads as the nominal electrical bench and delays enable by 200 ps after
 precharge. The previous 20 fF PH90 fixture is not sufficient for the current
 six-fixture certificate. All 72 unit tests pass in the pinned ngspice image.
+
+Both hierarchical-schematic driver replays terminate before payload: the dense
+replay fails at an ideal-source branch near 10.25 ns, and its bounded-waveform
+retry fails at a MOS body node near 10.73 ns. They cannot establish a driver
+bandwidth result. The replacement routing-isolation circuit keeps all 266
+extracted device instances, removes only parasitic R/C, and passes an independent
+LVS audit. It has advanced beyond those failure times. An exact-driver replay
+is queued separately; all of these runs remain diagnostic and unqualified.

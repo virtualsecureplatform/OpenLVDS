@@ -117,3 +117,18 @@ current DLL/PFD/bias bindings, simulator and producer fingerprints, captured
 files, and actual waveform response. It also verifies reference frequency and
 requested input slew. A passed aggregate label cannot replace missing cases or
 a valid measured fault response. Schematic reports cannot satisfy this gate.
+
+Driver routing diagnostics must retain the extracted transistor finger geometry.
+Replacing the driver with the hierarchical schematic also changes individual
+MOS widths and body-model behavior. To isolate routing, the diagnostic shorts
+only parasitic resistor elements and removes only parasitic capacitor elements;
+all PDK device instances, including intentional resistor and MIM devices, remain.
+An independent LVS audit checks this circuit against the physical schematic.
+Captured clock/data replay simplification is bounded at 10 µV with both edge
+counts and midpoint timing independently checked. Such replays remain diagnostics.
+
+The stressed 32-bit link artifact `093b45fc9a1d` uses TICER approximate RC.
+Its baseline replay directory named `full` means the unchanged baseline variant;
+it does not mean an exact RC network. A separate exact-driver replay keeps the
+original receiver/capture models to isolate the driver. This mixed-model test
+cannot replace the six-fixture certificate or the complete qualified link matrix.
