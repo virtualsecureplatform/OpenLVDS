@@ -138,3 +138,28 @@ The mux transmitter's fresh full/approximate RC pair passes with a maximum
 edge difference of 1.72 ps and plateau difference of 9.18 mV. Receiver,
 delay-line, and capture-core comparisons also pass; driver and DLL fixtures
 are still needed for the complete six-fixture certificate.
+
+The phase-selected mux completes its 32-bit diagnostic payload with zero errors,
+349 ps setup margin, 476 ps hold margin, and passing electrical levels. The
+transient is still running through its final idle interval. The separate
+100 mV averaged phase-detector prototype passes all 70 extreme-PVT/slew cases.
+The reusable `lvds_phase_qualifier` analog subcircuit now implements its matched
+clock-input filters, error averaging, matched-unit reference, and comparator.
+It is not yet connected into the canonical DLL; integrated PVT and extracted
+qualification remain required.
+
+The stronger pump/buffer prototype passes all 15 schematic PVT cases, but its
+600 ns patched-extraction diagnostic fails feedback error: 110 ps for the
+8-times pump and 117 ps for the 16-times pump. Correctly measured control-copy
+errors are 17 and 33 mV, respectively. The original diagnostic producer used
+the BAD column for its copy-error field; the retained waveform headers and
+independent `copy_audit.json` files identify and correct that analysis error.
+Neither candidate is qualified. The 420 MHz, 55% duty delayed-enable retry
+finishes successfully, with 37 ps feedback error and 14 mV copy error.
+
+The first DLL repair now uses 32 reference units per pump branch, complementary
+steering gates, the 8-times follower with 2 pF output storage, and matched native
+buf_8 PFD output drivers. The physical policy retains direct reference clocks
+and explicitly verifies both drivers and buffered reset coincidence. The phase
+qualifier component is preserved for the next integration step. This source
+revision still requires its own physical and extracted qualification.

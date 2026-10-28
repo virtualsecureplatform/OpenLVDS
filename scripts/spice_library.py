@@ -29,7 +29,7 @@ def digital_current(name,info):
     physical=json.loads((ROOT/f'build/physical/{which}/summary.json').read_text())
     sources=[ROOT/'rtl/openlvds_reset.v',ROOT/f'rtl/{name}.v']
     if which=='tx':sources.extend([ROOT/'rtl/openlvds_ddr_tx.v',ROOT/'sky130/tx_blackboxes.v'])
-    if which=='pfd':sources=[ROOT/'sky130/lvds_pfd.v']
+    if which=='pfd':sources=[ROOT/'sky130/lvds_pfd.v',ROOT/'sky130/pfd_blackboxes.v']
     sources.extend([ROOT/f'constraints/{which}.sdc',ROOT/f'build/physical/{which}/config.json'])
     current=hashlib.sha256(b''.join(p.read_bytes() for p in sources)).hexdigest()
     path=ROOT/physical['run']/'final/gds'/f'{name}.gds'

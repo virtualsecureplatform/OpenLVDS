@@ -7,13 +7,18 @@ def delay_cells_absent(netlist):
     return not re.search(r'\bsky130_fd_sc_hd__clkdlybuf\w*\b',netlist)
 
 
-def pfd_ports_direct(netlist):
-    for instance,clock,output in [('ref_ff','REF','UP'),('fb_ff','FB','DN')]:
-        match=re.search(r'\bsky130_fd_sc_hd__dfrtp_4\s+'+instance+r'\s*\((.*?)\);',netlist,re.S)
-        if not match:return False
-        pins=dict(re.findall(r'\.(\w+)\s*\(\s*([^()\s]+)\s*\)',match[1]))
-        if pins.get('CLK')!=clock or pins.get('Q')!=output:return False
-    return True
+def pfd_paths_retained(netlist):
+    def pins(kind,name):
+        match=re.search(r'\bsky130_fd_sc_hd__'+kind+r'\s+'+name+r'\s*\((.*?)\);',netlist,re.S)
+        return dict(re.findall(r'\.(\w+)\s*\(\s*([^()\s]+)\s*\)',match[1])) if match else {}
+    raw=[]
+    for instance,clock,output,driver in [('ref_ff','REF','UP','up_drive'),('fb_ff','FB','DN','dn_drive')]:
+        ff=pins('dfrtp_4',instance);buf=pins('buf_8',driver)
+        if ff.get('CLK')!=clock or not ff.get('Q'):return False
+        if buf.get('A')!=ff['Q'] or buf.get('X')!=output:return False
+        raw.append(ff['Q'])
+    coincidence=pins('and2_4','coincidence')
+    return len(set(raw))==2 and set(raw).isdisjoint({'UP','DN'}) and {coincidence.get('A'),coincidence.get('B')}=={'UP','DN'}
 
 
 def tx_cells_retained(netlist):

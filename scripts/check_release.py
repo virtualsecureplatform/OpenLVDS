@@ -13,7 +13,7 @@ from evidence_scope import matches as evidence_matches
 from link_evidence import matches as link_matches
 from openpll_clock import rtl_sources
 from spice_engine import engine,provenance
-from physical_policy import delay_cells_absent,pfd_ports_direct,tx_cells_retained
+from physical_policy import delay_cells_absent,pfd_paths_retained,tx_cells_retained
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -56,11 +56,11 @@ def main():
         netlist=ROOT/evidence.get('run','build/physical/missing')/'final/nl'/f'{name}.nl.v'
         text=netlist.read_text() if netlist.is_file() else ''
         check(kind+' no clock-delay buffers',bool(text) and delay_cells_absent(text))
-        if kind=='pfd':check('PFD direct clock and pulse ports',pfd_ports_direct(text))
+        if kind=='pfd':check('PFD direct clocks and matched pulse drivers',pfd_paths_retained(text))
         if kind=='tx':check('TX native serializer cells and connections',tx_cells_retained(text))
         files=[ROOT/'rtl/openlvds_reset.v',ROOT/f'rtl/{name}.v']
         if kind=='tx':files.extend([ROOT/'rtl/openlvds_ddr_tx.v',ROOT/'sky130/tx_blackboxes.v'])
-        if kind=='pfd':files=[ROOT/'sky130/lvds_pfd.v']
+        if kind=='pfd':files=[ROOT/'sky130/lvds_pfd.v',ROOT/'sky130/pfd_blackboxes.v']
         config=ROOT/f'build/physical/{kind}/config.json'
         stamp=hashlib.sha256(b''.join(p.read_bytes() for p in files)+
             (ROOT/f'constraints/{kind}.sdc').read_bytes()+config.read_bytes()).hexdigest() if config.exists() else None

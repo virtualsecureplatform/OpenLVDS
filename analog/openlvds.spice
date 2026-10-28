@@ -154,6 +154,7 @@ XCT CT NBC VSS VSS sky130_fd_pr__nfet_01v8 w=64 l=0.5
 XC0 CL PN CT VSS sky130_fd_pr__nfet_01v8 w=8 l=0.15
 XC1 CO PP CT VSS sky130_fd_pr__nfet_01v8 w=8 l=0.15
 XCD CL CL VDDD VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
+XADDDP CTRL DNB D VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
 XCM CO CL VDDD VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
 * Restore at the actual capture-clock load, not just an unloaded pad probe.
 XI CO Q VDDD VSS lvds_inv18_drive
@@ -247,12 +248,12 @@ XF1 FBAD_B BAD VDDD VSS lvds_inv18_drive
 .subckt lvds_ctrl_buffer IN OUT PB VDDIO VSS
 * PMOS inputs on 3.3 V retain headroom at the fast-corner control voltage.
 * Long-channel mirror loads reduce systematic follower offset.
-XPP L IN T VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=8 l=1
-XPM OUT OUT T VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=8 l=1
-XPT T PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=4 l=2.5
-XNL L L VSS VSS sky130_fd_pr__nfet_01v8 w=4 l=1
-XNR OUT L VSS VSS sky130_fd_pr__nfet_01v8 w=4 l=1
-XCC OUT VSS sky130_fd_pr__cap_mim_m3_1 w=20 l=25
+XPP L IN T VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=64.0 l=1
+XPM OUT OUT T VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=64.0 l=1
+XPT T PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=32.0 l=2.5
+XNL L L VSS VSS sky130_fd_pr__nfet_01v8 w=32.0 l=1
+XNR OUT L VSS VSS sky130_fd_pr__nfet_01v8 w=32.0 l=1
+XCC OUT VSS sky130_fd_pr__cap_mim_m3_1 w=25 l=40
 .ends lvds_ctrl_buffer
 
 .subckt openlvds_dll_analog CLK PD_ENABLE PH0 PH90 PH180 PH270 FB PD_REF PHASE_BAD UP DN ERR PB VDDIO VDDD VSS
@@ -290,21 +291,23 @@ XBPN1 PC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
 XBPN2 PC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
 XBPN3 PC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
 XBPN4 PC NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
-* Two matched output units per branch provide approximately 14 uA.
+* Thirty-two matched units per branch provide approximately 224 uA.
 * The 2 pF storage capacitor retains switching-feedthrough suppression.
 XCPU U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
 XCPU1 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
 XCU CTRL UPB U VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
+XADDUN CTRL UP U VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
 XUPINV UP UPB VDDD VSS lvds_inv18
 XCD CTRL DN D VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
 XCPD D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
 XCPD1 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
 * Keep both current-source drains near VCTRL while their main switches are
 * off. This suppresses charge sharing from floating U/D nodes every cycle.
-XVCOPY CTRL VCOPY PB VDDIO VSS lvds_ctrl_buffer
 XCUDUMP VCOPY UP U VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
+XADDUDN VCOPY UPB U VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
 XDNB DN DNB VDDD VSS lvds_inv18
 XCDDUMP VCOPY DNB D VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
+XADDDDP VCOPY DN D VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
 XCC0 CTRL VSS sky130_fd_pr__cap_mim_m3_1 w=30 l=30
 XCC1 CTRL VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
 * Start at minimum delay to exclude multiple-period acquisition.
@@ -313,14 +316,77 @@ XRP0 VDDD PRE VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
 XEN PD_ENABLE ENB VDDD VSS lvds_inv18
 XPREN CTRL ENB PRE VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
 XPREP CTRL PD_ENABLE PRE VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
+XVCOPY CTRL VCOPY PB VDDIO VSS lvds_ctrl_buffer
+XADDCP0 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN0 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP1 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN1 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP2 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN2 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP3 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN3 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP4 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN4 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP5 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN5 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP6 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN6 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP7 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN7 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP8 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN8 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP9 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN9 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP10 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN10 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP11 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN11 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP12 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN12 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP13 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN13 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP14 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN14 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP15 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN15 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP16 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN16 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP17 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN17 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP18 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN18 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP19 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN19 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP20 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN20 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP21 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN21 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP22 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN22 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP23 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN23 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP24 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN24 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP25 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN25 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP26 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN26 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP27 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN27 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP28 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN28 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
+XADDCP29 U PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XADDCN29 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
 .ends openlvds_dll_analog
 
 .subckt lvds_pfd REF FB RESET_N PD_ENABLE UP DN ERR VDDD VSS
 XCLR RESET_N PD_ENABLE VSS VSS VDDD VDDD ALLOW sky130_fd_sc_hd__and2_1
 XAND UP DN VSS VSS VDDD VDDD BOTH sky130_fd_sc_hd__and2_4
 XRST BOTH ALLOW VSS VSS VDDD VDDD CLEAR_B sky130_fd_sc_hd__and2b_4
-XU REF VDDD CLEAR_B VSS VSS VDDD VDDD UP sky130_fd_sc_hd__dfrtp_4
-XD FB VDDD CLEAR_B VSS VSS VDDD VDDD DN sky130_fd_sc_hd__dfrtp_4
+XU REF VDDD CLEAR_B VSS VSS VDDD VDDD RU sky130_fd_sc_hd__dfrtp_4
+XD FB VDDD CLEAR_B VSS VSS VDDD VDDD RD sky130_fd_sc_hd__dfrtp_4
+XUPBUF RU VSS VSS VDDD VDDD UP sky130_fd_sc_hd__buf_8
+XDNBUF RD VSS VSS VDDD VDDD DN sky130_fd_sc_hd__buf_8
 XERR UP DN VSS VSS VDDD VDDD ERR sky130_fd_sc_hd__xor2_1
 .ends lvds_pfd
 
