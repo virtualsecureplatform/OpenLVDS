@@ -12,6 +12,15 @@ import numpy as np
 
 ROOT=Path(__file__).resolve().parents[1]
 
+def rtl_sources():
+    pll=ROOT/'thirdparties/OpenPLL'
+    names=['IntegerPLL_B2TH','IntegerPLL_Divider','IntegerPLL_DLF','IntegerPLL_MMD_Retimer',
+        'IntegerPLL_DigitalCore','IntegerPLL_25MHzModeConfig_modern','IntegerPLL_25MHzModeController',
+        'IntegerPLL_HardMacroTop_EINVP','IntegerPLL_HardMacroTop_EINVP_25MHzConfigured']
+    return [pll/'rtl'/(n+'.v') for n in names]+[
+        pll/'models/IntegerPLL_BBPD_model.v',pll/'models/IntegerPLL_DCO_25MHzCoarse_modern_model.v',
+        ROOT/'models/openpll_dco_adapter.v',ROOT/'examples/openlvds_openpll.v',ROOT/'tb/tb_openpll.v']
+
 def stats(times,levels):
     rising=times[levels==1];falling=times[levels==0]
     if len(rising)<8:raise ValueError('Need at least eight rising edges')
@@ -49,13 +58,7 @@ def main():
         result['clock_sha256']=hashlib.sha256((out/'physical_clock.csv').read_bytes()).hexdigest()
         (out/'physical_summary.json').write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps(result,indent=2));return 0 if result['passed'] else 1
-    pll=ROOT/'thirdparties/OpenPLL'
-    names=['IntegerPLL_B2TH','IntegerPLL_Divider','IntegerPLL_DLF','IntegerPLL_MMD_Retimer',
-        'IntegerPLL_DigitalCore','IntegerPLL_25MHzModeConfig_modern','IntegerPLL_25MHzModeController',
-        'IntegerPLL_HardMacroTop_EINVP','IntegerPLL_HardMacroTop_EINVP_25MHzConfigured']
-    sources=[pll/'rtl'/(n+'.v') for n in names]+[
-        pll/'models/IntegerPLL_BBPD_model.v',pll/'models/IntegerPLL_DCO_25MHzCoarse_modern_model.v',
-        ROOT/'models/openpll_dco_adapter.v',ROOT/'examples/openlvds_openpll.v',ROOT/'tb/tb_openpll.v']
+    sources=rtl_sources()
     result=subprocess.run(['iverilog','-g2012','-Wall','-DOPENPLL_DCO_MODEL_COARSE','-s','tb_openpll',
         '-o',str(out/'pll.vvp'),*map(str,sources)],capture_output=True,text=True)
     (out/'compile.log').write_text(result.stdout+result.stderr)

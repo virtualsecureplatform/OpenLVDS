@@ -327,6 +327,10 @@ def main():
         diagnostic=a.diagnostic,inputs=inputs,fingerprint=fingerprint,
         source_sha256=hashlib.sha256(source_bytes).hexdigest(),
         requirements_sha256=hashlib.sha256(REQ_BYTES).hexdigest(),
+        runner_sha256=hashlib.sha256(runner_bytes).hexdigest(),
+        library_sha256=hashlib.sha256(lib).hexdigest(),
+        deck_sha256=hashlib.sha256(deck.read_bytes()).hexdigest(),
+        waveform_sha256=hashlib.sha256(prn.read_bytes()).hexdigest() if prn.exists() else None,
         output=str(out.relative_to(ROOT)))
     (out/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
     lock.close()

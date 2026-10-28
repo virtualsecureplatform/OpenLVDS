@@ -57,7 +57,8 @@ def main():
         r=subprocess.run(['netgen','-batch','lvs',f'{net} {name}',f'{schematic} {name}',str(setup),str(report)],capture_output=True,text=True,cwd=out)
         (out/'console.log').write_text(r.stdout+r.stderr)
         results[name]=dict(passed=clean_match(report.read_text() if report.exists() else '',r.returncode),
-            netlist_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),report=str(report.relative_to(ROOT)))
+            netlist_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),report=str(report.relative_to(ROOT)),
+            report_sha256=hashlib.sha256(report.read_bytes()).hexdigest() if report.exists() else None)
         print(name,'PASS' if results[name]['passed'] else 'FAIL',flush=True)
     summary=dict(passed=all(r['passed'] for r in results.values()),designs=results)
     (ROOT/'build/rc_audit/summary.json').write_text(json.dumps(summary,indent=2)+'\n')

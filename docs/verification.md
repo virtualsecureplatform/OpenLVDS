@@ -68,6 +68,12 @@ repeating them does not establish closed-loop stochastic jitter performance.
 extracted bits; 512 bits at each other process/temperature; timing stress cases;
 ±200 ps aperture shifts; and OpenPLL trace replay. `--case` supports diagnosis,
 but a partial matrix cannot pass release. No run with `--diagnostic` qualifies.
+The release checker compares each recorded configuration to the required case,
+verifies the captured runner, circuit, deck and waveform hashes, and recreates
+the current clock replay and DLL phase fingerprint. A nominal result cannot
+satisfy another process, duty, skew, or clock-source case by changing its label.
+It also checks independent extracted-topology audit reports and current OpenPLL
+source and trace bindings.
 
 Remaining release work must stay visible: uncompleted extracted tests, any failed
 electrical corner, missing characterization, and unsupported clock evidence must
