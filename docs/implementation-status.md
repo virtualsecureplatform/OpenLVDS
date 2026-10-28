@@ -216,3 +216,14 @@ with the original approximate receiver/capture models. These mixed-model and
 routing-isolation runs remain diagnostic and unqualified. The complete replay
 analysis is retained in
 `build/diagnostics/driver_stress_replay/routing_removed_driver/complete_analysis.json`.
+
+An isolated source-terminated driver experiment is prepared in
+`analog/experiments/source_terminated_driver.spice`. It doubles the output
+mirrors and switches using parallel copies of the original devices, preserves
+the input stage and 35 µA external reference, and adds a nominal 100 Ω source
+shunt made from 22 PDK resistor units. The test circuit retains extracted
+finger geometry and diffusion parameters; its LVS comparison against the
+experimental schematic passes. A controlled transient is queued only if the
+exact-driver replay confirms a swing failure with a complete, correctly decoded
+payload and valid common mode. The PHY continues to instantiate the existing
+driver. This experiment has no electrical or GDS qualification yet.

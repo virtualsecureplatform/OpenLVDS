@@ -1,0 +1,93 @@
+* SPDX-License-Identifier: GPL-3.0-only
+* Experimental source-terminated driver; NOT selected by the PHY library.
+* Include analog/openlvds.spice for lvds_shift18_33 and lvds_cmfb definitions.
+* Fixed 3.3/1.8 V supplies, 1.2 V reference and the existing 35 uA bias sink.
+* The output current path is doubled without changing the D input stage.
+* Source and far-end nominal 100 ohm loads divide the 7 mA steering current.
+* Qualification requires DC/PVT, loaded-channel timing, and fresh GDS/RC tests.
+
+.subckt openlvds_driver_core_source_terminated D OUTP OUTN VREF PB NB VDDIO VDDD VSS
+XLS D DP DN NB VDDIO VDDD VSS lvds_shift18_33
+* 200:1 PMOS mirror targets approximately 7 mA, including source termination.
+XIT0 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT1 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT2 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT3 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT4 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT5 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT6 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT7 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT8 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT9 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XPL OUTP DN TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XPR OUTN DP TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XNL OUTP DN BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
+XNR OUTN DP BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
+XIB0 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB1 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB2 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB3 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB4 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB5 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB6 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB7 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB8 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB9 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+* A 0.96 feedback divider centers the output near 1.25 V using VREF=1.2 V.
+XRCP OUTP CM VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=10.25
+XRCN OUTN CM VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=10.25
+XRCM0 CM CMS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=60
+XRCM1 CMS VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=60
+* Local symmetric MIM loads bound switch-feedthrough common-mode ripple.
+XCOUTP OUTP VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
+XCOUTN OUTN VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
+XCM CM VREF SINK NB VDDIO VSS lvds_cmfb
+XIT10 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT11 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT12 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT13 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT14 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT15 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT16 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT17 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT18 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIT19 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
+XIB10 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB11 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB12 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB13 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB14 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB15 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB16 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB17 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB18 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+XIB19 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
+* Parallel copies retain each output switch's original W/L and finger size.
+XPL_PAR OUTP DN TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XPR_PAR OUTN DP TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XNL_PAR OUTP DN BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
+XNR_PAR OUTN DP BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
+* Twenty-two identical nominal 2.2 kohm units form approximately 100 ohm.
+XTERM0 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM1 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM2 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM3 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM4 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM5 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM6 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM7 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM8 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM9 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM10 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM11 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM12 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM13 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM14 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM15 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM16 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM17 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM18 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM19 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM20 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XTERM21 OUTP OUTN VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+.ends openlvds_driver_core_source_terminated
