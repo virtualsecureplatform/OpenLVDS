@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Compare the fast RC networks to full RC on the real nonlinear circuits."""
 import argparse
+import fcntl
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
@@ -11,16 +12,17 @@ import subprocess
 import sys
 import numpy as np
 from spice_library import library
-from rc_certificate import REQUIRED
+from rc_certificate import REQUIRED,MODEL_SCOPES,TOPS
 from spice_engine import command as spice_command,engine,provenance
 from spice_scope import closure_hash
+import rc_trace
 
 ROOT=Path(__file__).resolve().parents[1]
-TOPS=dict(driver='openlvds_driver',receiver='openlvds_receiver',dll='openlvds_dll',
-          delay='openlvds_delay_line',tx='openlvds_tx_core',rx='openlvds_ddr_rx')
-MODELS=dict(driver={'openlvds_driver_core','lvds_bias'},receiver={'openlvds_receiver_core','lvds_bias'},
-            dll={'openlvds_dll_analog','lvds_bias','lvds_pfd'},delay={'openlvds_delay_line'},
-            tx={'openlvds_tx_core'},rx={'openlvds_ddr_rx'})
+PROGRAM_BYTES=Path(__file__).read_bytes()
+REQUIREMENTS_HASH=hashlib.sha256((ROOT/'requirements.json').read_bytes()).hexdigest()
+SOURCE_HASH=hashlib.sha256((ROOT/'analog/openlvds.spice').read_bytes()).hexdigest()
+TRACE_POLICY_HASH=hashlib.sha256(Path(rc_trace.__file__).read_bytes()).hexdigest()
+MODELS=MODEL_SCOPES
 
 def instance(name,nodes,models):
     return 'X'+name+' '+' '.join(nodes[p] for p in models[name]['ports'])+' '+name
@@ -89,24 +91,19 @@ VD1 D1 0 PULSE(1.8 0 3n 100p 100p 4.9n 10n)
         else:raise ValueError(kind)
     return common+body,print_nodes
 
-def simulate(kind,fast,reuse_full=False,analyze_only=False,resume=False):
-    mode='fast' if fast else 'full'
+def simulate(kind,fast,reuse_full=False,analyze_only=False,resume=False,simulator_stamp=None):
+    mode='fast' if fast else 'full';stamp=simulator_stamp or provenance()
     lib,inputs,models=library(extracted=True,digital=True,fast=fast)
     scope=closure_hash(lib,TOPS[kind]);inputs={k:v for k,v in inputs.items() if k in MODELS[kind]}
-    parent=ROOT/f'build/rc_validation/{engine()}/{kind}'
-    tag=mode+'_'+scope[:10]
-    out=parent/tag
-    if resume or analyze_only or (not fast and reuse_full):
-        for candidate in sorted(parent.glob(mode+'*')):
-            old=candidate/'library.spice'
-            if old.exists() and (candidate/'bench.cir.prn').exists() and closure_hash(old.read_bytes(),TOPS[kind])==scope:
-                out=candidate;break
-    out.mkdir(parents=True,exist_ok=True)
-    cached=(out/'library.spice').read_bytes() if (out/'library.spice').exists() else None
     body,nodes=fixture(kind,models)
     stop='2560n' if kind=='driver' else '1500n' if kind=='dll' else '60n'
     maximum='1n' if kind=='driver' else '100p'
     pdk=Path(os.environ['PDK_ROOT'])/'sky130A/libs.tech/ngspice/sky130.lib.spice'
+    recipe=hashlib.sha256(json.dumps([body,nodes,stop,maximum,str(pdk),REQUIREMENTS_HASH]).encode()).hexdigest()
+    # Separate simulator/fixture generations and never overwrite old references
+    # just because they share a circuit. Unattested legacy traces cannot resume.
+    out=ROOT/f'build/rc_validation/{engine()}/{kind}'/(mode+'_'+scope[:10]+'_'+stamp[:10]+'_'+recipe[:10])
+    out.mkdir(parents=True,exist_ok=True)
     deck=f'''OpenLVDS RC approximation reference comparison {kind} {mode} {engine()}
 .lib "{pdk}" tt
 .include "{out}/library.spice"
@@ -117,28 +114,35 @@ def simulate(kind,fast,reuse_full=False,analyze_only=False,resume=False):
 .print tran {' '.join('V('+n+')' for n in nodes)}
 .end
 '''
-    path=out/'bench.cir'
-    old_deck=path.read_text() if path.exists() else None
-    prn=out/'bench.cir.prn'
-    matching=cached is not None and closure_hash(cached,TOPS[kind])==scope and old_deck==deck and prn.exists()
-    reuse=(analyze_only or (not fast and reuse_full) or resume) and matching
-    if (analyze_only or (not fast and reuse_full)) and not matching:
-        return kind,mode,None,inputs,dict(error='No matching circuit reference')
-    if not reuse:
-        (out/'library.spice').write_bytes(lib);path.write_text(deck)
-        prn.unlink(missing_ok=True)
-        result=subprocess.run(spice_command(out/(engine()+'.log'),path),cwd=out,
-                              capture_output=True,text=True)
-        (out/'console.log').write_text(result.stdout+result.stderr)
-        if result.returncode or not prn.exists():return kind,mode,None,inputs,dict(error=engine()+' failed',returncode=result.returncode)
-    rows=[]
-    for line in prn.read_text().splitlines():
-        try:rows.append(list(map(float,line.split())))
-        except ValueError:pass
-    wave=np.array(rows)
-    minimum=2559.9e-9 if kind=='driver' else 1499.9e-9 if kind=='dll' else 59.9e-9
-    if not len(wave) or wave[-1,1]<minimum:return kind,mode,None,inputs,dict(error='Incomplete transient')
-    return kind,mode,wave,inputs,dict(scope_sha256=scope,artifact=str(out.relative_to(ROOT)))
+    with (out/'.run.lock').open('a') as lock:
+        try:fcntl.flock(lock,fcntl.LOCK_EX if resume else fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError:return kind,mode,None,inputs,dict(error='Reference is already running')
+        matching=rc_trace.matching(out,deck,scope,inputs,engine(),stamp,REQUIREMENTS_HASH)
+        reuse=(analyze_only or (not fast and reuse_full) or resume) and matching
+        if (analyze_only or (not fast and reuse_full)) and not matching:
+            return kind,mode,None,inputs,dict(error='No attested matching circuit reference')
+        path=out/'bench.cir';prn=out/'bench.cir.prn'
+        if not reuse:
+            (out/'trace_evidence.json').unlink(missing_ok=True)
+            (out/'library.spice').write_bytes(lib);path.write_text(deck)
+            (out/'producer.py').write_bytes(PROGRAM_BYTES)
+            prn.unlink(missing_ok=True)
+            result=subprocess.run(spice_command(out/(engine()+'.log'),path),cwd=out,capture_output=True,text=True)
+            (out/'console.log').write_text(result.stdout+result.stderr)
+            if result.returncode or not prn.exists():return kind,mode,None,inputs,dict(error=engine()+' failed',returncode=result.returncode)
+        rows=[]
+        for line in prn.read_text().splitlines():
+            try:rows.append(list(map(float,line.split())))
+            except ValueError:pass
+        wave=np.array(rows)
+        stop_seconds=float(stop[:-1])*1e-9
+        if (wave.ndim!=2 or wave.shape[1]!=len(nodes)+2 or len(wave)<2 or not np.all(np.isfinite(wave)) or
+                wave[-1,1]<stop_seconds*(1-1e-8) or not np.all(np.diff(wave[:,1])>0)):
+            return kind,mode,None,inputs,dict(error='Incomplete or invalid transient')
+        if provenance()!=stamp:return kind,mode,None,inputs,dict(error='Simulator changed during the transient')
+        if not reuse:rc_trace.record(out,TOPS[kind],scope,inputs,engine(),stamp,REQUIREMENTS_HASH)
+        return kind,mode,wave,inputs,dict(scope_sha256=scope,artifact=str(out.relative_to(ROOT)),
+            trace_evidence_sha256=rc_trace.digest((out/'trace_evidence.json').read_bytes()),reused_waveform=bool(reuse))
 
 def compare(kind,full,fast):
     f,_,a,_,error=full;_,_,b,_,error_b=fast
@@ -154,7 +158,7 @@ def compare(kind,full,fast):
         threshold=0 if kind=='driver' and col==2 else 1.25 if kind=='driver' else .9
         def edges(wave):
             v=wave[:,col]-threshold;t=wave[:,1]
-            i=np.where(v[:-1]*v[1:]<0)[0]
+            high=v>=0;i=np.flatnonzero(high[1:]!=high[:-1])
             times=t[i]-v[i]*(t[i+1]-t[i])/(v[i+1]-v[i])
             mask=(times>start)&(times<end)
             return times[mask]
@@ -184,11 +188,11 @@ def main():
     p.add_argument('--reuse-full',action='store_true',help='Reuse completed references with identical circuit snapshots')
     p.add_argument('--analyze-only',action='store_true',help='Recheck completed full/fast snapshots without resimulation')
     p.add_argument('--resume',action='store_true',help='Reuse completed, identical instantiated circuit closures')
-    a=p.parse_args();kinds=a.tests.split(',')
+    a=p.parse_args();kinds=a.tests.split(',');simulator_stamp=provenance()
     (ROOT/'build/rc_validation/summary.json').unlink(missing_ok=True)
     jobs=[(k,f) for k in kinds for f in [False,True]]
     if any(k not in REQUIRED for k in kinds):p.error('Unknown fixture')
-    with ThreadPoolExecutor(max_workers=a.jobs) as pool:r=list(pool.map(lambda j:simulate(*j,reuse_full=a.reuse_full,analyze_only=a.analyze_only,resume=a.resume),jobs))
+    with ThreadPoolExecutor(max_workers=a.jobs) as pool:r=list(pool.map(lambda j:simulate(*j,reuse_full=a.reuse_full,analyze_only=a.analyze_only,resume=a.resume,simulator_stamp=simulator_stamp),jobs))
     data={(x[0],x[1]):x for x in r}
     cases={k:compare(k,data[k,'full'],data[k,'fast']) for k in kinds}
     inputs_full={};inputs_fast={};consistent=True
@@ -198,11 +202,16 @@ def main():
                 if name in target and target[name]!=digest:consistent=False
                 target[name]=digest
     complete=set(kinds)==REQUIRED and len(kinds)==len(REQUIRED)
+    consistent &= provenance()==simulator_stamp and Path(__file__).read_bytes()==PROGRAM_BYTES
+    consistent &= hashlib.sha256((ROOT/'requirements.json').read_bytes()).hexdigest()==REQUIREMENTS_HASH
+    consistent &= hashlib.sha256((ROOT/'analog/openlvds.spice').read_bytes()).hexdigest()==SOURCE_HASH
+    consistent &= hashlib.sha256(Path(rc_trace.__file__).read_bytes()).hexdigest()==TRACE_POLICY_HASH
     summary=dict(passed=complete and consistent and all(x['passed'] for x in cases.values()),complete_suite=complete,cases=cases,
-        simulator=engine(),simulator_provenance=provenance(),
+        simulator=engine(),simulator_provenance=simulator_stamp,
         reference_inputs=inputs_full,fast_inputs=inputs_fast,
-        source_sha256=hashlib.sha256((ROOT/'analog/openlvds.spice').read_bytes()).hexdigest(),
-        runner_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        source_sha256=SOURCE_HASH,
+        runner_sha256=hashlib.sha256(PROGRAM_BYTES).hexdigest(),
+        requirements_sha256=REQUIREMENTS_HASH,trace_policy_sha256=TRACE_POLICY_HASH,
         qualification='Nonlinear operating-window full-RC comparison after settling; active outputs required; 20ps edges, 20mV plateaus')
     path=ROOT/'build/rc_validation/summary.json';path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(summary,indent=2)+'\n');print(json.dumps(summary,indent=2))

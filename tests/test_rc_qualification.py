@@ -3,21 +3,26 @@ import hashlib
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from rc_certificate import REQUIRED,valid
 from validate_fast import compare
 from spice_engine import engine,provenance
+import rc_trace
 
 class Qualification(unittest.TestCase):
     def test_partial_and_stale_certificates_are_rejected(self):
         runner=Path(__file__).resolve().parents[1]/'scripts/validate_fast.py'
         c=dict(passed=True,complete_suite=True,cases={k:dict(passed=True) for k in REQUIRED},
                runner_sha256=hashlib.sha256(runner.read_bytes()).hexdigest(),fast_inputs={'a':'b'},
-               simulator=engine(),simulator_provenance=provenance())
-        self.assertTrue(valid(c,{'a':'b'}))
-        self.assertFalse(valid(c,{'a':'changed'}))
-        c['cases'].pop('driver');self.assertFalse(valid(c,{'a':'b'}))
+               simulator=engine(),simulator_provenance=provenance(),
+               requirements_sha256=hashlib.sha256((runner.parents[1]/'requirements.json').read_bytes()).hexdigest(),
+               trace_policy_sha256=hashlib.sha256(Path(rc_trace.__file__).read_bytes()).hexdigest())
+        with patch('rc_certificate.traces_current',return_value=True):
+            self.assertTrue(valid(c,{'a':'b'}))
+            self.assertFalse(valid(c,{'a':'changed'}))
+            c['cases'].pop('driver');self.assertFalse(valid(c,{'a':'b'}))
 
     def test_identical_inactive_dll_does_not_qualify(self):
         time=np.linspace(0,1500e-9,15001)
