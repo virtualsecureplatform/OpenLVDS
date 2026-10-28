@@ -18,7 +18,7 @@ The latest completed checks on 2026-10-28 include:
   DRC/LVS. The integrated phase-qualifier DLL and PFD pass fresh physical
   checks and exact RC extraction. All five analog networks pass independent
   RC connectivity audits. Electrical qualification of the new DLL is pending.
-- Unit tests: 71 pass, including stale-evidence rejection, parallel input timing,
+- Unit tests: 72 pass, including stale-evidence rejection, parallel input timing,
   link measurement boundaries, driver latency/polarity, physical port policy, and RC trace provenance.
 
 Extracted DLL qualification and the complete full/approximate RC
@@ -172,7 +172,7 @@ phase-fault bench. The reference inverter now has 16/8 µm drive, and PH270/FB
 carry matched passive sensing loads. The physical policy verifies each native
 qualifier cell and connection, including the two-buffer window, independently
 of the UP/DN steering paths. Full RTL regression passes 2,373,576 bits in 54
-cases, and all 71 unit tests pass. The regenerated analog DLL passes DRC
+cases, and all 72 unit tests pass. The regenerated analog DLL passes DRC
 (zero errors), LVS, exact RC extraction with the expected 22 ports, and an
 independent RC connectivity audit. The native PFD also passes DRC/LVS and
 its explicit cell-path policy, and its 12-terminal exact RC extraction assembles
@@ -195,3 +195,8 @@ loaded data/clock eye-center amplitudes 179/225 mV. Receiver sample amplitude
 remains above 100 mV. These are diagnostics with ideal DLL phases and shortened
 training, not a release result. The captured-waveform driver replay remains
 in progress; output-level and aperture requirements have not been relaxed.
+
+The full/fast DLL fixture now includes the same 40 fF PH0 and PH90 launch
+loads as the nominal electrical bench and delays enable by 200 ps after
+precharge. The previous 20 fF PH90 fixture is not sufficient for the current
+six-fixture certificate. All 72 unit tests pass in the pinned ngspice image.

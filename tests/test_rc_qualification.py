@@ -7,7 +7,7 @@ from unittest.mock import patch
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from rc_certificate import REQUIRED,valid
-from validate_fast import compare
+from validate_fast import compare,fixture
 from spice_engine import engine,provenance
 import rc_trace
 
@@ -23,6 +23,14 @@ class Qualification(unittest.TestCase):
             self.assertTrue(valid(c,{'a':'b'}))
             self.assertFalse(valid(c,{'a':'changed'}))
             c['cases'].pop('driver');self.assertFalse(valid(c,{'a':'b'}))
+
+    def test_dll_reference_has_both_native_launch_loads(self):
+        body,_=fixture('dll',{})
+        self.assertIn('C0 PH0 0 40f',body)
+        self.assertIn('C90 PH90 0 40f',body)
+        for tap,net in [('180','PH180'),('270','PH270'),('360','FB')]:
+            self.assertIn(f'C{tap} {net} 0 20f',body)
+        self.assertIn('85.2n 0 85.22n 1.8',body)
 
     def test_identical_inactive_dll_does_not_qualify(self):
         time=np.linspace(0,1500e-9,15001)

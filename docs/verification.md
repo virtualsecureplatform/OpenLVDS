@@ -55,6 +55,10 @@ device and terminal parasitics. The exact resistor-only reduction eliminates
 unobserved algebraic nodes by a Schur complement; capacitor and device nodes
 are protected. The optional TICER pass additionally removes quick internal RC
 nodes. Its circuit snapshots and comparison results are hashed separately.
+The DLL comparison fixture loads PH0 and PH90 at 40 fF each, matching the
+native transmitter launch loads in the electrical qualification bench. It
+uses the same 200 ps separation between the 32-cycle precharge and detector
+enable. A prior underloaded DLL fixture cannot supply this comparison.
 The method is described in the [KLayout-PEX TICER documentation](https://iic-jku.github.io/klayout-pex-website/doc/doc.html#quick-nodes).
 
 The link bench uses the physical TX/RX DDR macros and analog cores, two terminated
