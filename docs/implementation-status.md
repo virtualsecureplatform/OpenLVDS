@@ -114,7 +114,9 @@ The revised transmitter uses three plain sampling registers and a PH90-selected
 mux for data, with an identical PH0-selected constant-input clock replica.
 Both input bits still belong to the same rising-edge capture. Generic and
 native RTL pass the full 54-case regression and functional PHY assembly.
-Physical hardening and fresh extracted electrical checks remain required.
+The mux revision passes physical DRC/LVS and timing, with 58 ps worst setup
+slack and 87 ps hold slack. Native cell connections pass the independent
+physical policy. Fresh extracted electrical checks remain required.
 
 The compact receiver with the preceding transmitter revision completes a
 32-bit extracted-channel diagnostic with zero errors, 202 ps setup margin,
