@@ -12,13 +12,17 @@ The latest completed checks on 2026-10-28 include:
   test uses 840 Mb/s, 250 mV differential input, and 100 fF output load.
 - Physical checks: five analog macros and three digital macros pass DRC/LVS;
   the five analog extracted networks also pass an independent connectivity audit.
-- Unit tests: 33 pass, including stale-evidence rejection, parallel input timing,
-  link measurement boundaries, driver latency/polarity, and physical port policy.
+- Unit tests: 38 pass, including stale-evidence rejection, parallel input timing,
+  link measurement boundaries, driver latency/polarity, physical port policy, and RC trace provenance.
 
-Extracted driver and DLL corner simulations and the full/approximate RC
-comparison are still running. Completed driver cases are recorded individually
+Extracted driver and DLL qualification and the complete full/approximate RC
+comparison remain outstanding. Completed driver cases are recorded individually
 under `build/analog_extracted/`. No approximate network is qualified until the
-complete comparison certificate passes.
+complete comparison certificate passes. Each reusable reference now carries hashes
+of its simulator provenance, requirements, circuit, fixture, waveform, and producer
+snapshot. Unattested legacy traces cannot qualify or resume a reference. Fresh
+receiver, delay-line, TX, and RX comparison pairs pass; driver and DLL pairs are
+still required for a complete certificate.
 
 An archived partial extracted DLL trace showed approximately 508 ps quarter-cycle
 delay and 310 ps detector-input error. Automatically inserted clock-delay buffers
@@ -35,7 +39,9 @@ checked independently.
 The bench now launches parallel data according to the existing physical input
 constraints. An isolated transistor-level TX diagnostic using the unqualified
 approximate RC view and 80 fF output loads decodes all 64 payload bits correctly;
-the corresponding end-to-end run is still in progress. That diagnostic uses a
+a subsequent 32-bit end-to-end diagnostic decodes every payload bit with valid
+voltage levels, but measures approximately 35 ps setup margin against the
+unchanged 200 ps requirement. That diagnostic uses a
 0.9 V logic threshold: three sampled highs remain below 1.44 V at its selected
 sample time, so it does not establish valid CMOS levels or output timing margin.
 Short diagnostic runs use less training than
