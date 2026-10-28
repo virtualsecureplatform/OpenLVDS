@@ -267,7 +267,10 @@ def dll(corner,temp,mhz=None,duty=.5):
     mhz=CLOCK_MHZ if mhz is None else mhz
     name=case_name(corner,temp,mhz,duty)
     period=1000/mhz
-    pd_start=5+32*period
+    # Enable follows the 32-cycle hold with nonzero control propagation.
+    # At 380/420 MHz, coincident PULSE/PWL times rounded independently can
+    # differ by sub-femtoseconds and stall the ideal enable-source branch.
+    pd_start=5+32*period+.2
     pdk=Path(os.environ['PDK_ROOT'])/'sky130A'
     deck=header(corner,temp)+f'''.include "{pdk}/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice"
 IREF IREF 0 PWL(0 0 1n 35u)

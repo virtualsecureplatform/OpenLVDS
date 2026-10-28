@@ -89,3 +89,10 @@ Remaining release work must stay visible: uncompleted extracted tests, any faile
 electrical corner, missing characterization, and unsupported clock evidence must
 not be replaced by behavioral results. DRC/LVS are connectivity/manufacturability
 checks, not proof of LVDS timing, input tolerance, mismatch or silicon yield.
+
+The DLL electrical bench holds precharge for 32 complete clock periods and
+then adds 200 ps before the enable transition. This separates the ideal
+control source from a coincident clock breakpoint at non-integer periods.
+The original 420 MHz, 55% duty case stopped at the enable source with a
+sub-femtosecond timestep; the delayed-enable retry advances beyond that point.
+Phase, tracking-error, and acquisition limits remain unchanged.

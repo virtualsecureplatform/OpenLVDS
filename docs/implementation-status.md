@@ -133,3 +133,8 @@ test. The original phase-error flag also remains inadequate: raw-clock window
 prototypes improve sensitivity, but broader process, temperature, and slew
 checks expose missed faults or invalid pulse cadence. These prototypes remain
 separate from the canonical analog and PFD implementations.
+
+The mux transmitter's fresh full/approximate RC pair passes with a maximum
+edge difference of 1.72 ps and plateau difference of 9.18 mV. Receiver,
+delay-line, and capture-core comparisons also pass; driver and DLL fixtures
+are still needed for the complete six-fixture certificate.
