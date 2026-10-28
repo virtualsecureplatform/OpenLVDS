@@ -154,7 +154,6 @@ XCT CT NBC VSS VSS sky130_fd_pr__nfet_01v8 w=64 l=0.5
 XC0 CL PN CT VSS sky130_fd_pr__nfet_01v8 w=8 l=0.15
 XC1 CO PP CT VSS sky130_fd_pr__nfet_01v8 w=8 l=0.15
 XCD CL CL VDDD VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
-XADDDP CTRL DNB D VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
 XCM CO CL VDDD VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
 * Restore at the actual capture-clock load, not just an unloaded pad probe.
 XI CO Q VDDD VSS lvds_inv18_drive
@@ -299,6 +298,7 @@ XCU CTRL UPB U VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
 XADDUN CTRL UP U VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
 XUPINV UP UPB VDDD VSS lvds_inv18
 XCD CTRL DN D VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
+XADDDP CTRL DNB D VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.15
 XCPD D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
 XCPD1 D NC VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.5
 * Keep both current-source drains near VCTRL while their main switches are
