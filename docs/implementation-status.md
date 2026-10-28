@@ -111,3 +111,20 @@ passes DRC/LVS and the unchanged timing constraints; worst reported setup slack
 is 7 ps and hold slack is 88 ps. Native cell types and their state connections
 are checked independently. Fresh electrical timing evidence is still required
 for this transmitter revision.
+
+The compact receiver with the preceding transmitter revision completes a
+32-bit extracted-channel diagnostic with zero errors, 202 ps setup margin,
+and 257 ps hold margin. That run uses shortened training and no injected
+jitter; it does not qualify the revised native transmitter or the link matrix.
+The native transmitter's fresh full/approximate RC comparison passes, with
+maximum edge error 3.31 ps and plateau error 2.29 mV. Four of the six comparison
+fixtures currently pass; the complete certificate remains outstanding.
+
+DLL experiments with stronger charge-pump branches reduce settled nominal
+feedback error to 67 ps (8 times the original current) and 48 ps (16 times).
+However, the respective control-copy errors reach 80 and 154 mV, exceeding the
+50 mV limit. Neither candidate is promoted. A stronger control buffer is under
+test. The original phase-error flag also remains inadequate: raw-clock window
+prototypes improve sensitivity, but broader process, temperature, and slew
+checks expose missed faults or invalid pulse cadence. These prototypes remain
+separate from the canonical analog and PFD implementations.
