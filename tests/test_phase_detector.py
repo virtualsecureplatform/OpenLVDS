@@ -4,7 +4,7 @@ import sys
 import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from verify_phase_detector import metrics
+from verify_phase_detector import metrics,pulse_metrics
 
 
 class PhaseErrorResponse(unittest.TestCase):
@@ -42,6 +42,14 @@ class PhaseErrorResponse(unittest.TestCase):
         wave=self.wave(0,150)
         wave[:,7]=1.8*(np.mod(wave[:,1],2.5e-9)<.1e-9)
         self.assertFalse(metrics(wave,150)['passed'])
+
+    def test_fault_cadence_can_be_measured_after_analog_settling(self):
+        wave=self.wave(1.8,150)
+        time=wave[:,1]+100e-9
+        response=pulse_metrics(time,wave[:,2],wave[:,7],120e-9,140e-9)
+        self.assertTrue(response['passed'])
+        self.assertGreater(response['reference_cycles'],5)
+        self.assertFalse(pulse_metrics(time,wave[:,2],wave[:,7])['passed'])
 
 
 if __name__=='__main__':unittest.main()

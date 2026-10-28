@@ -18,7 +18,7 @@ REQ=json.loads((ROOT/'requirements.json').read_text())
 OFFSETS_PS=(0,50,-50,150,-150,300,-300)
 
 
-def pulse_metrics(time,reference,bad):
+def pulse_metrics(time,reference,bad,window_start_s=20e-9,window_end_s=40e-9):
     def crossings(values,level,rising):
         high=values>=level
         i=np.flatnonzero((~high[:-1]&high[1:]) if rising else (high[:-1]&~high[1:]))
@@ -26,7 +26,7 @@ def pulse_metrics(time,reference,bad):
     ref=crossings(reference,.9,True)
     if len(ref)<3:return dict(passed=False,error='Missing reference cycles')
     period=float(np.median(np.diff(ref)))
-    anchors=ref[(ref>20e-9+period/2)&(ref<40e-9-period/2)]
+    anchors=ref[(ref>window_start_s+period/2)&(ref<window_end_s-period/2)]
     starts=list(crossings(bad,1.44,True));ends=list(crossings(bad,1.44,False))
     if bad[0]>=1.44:starts.insert(0,float(time[0]))
     if bad[-1]>=1.44:ends.append(float(time[-1]))
