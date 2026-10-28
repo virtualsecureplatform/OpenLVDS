@@ -5,19 +5,19 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 The latest completed checks on 2026-10-28 include:
 
-- RTL: 1,186,812 bits across 27 clock/duty/skew cases, plus DLL control and PHY assembly.
+- RTL: 2,373,624 bits across 54 cases: 1,186,812 each for generic RTL and native
+  SKY130 serializer cells, plus DLL control and generic/native PHY assembly.
 - Schematic characterization previously passed all 60 cases. The revised receiver
   passes 15 static and 15 rate canonical cases at tt/ff/ss/fs/sf and 0, 25, and
   40 °C.
 - Extracted driver: all 15 corners pass, including edge identity, polarity,
   amplitude, common mode, and propagation measurements.
-- The revised receiver with its initial wide routing passed 15 full-RC static
-  and 15 full-RC rate corners. The subsequent compact routing needs fresh checks. The rate test uses 840 Mb/s,
+- The compact receiver passes all 15 full-RC static and 15 full-RC rate corners. The rate test uses 840 Mb/s,
   250 mV differential input, and 100 fF output load.
 - Physical checks: five analog macros and three digital macros pass DRC/LVS;
   all five current analog extracted networks also pass an independent
   connectivity audit. The compact receiver passes DRC/LVS and extraction.
-- Unit tests: 42 pass, including stale-evidence rejection, parallel input timing,
+- Unit tests: 49 pass, including stale-evidence rejection, parallel input timing,
   link measurement boundaries, driver latency/polarity, physical port policy, and RC trace provenance.
 
 Extracted DLL qualification and the complete full/approximate RC
@@ -92,11 +92,22 @@ Receiver routing now uses 5 µm total inter-cell clearance, local internal buses
 and local signal-pin escapes. Its width drops from 985 to 607 µm. Extracted
 coupling-capacitance sums incident on Q decrease from 130 to 23 fF, PP from
 121 to 68 fF, PN from 128 to 72 fF, and CO from 43 to 24 fF. These are network
-capacitance sums, not independent grounded loads. Fresh compact-layout PVT,
-full/approximate RC comparison, and whole-link diagnostics are running.
+capacitance sums, not independent grounded loads. Compact-layout PVT passes all 30 cases. Its full/approximate RC comparison passes
+with at most 1.23 ps edge error and 0.15 mV plateau error. Whole-link diagnostics
+remain in progress.
 
 Analog LVS now compares fixed-width poly resistors individually. The PDK's
 mixed series/parallel reduction gave an extraction-order-dependent property
 error for an unchanged ladder. Disabling those reductions preserves each
 connection and resistor length check: the compact layout passes, and a
 controlled doubled-length resistor is rejected. Property errors remain fatal.
+
+The native transmitter retains two XOR input gates, a driven output XOR, three
+positive-edge sampling cells, and a local falling-clock inverter in each data
+and clock-replica lane. This preserves the existing serializer algorithm while
+replacing the decomposed NAND paths. Its clock domains use local routing, with
+post-route setup/hold repair and explicit 100 ps port slew. The native macro
+passes DRC/LVS and the unchanged timing constraints; worst reported setup slack
+is 7 ps and hold slack is 88 ps. Native cell types and their state connections
+are checked independently. Fresh electrical timing evidence is still required
+for this transmitter revision.

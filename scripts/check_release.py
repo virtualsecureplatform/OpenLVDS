@@ -13,7 +13,7 @@ from evidence_scope import matches as evidence_matches
 from link_evidence import matches as link_matches
 from openpll_clock import rtl_sources
 from spice_engine import engine,provenance
-from physical_policy import delay_cells_absent,pfd_ports_direct
+from physical_policy import delay_cells_absent,pfd_ports_direct,tx_cells_retained
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -32,12 +32,12 @@ def main():
         try:return json.loads(p.read_text())
         except ValueError:check(path,False,'Invalid JSON');return {}
     rtl=read('build/rtl/summary.json')
-    check('behavioral coverage',rtl.get('passed') and not rtl.get('smoke',True) and rtl.get('total_bits',0)>=req['minimum_behavioral_bits'])
+    check('behavioral coverage',rtl.get('passed') and not rtl.get('smoke',True) and min(rtl.get('rtl_total_bits',0),rtl.get('native_total_bits',0))>=req['minimum_behavioral_bits'] and rtl.get('native_functional_phy_passed',False))
     # Recreate verify_rtl.py's source fingerprint, including its benches/models.
     sources=sorted((ROOT/'rtl').glob('*.v'))+[ROOT/'tb/tb_link.v']
     dll=[ROOT/'rtl/openlvds_dll_control.v',ROOT/'tb/tb_dll_control.v']
     phy=sorted((ROOT/'rtl').glob('*.v'))+[ROOT/'models/analog_functional.v',ROOT/'tb/tb_phy.v']
-    stamp=hashlib.sha256(b''.join(p.read_bytes() for p in sources+dll+phy)+
+    stamp=hashlib.sha256(b''.join(p.read_bytes() for p in sources+dll+phy)+(ROOT/'models/sky130_tx_functional.v').read_bytes()+
         (ROOT/'requirements.json').read_bytes()+(ROOT/'scripts/verify_rtl.py').read_bytes()).hexdigest()
     check('behavioral source fingerprint',rtl.get('source_hash')==stamp)
     physical=read('build/layout/current.json')
@@ -57,8 +57,9 @@ def main():
         text=netlist.read_text() if netlist.is_file() else ''
         check(kind+' no clock-delay buffers',bool(text) and delay_cells_absent(text))
         if kind=='pfd':check('PFD direct clock and pulse ports',pfd_ports_direct(text))
+        if kind=='tx':check('TX native serializer cells and connections',tx_cells_retained(text))
         files=[ROOT/'rtl/openlvds_reset.v',ROOT/f'rtl/{name}.v']
-        if kind=='tx':files.append(ROOT/'rtl/openlvds_ddr_tx.v')
+        if kind=='tx':files.extend([ROOT/'rtl/openlvds_ddr_tx.v',ROOT/'sky130/tx_blackboxes.v'])
         if kind=='pfd':files=[ROOT/'sky130/lvds_pfd.v']
         config=ROOT/f'build/physical/{kind}/config.json'
         stamp=hashlib.sha256(b''.join(p.read_bytes() for p in files)+

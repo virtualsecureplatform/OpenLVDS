@@ -4,6 +4,8 @@ create_clock -name clk_400 -period 2.380952 [get_ports clk_400]
 create_clock -name clk_90 -period 2.380952 -waveform {0.595238 1.785714} [get_ports clk_90]
 set_clock_uncertainty 0.200 [all_clocks]
 set_clock_transition 0.100 [all_clocks]
+# Propagated local clocks also need an explicit port slew.
+set_input_transition 0.100 [all_inputs]
 set_input_delay 0.250 -clock clk_400 [get_ports {tx_data*}]
 set_output_delay 0.000 -clock clk_400 [get_ports tx_serial]
 set_output_delay 0.000 -clock clk_90 [get_ports forwarded_clock]

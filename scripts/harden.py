@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from physical_policy import delay_cells_absent,pfd_ports_direct
+from physical_policy import delay_cells_absent,pfd_ports_direct,tx_cells_retained
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -46,6 +46,15 @@ def main():
         # OpenROAD can otherwise select intentional clock-delay cells as
         # general port buffers, distorting PFD pulses and DDR launch timing.
         config['EXTRA_EXCLUDED_CELLS']=['sky130_fd_sc_hd__clkdlybuf*']
+        if which=='tx':
+            # Each small launch domain has only local clock loads. The DLL
+            # drives these directly, avoiding an unnecessary two-level tree.
+            config['RUN_CTS']=False
+            config['RUN_POST_CTS_RESIZER_TIMING']=False
+            config['RUN_POST_GRT_RESIZER_TIMING']=True
+            config['DESIGN_REPAIR_BUFFER_INPUT_PORTS']=False
+            config['VERILOG_DEFINES']=['OPENLVDS_SKY130_TX']
+            config['EXTRA_VERILOG_MODELS']=[str(ROOT/'sky130/tx_blackboxes.v')]
         if which=='rx':
             # Six local clock loads are driven directly by the analog clock
             # receiver. Avoid an unnecessary two-level tree and its sampling skew.
@@ -69,7 +78,7 @@ def main():
                 RUN_MCSTA=False,RUN_EQY=False,
                 LINTER_DISABLE_WARNINGS_BLACKBOX=['UNDRIVEN','UNUSEDSIGNAL','PINMISSING','TIMESCALEMOD'])
         cfg=out/'config.json'; cfg.write_text(json.dumps(config,indent=2)+'\n')
-        inputs=sources+[ROOT/f'constraints/{which}.sdc',cfg]
+        inputs=sources+([ROOT/'sky130/tx_blackboxes.v'] if which=='tx' else [])+[ROOT/f'constraints/{which}.sdc',cfg]
         captured={path:path.read_bytes() for path in inputs}
         stamp=hashlib.sha256(b''.join(captured.values())).hexdigest()
         archive=out/'inputs'/stamp[:16];archive.mkdir(parents=True,exist_ok=True)
@@ -87,7 +96,7 @@ def main():
         netlist=runs/'final/nl'/f'{design}.nl.v'
         text=netlist.read_text() if netlist.exists() else ''
         no_delay=bool(text) and delay_cells_absent(text)
-        interface=which!='pfd' or pfd_ports_direct(text)
+        interface=pfd_ports_direct(text) if which=='pfd' else tx_cells_retained(text) if which=='tx' else True
         results[which]=dict(passed=result.returncode==0 and unchanged and no_delay and interface,returncode=result.returncode,
             run=str(runs.relative_to(ROOT)),metrics=data,
             source_sha256=stamp,inputs_unchanged=unchanged,

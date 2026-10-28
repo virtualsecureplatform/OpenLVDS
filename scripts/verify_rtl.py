@@ -26,6 +26,10 @@ def main():
                             *map(str,sources)],capture_output=True,text=True)
     (out/'compile.log').write_text(compile.stdout+compile.stderr)
     if compile.returncode: print(compile.stderr); return 1
+    native_model=ROOT/'models/sky130_tx_functional.v'
+    native_compile=subprocess.run(['iverilog','-g2012','-Wall','-DOPENLVDS_SKY130_TX','-s','tb_link','-o',str(out/'native_link.vvp'),*map(str,sources),str(native_model)],capture_output=True,text=True)
+    (out/'native_compile.log').write_text(native_compile.stdout+native_compile.stderr)
+    if native_compile.returncode:print(native_compile.stderr);return 1
     dll_sources=[ROOT/'rtl/openlvds_dll_control.v',ROOT/'tb/tb_dll_control.v']
     subprocess.run(['iverilog','-g2012','-s','tb_dll_control','-o',str(out/'dll.vvp'),
                     *map(str,dll_sources)],check=True)
@@ -35,28 +39,35 @@ def main():
     subprocess.run(['iverilog','-g2012','-s','tb_phy','-o',str(out/'phy.vvp'),*map(str,phy_sources)],check=True)
     phy=subprocess.run(['vvp',str(out/'phy.vvp')],capture_output=True,text=True)
     (out/'phy.log').write_text(phy.stdout+phy.stderr)
-    cases=list(itertools.product(req['clock_test_mhz'],req['clock_duty'],req['channel_skew_ps']))
-    if a.smoke: cases=[(400,.5,0)]
+    subprocess.run(['iverilog','-g2012','-DOPENLVDS_SKY130_TX','-s','tb_phy','-o',str(out/'native_phy.vvp'),*map(str,phy_sources),str(native_model)],check=True)
+    native_phy=subprocess.run(['vvp',str(out/'native_phy.vvp')],capture_output=True,text=True)
+    (out/'native_phy.log').write_text(native_phy.stdout+native_phy.stderr)
+    cases=list(itertools.product(['rtl','sky130'],req['clock_test_mhz'],req['clock_duty'],req['channel_skew_ps']))
+    if a.smoke: cases=[(implementation,400,.5,0) for implementation in ['rtl','sky130']]
     def run(case):
-        mhz,duty,skew=case
-        name=f'{mhz}m_d{duty:.2f}_s{skew:+d}'
-        result=subprocess.run(['vvp',str(out/'link.vvp'),f'+PERIOD={1000/mhz:.12f}',
+        implementation,mhz,duty,skew=case
+        name=f'{implementation}_{mhz}m_d{duty:.2f}_s{skew:+d}'
+        executable='link.vvp' if implementation=='rtl' else 'native_link.vvp'
+        result=subprocess.run(['vvp',str(out/executable),f'+PERIOD={1000/mhz:.12f}',
             f'+DUTY={duty}',f'+SKEW={skew/1000}',f'+CYCLES={1000 if a.smoke else 22000}',
             '+JITTER=0.05'],capture_output=True,text=True)
         log=result.stdout+result.stderr
         (out/f'{name}.log').write_text(log)
         bits=re.search(r'PASS bits=(\d+) pairs=(\d+)',log)
-        return dict(case=name,passed=result.returncode==0 and bits is not None,
+        return dict(case=name,implementation=implementation,passed=result.returncode==0 and bits is not None,
                     bits=int(bits[1]) if bits else 0,pairs=int(bits[2]) if bits else 0)
     with ThreadPoolExecutor(max_workers=a.jobs) as pool: results=list(pool.map(run,cases))
     total=sum(r['bits'] for r in results)
-    summary=dict(passed=control.returncode==0 and phy.returncode==0 and all(r['passed'] for r in results) and (a.smoke or total>=req['minimum_behavioral_bits']),
+    native_total=sum(r['bits'] for r in results if r['implementation']=='sky130')
+    rtl_total=sum(r['bits'] for r in results if r['implementation']=='rtl')
+    summary=dict(passed=control.returncode==0 and phy.returncode==0 and native_phy.returncode==0 and all(r['passed'] for r in results) and (a.smoke or min(native_total,rtl_total)>=req['minimum_behavioral_bits']),
                  dll_control_passed=control.returncode==0,
-                 functional_phy_passed=phy.returncode==0,
+                 functional_phy_passed=phy.returncode==0,native_functional_phy_passed=native_phy.returncode==0,
+                 native_total_bits=native_total,rtl_total_bits=rtl_total,
                  smoke=a.smoke,total_bits=total,cases=results,
                  source_hash=hashlib.sha256(b''.join(p.read_bytes() for p in sources)+
                      b''.join(p.read_bytes() for p in dll_sources)+
-                     b''.join(p.read_bytes() for p in phy_sources)+
+                     b''.join(p.read_bytes() for p in phy_sources)+native_model.read_bytes()+
                      (ROOT/'requirements.json').read_bytes()+Path(__file__).read_bytes()).hexdigest())
     (out/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
     print(json.dumps(dict(passed=summary['passed'],dll_control_passed=summary['dll_control_passed'],
