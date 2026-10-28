@@ -206,5 +206,13 @@ replay fails at an ideal-source branch near 10.25 ns, and its bounded-waveform
 retry fails at a MOS body node near 10.73 ns. They cannot establish a driver
 bandwidth result. The replacement routing-isolation circuit keeps all 266
 extracted device instances, removes only parasitic R/C, and passes an independent
-LVS audit. It has advanced beyond those failure times. An exact-driver replay
-is queued separately; all of these runs remain diagnostic and unqualified.
+LVS audit. Its full 110 ns replay completes with 32 checked bits and zero
+word errors, but only 37 ps setup margin and 438 ps hold margin. Data eye-center
+swing improves to 228 mV; clock ringing creates extra zero crossings and still
+fails the loaded transmitter-eye check. Receiver decision voltage remains at
+least 167 mV. This routing-only change fails the existing 200 ps margin and
+250 mV transmitter requirements. A separate exact-RC driver replay is running
+with the original approximate receiver/capture models. These mixed-model and
+routing-isolation runs remain diagnostic and unqualified. The complete replay
+analysis is retained in
+`build/diagnostics/driver_stress_replay/routing_removed_driver/complete_analysis.json`.
