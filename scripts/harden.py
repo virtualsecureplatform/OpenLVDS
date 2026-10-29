@@ -6,6 +6,7 @@ import fcntl
 import hashlib
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -37,6 +38,11 @@ def main():
         lock=(out/'.run.lock').open('a')
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:raise RuntimeError(which+': physical flow is already running')
+        previous=out/'summary.json'
+        if previous.exists():
+            old=json.loads(previous.read_text());history=out/'history'/old.get('source_sha256','unknown')[:16];history.mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(previous,history/'summary.json')
+            if (out/'flow.log').exists():shutil.copyfile(out/'flow.log',history/'flow.log')
         sources=[ROOT/'rtl/openlvds_reset.v', ROOT/f'rtl/{design}.v']
         if which=='tx':
             if a.tx_core_source:sources[1]=a.tx_core_source.resolve()
@@ -61,6 +67,7 @@ def main():
         # general port buffers, distorting PFD pulses and DDR launch timing.
         config['EXTRA_EXCLUDED_CELLS']=['sky130_fd_sc_hd__clkdlybuf*']
         if which=='tx':
+            if a.tx_buffer_strength:config['DESIGN_REPAIR_BUFFER_OUTPUT_PORTS']=False
             # Each small launch domain has only local clock loads. The DLL
             # drives these directly, avoiding an unnecessary two-level tree.
             config['RUN_CTS']=False
