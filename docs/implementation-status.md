@@ -265,3 +265,39 @@ Its setup margin is only 11.61 ps against the unchanged 200 ps target; hold
 margin is 499.09 ps. It is not promoted to the PHY. Timing diagnosis and fresh
 physical/PVT qualification are still needed; electrical success in this
 mixed-model diagnostic cannot establish release.
+
+
+## Pulse-area DLL comparison
+
+The active PHY still uses the preceding DLL; the new circuits are isolated
+experiments. `scripts/dll_campaign.py` prepares immutable native-finger
+candidates, records a durable dependency queue, and runs at most four
+transients. Its manifest and per-case summaries are under
+`build/diagnostics/dll_architecture/2c89de68294cda33/`.
+
+The new monitor averages UP and DN independently, applies a signed window,
+and checks for inactive/stuck PFD outputs. All seven SS/0 °C offset cases
+(0, ±50, ±150, ±300 ps) pass with the captured exact PFD and schematic monitor.
+The ±150 ps filtered differences are approximately +91.7/-90.3 mV, and the
+small-offset cases remain quiet. These diagnostic results do not qualify a
+fresh extracted monitor. TT/FF and stuck-output checks precede the loop matrix.
+
+Three NMOS-follower pump repairs and four averaged-PFD/current-mirror-OTA
+loops are prepared. Pump repairs vary follower bias and storage capacitance;
+OTA loops vary input width and CTRL capacitance. The queue advances into loop
+checks only after the monitor prerequisites pass. Independent loaded/unloaded
+follower checks are also present. The OTA gm/headroom characterization waits
+on the same simulator lease, so it cannot add a fifth transient.
+
+The isolated eight-terminal PFD passes its physical flow and is extracted as
+`build/extracted/c1cc337581f9c7c5/lvds_pfd/lvds_pfd.reduced.spice`.
+Both `ota_w4_c8` and `cp_b2_c4` DLL candidates pass zero-error DRC and strict
+LVS with 15 analog ports. Their layouts keep clocks, pump controls and averaging
+RC inputs within the control island; the high-resistance window/reference bank
+occupies a separate quiet island. Exact extraction and independent RC topology
+audits remain in progress. Candidate outputs do not overwrite active layout,
+extraction, or release manifests.
+
+All 85 unit tests pass at this milestone. Stability, complete PVT/fault
+qualification, receive aperture characterization and the complete link
+regression remain required before selecting and promoting a replacement.
