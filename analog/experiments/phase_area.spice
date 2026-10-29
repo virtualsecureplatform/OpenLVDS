@@ -1,0 +1,225 @@
+* SPDX-License-Identifier: GPL-3.0-only
+* Diagnostic pulse-area monitor. Fixed supplies; not release-qualified.
+* Equal pulse-area averages drive signed window and activity comparators.
+.subckt lvds_area_compare PLUS MINUS OUT PC VDDD VSS
+XTAIL T PC VDDD VDDD sky130_fd_pr__pfet_01v8 w=4 l=0.5
+XP L PLUS T VDDD sky130_fd_pr__pfet_01v8 w=16 l=1
+XM O MINUS T VDDD sky130_fd_pr__pfet_01v8 w=16 l=1
+XNL L L VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=1
+XNR O L VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=1
+XIP OB O VDDD VDDD sky130_fd_pr__pfet_01v8 w=2 l=0.15
+XIN OB O VSS VSS sky130_fd_pr__nfet_01v8 w=16 l=0.15
+XBUF OB OUT VDDD VSS lvds_inv18_drive
+.ends lvds_area_compare
+
+.subckt lvds_area_or A B Y VDDD VSS
+XP0 T A VDDD VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
+XP1 N B T VDDD sky130_fd_pr__pfet_01v8 w=8 l=0.15
+XN0 N A VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
+XN1 N B VSS VSS sky130_fd_pr__nfet_01v8 w=2 l=0.15
+XI N Y VDDD VSS lvds_inv18_drive
+.ends lvds_area_or
+
+.subckt lvds_phase_area UP DN UF DF BAD PC VDDD VSS
+XRU UP UF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XRD DN DF VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XCU UF VSS sky130_fd_pr__cap_mim_m3_1 w=20 l=25
+XCD DF VSS sky130_fd_pr__cap_mim_m3_1 w=20 l=25
+* A=U/2; B=D/2+VDDD/54. Reverse U/D for negative errors.
+* Rv=27R; Rg=R+R/26, all made from identical R units.
+
+XPUA UF PA VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPAG PA VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPDB DF PB VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV0 VDDD PV0 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV1 PV0 PV1 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV2 PV1 PV2 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV3 PV2 PV3 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV4 PV3 PV4 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV5 PV4 PV5 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV6 PV5 PV6 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV7 PV6 PV7 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV8 PV7 PV8 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV9 PV8 PV9 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV10 PV9 PV10 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV11 PV10 PV11 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV12 PV11 PV12 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV13 PV12 PV13 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV14 PV13 PV14 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV15 PV14 PV15 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV16 PV15 PV16 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV17 PV16 PV17 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV18 PV17 PV18 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV19 PV18 PV19 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV20 PV19 PV20 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV21 PV20 PV21 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV22 PV21 PV22 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV23 PV22 PV23 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV24 PV23 PV24 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV25 PV24 PV25 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPV26 PV25 PB VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPBG PB PG VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP0 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP1 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP2 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP3 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP4 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP5 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP6 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP7 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP8 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP9 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP10 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP11 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP12 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP13 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP14 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP15 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP16 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP17 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP18 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP19 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP20 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP21 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP22 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP23 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP24 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XPGP25 PG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNUA DF NA VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNAG NA VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNDB UF NB VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV0 VDDD NV0 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV1 NV0 NV1 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV2 NV1 NV2 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV3 NV2 NV3 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV4 NV3 NV4 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV5 NV4 NV5 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV6 NV5 NV6 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV7 NV6 NV7 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV8 NV7 NV8 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV9 NV8 NV9 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV10 NV9 NV10 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV11 NV10 NV11 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV12 NV11 NV12 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV13 NV12 NV13 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV14 NV13 NV14 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV15 NV14 NV15 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV16 NV15 NV16 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV17 NV16 NV17 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV18 NV17 NV18 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV19 NV18 NV19 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV20 NV19 NV20 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV21 NV20 NV21 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV22 NV21 NV22 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV23 NV22 NV23 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV24 NV23 NV24 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV25 NV24 NV25 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNV26 NV25 NB VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNBG NB NG VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP0 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP1 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP2 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP3 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP4 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP5 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP6 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP7 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP8 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP9 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP10 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP11 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP12 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP13 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP14 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP15 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP16 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP17 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP18 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP19 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP20 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP21 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP22 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP23 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP24 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XNGP25 NG VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+* S=(UF+DF)/8. Two series units per input; three parallel to ground.
+XSU0 UF SU VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XSU1 SU S VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XSD0 DF SD VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XSD1 SD S VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XSG0 S VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XSG1 S VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+XSG2 S VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=85
+* Activity reference taps: VDDD/64 and 12*VDDD/64.
+XLAD0 VSS LAD1 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD1 LAD1 LAD2 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD2 LAD2 LAD3 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD3 LAD3 LAD4 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD4 LAD4 LAD5 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD5 LAD5 LAD6 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD6 LAD6 LAD7 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD7 LAD7 LAD8 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD8 LAD8 LAD9 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD9 LAD9 LAD10 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD10 LAD10 LAD11 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD11 LAD11 LAD12 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD12 LAD12 LAD13 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD13 LAD13 LAD14 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD14 LAD14 LAD15 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD15 LAD15 LAD16 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD16 LAD16 LAD17 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD17 LAD17 LAD18 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD18 LAD18 LAD19 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD19 LAD19 LAD20 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD20 LAD20 LAD21 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD21 LAD21 LAD22 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD22 LAD22 LAD23 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD23 LAD23 LAD24 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD24 LAD24 LAD25 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD25 LAD25 LAD26 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD26 LAD26 LAD27 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD27 LAD27 LAD28 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD28 LAD28 LAD29 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD29 LAD29 LAD30 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD30 LAD30 LAD31 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD31 LAD31 LAD32 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD32 LAD32 LAD33 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD33 LAD33 LAD34 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD34 LAD34 LAD35 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD35 LAD35 LAD36 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD36 LAD36 LAD37 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD37 LAD37 LAD38 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD38 LAD38 LAD39 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD39 LAD39 LAD40 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD40 LAD40 LAD41 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD41 LAD41 LAD42 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD42 LAD42 LAD43 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD43 LAD43 LAD44 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD44 LAD44 LAD45 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD45 LAD45 LAD46 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD46 LAD46 LAD47 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD47 LAD47 LAD48 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD48 LAD48 LAD49 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD49 LAD49 LAD50 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD50 LAD50 LAD51 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD51 LAD51 LAD52 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD52 LAD52 LAD53 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD53 LAD53 LAD54 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD54 LAD54 LAD55 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD55 LAD55 LAD56 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD56 LAD56 LAD57 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD57 LAD57 LAD58 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD58 LAD58 LAD59 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD59 LAD59 LAD60 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD60 LAD60 LAD61 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD61 LAD61 LAD62 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD62 LAD62 LAD63 VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XLAD63 LAD63 VDDD VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=8.5
+XPOS PA PB POS PC VDDD VSS lvds_area_compare
+XNEG NA NB NEG PC VDDD VSS lvds_area_compare
+XLOW LAD1 S LOW PC VDDD VSS lvds_area_compare
+XHIGH S LAD12 HIGH PC VDDD VSS lvds_area_compare
+XO0 POS NEG PHASE VDDD VSS lvds_area_or
+XO1 LOW HIGH ACTIVITY VDDD VSS lvds_area_or
+XO2 PHASE ACTIVITY BAD VDDD VSS lvds_area_or
+.ends lvds_phase_area
