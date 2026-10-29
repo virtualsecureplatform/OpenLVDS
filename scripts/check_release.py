@@ -96,6 +96,8 @@ def main():
                           evidence.get('simulator')==engine() and evidence.get('simulator_provenance')==simulator_stamp and evidence_matches(evidence,
                             folder/'source.spice',
                             (ROOT/'analog/openlvds.spice').read_bytes() if root=='analog' else expected_rc,scope_test))
+                    if test=='driver':
+                        check(f'DC output/{root}/{process}/{temp}',evidence.get('dc_output',{}).get('passed') is True)
                     producer=folder/'runner.py';analyzer=folder/'analysis_runner.py'
                     check(f'analysis/{root}/{test}/{process}/{temp}',producer.is_file() and
                         evidence.get('runner_sha256')==digest(producer) and evidence.get('analysis_runner_sha256')==analysis_stamp and

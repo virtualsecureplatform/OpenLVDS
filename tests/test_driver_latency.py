@@ -4,7 +4,7 @@ import sys
 import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from verify_analog import driver_metrics
+from verify_analog import driver_metrics,driver_dc_metrics
 
 
 class DriverLatency(unittest.TestCase):
@@ -17,6 +17,15 @@ class DriverLatency(unittest.TestCase):
         out=.35*(2*np.interp(t-delay_ns*1e-9,pt,pv)/1.8-1)
         if invert:out=-out
         return np.column_stack([np.arange(len(t)),t,inp,1.25+out/2,1.25-out/2,np.full(len(t),1.4)])
+
+    def test_dc_requires_both_correctly_signed_polarities(self):
+        t=np.arange(1750,2000,.5)*1e-9
+        vod=np.where(t<1900e-9,-.35,.35)
+        wave=np.column_stack([np.arange(len(t)),t,np.zeros(len(t)),1.25+vod/2,1.25-vod/2])
+        self.assertTrue(driver_dc_metrics(wave)['passed'])
+        wave[:,3:5]=wave[:,3:5][:,::-1]
+        self.assertFalse(driver_dc_metrics(wave)['passed'])
+        self.assertFalse(driver_dc_metrics(wave[t<1900e-9])['passed'])
 
     def test_delay_longer_than_one_ui_retains_polarity(self):
         result=driver_metrics(self.waveform(1.4),30)

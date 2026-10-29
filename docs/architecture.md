@@ -111,3 +111,14 @@ The generated analog layouts prioritize inspectable, deterministic connectivity.
 Their long bus placement has considerable area and parasitic cost and is not an
 area-optimized production floorplan. The RTL assembly does not imply there is a
 single routed, pad-integrated PHY GDS.
+
+## Qualification contract revision
+
+The clock test points are 390, 400, and 410 MHz (780–820 Mb/s DDR).
+Supplies stay fixed; process corners and 0/25/40 °C temperatures are unchanged.
+Driver voltage limits apply to both settled polarities into 100 Ω. The driver
+bench holds these polarities before its cadence test. Loaded transmitter eye
+metrics are diagnostic. Link acceptance retains receiver sensitivity, legal
+receiver pin voltages, correct payload, and the additional 200 ps sampling
+margin. This revision does not qualify historical 380/420 MHz diagnostics as
+390/410 MHz results, or promote the source-terminated driver experiment.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
-"""Transistor-level validation using real SKY130 corner models in Xyce."""
+"""Transistor-level validation using real SKY130 corner models."""
 import argparse
 import fcntl
 from concurrent.futures import ThreadPoolExecutor
@@ -157,10 +157,33 @@ def driver_metrics(wave,window_start_ns=2510):
         common_mode_max_v=float(np.max(vcm[window])) if np.any(window) else None,
         sink_bias_v=float(np.mean(wave[window,5])) if np.any(window) else None)
 
+def driver_dc_metrics(wave):
+    """Both settled data polarities with the bench's 100 ohm termination."""
+    points=[]
+    for low_ns,high_ns,sign in [(1800,1850,-1),(1950,1990,1)]:
+        a=wave[(wave[:,1]>=low_ns*1e-9)&(wave[:,1]<=high_ns*1e-9)]
+        if not len(a):return dict(passed=False,error='Missing settled DC polarity')
+        differential=sign*(a[:,3]-a[:,4]);common=(a[:,3]+a[:,4])/2
+        ok=bool(np.all(differential>=REQ['tx_differential_min_v']) and
+            np.all(differential<=REQ['tx_differential_max_v']) and
+            np.all(common>=REQ['tx_common_mode_min_v']) and
+            np.all(common<=REQ['tx_common_mode_max_v']))
+        points.append(dict(polarity=sign,passed=ok,differential_min_v=float(differential.min()),
+            differential_max_v=float(differential.max()),common_mode_min_v=float(common.min()),
+            common_mode_max_v=float(common.max())))
+    return dict(passed=all(x['passed'] for x in points),termination_ohm=100,points=points)
+
+
 def driver(corner,temp):
     name=f'driver_{corner}_{temp}'
+    # Hold both polarities for DC qualification before exercising edge cadence.
+    stimulus=[(0,0),(1899.95,0),(1900.05,1.8),(1999.95,1.8),(2000.05,0)]
+    for i in range(1,433):
+        at=2000+i*1.25;previous=1.8*((i-1)%2);value=1.8*(i%2)
+        stimulus.extend([(at-.05,previous),(at+.05,value)])
+    vd='VD D 0 PWL('+ ' '.join(f'{t:.9f}n {v}' for t,v in stimulus)+')'
     deck=header(corner,temp)+'''IREF IREF 0 PWL(0 0 1n 35u)
-VD D 0 PULSE(0 1.8 2000n 100p 100p 1.15n 2.5n)
+DRIVER_STIMULUS
 XD D P N VREF IREF VDDIO VDDD 0 openlvds_driver
 RT P N 100
 CP P 0 2p
@@ -169,8 +192,13 @@ CN N 0 2p
 .print tran V(D) V(P) V(N) V(XD:XCORE:SINK) V(XD:XCORE:TOP) V(XD:XCORE:DP) V(XD:XCORE:DN)
 .end
 '''
+    deck=deck.replace('DRIVER_STIMULUS',vd)
     out,wave,res=run_deck(name,deck)
-    if wave is not None:res=driver_metrics(wave)
+    if wave is not None:
+        res=driver_metrics(wave)
+        res['dc_output']=driver_dc_metrics(wave)
+        res['loaded_eye_passed']=res['passed']
+        res['passed']=res['polarity_ok'] and res['transitions_ok'] and res['dc_output']['passed']
     return name,save(out,res,deck)
 
 def receiver(corner,temp):

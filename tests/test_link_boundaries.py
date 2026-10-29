@@ -44,6 +44,18 @@ class LinkMeasurementBoundaries(unittest.TestCase):
         self.assertGreater(result['hold_margin_ps'],200)
         self.assertTrue(all(x['passed'] for x in result['transmitter']))
 
+    def test_loaded_tx_eye_is_diagnostic_but_rx_sensitivity_still_gates(self):
+        args=list(self.fixture())
+        wave=args[0].copy()
+        for p,n in [(12,13),(14,15)]:
+            wave[:,p]=1.2+(wave[:,p]-1.2)*.5
+            wave[:,n]=1.2+(wave[:,n]-1.2)*.5
+        args[0]=wave
+        result=analyze(*args)
+        self.assertTrue(result['passed'],result)
+        self.assertTrue(all(not x['passed'] for x in result['transmitter']))
+        self.assertTrue(all(x['qualification']=='diagnostic_loaded_eye' for x in result['transmitter']))
+
     def test_decoded_bits_do_not_override_insufficient_input_swing(self):
         result=analyze(*self.fixture(received_swing=.06))
         self.assertEqual(result['word_errors'],0)
