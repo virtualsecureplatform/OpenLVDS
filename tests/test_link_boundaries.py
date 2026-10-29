@@ -56,6 +56,21 @@ class LinkMeasurementBoundaries(unittest.TestCase):
         self.assertTrue(all(not x['passed'] for x in result['transmitter']))
         self.assertTrue(all(x['qualification']=='diagnostic_loaded_eye' for x in result['transmitter']))
 
+    def test_correct_decoded_words_cannot_hide_inverted_pin_data(self):
+        args=list(self.fixture());wave=args[0].copy()
+        wave[:,[2,3]]=wave[:,[3,2]];args[0]=wave
+        result=analyze(*args)
+        self.assertEqual(result['word_errors'],0)
+        self.assertFalse(result['signed_receive_eye_passed'])
+        self.assertFalse(result['passed'])
+
+    def test_clock_receiver_requires_its_own_input_eye(self):
+        args=list(self.fixture());wave=args[0].copy()
+        wave[:,4:6]=1.2+(wave[:,4:6]-1.2)*.1;args[0]=wave
+        result=analyze(*args)
+        self.assertFalse(result['clock_receive_eye_passed'])
+        self.assertFalse(result['passed'])
+
     def test_decoded_bits_do_not_override_insufficient_input_swing(self):
         result=analyze(*self.fixture(received_swing=.06))
         self.assertEqual(result['word_errors'],0)

@@ -158,7 +158,20 @@ def analyze(wave,words,launch,period,data_delay_ns=1.2):
         candidates=pin_rise if rising else pin_fall
         previous=candidates[candidates<at+1e-15]
         if len(previous):pin_sampling.append(previous[-1])
-    amplitudes=abs(np.interp(pin_sampling,t,vd))
+    # Each published word comes from the preceding rising/falling capture pair.
+    # Require one ordered pair per payload word and the expected analog sign.
+    expected_sign=np.array([1 if word&(1<<bit) else -1 for word in words for bit in [0,1]])
+    signed_samples=np.interp(pin_sampling,t,vd)
+    capture_count_ok=len(sampling)==len(expected_sign)==len(signed_samples)
+    signed_ok=bool(capture_count_ok and np.all(signed_samples*expected_sign>=REQ['rx_threshold_v']))
+    clock_crossings=edge_times(t,clock_diff,level=0)
+    clock_centers=(clock_crossings[:-1]+clock_crossings[1:])/2
+    if pin_sampling:
+        clock_centers=clock_centers[(clock_centers>=min(pin_sampling))&(clock_centers<=max(pin_sampling))]
+    else:clock_centers=np.array([])
+    clock_amplitudes=abs(np.interp(clock_centers,t,clock_diff))
+    clock_eye_ok=bool(len(clock_amplitudes) and np.all(clock_amplitudes>=REQ['rx_threshold_v']))
+    amplitudes=abs(signed_samples)
     pin_min=float(np.min(wave[mask,2:6]));pin_max=float(np.max(wave[mask,2:6]))
     transmitter=[]
     if wave.shape[1]>=16 and pin_sampling:
@@ -178,11 +191,14 @@ def analyze(wave,words,launch,period,data_delay_ns=1.2):
                 common_mode_max_v=float(common.max()) if len(common) else None))
     # DC output limits are qualified independently in the driver bench.
     # Loaded TX eye metrics remain diagnostic; sensitivity is measured at RX.
-    electrical_ok=bool(len(amplitudes)==len(sampling) and len(amplitudes) and
+    electrical_ok=bool(capture_count_ok and signed_ok and clock_eye_ok and len(amplitudes) and
         np.all(amplitudes>=REQ['rx_threshold_v']) and pin_min>=REQ['rx_pin_min_v'] and
         pin_max<=REQ['rx_pin_max_v'] and len(transmitter)==2)
     return dict(passed=errors==0 and electrical_ok,checked_bits=2*len(received),word_errors=errors,
-        electrical_passed=electrical_ok,transmitter=transmitter,rx_pin_min_v=pin_min,rx_pin_max_v=pin_max,
+        electrical_passed=electrical_ok,capture_count_passed=capture_count_ok,
+        signed_receive_eye_passed=signed_ok,clock_receive_eye_passed=clock_eye_ok,
+        clock_sampling_differential_min_v=float(clock_amplitudes.min()) if len(clock_amplitudes) else None,
+        transmitter=transmitter,rx_pin_min_v=pin_min,rx_pin_max_v=pin_max,
         sampling_differential_min_v=float(np.min(amplitudes)) if len(amplitudes) else None,
         sampling_differential_max_v=float(np.max(amplitudes)) if len(amplitudes) else None,
         alignment=offset,setup_margin_ps=min(setup) if setup else None,
