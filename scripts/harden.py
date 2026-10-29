@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from physical_policy import delay_cells_absent,pfd_paths_retained,tx_cells_retained
+from physical_policy import delay_cells_absent,pfd_paths_retained,tx_cells_retained,pfd_area_paths_retained
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -17,11 +17,17 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('--design',choices=['tx','rx','pfd','both'],default='both')
     p.add_argument('--tag',default='lab')
+    p.add_argument('--pfd-source',type=Path,help='Isolated PFD candidate source')
+    p.add_argument('--artifact-dir',type=Path,help='Isolated physical output directory; never changes active evidence')
+    p.add_argument('--pfd-policy',choices=['legacy','pulse-area'],default='legacy')
     a=p.parse_args()
+    if (a.pfd_source or a.artifact_dir or a.pfd_policy!='legacy') and a.design!='pfd':p.error('Candidate options require --design pfd')
+    if a.pfd_source and not a.artifact_dir:p.error('Candidate source requires --artifact-dir')
+    if a.artifact_dir and not a.artifact_dir.resolve().is_relative_to(ROOT):p.error('Artifacts must reside in OpenLVDS')
     results={}
     for which in ['tx','rx'] if a.design=='both' else [a.design]:
         design={'tx':'openlvds_tx_core','rx':'openlvds_ddr_rx','pfd':'lvds_pfd'}[which]
-        out=ROOT/'build/physical'/which; out.mkdir(parents=True,exist_ok=True)
+        out=a.artifact_dir.resolve() if a.artifact_dir else ROOT/'build/physical'/which; out.mkdir(parents=True,exist_ok=True)
         lock=(out/'.run.lock').open('a')
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:raise RuntimeError(which+': physical flow is already running')
@@ -64,7 +70,7 @@ def main():
             config['VERILOG_DEFINES']=['OPENLVDS_SKY130_RX']
             config['EXTRA_VERILOG_MODELS']=[str(ROOT/'sky130/rx_blackboxes.v')]
         if which=='pfd':
-            sources=[ROOT/'sky130/lvds_pfd.v']
+            sources=[a.pfd_source.resolve() if a.pfd_source else ROOT/'sky130/lvds_pfd.v']
             config.update(VERILOG_FILES=list(map(str,sources)),
                 VERILOG_DEFINES=['USE_POWER_PINS'],CLOCK_PORT=None,
                 SYNTH_ELABORATE_ONLY=True,SYNTH_HIERARCHY_MODE='flatten',
@@ -96,12 +102,12 @@ def main():
         netlist=runs/'final/nl'/f'{design}.nl.v'
         text=netlist.read_text() if netlist.exists() else ''
         no_delay=bool(text) and delay_cells_absent(text)
-        interface=pfd_paths_retained(text) if which=='pfd' else tx_cells_retained(text) if which=='tx' else True
+        interface=(pfd_area_paths_retained(text) if a.pfd_policy=='pulse-area' else pfd_paths_retained(text)) if which=='pfd' else tx_cells_retained(text) if which=='tx' else True
         results[which]=dict(passed=result.returncode==0 and unchanged and no_delay and interface,returncode=result.returncode,
             run=str(runs.relative_to(ROOT)),metrics=data,
             source_sha256=stamp,inputs_unchanged=unchanged,
             delay_cells_absent=no_delay,interface_verified=interface,
-            input_archive=str(archive.relative_to(ROOT)))
+            input_archive=str(archive.relative_to(ROOT)),pfd_policy=a.pfd_policy if which=='pfd' else None)
         if not unchanged:results[which]['error']='Inputs changed during the physical flow; regenerate'
         (out/'summary.json').write_text(json.dumps(results[which],indent=2)+'\n')
         print(which,'PASS' if results[which]['passed'] else 'FAIL',str(out/'flow.log'),flush=True)

@@ -70,3 +70,24 @@ def tx_cells_retained(netlist):
         if rise['CLK']!=capture or held['CLK']!=capture:return False
         if output['S']!=selector['X'] or selector['A']!=select:return False
     return True
+
+
+def pfd_area_paths_retained(netlist):
+    """Pulse-area PFD: direct clocks, buffered coincidence, no XOR monitor."""
+    def pins(kind,name):
+        m=re.search(r'\bsky130_fd_sc_hd__'+kind+r'\s+'+name+r'\s*\((.*?)\);',netlist,re.S)
+        return dict(re.findall(r'\.(\w+)\s*\(\s*([^()\s]+)\s*\)',m[1])) if m else {}
+    header=re.search(r'\bmodule\s+lvds_pfd\s*\((.*?)\);',netlist,re.S)
+    if not header or re.search(r'\b(ERR|QREF|QFB|QWIN)\b',header[1]):return False
+    if not all(re.search(r'\b'+p+r'\b',header[1]) for p in ['REF','FB','RESET_N','PD_ENABLE','UP','DN']):return False
+    raw=[]
+    for name,clock,out,driver in [('ref_ff','REF','UP','up_drive'),('fb_ff','FB','DN','dn_drive')]:
+        ff=pins('dfrtp_4',name);buf=pins('buf_8',driver)
+        if ff.get('CLK')!=clock or not ff.get('Q') or buf.get('A')!=ff['Q'] or buf.get('X')!=out:return False
+        raw.append(ff['Q'])
+    both=pins('and2_4','coincidence');clear=pins('and2b_4','clear');ena=pins('and2_1','ena')
+    if len(set(raw))!=2 or not set(raw).isdisjoint({'UP','DN'}):return False
+    if {both.get('A'),both.get('B')}!={'UP','DN'} or clear.get('A_N')!=both.get('X'):return False
+    if {ena.get('A'),ena.get('B')}!={'RESET_N','PD_ENABLE'} or clear.get('B')!=ena.get('X'):return False
+    if not clear.get('X') or any(pins('dfrtp_4',name).get('RESET_B')!=clear['X'] for name in ['ref_ff','fb_ff']):return False
+    return delay_cells_absent(netlist) and not re.search(r'\bqual_\w+',netlist)
