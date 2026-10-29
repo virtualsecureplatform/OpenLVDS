@@ -20,6 +20,7 @@ from rc_certificate import valid as valid_certificate
 from spice_engine import command as spice_command,engine,provenance
 from evidence_scope import matches as evidence_matches
 from dll_case import case_name,trace_duty
+from rx_aperture_evidence import load as load_rx_aperture
 
 ROOT=Path(__file__).resolve().parents[1]
 REQ_BYTES=(ROOT/'requirements.json').read_bytes()
@@ -31,6 +32,17 @@ def edge_times(t,v,level=.9,rising=None):
     if rising is not None:changes &= high[1:]==rising
     i=np.where(changes)[0]
     return t[i]+(level-v[i])*(t[i+1]-t[i])/(v[i+1]-v[i])
+
+def input_slews(t,v,start,end):
+    values=[]
+    for rising in [True,False]:
+        mid=edge_times(t,v,rising=rising)
+        before=edge_times(t,v,.18 if rising else 1.62,rising)
+        after=edge_times(t,v,1.62 if rising else .18,rising)
+        for at in mid[(mid>=start)&(mid<=end)]:
+            lo=before[before<=at];hi=after[after>=at]
+            if len(lo) and len(hi):values.append((hi[0]-lo[-1])*1e12)
+    return dict(min_ps=min(values) if values else None,max_ps=max(values) if values else None)
 
 def pwl(points):
     return 'PWL('+ ' '.join(f'{t:.9f}n {v:.9g}' for t,v in points)+')'
@@ -114,7 +126,7 @@ def parallel_stimulus(launch,words,previous_rise):
 def instance(label,name,nodes,models):
     return 'X'+label+' '+' '.join(nodes[x] for x in models[name]['ports'])+' '+name
 
-def analyze(wave,words,launch,period,data_delay_ns=1.2):
+def analyze(wave,words,launch,period,data_delay_ns=1.2,aperture=None):
     t=wave[:,1];qclk=wave[:,7]
     edges=edge_times(t,qclk,rising=True)
     publication=edges[(edges+period*.5e-9>launch[0]*1e-9)&(edges+period*.5e-9<t[-1])]
@@ -136,15 +148,16 @@ def analyze(wave,words,launch,period,data_delay_ns=1.2):
     earlier=edges[edges<start_publication-1e-15]
     first=earlier[-1] if len(earlier) else start_publication-period*1e-9
     last=publication[min(offset+len(words)-1,len(publication)-1)]
-    # Conservative digital aperture bounds. Additional +/-200 ps clock-delay
-    # runs exercise the real sampling transistors rather than trusting these.
+    # Characterized setup/hold is subtracted before requiring the additional
+    # 200ps link margin. Legacy estimates are restricted to diagnostics.
+    aperture=aperture or dict(setup_ps=200,hold_ps=80,qualified=False)
     data_edges=edge_times(t,wave[:,6]);sampling=edge_times(t,qclk)
     sampling=sampling[(sampling>=first-1e-15)&(sampling<last-1e-15)]
     setup=[];hold=[]
     for at in sampling:
         before=data_edges[data_edges<at];after=data_edges[data_edges>at]
-        if len(before):setup.append((at-before[-1])*1e12-200)
-        if len(after):hold.append((after[0]-at)*1e12-80)
+        if len(before):setup.append((at-before[-1])*1e12-aperture['setup_ps'])
+        if len(after):hold.append((after[0]-at)*1e12-aperture['hold_ps'])
     mask=(t>=first)&(t<=last)
     vd=wave[:,2]-wave[:,3];vc=(wave[:,2]+wave[:,3])/2
     # Sensitivity belongs at the input clock crossing, before the comparator
@@ -189,13 +202,17 @@ def analyze(wave,words,launch,period,data_delay_ns=1.2):
                 differential_max_v=float(swing.max()) if len(swing) else None,
                 common_mode_min_v=float(common.min()) if len(common) else None,
                 common_mode_max_v=float(common.max()) if len(common) else None))
+    capture_slews={name:input_slews(t,wave[:,col],first,last) for name,col in [('data',6),('clock',7)]}
+    domain=aperture.get('input_slew_ps',[20,200])
+    slew_ok=all(v['min_ps'] is not None and v['min_ps']>=domain[0] and v['max_ps']<=domain[1] for v in capture_slews.values())
     # DC output limits are qualified independently in the driver bench.
     # Loaded TX eye metrics remain diagnostic; sensitivity is measured at RX.
     electrical_ok=bool(capture_count_ok and signed_ok and clock_eye_ok and len(amplitudes) and
         np.all(amplitudes>=REQ['rx_threshold_v']) and pin_min>=REQ['rx_pin_min_v'] and
-        pin_max<=REQ['rx_pin_max_v'] and len(transmitter)==2)
+        pin_max<=REQ['rx_pin_max_v'] and len(transmitter)==2 and (not aperture.get('qualified') or slew_ok))
     return dict(passed=errors==0 and electrical_ok,checked_bits=2*len(received),word_errors=errors,
         electrical_passed=electrical_ok,capture_count_passed=capture_count_ok,
+        capture_input_slew_ps=capture_slews,capture_aperture_slew_passed=slew_ok,
         signed_receive_eye_passed=signed_ok,clock_receive_eye_passed=clock_eye_ok,
         clock_sampling_differential_min_v=float(clock_amplitudes.min()) if len(clock_amplitudes) else None,
         transmitter=transmitter,rx_pin_min_v=pin_min,rx_pin_max_v=pin_max,
@@ -219,6 +236,7 @@ def main():
     p.add_argument('--clock-source',choices=['ideal','openpll-rtl','openpll-physical'],default='ideal')
     p.add_argument('--fast-rc',action='store_true')
     p.add_argument('--diagnostic',action='store_true',help='Permit an unqualified approximation for bring-up; cannot release')
+    p.add_argument('--aperture-table',help='Completed full-RC capture table; otherwise discover the latest current table')
     p.add_argument('--dll-phase',action='store_true')
     p.add_argument('--settled-start',action='store_true',help='Begin from solved fixed-supply DC bias; startup acquisition is checked separately')
     p.add_argument('--training-ns',type=float,help='Training before payload (default 256 cycles with settled-start, otherwise at least 800 ns)')
@@ -236,7 +254,13 @@ def main():
     lib,inputs,models=library(extracted=True,digital=True,fast=a.fast_rc)
     if (ROOT/'analog/openlvds.spice').read_bytes()!=source_bytes:p.error('Analog source changed while assembling the circuit')
     if certificate and not valid_certificate(certificate,inputs):p.error('Fast-RC certificate is stale or incomplete')
-    config=dict(vars(a),simulator=engine())
+    rx_model=models['openlvds_ddr_rx']
+    try:
+        aperture=load_rx_aperture(rx_model.get('exact_sha256',rx_model['netlist_sha256']),a.process,a.temperature,a.aperture_table)
+    except (OSError,ValueError,KeyError,TypeError) as error:
+        if not a.diagnostic or a.aperture_table:p.error(str(error))
+        aperture=dict(qualified=False,setup_ps=200,hold_ps=80,qualification='legacy diagnostic estimate')
+    config=dict(vars(a),simulator=engine(),rx_aperture=aperture)
     nominal_period=1000/a.mhz
     minimum_training=256*nominal_period
     training=a.training_ns if a.training_ns is not None else minimum_training if a.settled_start else max(800,minimum_training)
@@ -264,6 +288,7 @@ def main():
     (out/'requirements.json').write_bytes(REQ_BYTES)
     (out/'analog_source.spice').write_bytes(source_bytes)
     (out/'library.spice').write_bytes(lib)
+    (out/'rx_aperture.json').write_text(json.dumps(aperture,indent=2)+'\n')
     eligible=np.where(rises>=training)[0]
     if len(eligible)<a.bits/2+10:p.error('Clock waveform is too short')
     launch=rises[eligible[0]:eligible[0]+a.bits//2]
@@ -331,13 +356,13 @@ def main():
     if result.returncode or wave.ndim!=2 or wave[-1,1]<(total-.1)*1e-9:
         summary=dict(passed=False,error=engine()+' failed or transient incomplete',returncode=result.returncode)
     else:
-        summary=analyze(wave,words,launch,period,1.2+a.skew_ps/1000)
+        summary=analyze(wave,words,launch,period,1.2+a.skew_ps/1000,aperture)
         if not a.eye_shift_ps:
             margins=[summary.get('setup_margin_ps'),summary.get('hold_margin_ps')]
             margin_ok=all(m is not None and m>=REQ['minimum_sampling_margin_ps'] for m in margins)
             summary['sampling_margin_passed']=margin_ok
             summary['passed']=summary['passed'] and margin_ok
-    summary.update(config=config,clock_partition=scope,network='TICER approximate RC' if a.fast_rc else 'full distributed RC',
+    summary.update(config=config,rx_aperture=aperture,clock_partition=scope,network='TICER approximate RC' if a.fast_rc else 'full distributed RC',
         actual_clock_mhz=1000/period,injected_external_jitter_pp_ps=a.jitter_pp_ps,
         startup_model='solved DC operating point at fixed supplies' if a.settled_start else 'one-nanosecond supply ramp',
         simulator=engine(),simulator_provenance=simulator_stamp,training_ns=training,

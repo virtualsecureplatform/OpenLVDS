@@ -6,6 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from simulate_link import clocks,pwl
 from spice_engine import engine,provenance
+from rx_aperture_evidence import matches as aperture_matches
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -18,6 +19,12 @@ def matches(summary,case,requirements,library):
         if not summary.get('passed') or summary.get('diagnostic',True):
             return False,'Unpassed or diagnostic result'
         config=summary['config']
+        aperture=summary.get('rx_aperture',{})
+        if not (aperture.get('qualified') and config.get('rx_aperture')==aperture and
+                aperture_matches(aperture,config['process'],config['temperature'])):
+            return False,'Missing or stale full-RC receiver aperture qualification'
+        if not summary.get('capture_aperture_slew_passed'):
+            return False,'Capture input slew is outside the characterized aperture domain'
         expected=dict(process='tt',temperature=25,mhz=400,duty=.5,skew_ps=0,
             eye_shift_ps=0,clock_source='ideal',dll_phase=True,settled_start=True,
             jitter_pp_ps=requirements['injected_jitter_pp_ps'])
@@ -38,6 +45,8 @@ def matches(summary,case,requirements,library):
         output=(ROOT/summary['output']).resolve()
         if not output.is_relative_to((ROOT/'build/link').resolve()):
             return False,'Evidence is outside the link artifact directory'
+        if json.loads((output/'rx_aperture.json').read_text())!=aperture:
+            return False,'Captured receiver aperture evidence changed'
         runner=(ROOT/'scripts/simulate_link.py').read_bytes()
         req=(ROOT/'requirements.json').read_bytes()
         source=(ROOT/'analog/openlvds.spice').read_bytes()

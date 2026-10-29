@@ -16,9 +16,10 @@ class LinkEvidence(unittest.TestCase):
         self.root=Path(folder.name);self.library=b'captured circuit'
         self.req=dict(injected_jitter_pp_ps=100)
         self.case=dict(name='nominal',config=dict(bits=64,dll_phase=True,settled_start=True))
+        self.aperture=dict(qualified=True,setup_ps=120,hold_ps=90,table='fixture/table.json',table_sha256='fixture')
         config=dict(bits=64,process='tt',temperature=25,mhz=400,duty=.5,skew_ps=0,
             eye_shift_ps=0,clock_source='ideal',dll_phase=True,settled_start=True,
-            jitter_pp_ps=100,diagnostic=False,fast_rc=False,simulator='fixture',training_ns=None)
+            jitter_pp_ps=100,diagnostic=False,fast_rc=False,simulator='fixture',training_ns=None,rx_aperture=self.aperture)
         self.c0=[(0,0),(5,1.8)];self.c90=[(0,0),(5.625,1.8)]
         scope='measured DLL characterization'
         files={'scripts/simulate_link.py':b'current runner','requirements.json':json.dumps(self.req).encode(),
@@ -30,6 +31,8 @@ class LinkEvidence(unittest.TestCase):
             files['scripts/simulate_link.py']+b'fixture provenance'+clock+scope.encode())
         self.out=self.root/'build/link/nominal'/fingerprint[:12];self.out.mkdir(parents=True)
         self.summary=dict(passed=True,diagnostic=False,config=config,word_errors=0,
+            rx_aperture=self.aperture,
+            capture_aperture_slew_passed=True,
             electrical_passed=True,sampling_margin_passed=True,checked_bits=64,
             actual_clock_mhz=400,training_ns=640,clock_partition=scope,
             simulator='fixture',simulator_provenance='fixture provenance',network='full distributed RC',
@@ -41,8 +44,10 @@ class LinkEvidence(unittest.TestCase):
                 ('library.spice',self.library,'library_sha256'),('bench.cir',b'deck','deck_sha256'),
                 ('bench.cir.prn',b'waveform','waveform_sha256')]:
             (self.out/filename).write_bytes(data);self.summary[key]=evidence.digest(data)
+        (self.out/'rx_aperture.json').write_text(json.dumps(self.aperture))
         for target,value in [('ROOT',self.root),('engine',lambda:'fixture'),
                 ('provenance',lambda:'fixture provenance'),
+                ('aperture_matches',lambda *_:True),
                 ('clocks',lambda *_:(self.c0,self.c90,[],2.5,scope))]:
             patcher=patch.object(evidence,target,value);patcher.start();self.addCleanup(patcher.stop)
 
@@ -74,6 +79,15 @@ class LinkEvidence(unittest.TestCase):
 
     def test_changed_circuit_is_rejected(self):
         self.library=b'new circuit'
+        self.assertFalse(self.matches()[0])
+
+    def test_missing_or_stale_capture_aperture_cannot_release(self):
+        with patch.object(evidence,'aperture_matches',return_value=False):
+            self.assertFalse(self.matches()[0])
+        self.summary['capture_aperture_slew_passed']=False
+        self.assertFalse(self.matches()[0])
+        self.summary['capture_aperture_slew_passed']=True
+        self.summary.pop('rx_aperture')
         self.assertFalse(self.matches()[0])
 
 

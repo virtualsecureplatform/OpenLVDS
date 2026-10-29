@@ -77,5 +77,24 @@ class LinkMeasurementBoundaries(unittest.TestCase):
         self.assertFalse(result['electrical_passed'])
         self.assertFalse(result['passed'])
 
+    def test_measured_capture_bounds_are_subtracted_before_extra_margin(self):
+        fixture=self.fixture()
+        before=analyze(*fixture)
+        after=analyze(*fixture,aperture=dict(setup_ps=120,hold_ps=100))
+        self.assertAlmostEqual(after['setup_margin_ps']-before['setup_margin_ps'],80)
+        self.assertAlmostEqual(after['hold_margin_ps']-before['hold_margin_ps'],-20)
+
+    def test_characterized_aperture_requires_input_slews_in_its_domain(self):
+        args=list(self.fixture())
+        aperture=dict(setup_ps=120,hold_ps=100,qualified=True,input_slew_ps=[20,200])
+        self.assertFalse(analyze(*args,aperture=aperture)['capture_aperture_slew_passed'])
+        wave=args[0].copy()
+        for col in [6,7]:
+            wave[:,col]=np.convolve(wave[:,col],np.ones(20)/20,mode='full')[:len(wave)]
+        args[0]=wave
+        result=analyze(*args,aperture=aperture)
+        self.assertTrue(result['capture_aperture_slew_passed'],result)
+        self.assertTrue(result['passed'],result)
+
 
 if __name__=='__main__':unittest.main()
