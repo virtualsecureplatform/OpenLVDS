@@ -18,6 +18,18 @@ ROOT=Path(__file__).resolve().parents[1]
 VARIANTS={'mirror2':(1,2),'input2':(2,1),'both2':(2,2),'both4':(4,4)}
 
 def variant_source(source,variant):
+    if variant=='nmos':
+        body=""".subckt lvds_ctrl_buffer IN OUT NC VDDD VSS
+XNP L IN T VSS sky130_fd_pr__nfet_01v8 w=64 l=1
+XNM OUT OUT T VSS sky130_fd_pr__nfet_01v8 w=64 l=1
+XNT T NC VSS VSS sky130_fd_pr__nfet_01v8 w=64 l=0.5
+XPL L L VDDD VDDD sky130_fd_pr__pfet_01v8 w=64 l=1
+XPR OUT L VDDD VDDD sky130_fd_pr__pfet_01v8 w=64 l=1
+XCC OUT VSS sky130_fd_pr__cap_mim_m3_1 w=25 l=40
+.ends lvds_ctrl_buffer"""
+        return replace(source,'lvds_ctrl_buffer',body).replace(
+            'XVCOPY CTRL VCOPY PB VDDIO VSS lvds_ctrl_buffer',
+            'XVCOPY CTRL VCOPY NC VDDD VSS lvds_ctrl_buffer')
     if variant.startswith('restore'):
         width={'restore4':4,'restore2':2}[variant]
         helper=f'''.subckt screen_restorer A Y VDD VSS
@@ -48,7 +60,7 @@ def stimulus(t,v):return 'PWL('+' '.join(f'{at:.12g}n {value:.12g}' for at,value
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('variant',choices=['baseline',*VARIANTS,'restore4','restore2'])
+    p.add_argument('variant',choices=['baseline',*VARIANTS,'nmos','restore4','restore2'])
     a=p.parse_args();original=(ROOT/'analog/openlvds.spice').read_text()
     source=original if a.variant=='baseline' else variant_source(original,a.variant)
     ports,devices=flatten(circuits(source),'openlvds_dll_analog')

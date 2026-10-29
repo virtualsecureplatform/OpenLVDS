@@ -21,6 +21,14 @@ class DLLCandidates(unittest.TestCase):
             _,devices=flatten(defs,'openlvds_dll_analog')
             for d in devices:
                 if 'fet_' in d['model']:self.assertLessEqual(float(d['params']['w']),8)
+    def test_nmos_candidate_uses_existing_nc_bias_without_new_macro_ports(self):
+        text=variant_source(self.source,'nmos');defs=circuits(text)
+        self.assertEqual(defs['lvds_ctrl_buffer'][0],['IN','OUT','NC','VDDD','VSS'])
+        instance=next(x for x in defs['openlvds_dll_analog'][1] if x[0]=='XVCOPY')
+        self.assertEqual(instance[1],['CTRL','VCOPY','NC','VDDD','VSS'])
+        self.assertEqual(defs['openlvds_dll_analog'][0],circuits(self.source)['openlvds_dll_analog'][0])
+        flatten(defs,'openlvds_dll_analog')
+
     def test_mirror_only_variant_preserves_input_capacitance_geometry(self):
         defs=circuits(variant_source(self.source,'mirror2'))
         d={x[0]:x[3] for x in defs['lvds_ctrl_buffer'][1]}
