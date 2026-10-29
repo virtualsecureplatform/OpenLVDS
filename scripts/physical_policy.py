@@ -91,3 +91,28 @@ def pfd_area_paths_retained(netlist):
     if {ena.get('A'),ena.get('B')}!={'RESET_N','PD_ENABLE'} or clear.get('B')!=ena.get('X'):return False
     if not clear.get('X') or any(pins('dfrtp_4',name).get('RESET_B')!=clear['X'] for name in ['ref_ff','fb_ff']):return False
     return delay_cells_absent(netlist) and not re.search(r'\bqual_\w+',netlist)
+
+
+def tx_buffered_paths_retained(netlist,strength=4):
+    """Require the same native output buffer in each lane and trace it to the ports."""
+    if strength not in [4,8]:return False
+    cells={}
+    for cell,name,body in re.findall(r'\b(sky130_fd_sc_hd__\w+)\s+(\\?\S+)\s*\((.*?)\);',netlist,re.S):
+        cells[name.lstrip('\\')]=(cell,dict(re.findall(r'\.(\w+)\s*\(\s*([^()\s]+)\s*\)',body)))
+    parent={}
+    def root(n):
+        parent.setdefault(n,n)
+        if parent[n]!=n:parent[n]=root(parent[n])
+        return parent[n]
+    for a,b in re.findall(r'\bassign\s+(\S+)\s*=\s*(\S+)\s*;',netlist):
+        if any(c in a+b for c in '~&|^{}?:()') or "'" in a+b:continue
+        parent[root(a)]=root(b)
+    outputs=[]
+    for lane,port in [('data_launch','tx_serial'),('clock_launch','forwarded_clock')]:
+        mux=cells.get(lane+'/output_logic');driver=cells.get(lane+'/output_drive')
+        if not mux or not driver or driver[0]!=f'sky130_fd_sc_hd__buf_{strength}':return False
+        if not all(driver[1].get(pin) for pin in ['A','X']):return False
+        if root(driver[1]['A'])!=root(mux[1].get('X','')):return False
+        if root(driver[1]['X'])!=root(port):return False
+        outputs.append(root(driver[1]['X']))
+    return len(set(outputs))==2 and tx_cells_retained(netlist)

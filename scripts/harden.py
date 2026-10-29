@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from physical_policy import delay_cells_absent,pfd_paths_retained,tx_cells_retained,pfd_area_paths_retained
+from physical_policy import delay_cells_absent,pfd_paths_retained,tx_cells_retained,pfd_area_paths_retained,tx_buffered_paths_retained
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -20,8 +20,14 @@ def main():
     p.add_argument('--pfd-source',type=Path,help='Isolated PFD candidate source')
     p.add_argument('--artifact-dir',type=Path,help='Isolated physical output directory; never changes active evidence')
     p.add_argument('--pfd-policy',choices=['legacy','pulse-area'],default='legacy')
+    p.add_argument('--tx-core-source',type=Path)
+    p.add_argument('--tx-ddr-source',type=Path)
+    p.add_argument('--tx-buffer-strength',type=int,choices=[4,8])
     a=p.parse_args()
-    if (a.pfd_source or a.artifact_dir or a.pfd_policy!='legacy') and a.design!='pfd':p.error('Candidate options require --design pfd')
+    if (a.pfd_source or a.pfd_policy!='legacy') and a.design!='pfd':p.error('PFD candidate options require --design pfd')
+    if (a.tx_core_source or a.tx_ddr_source or a.tx_buffer_strength) and a.design!='tx':p.error('TX candidate options require --design tx')
+    if (a.tx_core_source or a.tx_ddr_source or a.tx_buffer_strength) and not (a.tx_core_source and a.tx_ddr_source and a.tx_buffer_strength and a.artifact_dir):p.error('Provide both TX sources, buffer strength, and artifact directory')
+    if a.artifact_dir and a.design not in ['pfd','tx']:p.error('Isolated output requires a single PFD or TX design')
     if a.pfd_source and not a.artifact_dir:p.error('Candidate source requires --artifact-dir')
     if a.artifact_dir and not a.artifact_dir.resolve().is_relative_to(ROOT):p.error('Artifacts must reside in OpenLVDS')
     results={}
@@ -32,7 +38,9 @@ def main():
         try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         except BlockingIOError:raise RuntimeError(which+': physical flow is already running')
         sources=[ROOT/'rtl/openlvds_reset.v', ROOT/f'rtl/{design}.v']
-        if which=='tx': sources.append(ROOT/'rtl/openlvds_ddr_tx.v')
+        if which=='tx':
+            if a.tx_core_source:sources[1]=a.tx_core_source.resolve()
+            sources.append(a.tx_ddr_source.resolve() if a.tx_ddr_source else ROOT/'rtl/openlvds_ddr_tx.v')
         config=dict(DESIGN_NAME=design,VERILOG_FILES=list(map(str,sources)),
             CLOCK_PORT='clk_400' if which=='tx' else 'clk',CLOCK_PERIOD=2.380952,
             PNR_SDC_FILE=str(ROOT/f'constraints/{which}.sdc'),
@@ -102,12 +110,14 @@ def main():
         netlist=runs/'final/nl'/f'{design}.nl.v'
         text=netlist.read_text() if netlist.exists() else ''
         no_delay=bool(text) and delay_cells_absent(text)
-        interface=(pfd_area_paths_retained(text) if a.pfd_policy=='pulse-area' else pfd_paths_retained(text)) if which=='pfd' else tx_cells_retained(text) if which=='tx' else True
+        if which=='pfd':interface=pfd_area_paths_retained(text) if a.pfd_policy=='pulse-area' else pfd_paths_retained(text)
+        elif which=='tx':interface=tx_buffered_paths_retained(text,a.tx_buffer_strength) if a.tx_buffer_strength else tx_cells_retained(text)
+        else:interface=True
         results[which]=dict(passed=result.returncode==0 and unchanged and no_delay and interface,returncode=result.returncode,
             run=str(runs.relative_to(ROOT)),metrics=data,
             source_sha256=stamp,inputs_unchanged=unchanged,
             delay_cells_absent=no_delay,interface_verified=interface,
-            input_archive=str(archive.relative_to(ROOT)),pfd_policy=a.pfd_policy if which=='pfd' else None)
+            input_archive=str(archive.relative_to(ROOT)),pfd_policy=a.pfd_policy if which=='pfd' else None,tx_buffer_strength=a.tx_buffer_strength if which=='tx' else None)
         if not unchanged:results[which]['error']='Inputs changed during the physical flow; regenerate'
         (out/'summary.json').write_text(json.dumps(results[which],indent=2)+'\n')
         print(which,'PASS' if results[which]['passed'] else 'FAIL',str(out/'flow.log'),flush=True)

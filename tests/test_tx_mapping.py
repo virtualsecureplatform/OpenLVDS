@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from physical_policy import tx_cells_retained
+from physical_policy import tx_cells_retained,tx_buffered_paths_retained
 
 
 class NativeSerializerMapping(unittest.TestCase):
@@ -19,6 +19,24 @@ class NativeSerializerMapping(unittest.TestCase):
                 ('dfrtp_4','fall_sample','.CLK(CLKN),.D(HELD),.RESET_B(RST),.Q(FALL)')]
             rows.extend(f'sky130_fd_sc_hd__{cell} \\{lane}/{name} ({pins});' for cell,name,pins in cells)
         return '\n'.join(rows)
+
+    def buffered(self):
+        text=self.fixture()
+        # Use unique routed output nets for the two lanes.
+        text=text.replace('\\data_launch/output_logic (.A0(FALL),.A1(RISE),.S(SEL),.X(SERIAL))',
+                          '\\data_launch/output_logic (.A0(FALL),.A1(RISE),.S(SEL),.X(DATA_MUX))')
+        text=text.replace('\\clock_launch/output_logic (.A0(FALL),.A1(RISE),.S(SEL),.X(SERIAL))',
+                          '\\clock_launch/output_logic (.A0(FALL),.A1(RISE),.S(SEL),.X(CLOCK_MUX))')
+        return text+"\nsky130_fd_sc_hd__buf_4 \\data_launch/output_drive (.A(DATA_MUX),.X(tx_serial));\nsky130_fd_sc_hd__buf_4 \\clock_launch/output_drive (.A(CLOCK_MUX),.X(forwarded_clock));"
+
+    def test_output_buffers_have_matched_strength_and_real_port_connections(self):
+        text=self.buffered()
+        self.assertTrue(tx_buffered_paths_retained(text))
+        self.assertFalse(tx_buffered_paths_retained(text.replace('buf_4 \\clock_launch/output_drive','buf_8 \\clock_launch/output_drive')))
+        self.assertFalse(tx_buffered_paths_retained(text.replace('.X(forwarded_clock)','.X(tx_serial)')))
+        self.assertFalse(tx_buffered_paths_retained(text.replace('.A(CLOCK_MUX)','.A(DATA_MUX)')))
+        alias=text.replace('.X(tx_serial)','.X(routed_data)')+'\nassign tx_serial = routed_data;'
+        self.assertTrue(tx_buffered_paths_retained(alias))
 
     def test_matched_native_cells_and_routed_clock_name_pass(self):
         self.assertTrue(tx_cells_retained(self.fixture()))
