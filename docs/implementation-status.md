@@ -3,7 +3,11 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
-The latest completed checks on 2026-10-28 include:
+The pulse-area comparison milestone on 2026-10-29 is described at the end of
+this document and in [the experiment workflow](dll-experiments.md). Its circuits
+remain separate from the active PHY. All 103 current unit tests pass.
+
+The preceding canonical checks on 2026-10-28 include:
 
 - RTL: 2,373,576 bits across 54 cases: 1,186,788 each for generic RTL and native
   SKY130 serializer cells, plus DLL control and generic/native PHY assembly.
@@ -270,34 +274,69 @@ mixed-model diagnostic cannot establish release.
 ## Pulse-area DLL comparison
 
 The active PHY still uses the preceding DLL; the new circuits are isolated
-experiments. `scripts/dll_campaign.py` prepares immutable native-finger
-candidates, records a durable dependency queue, and runs at most four
-transients. Its manifest and per-case summaries are under
-`build/diagnostics/dll_architecture/2c89de68294cda33/`.
+experiments. The corrected, immutable architecture campaign is
+`build/diagnostics/dll_architecture/6d99d42cf3eb5d31/`. The preceding campaign
+`2c89de68294cda33` was stopped because its loop fixture duplicated the bias
+generator already present in the DLL wrapper. No loop result from that fixture
+is accepted. All prepared cases now check for exactly one reference generator.
+The unchanged monitor waveforms were hash-checked and reanalyzed in the corrected
+campaign; the affected loop and follower cases run afresh.
 
-The new monitor averages UP and DN independently, applies a signed window,
-and checks for inactive/stuck PFD outputs. All seven SS/0 °C offset cases
-(0, ±50, ±150, ±300 ps) pass with the captured exact PFD and schematic monitor.
-The ±150 ps filtered differences are approximately +91.7/-90.3 mV, and the
-small-offset cases remain quiet. These diagnostic results do not qualify a
-fresh extracted monitor. TT/FF and stuck-output checks precede the loop matrix.
+The monitor averages UP and DN independently, applies a signed window, and
+checks for inactive/stuck PFD outputs. All 21 offset and six stuck-output
+diagnostics pass at SS/0 °C, TT/25 °C and FF/0 °C with the captured PFD and
+schematic monitor. This includes quiet 0/±50 ps and asserted ±150/±300 ps cases.
+These results do not qualify a fresh extracted monitor.
 
-Three NMOS-follower pump repairs and four averaged-PFD/current-mirror-OTA
-loops are prepared. Pump repairs vary follower bias and storage capacitance;
-OTA loops vary input width and CTRL capacitance. The queue advances into loop
-checks only after the monitor prerequisites pass. Independent loaded/unloaded
-follower checks are also present. The OTA gm/headroom characterization waits
-on the same simulator lease, so it cannot add a fifth transient.
+Three NMOS-follower pump repairs and four averaged-PFD/current-mirror-OTA loops
+are prepared. Completed loaded replay peaks are 48.72 mV for `cp_b1_c4` and
+43.47 mV for `cp_b2_c2`, against the unchanged 50 mV limit. The comparison
+supervisor prioritizes `cp_b2_c2` at SS/0 °C alongside the three `ota_w4_c8`
+corners. Startup-only traces interrupted to make this comparison earlier are
+archived within their task directories. There are at most four transients.
 
-The isolated eight-terminal PFD passes its physical flow and is extracted as
-`build/extracted/c1cc337581f9c7c5/lvds_pfd/lvds_pfd.reduced.spice`.
-Both `ota_w4_c8` and `cp_b2_c4` DLL candidates pass zero-error DRC and strict
-LVS with 15 analog ports. Their layouts keep clocks, pump controls and averaging
-RC inputs within the control island; the high-resistance window/reference bank
-occupies a separate quiet island. Exact extraction and independent RC topology
-audits remain in progress. Candidate outputs do not overwrite active layout,
-extraction, or release manifests.
+All 15 fixed-supply OTA characterization cases complete. Transconductance is
+39.35–48.69 µS with the correct control direction; the largest equivalent input
+offset is 14.51 mV over the characterized signal range. These cases fail the
+prototype's 10 mV offset screen. They do not establish loop failure or passing
+phase accuracy: complete acquisition, phase, ripple and stability checks remain
+necessary. The largest measured thin-oxide signal-node magnitude is 1.4 V;
+this limited signal check is not a general device-stress qualification.
 
-All 85 unit tests pass at this milestone. Stability, complete PVT/fault
-qualification, receive aperture characterization and the complete link
-regression remain required before selecting and promoting a replacement.
+The eight-terminal PFD, `ota_w4_c8` and `cp_b2_c4` analog layouts pass DRC,
+strict LVS, exact RC extraction, and independent RC topology audits. Their
+analog interface has 15 ports. Clock paths, pump controls and averaging inputs
+remain within the control island; the window/reference bank occupies the quiet
+island. Exact analog network hashes are `3502faf1b5c1` and `62713ea94c5a`;
+the new PFD network is `11fa96b45bbb`. The assembled full-RC OTA circuit also
+passes an operating-point-only parser/solver check. No transient qualification
+is implied by that check.
+
+The matched native `buf_4` serializer experiment passes 54 functional cases
+(2,373,588 checked bits), DRC/LVS, positive timing slack, direct-output cell
+policy, exact RC extraction and its independent audit. The initial routed retry
+that inserted extra output buffers is preserved and rejected. The passing
+direct-output network is `cdf6cbd8a901`; it is not promoted to the active PHY.
+
+Native DLL qualification is prepared for both physical candidates, with 313
+transients per candidate and prerequisites on its three-corner architecture
+screen. It covers 15 PVT points, nine clock/duty conditions, the 105/70 phase
+fault matrices, frequency endpoints, stuck outputs, frequency steps and clock
+loss/rearm. Full/fast DLL comparisons include nominal and phase-fault fixtures.
+An omitted pulse after the settled scoring window checks unwrapped delay
+through every section. CTRL and VCOPY measurements bind actual storage-capacitor
+terminals, whose names survive extraction and RC reduction. Every voltage
+probe is checked before a case is queued. These DLL comparisons do not replace
+the complete six-fixture RC certificate.
+
+Full-RC receiver aperture characterization is queued behind the same simulator
+lease. It has 480 setup/hold boundaries across 15 PVT points, both capture edges,
+both data polarities and all 20/200 ps clock/data slew combinations. It observes
+the published pair and valid output, bisects to 5 ps, adds 20 ps guard and rounds
+up to 10 ps. Link release evidence now requires a complete current table and
+rechecks its boundary witnesses. The extra 200 ps link margin is unchanged.
+Legacy 200/80 ps aperture estimates are permitted only for diagnostic runs.
+
+All 103 unit tests pass. Candidate selection, stability qualification, complete
+electrical results, the six-fixture RC certificate and the full 45-case link
+regression remain outstanding. No candidate or approximation is released.
