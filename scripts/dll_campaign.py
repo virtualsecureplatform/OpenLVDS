@@ -51,6 +51,22 @@ def closure(text,tops):
     for top in tops:visit(top)
     return '\n\n'.join(selected.values())+'\n'
 
+def bias_reference_count(deck,lib):
+    definitions={m[1].lower():m[0] for m in re.finditer(r'(?ims)^\.subckt\s+(\S+)\s.*?^\.ends[^\n]*',lib)}
+    def count(text,stack=()):
+        total=0
+        for line in text.splitlines():
+            words=line.split()
+            if not words or not words[0].lower().startswith('x'):continue
+            end=next((i for i,w in enumerate(words) if '=' in w),len(words));child=words[end-1].lower()
+            if child=='lvds_bias':total+=1
+            elif child in definitions:
+                if child in stack:raise ValueError('Recursive circuit hierarchy')
+                total+=count(definitions[child],stack+(child,))
+        return total
+    return count(deck)
+
+
 def prepare():
     if engine()!='ngspice':raise ValueError('Use env.sh --ngspice for the pinned diagnostic campaign')
     source=(ROOT/'analog/openlvds.spice').read_text();monitor=(ROOT/'analog/experiments/phase_area.spice').read_text()
@@ -81,10 +97,11 @@ def prepare():
 VA VDDIO 0 3.3
 VD VDDD 0 1.8
 IB PB 0 35u
-XB PB NB VDDIO 0 lvds_bias
 '''
-        if spec['kind']!='loop':prefix+='XBI PB PC NC VDDIO VDDD 0 screen_bias\n'
+        if spec['kind']!='loop':prefix+='XB PB NB VDDIO 0 lvds_bias\n'
+        if spec['kind'] in ['phase','logic']:prefix+='XBI PB PC NC VDDIO VDDD 0 screen_bias\n'
         deck=prefix+body+f'\n.save i(VA) i(VD)\n.tran 5p {spec["stop_ns"]}n 0 20p\n.print tran '+ ' '.join('V('+n+')' for n in probes.values())+'\n.end\n'
+        if bias_reference_count(deck,lib)!=1:raise ValueError('Fixture must contain exactly one reference diode generator')
         (out/'bench.cir').write_text(deck)
         task=dict(id=name,spec=spec,aliases=probes,needs=list(needs),files={n:digest((out/n).read_bytes()) for n in ['bench.cir','library.spice']})
         tasks.append(task)
@@ -166,15 +183,18 @@ def validate(root,manifest,task):
     for name,expected in task['files'].items():
         if digest((root/task['id']/name).read_bytes())!=expected:raise ValueError('Captured task input changed: '+name)
 
-def execute(root,task):
+def execute(root,task,reuse_from=None):
     manifest=json.loads((root/'manifest.json').read_text());validate(root,manifest,task)
     out=root/task['id'];spec=task['spec'];start=time.time()
-    run=subprocess.run(command(out/(engine()+'.log'),out/'bench.cir'),cwd=out,capture_output=True,text=True)
-    (out/'console.log').write_text(run.stdout+run.stderr)
-    result=dict(diagnostic=True,qualified=False,task=task['id'],spec=spec,returncode=run.returncode,passed=False,
+    if reuse_from is None:
+        run=subprocess.run(command(out/(engine()+'.log'),out/'bench.cir'),cwd=out,capture_output=True,text=True)
+        (out/'console.log').write_text(run.stdout+run.stderr)
+        returncode=run.returncode
+    else:returncode=0
+    result=dict(diagnostic=True,qualified=False,task=task['id'],spec=spec,returncode=returncode,passed=False,
                 wall_seconds=time.time()-start,input_files=task['files'])
     try:
-        if run.returncode:raise ValueError('Simulator failed')
+        if returncode:raise ValueError('Simulator failed')
         wave,head=measure.read_wave(out/'bench.cir.prn')
         for alias,node in task['aliases'].items():head['V('+alias.upper()+')']=head['V('+node.upper()+')']
         kind=spec['kind']
@@ -189,15 +209,57 @@ def execute(root,task):
                          screening_margin_passed=peak<40,peak_copy_error_mv=peak,
                          mean_copy_error_mv=measure.average(wave[keep,1],error)*1000)
         result.update(metrics)
-        variables,raw=read_raw(out/'bench.raw');index={n:i for i,n in enumerate(variables)}
-        keep=raw[:,index['time']]>=max(0,spec['stop_ns']-300)*1e-9
-        power=-3.3*raw[keep,index['i(va)']]-1.8*raw[keep,index['i(vd)']]
-        result['mean_supply_power_mw']=measure.average(raw[keep,index['time']],power)*1000
+        if reuse_from is None:
+            variables,raw=read_raw(out/'bench.raw');index={n:i for i,n in enumerate(variables)}
+            keep=raw[:,index['time']]>=max(0,spec['stop_ns']-300)*1e-9
+            power=-3.3*raw[keep,index['i(va)']]-1.8*raw[keep,index['i(vd)']]
+            result['mean_supply_power_mw']=measure.average(raw[keep,index['time']],power)*1000
+            result['raw_sha256']=digest((out/'bench.raw').read_bytes())
+        else:
+            result.update(reanalysis_from=reuse_from,mean_supply_power_mw=None,power_applicability='Original raw current trace was not attested; not reused')
         result['waveform_sha256']=digest((out/'bench.cir.prn').read_bytes())
         validate(root,manifest,task)
     except (ValueError,KeyError,OSError,IndexError) as e:result.update(passed=False,error=str(e))
     atomic(out/'summary.json',result)
     return result
+
+def import_monitor_results(root,previous):
+    """Reanalyze only unchanged, hash-bound monitor stimuli; no loop reuse."""
+    import shutil
+    current=json.loads((root/'manifest.json').read_text());old=json.loads((previous/'manifest.json').read_text())
+    for key,value in current['identity'].items():
+        if key!='code' and old['identity'].get(key)!=value:raise ValueError('Changed input scope: '+key)
+    for name,value in current['identity']['code'].items():
+        if name=='scripts/dll_campaign.py' or old['identity']['code'].get(name)==value:continue
+        if name=='scripts/dll_measurements.py':
+            import ast
+            def monitor_ast(text):
+                tree=ast.parse(text);tree.body=[n for n in tree.body if not isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef)) or n.name!='loop']
+                return ast.dump(tree,include_attributes=False)
+            if monitor_ast((previous/'inputs'/name).read_text())==monitor_ast((ROOT/name).read_text()):continue
+        raise ValueError('Changed monitor analyzer dependency')
+    old_tasks={t['id']:t for t in old['tasks']};imported=0
+    normalize=lambda text:re.sub(r'(?im)^\.include .*$', '.include "CAPTURED_LIBRARY"',text)
+    for task in current['tasks']:
+        if task['spec']['kind'] not in ['phase','logic']:continue
+        prior=previous/task['id'];report=prior/'summary.json'
+        if not report.exists():continue
+        evidence=json.loads(report.read_text());old_task=old_tasks[task['id']]
+        if evidence.get('returncode')!=0 or evidence.get('input_files')!=old_task['files']:continue
+        if task['spec']!=old_task['spec'] or task['aliases']!=old_task['aliases']:raise ValueError('Changed monitor fixture')
+        for name,sha in old_task['files'].items():
+            if digest((prior/name).read_bytes())!=sha:raise ValueError('Changed captured monitor input')
+        out=root/task['id']
+        if (out/'library.spice').read_bytes()!=(prior/'library.spice').read_bytes():raise ValueError('Changed monitor library')
+        if normalize((out/'bench.cir').read_text())!=normalize((prior/'bench.cir').read_text()):raise ValueError('Changed monitor stimulus')
+        wave=prior/'bench.cir.prn'
+        if digest(wave.read_bytes())!=evidence.get('waveform_sha256'):raise ValueError('Changed captured monitor waveform')
+        shutil.copyfile(wave,out/'bench.cir.prn')
+        origin=dict(campaign=str(previous),task=task['id'],manifest_sha256=digest((previous/'manifest.json').read_bytes()),
+                    producer_code=old['identity']['code'],waveform_sha256=evidence['waveform_sha256'])
+        atomic(out/'reanalysis_origin.json',origin);execute(root,task,reuse_from=origin);imported+=1
+    return imported
+
 
 def supervise(root,jobs):
     if jobs<1 or jobs>4:raise ValueError('Concurrency must be 1..4')
@@ -250,9 +312,12 @@ def supervise(root,jobs):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('action',choices=['prepare','run','status','worker'])
-    p.add_argument('campaign',nargs='?',type=Path);p.add_argument('--jobs',type=int,default=4);p.add_argument('--task')
+    p.add_argument('campaign',nargs='?',type=Path);p.add_argument('--jobs',type=int,default=4);p.add_argument('--task');p.add_argument('--reuse-monitors',type=Path)
     a=p.parse_args();root=a.campaign.resolve() if a.campaign else None
-    if a.action=='prepare':print(prepare());return
+    if a.action=='prepare':
+        root=prepare()
+        if a.reuse_monitors:print('Reanalyzed monitors:',import_monitor_results(root,a.reuse_monitors.resolve()))
+        print(root);return
     if root is None:p.error('Campaign directory required')
     if a.action=='run':supervise(root,a.jobs)
     elif a.action=='worker':

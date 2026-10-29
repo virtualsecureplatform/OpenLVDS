@@ -7,7 +7,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 import dll_design as design
 from layout import circuits,flatten
 from spice_scope import closure_hash
-from dll_campaign import closure
+from dll_campaign import closure,bias_reference_count
 from dll_measurements import read_wave,average
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -42,6 +42,16 @@ class DLLArchitecture(unittest.TestCase):
         self.assertEqual(rows['XNO'][1][2:],['VSS','VSS'])
         self.assertEqual(rows['XPL'][1][1],'DF')
         self.assertEqual(rows['XPR'][1][1],'UF')
+    def test_standalone_dll_fixture_cannot_duplicate_wrapper_bias(self):
+        lib=""".subckt lvds_bias PB NB VP VN
+.ends lvds_bias
+.subckt wrapper PB NB VP VN
+XB PB NB VP VN lvds_bias
+.ends wrapper
+"""
+        self.assertEqual(bias_reference_count('XD PB NB VP VN wrapper',lib),1)
+        self.assertEqual(bias_reference_count('XD PB NB VP VN wrapper\nXB PB NB VP VN lvds_bias',lib),2)
+
     def test_time_average_is_not_sample_count_weighted(self):
         self.assertAlmostEqual(average(np.array([0.,1.,10.]),np.array([0.,1.,1.])),.95)
 

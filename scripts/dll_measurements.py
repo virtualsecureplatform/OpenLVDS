@@ -51,6 +51,7 @@ def loop(w,h,mhz,architecture,start_ns=1200,stop_ns=1500):
         if len(after):phases.append((after[0]-at)*1e12)
     for at in within(pdref):
         if len(fb):errors.append(float(np.min(abs(fb-at)))*1e12)
+    if not phases or not errors:return dict(passed=False,complete=complete(w,stop_ns),cadence_passed=False,error='Missing quarter-phase or feedback clock')
     keep=(t>=start_ns*1e-9)&(t<=stop_ns*1e-9);time=t[keep]
     ctrl=column(w,h,'CTRL')[keep];bad=column(w,h,'BAD')[keep]
     qerror=max((abs(p-period*250e9) for p in phases),default=float('inf'))
