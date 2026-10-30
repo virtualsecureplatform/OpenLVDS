@@ -5,7 +5,7 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 The pulse-area comparison milestone on 2026-10-29 is described at the end of
 this document and in [the experiment workflow](dll-experiments.md). Its circuits
-remain separate from the active PHY. All 103 current unit tests pass.
+remain separate from the active PHY. All 107 current unit tests pass.
 
 The preceding canonical checks on 2026-10-28 include:
 
@@ -339,6 +339,6 @@ up to 10 ps. Link release evidence now requires a complete current table and
 rechecks its boundary witnesses. The extra 200 ps link margin is unchanged.
 Legacy 200/80 ps aperture estimates are permitted only for diagnostic runs.
 
-All 103 unit tests pass. Candidate selection, stability qualification, complete
+All 107 unit tests pass. Candidate selection, stability qualification, complete
 electrical results, the six-fixture RC certificate and the full 45-case link
 regression remain outstanding. No candidate or approximation is released.

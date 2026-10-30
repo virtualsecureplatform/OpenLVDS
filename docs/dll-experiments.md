@@ -12,20 +12,28 @@ The clock range is 390/400/410 MHz, and temperatures are 0/25/40 °C.
 The corrected architecture campaign is
 `build/diagnostics/dll_architecture/6d99d42cf3eb5d31`. It contains captured
 sources, libraries, producer files, stimulus, hashes and a durable task state.
-Inspect it with:
+Inspect live service and queue health on the host with:
+
+```sh
+python3 scripts/manage_dll_jobs.py status
+```
+
+This detects a dead manager or a stale heartbeat instead of trusting a cached
+`running` flag. The legacy manifest/task listing remains available with:
 
 ```sh
 ./scripts/env.sh --ngspice python3 scripts/dll_campaign.py status \
   build/diagnostics/dll_architecture/6d99d42cf3eb5d31
 ```
 
-The current supervisor runs on the host so its recorded process IDs can be
-inspected across worker containers. Each new worker runs in Apptainer. Resume
-that policy only after confirming there is no existing supervisor:
+The supervisor runs on the host, with Apptainer workers, under the independent
+user systemd service `openlvds-resident.service`. All six existing simulations
+were moved into its cgroup without restarting them. Detached processes alone
+were insufficient because they still belonged to the tool/tmux scope.
+Start the watchdog independently of a terminal with:
 
 ```sh
-OPENLVDS_SPICE=ngspice python3 scripts/run_dll_comparison.py \
-  build/diagnostics/dll_architecture/6d99d42cf3eb5d31 --host --jobs 6
+python3 scripts/manage_dll_jobs.py start
 ```
 
 The supervisor, OTA characterization, receiver aperture characterization and
@@ -36,6 +44,23 @@ six cases concurrently; other campaigns retain their four-case limit. The four
 original simulations were preserved when the supervisor restarted. Do not change a
 queued campaign's captured producer dependencies or the pinned simulator.
 Prepare another generation when a circuit, stimulus or measurement changes.
+
+The watchdog restarts crashed coordinators. The comparison manager adopts live
+workers using PID/start-time/boot identities. A missing worker's incomplete
+outputs are archived and retried at most twice; incomplete traces never count
+as circuit passes. Dependent coordinators are launched sequentially, avoiding
+a lease handoff that could launch extra jobs while orphan workers remain alive.
+Logs, PID records, heartbeat and the controlled recovery-test report are under
+`build/diagnostics/resident_jobs/`. Stop all managed jobs explicitly with
+`python3 scripts/manage_dll_jobs.py stop`.
+User lingering is enabled so logout does not terminate the user service. The
+unit is transient; after a host reboot, start it again with the command above.
+
+The recovery test killed only the comparison manager: the watchdog replaced
+it and all six native ngspice PIDs survived unchanged. The exact cause of the
+earlier simultaneous process loss was not established; the shared-session
+lifecycle weakness and stale-state recovery are fixed. A host reboot still
+requires restarting interrupted SPICE transients; there is no checkpoint.
 
 The former `2c89de68294cda33` campaign has a rejected loop fixture with a
 duplicated bias generator. Its unaffected monitor waveforms were verified and
