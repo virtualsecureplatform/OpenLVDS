@@ -115,7 +115,7 @@ def run(root, jobs, host=False):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('campaign', type=Path)
-    p.add_argument('--jobs', type=int, choices=range(1, 5), default=4)
+    p.add_argument('--jobs', type=int, choices=range(1, 7), default=4)
     p.add_argument('--host', action='store_true', help='Host PID accounting; launch each new worker in Apptainer')
     a = p.parse_args()
     return run(a.campaign.resolve(), a.jobs, a.host)

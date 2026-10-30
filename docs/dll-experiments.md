@@ -25,13 +25,15 @@ that policy only after confirming there is no existing supervisor:
 
 ```sh
 OPENLVDS_SPICE=ngspice python3 scripts/run_dll_comparison.py \
-  build/diagnostics/dll_architecture/6d99d42cf3eb5d31 --host --jobs 4
+  build/diagnostics/dll_architecture/6d99d42cf3eb5d31 --host --jobs 6
 ```
 
 The supervisor, OTA characterization, receiver aperture characterization and
 native qualification share `build/diagnostics/dll_architecture/.supervisor.lock`.
-Waiting programs do not launch a fifth transient. An exclusive lease serializes
-campaigns; the program holding it can run up to four cases. Do not change a
+Waiting programs do not launch additional transients. An exclusive lease serializes
+campaigns. At the user's request on 2026-10-30, the comparison supervisor runs
+six cases concurrently; other campaigns retain their four-case limit. The four
+original simulations were preserved when the supervisor restarted. Do not change a
 queued campaign's captured producer dependencies or the pinned simulator.
 Prepare another generation when a circuit, stimulus or measurement changes.
 

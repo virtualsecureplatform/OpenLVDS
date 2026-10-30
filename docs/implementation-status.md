@@ -293,7 +293,9 @@ are prepared. Completed loaded replay peaks are 48.72 mV for `cp_b1_c4` and
 43.47 mV for `cp_b2_c2`, against the unchanged 50 mV limit. The comparison
 supervisor prioritizes `cp_b2_c2` at SS/0 °C alongside the three `ota_w4_c8`
 corners. Startup-only traces interrupted to make this comparison earlier are
-archived within their task directories. There are at most four transients.
+archived within their task directories. On 2026-10-30 the user authorized two
+additional concurrent simulations. The comparison now runs six transients,
+adding `ota_w8_c8` at SS/0 °C and TT/25 °C while preserving the original four.
 
 All 15 fixed-supply OTA characterization cases complete. Transconductance is
 39.35–48.69 µS with the correct control direction; the largest equivalent input
