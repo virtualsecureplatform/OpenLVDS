@@ -10,7 +10,7 @@ import re
 import subprocess
 from diagnose_link_clock import pulse_transport
 from dll_campaign import atomic,text_block
-from dll_measurements import read_wave,average
+from dll_measurements import read_wave
 from layout import circuits,flatten,schematic_text
 from layout_receiver_gain_candidate import source_variant as gain_source,MID
 from spice_engine import command,engine,provenance
@@ -71,7 +71,7 @@ def prepare(parent):
         deck=deck.replace(include,f'.include "{out}/library.spice"')
         aliases={n:'XRC:'+TOP+'__'+n for n in ['PP','PN','CO']+(['CO_TRACK'] if clamped else [])}
         probes=re.search(r'(?im)^\.print tran[^\n]*',deck)
-        deck=deck[:probes.end()]+' '+ ' '.join('V('+n+')' for n in aliases.values())+' I(VA) I(VD)'+deck[probes.end():]
+        deck=deck[:probes.end()]+' '+ ' '.join('V('+n+')' for n in aliases.values())+deck[probes.end():]
         ProbeNetwork(library).validate(deck,aliases.values())
         (out/'candidate.spice').write_text(source);(out/'library.spice').write_text(library);(out/'bench.cir').write_text(deck)
         tasks.append(dict(id=name,clamped=clamped,mode=mode,aliases=aliases,
@@ -110,9 +110,8 @@ def run(root):
             observations={}
             for name,node in task['aliases'].items():
                 v=signal('V('+node+')')[keep];observations[name]=dict(min_v=float(v.min()),max_v=float(v.max()))
-            power=average(t[keep],-3.3*signal('I(VA)')[keep]-1.8*signal('I(VD)')[keep])
             result=dict(task=task['id'],qualified_phy=False,qualification_verdict=None,receiver_transport=transport,
-                clock_internal_node_ranges_v=observations,mean_total_supply_power_mw=float(power*1000),
+                clock_internal_node_ranges_v=observations,
                 manifest_sha256=digest(root/'manifest.json'),waveform_sha256=digest(folder/'bench.cir.prn'))
             unchanged()
             if cached is not None and cached!=result:raise ValueError('Clamp cached analysis differs from waveform')
