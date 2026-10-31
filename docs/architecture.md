@@ -5,7 +5,10 @@ startup training counter, DDR launch core, and two differential drivers.
 `rtl/openlvds_rx.v` assembles a shared bias generator, two input comparators and
 the DDR capture core. `sky130/openlvds_analog.v` declares the physical analog
 macro boundaries. `analog/openlvds.spice` implements those same boundaries with
-SKY130 MOSFETs, precision poly resistors and MIM capacitors.
+SKY130 MOSFETs, precision poly resistors and MIM capacitors. The canonical
+development DLL retains the preceding charge-pump implementation. The OTA
+candidate under qualification uses the separate assembly described below; no
+electrical release has been published.
 
 ```mermaid
 flowchart LR
@@ -62,12 +65,75 @@ The DLL controller releases its phase detector on the original clock rising
 edge (the inverted detector reference falling edge), qualifies a
 quiet phase-error indication, and revokes readiness when errors recur. The
 phase detector remains disabled for 32 rising edges so the physical control
-capacitor can reach its maximum-control, minimum-delay preset. The detector
+capacitor can reach its preset before closing the loop. The detector
 compares the half-period tap against an inverted reference.
 That fixed half-cycle offset excludes the zero-delay solution and leaves time
 for the detector reset to recover before the next feedback edge. After
 qualification the TX sends alternating training data for 256 cycles before
 asserting `tx_ready`. Supply and reference sources must already be operating.
+
+## OTA candidate under qualification
+
+The candidate keeps the four current-starved delay sections and compares PH180
+with an inverted PH0 reference. Their half-period alignment sets PH90 near a
+quarter period: 625 ps at 400 MHz. The fourth tap FB remains available for
+observation. The forwarded clock still supplies RX timing directly; no CDR is
+introduced.
+
+```mermaid
+flowchart LR
+  CLK[OpenPLL clock] --> PH0[PH0 clock buffers]
+  PH0 --> DELAY[Four controlled delay sections]
+  DELAY --> TAPS[PH90 / PH180 / PH270 / FB]
+  PH0 --> INV[Inverted reference PD_REF]
+  INV --> PFD[Native eight-port PFD]
+  TAPS -->|PH180| PFD
+  PFD -->|UP / DN| AVG[Matched RC averages UF / DF]
+  AVG --> OTA[W8 current-mirror OTA]
+  OTA --> CTRL[Enable switches and nominal 4 pF CTRL storage]
+  CTRL --> DELAY
+  AVG --> MON[Signed phase window and activity comparators]
+  MON --> BAD[PHASE_BAD]
+  BAD --> LOCK[32-cycle preset / 615-cycle guard / 64 good cycles]
+  LOCK -->|PD_ENABLE| PFD
+  LOCK -->|PD_ENABLE| CTRL
+  LOCK --> READY[DLL lock and TX warmup]
+```
+
+The eight PFD terminals comprise six logic signals and two supply pins. Its
+reference and feedback connect directly to native flip-flop clocks; matched
+`buf_8` outputs drive UP/DN and the coincidence reset path. There are no private
+raw-clock qualifier ports in this candidate. The analog boundary has 15 pins.
+`rtl/experiments/openlvds_dll_core_area.v` connects these macros while preserving
+the existing external DLL-core interface. The matching physical declarations are
+in `sky130/experiments/openlvds_analog_area.v`.
+
+The averages drive a signed transconductor: UF above DF raises CTRL and reduces
+the delay, providing negative feedback. W8 denotes the 8 µm thick-oxide OTA
+input devices; C4 denotes nominal 4 pF control storage. Enable switches disconnect
+the OTA during preset. The controller retains the 32-cycle preset and requires
+both a 615-cycle acquisition guard and 64 good cycles after an error. Those two
+qualification counters run concurrently. A new fault resets them and revokes
+lock. TX warmup remains 256 cycles.
+
+The monitor repair reduces its resistor lengths by four, increases averaging
+capacitance fourfold to preserve nominal averaging R×C, and increases comparator
+branch widths fourfold. The averaging capacitors and fast-clock circuitry stay
+in the control island; the window/activity comparators occupy a separate monitor
+island. Comparators check both signed error and abnormal UP/DN activity, including
+stuck outputs. External acceptance remains quiet at 0/±50 ps and valid fault
+coverage at ±150/±300 ps in the specified scoring window. Extracted wire and
+device capacitance still require native validation; a passing schematic proxy is
+not sufficient.
+
+The candidate serializer ends both data and clock lanes with matched native
+`buf_4` outputs. Its captured physical sources and the 15/8-port DLL assembly pass
+the full 54-case functional regression. Electrical qualification, measured loop
+margins, recovery/readiness replay, six-fixture RC certification and all 45 link
+cases remain required. Published packages use the exact tested libraries and
+matching source snapshots, located with `make release-library` after promotion.
+
+## Canonical development DLL baseline
 
 The DLL has four current-starved delay sections, a standard-cell phase/frequency
 detector, charge pump, physical MIM loop capacitor, startup control preset, and
@@ -90,6 +156,8 @@ balance the remaining taps. The private analog macro exposes three filtered
 sense signals and three independent sense inputs for fault injection; the
 assembled core ties them internally, so the public PHY interface is unchanged.
 The filtered sense signals do not enter the charge-pump PFD clock paths.
+
+## Differential I/O and clock source
 
 The TX uses a resistively loaded, thick-oxide differential current-mode level
 converter followed by 3.3 V output buffers. It consumes static bias current to

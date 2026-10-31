@@ -6,8 +6,9 @@ there is no CDR. OpenPLL supplies the transmitter clock.
 
 The implementation includes synthesizable DDR logic, transistor circuits,
 generated analog GDS/LEF, digital place and route, DRC/LVS, GDS-based distributed
-RC extraction, and reproducible simulation runners. **Electrical release is
-conditional on `make release` passing.** Generated layouts alone do not qualify
+RC extraction, and reproducible simulation runners. **The OTA candidate is still
+in electrical bring-up and has no published release.** Its staged workflow must
+pass all release gates before publishing an exact-byte macro package. Generated layouts alone do not qualify
 the link, and functional analog models do not establish electrical performance.
 See [implementation status](docs/implementation-status.md) for completed checks
 and the remaining link bring-up work.
@@ -26,13 +27,21 @@ as a reference and is not required at run time.
 | Termination | external 100 Ω across each receiver pair |
 | Board model | 20 cm, 100 Ω differential, 1.2 ns delay |
 | Per-pin model | 1 nH package inductance; 2 pF pad capacitance |
-| Stress | 380/400/420 MHz; 45/50/55% duty; ±100 ps skew; 100 ps pp jitter |
+| Stress | 390/400/410 MHz; 45/50/55% duty; ±100 ps skew; 100 ps pp jitter |
 | Sampling margin target | 200 ps |
 
 The machine-readable contract is [requirements.json](requirements.json).
 These are reusable macros: pads, ESD protection, package design, and a complete
 chip assembly are outside their boundary. VREF must be buffered because the
 receiver input stages exchange current with it.
+
+The OTA candidate uses a 15-port analog DLL, an 8-port PFD and matched native
+`buf_4` transmitter outputs. Its [qualification workflow](docs/dll-experiments.md)
+checks the actual candidate RTL and physical networks, measured stability and
+recovery, receiver aperture and the full link matrix. After successful publication,
+`make release-library` locates the tested package and `make release-current`
+rechecks its proof selection. The commands below operate on the canonical
+development sources; `make release` checks that development baseline.
 
 Build the pinned Apptainer image with `make setup`, or import the matching
 OpenPLL image:
