@@ -497,3 +497,14 @@ interfaces match the corresponding extraction port sets. No production package
 or current release pointer has been published. The workflow invokes promotion
 only after candidate RTL, native electrical/model/recovery/readiness/OTA gates,
 six-fixture RC certification and all 45 link cases pass.
+
+
+A further exact degree-12 performance candidate, `schur_5dc0fd57ddac9cbc`,
+passes topology audit and four numerical witnesses. It reduces the repaired
+resistor graph to 11,826 nodes and 51,305 resistors, versus 14,631/53,508 for
+degree eight. Every capacitor/device/port statement is preserved. Maximum
+witness current difference is 4.41e-13 A. Source matching and unchanged unrelated
+DLL definitions are checked against physical reference qualification
+`e4b01eb8a59d0c93`. Native equivalence and runtime comparisons remain required
+before selecting this profile; the active and prepared qualification selections
+have not changed.
