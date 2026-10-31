@@ -1583,3 +1583,13 @@ retaining 80 ns stimuli, native bias/digital RX load and 15–75 ns scoring. Two
 targeted tests verify that only those resistor terminals change, CO_TRACK is
 connected only to the replica, and the unclamped source control is unchanged.
 No physical candidate or qualification verdict is selected from this experiment.
+
+Reduced-clamp native replay `5c2e6e425ac65e58` now completes both original
+controls. Captured misses 10 rising and 10 falling edges; sharp misses nine
+of each. Reanalysis of both cached native waveforms reproduces the saved
+reports and verifies their captured context. The native continuation and its
+downstream follow-up correctly hold for lost clock edges. Neither component
+root `57488d46b26d09ec` nor link root `cb4be133271a71ea` has an execution receipt
+or raw simulation trace. The candidate is not selected for qualification.
+The VREF-bias experiment's unchanged source control is running under the same
+six-slot limit; no result for its modified circuit is available yet.

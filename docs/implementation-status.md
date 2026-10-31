@@ -364,13 +364,18 @@ Current bring-up evidence on 2026-10-31:
   there is no output falling crossing in 24–27 ns. CO_TRACK spans
   0.738464–0.836576 V in that interval. Both complete original controls continue;
   no partial trace supplies a qualification verdict.
+  Both native controls now finish: captured misses 10 rising and 10 falling
+  edges; sharp misses nine of each. Cached waveform reanalysis confirms both
+  reports. Native continuation and downstream follow-up record
+  `held_for_diagnosis`; neither the prepared component nor link campaign starts
+  a simulation. The reduced-clamp candidate is not selected for qualification.
 - New source comparison `receiver_clamp/0244d3fb608b9d06` connects the two CO
   resistors to the existing 1.2 V VREF port instead of CO_TRACK. The replica is
   retained unloaded as an observation node; every device size and all other
   connections are unchanged. This tests a fixed reference against movement of
   the loaded replica, using the existing fixture reference and fixed supplies.
   Two structural tests pass. Service `openlvds-vref-clamp-source-screen` is live
-  and queued; no electrical, physical or native improvement is claimed. Reference
+  and running its unchanged control; no electrical, physical or native improvement is claimed. Reference
   loading and full input-range/PVT behavior still require qualification if selected.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
