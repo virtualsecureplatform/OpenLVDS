@@ -1,18 +1,49 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
-"""Prepare and register W8/C4 screening only after its extraction and audit pass."""
+"""Advance an audited OTA layout through native qualification and staged PHY tests."""
+import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
 import subprocess
 import time
 from dll_campaign import atomic
+from stability_evidence import PRODUCERS,verified as verify_stability
 
 ROOT=Path(__file__).resolve().parents[1]
-LAYOUT=ROOT/'build/diagnostics/dll_layout/c465a14562c2ff4f'
+DEFAULT_LAYOUT=ROOT/'build/diagnostics/dll_layout/c465a14562c2ff4f'
+
+
+def qualification_config(old,relative):
+    result=dict(old)
+    if result.get('ota_qualification')!=relative:
+        result.pop('ota_stage',None);result.pop('ota_stability',None)
+    result.update(disabled=sorted(set(result.get('disabled',[]))|{'qualify_cp'}),ota_qualification=relative)
+    return result
+
+
+def cached_model(root,inputs,corners):
+    code={name:hashlib.sha256((ROOT/'scripts'/name).read_bytes()).hexdigest() for name in PRODUCERS}
+    reports=sorted(root.glob('*/summary.json'),key=lambda p:p.stat().st_mtime,reverse=True)
+    for path in reports:
+        captured=json.loads((path.parent/'manifest.json').read_text())
+        if captured['code']!=code:continue
+        # Current-producer evidence must verify as captured. Never overwrite a
+        # failed or damaged current generation to hide a rejection on restart.
+        verify_stability(path,inputs,corners)
+        return path
+    return None
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--layout',type=Path,default=DEFAULT_LAYOUT,help='Alternate layouts must already have a passing RC audit')
+    args=parser.parse_args();LAYOUT=args.layout.resolve()
+    if not LAYOUT.is_relative_to(ROOT/'build/diagnostics/dll_layout'):
+        raise ValueError('Use an isolated DLL layout')
+    if LAYOUT!=DEFAULT_LAYOUT and not (LAYOUT/'rc_audit.json').exists():
+        raise ValueError('Prepare and independently audit the alternate layout first')
     os.environ['OPENLVDS_SPICE']='ngspice'
     while not (LAYOUT/'rc_audit.json').exists():
         state=subprocess.run(['systemctl','--user','is-active','openlvds-w8c4-rc.service'],capture_output=True,text=True)
@@ -32,7 +63,7 @@ def main():
     if not (artifact/'manifest.json').is_file():raise ValueError('Prepared manifest missing')
     config=ROOT/'build/diagnostics/resident_jobs/config.json'
     old=json.loads(config.read_text()) if config.exists() else {}
-    old.update(disabled=['qualify_cp'],ota_qualification=str(relative))
+    old=qualification_config(old,str(relative))
     atomic(config,old)
     print('Registered OTA extracted screen:',relative,flush=True)
     workflow=LAYOUT/'workflow.json'
@@ -45,8 +76,14 @@ def main():
                 atomic(workflow,dict(status='candidate_requires_diagnosis',qualification=str(relative),observed=state['status']))
                 raise RuntimeError('OTA electrical gate failed; retain candidate for diagnosis')
             time.sleep(10)
-    wait_for(['screen_passed'])
+    wait_for(['screen_passed','completed'])
     def model(all_pvt=False):
+        inputs=json.loads((artifact/'manifest.json').read_text())['identity']['full_models']['inputs']
+        corners=('ss_0','tt_25','ff_0')
+        if all_pvt:
+            req=json.loads((artifact/'requirements.json').read_text());corners=tuple(f'{p}_{t}' for p in req['process_corners'] for t in req['temperatures_c'])
+        cached=cached_model(artifact/('stability_all_pvt' if all_pvt else 'stability_screen'),inputs,corners)
+        if cached:return cached
         args=['scripts/env.sh','--ngspice','python3','scripts/measure_dll_stability.py',str(relative)]
         if all_pvt:args+=['--all-pvt']
         result=subprocess.run(args,cwd=ROOT,capture_output=True,text=True)
@@ -56,12 +93,7 @@ def main():
         if not json.loads(report.read_text())['passed']:
             atomic(workflow,dict(status='stability_requires_diagnosis',report=str(report.relative_to(ROOT))))
             raise RuntimeError('Measured stability or model validation failed')
-        from stability_evidence import verified
-        inputs=json.loads((artifact/'manifest.json').read_text())['identity']['full_models']['inputs']
-        corners=('ss_0','tt_25','ff_0')
-        if all_pvt:
-            req=json.loads((artifact/'requirements.json').read_text());corners=tuple(f'{p}_{t}' for p in req['process_corners'] for t in req['temperatures_c'])
-        verified(report,inputs,corners)
+        verify_stability(report,inputs,corners)
         return report
     report=model()
     old=json.loads(config.read_text());old.update(ota_stage='full',ota_stability=str(report.relative_to(ROOT)))
