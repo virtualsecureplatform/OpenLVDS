@@ -998,8 +998,9 @@ receiver-loading receipts are `receiver_loading/28d53f03bd0b5df5` and
 `receiver_loading/5401712c60ce2946`. The replay adapter captures every selected
 physical producer without changing the live replay implementation. Its original
 stimuli, shared bias, native early RX load, observations and scoring interval
-remain unchanged. Both cases still need complete native results; no improved
-clock recovery is claimed from layout metrics.
+remain unchanged. The complete captured case loses nine rising and nine
+falling edges, matching the preceding placement. Its sharper control remains
+pending; no improved clock recovery is established.
 
 Full-link fixture `receiver_candidate_link/98985df18860704a` is prepared for this
 layout and the same original buf_4 link. Its run gate still requires both complete
@@ -1008,10 +1009,11 @@ pin replays to recover every edge before any integration simulation starts.
 ## Tracked decision-node clamp at schematic level
 
 The current-and-buffer candidate's complete captured replay still loses nine
-rising and nine falling edges. The reordered placement's early trace also misses
-the first short negative pulse: PP−PN reverses for only about 216 ps and CO peaks
-at about 0.561 V. A smaller sum of wire capacitors alone has not established
-better dynamic behavior; both native comparisons continue to completion.
+rising and nine falling edges. The reordered placement's complete captured case
+also loses nine of each polarity. At its first lost short negative pulse, PP−PN
+reverses for only about 216 ps and CO peaks at about 0.561 V. A smaller sum of
+wire capacitors has not improved captured-input cadence; the native sharper
+controls continue to completion.
 
 `receiver_clamp_experiment.py` compares the decision-current schematic with and
 without a local clamp. A replica inverter with P8/N4 µm devices connects its
@@ -1043,6 +1045,15 @@ actual layout, independent extraction, native replay and fresh component/PVT
 and full-link checks before selection. The first preparation containing optional
 current probes was retired before any simulation; the frozen exporter supports
 voltage probes only. Its no-run receipt remains in `receiver_clamp/877040209e65a9d0`.
+
+The unclamped/captured control completes with zero missing edges. Diagnostic
+input-to-output edge latency spans 296.120–412.380 ps, and CO ranges
+0.0161–1.7919 V over the original 15–75 ns interval. The corresponding native
+receiver loses nine rising and nine falling edges. This implicates extracted
+parasitics but does not isolate wire capacitance from the extracted devices'
+explicit junction geometry: schematic finger models use schematic geometry
+defaults. The clamped cases still need complete results, followed by actual
+physical/native proof if selected.
 
 ## Xyce compatibility check
 

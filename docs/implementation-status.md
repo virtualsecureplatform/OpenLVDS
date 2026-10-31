@@ -161,19 +161,24 @@ Current bring-up evidence on 2026-10-31:
   starts `b6d987db3ef27b9b`. Incident routing capacitance falls PP 109.141→66.413 fF,
   PN 115.726→62.576 fF and CO 45.447→42.437 fF; CT rises 138.108→165.735 fF.
   These exclude device/MIM capacitance and count full coupling values. Native
-  replay `receiver_replay/17c5587a5df91855` is running with both original stimuli
-  and loads; no recovery improvement is claimed yet. Matching isolated link
+  replay `receiver_replay/17c5587a5df91855` completes its captured case and loses
+  nine rising and nine falling edges; the sharper control remains pending. Both
+  original stimuli and loads are retained. No recovery improvement is established. Matching isolated link
   fixture `receiver_candidate_link/98985df18860704a` is prepared and held behind
-  both completed, zero-missing-edge replays. The previous decision-current
-  placement's live trace still misses the first short negative pulse; its
-  complete replay is preserved.
+  both completed, zero-missing-edge replays. Both decision-current placements
+  fail the captured-input cadence test, so neither is selected for integration.
 - Schematic tracked-clamp comparison `receiver_clamp/e888b13239fc158e` is running
   under the shared simulator budget. It adds a diode-connected replica inverter
   with the first restoration stage's P/N ratio and two parallel precision-poly
   units from CO to the replica trip point. Three fixtures compare unclamped and
   clamped circuits on captured pins, then clamped sharper inputs. Analog cores
   use schematic fingers; the shared bias and native early RX load are retained.
-  No physical or electrical improvement is claimed before these results.
+  The complete unclamped/captured schematic control recovers every edge, with
+  no missing rising or falling transition and diagnostic latencies 296–413 ps.
+  Its CO reaches 1.792 V. Clamped cases remain pending. The schematic/native
+  contrast implicates extracted parasitics, but does not isolate wire capacitance
+  from explicit extracted device junction geometry. No physical receiver fix
+  or clamp improvement is claimed yet.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
