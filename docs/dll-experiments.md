@@ -1519,3 +1519,39 @@ source owner before running these stages. Its receipt is under
 helper retains complete-report checks and handles successful unloaded transient
 units; the physical gate independently remeasures the actual source waveforms.
 No reduced-clamp physical/native result or release selection is claimed.
+
+All three reduced-clamp source controls subsequently complete with exactly one
+output edge in every checked input period. Its native replay producer now runs
+the two independent fixtures concurrently, each acquiring its own lease from
+the unchanged six-slot pool. The previous continuation was confirmed waiting
+and stopped before changing that producer; no live SPICE process was interrupted.
+Its frozen receipt is archived as `native_continuation_history_d6f80e5`.
+Service `openlvds-light-clamp-native-continuation-v2` captures the revised code.
+Tests verify concurrent fixture starts, separate leases, stable report order
+and completion of the other fixture when one simulator fails. Full unit suite:
+359 tests, 358 passed and one skipped.
+
+Physical root `receiver_layout/4e540d457ca789a4` passes DRC/LVS and independent
+RC connectivity audit (77 devices, nine ports). Native network SHA256 is
+`b8e821dc164ef55a4f58f81e1a740f03e0b2ea75451c7658d32712d5416e8723`.
+Loading receipt `receiver_loading/2b2f0d4e931336c9` measures incident PP/PN/CO
+wire sums 102.831/109.899/44.786 fF and CL/CT sums 25.001/70.874 fF. These
+are routing observations, not effective AC load or timing qualification.
+Replay `receiver_replay/5c2e6e425ac65e58` now runs both original 80 ns controls.
+
+Fresh component fixtures `receiver_components/57488d46b26d09ec` cover all 60
+original source/native static/rate cases. Loaded full-link diagnostic
+`receiver_candidate_link/cb4be133271a71ea` retains original stimulus and scoring.
+Service `openlvds-light-clamp-receiver-followup` waits on the actual native owner
+and requires complete one-to-one native recovery before running either campaign.
+No native improvement, component/link pass or PHY release is claimed yet.
+
+Actual component preflight reconstructs all 60 fixtures, then correctly holds at
+the incomplete native recovery gate. No execution receipt or raw component
+trace is created. `gate_preflight.json` binds this observation to the component
+manifest, verifier code and simulator provenance; it is not component qualification.
+
+Native DLL screen `15cac0ba813a9333` also completes all 21 selected static
+offsets: exact SS/0, TT/25 and FF/0 coverage at 0, ±50, ±150 and ±300 ps.
+Acquisition loops remain outstanding; static passes do not admit the measured
+loop model or the remaining 312 qualification fixtures.

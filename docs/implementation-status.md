@@ -54,7 +54,9 @@ Current bring-up evidence on 2026-10-31:
   screens before running native screening. Native qualification
   `dll_qualification/15cac0ba813a9333` now runs its 24-case screen (21 selected
   static offsets and three native loops); remaining 312 fixtures are held for
-  the measured model. Observation terminals are validated; no new native loop
+  the measured model. All 21 selected static offsets now pass, with exact
+  SS/0, TT/25 and FF/0 coverage at 0, ±50, ±150 and ±300 ps. The acquisition
+  loops remain outstanding. Observation terminals are validated; no new native loop
   result is claimed. The
   handoff holds on failed gates, ended producers or changed inputs. Native
   acquisition and omitted-pulse timing remain unproven.
@@ -329,22 +331,40 @@ Current bring-up evidence on 2026-10-31:
   and has completed its unchanged source control with no missing edges. Its
   modified captured source case now completes with exactly one output edge in
   all 47 checked periods and diagnostic latency 301.890–510.435 ps. The sharp
-  source control remains outstanding. No physical/native improvement is claimed;
+  source control now also passes; all three controls have exactly one edge per
+  checked period. No native improvement is claimed;
   all original controls and scoring requirements remain.
   Dedicated reduced-clamp physical/native producers use identity
   `light_decision_1k_clamp`, original decision scale and two parallel clamp units.
   They reject source evidence from the four-unit candidate and preserve original
   pin stimuli, bias, digital RX load and scoring windows. Host service
-  `openlvds-light-clamp-native-continuation` waits on its actual source owner,
+  `openlvds-light-clamp-native-continuation-v2` waited on its actual source owner,
   then runs layout, independent RC audit and both native controls only after
   all source gates pass. The downstream dispatcher selects its exact source
-  factory and native verifier. No physical/native result is claimed yet.
+  factory and native verifier. Physical root `receiver_layout/4e540d457ca789a4`
+  passes DRC/LVS (77 devices, nine ports) and independent RC audit. Native network
+  SHA256 starts `b8e821dc164ef55a`; replay `5c2e6e425ac65e58` now runs captured
+  and sharp controls concurrently, each with its own lease from the six-slot
+  pool. Incident PP/PN/CO wire sums are 102.831/109.899/44.786 fF
+  (`receiver_loading/2b2f0d4e931336c9`); CL/CT sums are 25.001/70.874 fF.
+  These routing sums do not establish effective AC load or native timing.
+  The prior waiting continuation was retired before the concurrency change;
+  its receipt is archived as `native_continuation_history_d6f80e5`. No live SPICE
+  process was stopped. Tests verify independent fixture starts, separate leases,
+  deterministic report order and completion of the other fixture after one fails.
+  All 60 component fixtures (`receiver_components/57488d46b26d09ec`) and the
+  original loaded link diagnostic (`receiver_candidate_link/cb4be133271a71ea`)
+  are prepared. Service `openlvds-light-clamp-receiver-followup` waits for complete
+  one-to-one native recovery before running them; no downstream result is claimed.
+  Component preflight reconstructs all 60 fixtures and correctly holds at the
+  incomplete native gate, with zero execution receipts or raw traces. Its
+  `gate_preflight.json` binds the manifest, verifier and simulator provenance.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 357 tests, 356 passed and one skipped in the pinned ngspice
+- Last full unit suite: 359 tests, 358 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
