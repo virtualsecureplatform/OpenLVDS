@@ -1047,3 +1047,36 @@ passes the original DC and transition criteria. Its original failed data is
 preserved in case history; the batch's original failure returncode is retained.
 Repair receipt: `component_refresh/sf0_driver_repair.json`. Three native driver
 PVT cases have passed so far; the remaining exact-RC component refresh continues.
+
+The publication-cell comparison also fails native SS/40 °C at 200 ps clock
+slew: publication-1 with buf_8 gives Q0/Q1 minima 1.56645/1.26103 V.
+Artifact `rx_aperture/4032d9b01f924bfd` holds its remaining 11 admissions.
+Internal publication-4 traces (`rx_publication/3efd83d2a44327ab`) distinguish
+the causes: local clock input crossings are within 0.343–0.711 ps, but the
+publication Qs cross 1.44 V only after 664–672 ps. Loaded public outputs reach
+1.44 V after 817.283/824.523 ps, outside the unchanged 800 ps window start;
+unloaded outputs cross at 764.879/772.168 ps. Further drive-strength tuning
+is therefore superseded by an isolated half-cycle publication experiment.
+
+`rtl/experiments/openlvds_ddr_rx_early.v` prepares a completed pair on the falling
+edge: a held rising sample and the falling sampler drive buf_4 public outputs.
+VALID is held on that falling edge too, preserving the first valid word for a
+positive-edge consumer. Explicit native cells and the distinct
+`half-cycle-publish-buf4` policy retain all sampler clocks, enables, word holding
+and VALID wiring through routing. This changes public update phase; integration
+must respect the positive-edge consumption contract. It remains an experiment,
+not a replacement for the qualified public interface.
+
+Fresh functional evidence `rx_buffered_rtl/3fc750281ff3b4bb` passes 54 cases,
+1,186,794 bits per generic/native model. Directed evidence
+`rx_early_contract/711c7d2a275a2c4a` passes 18 frequency/duty/model cases, including
+four asynchronous reset phases, first-valid word ordering, pre-edge consumer
+streams and post-edge pair agreement with the original RX. Physical artifact
+`rx_early_physical_v1` is being built for independent native RC audit and the
+unchanged 12-admission / 480-condition timing gates. No native timing pass is
+claimed from these functional checks.
+
+Both parallel native analog receiver batches complete successfully: 15 static
+receiver and 15 rate-receiver cases, fixed supplies and 0/25/40 °C. Exact-RC
+driver refresh and native DLL acquisition remain running; their captured
+producers are unchanged.

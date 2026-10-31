@@ -72,7 +72,11 @@ def captured_sources(bundle):
         reset=rx_archive/'openlvds_reset.v'
         if reset.read_bytes()!=files['rtl/openlvds_reset.v'].read_bytes():raise ValueError('Selected TX/RX reset RTL differs')
         files['rtl/openlvds_ddr_rx.v']=receiver[0]
-        files['models/sky130_rx_functional.v']=ROOT/'models/experiments'/('sky130_rx_buffer8_functional.v' if physical_rx['rx_policy'] in ['public-data-buf8-publish4','public-data-buf8-publish1'] else 'sky130_rx_functional.v')
+        model={'half-cycle-publish-buf4':'sky130_rx_early_functional.v',
+               'public-data-buf8-publish4':'sky130_rx_buffer8_functional.v',
+               'public-data-buf8-publish1':'sky130_rx_buffer8_functional.v',
+               'public-data-buf4':'sky130_rx_functional.v'}[physical_rx['rx_policy']]
+        files['models/sky130_rx_functional.v']=ROOT/'models/experiments'/model
     files['rtl/openlvds_dll_core.v']=core
     files['models/analog_functional.v']=ROOT/'models/analog_area_functional.v'
     # The alternate model is installed under the verifier's established name.

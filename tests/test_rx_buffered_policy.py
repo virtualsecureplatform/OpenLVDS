@@ -39,3 +39,22 @@ class PublicationCellComparison(unittest.TestCase):
         self.assertTrue(retained(source,**policy_parameters('public-data-buf8-publish1')))
         self.assertFalse(retained(source,**policy_parameters('public-data-buf8-publish4')))
         self.assertFalse(retained(source.replace('__dfrtp_1 data0_publish','__dfrtp_4 data0_publish'),**policy_parameters('public-data-buf8-publish1')))
+
+
+class EarlyPublicationPolicy(unittest.TestCase):
+    def test_half_cycle_topology_and_enable_membership_are_enforced(self):
+        from rx_buffered_policy import policy_parameters
+        source=(Path(__file__).resolve().parents[1]/'rtl/experiments/openlvds_ddr_rx_early.v').read_text()
+        params=policy_parameters('half-cycle-publish-buf4')
+        self.assertTrue(retained(source,**params));self.assertFalse(retained(source))
+        changes=[source.replace('__inv_4','__inv_1'),
+            source.replace('held_rise(.CLK(clk_n)','held_rise(.CLK(clk)'),
+            source.replace('valid_sample(.CLK(clk_n)','valid_sample(.CLK(clk)'),
+            source.replace('pair_start(.CLK(clk)','pair_start(.CLK(clk_n)'),
+            source.replace('fall_enable(.A(fall_bit)','fall_enable(.A(rise_bit)'),
+            source.replace('rise_enable(.A(rise_bit),.B(run)','rise_enable(.A(rise_bit),.B(serial)'),
+            source.replace('valid_enable(.A(pair_started)','valid_enable(.A(rise_bit)'),
+            source.replace('valid_drive(.A(held_valid)','valid_drive(.A(pair_started)'),
+            source.replace('data0_drive(.A(held_bit)','data0_drive(.A(rise_bit)')]
+        for changed in changes:self.assertFalse(retained(changed,**params))
+        self.assertFalse(retained(source,early_publish=True,strength=8))
