@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Fixed-supply OTA transfer/headroom characterization; signal inputs vary, rails do not."""
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import fcntl
 import hashlib
 import json
@@ -16,18 +17,22 @@ from dll_measurements import read_wave,average,column
 from run_ngspice import read_raw
 from screen_dll import stimulus
 from spice_engine import command,provenance,engine
+from spice_slots import slot
 
 ROOT=Path(__file__).resolve().parents[1]
 
-def prepare(source_path):
+def prepare(source_path,common_modes=(.4,.6,.9),controls=(.7,.9,1.1,1.3,1.4)):
     source=source_path.read_bytes();lib=closure(source.decode(),['lvds_phase_ota','lvds_bias'])
     # Use the same <=8 um native fingers as physical generation.
     lib=native_block(lib,'lvds_phase_ota')+'\n'+native_block(lib,'lvds_bias')
     requirements=(ROOT/'requirements.json').read_bytes();req=json.loads(requirements)
-    identity=source+lib.encode()+Path(__file__).read_bytes()+requirements+provenance().encode()
+    if not common_modes or not controls or any(not 0<v<1.8 for v in [*common_modes,*controls]):
+        raise ValueError('Signal characterization points must lie between 0 and 1.8 V')
+    grid=[(cm,ctrl,delta) for cm in common_modes for ctrl in controls for delta in [-.005,0,.005]]
+    identity=source+lib.encode()+Path(__file__).read_bytes()+requirements+provenance().encode()+json.dumps(grid).encode()
     out=ROOT/'build/diagnostics/ota_characterization'/hashlib.sha256(identity).hexdigest()[:16]
+    if (out/'manifest.json').exists():return out
     out.mkdir(parents=True,exist_ok=True);(out/'candidate.spice').write_bytes(source);(out/'producer.py').write_bytes(Path(__file__).read_bytes())
-    grid=[(cm,ctrl,delta) for cm in [.4,.6,.9] for ctrl in [.7,.9,1.1,1.3,1.4] for delta in [-.005,0,.005]]
     ramps=[]
     for col in range(3):
         pts=[]
@@ -61,20 +66,30 @@ XO U D OUT PB VDDIO VDDD 0 lvds_phase_ota
             (case/'bench.cir').write_text(text);cases.append(name)
     atomic(out/'manifest.json',dict(diagnostic=True,qualified=False,cases=cases,grid=grid,
         simulator=engine(),simulator_provenance=provenance(),candidate_sha256=hashlib.sha256(source).hexdigest(),
+        case_files={name:{f:hashlib.sha256((out/name/f).read_bytes()).hexdigest() for f in ['library.spice','bench.cir']} for name in cases},
         producer_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()))
     return out
 
-def run(root):
-    # Share the campaign lease: characterization never adds a fifth transient.
-    lease=ROOT/'build/diagnostics/dll_architecture/.supervisor.lock';lease.parent.mkdir(parents=True,exist_ok=True)
-    atomic(root/'state.json',dict(status='waiting_for_simulator_lease'))
+def run(root,jobs=1):
+    # Independent artifact ownership, with the same per-worker native slots as DLL jobs.
+    lease=root/'.execution.lock'
+    atomic(root/'state.json',dict(status='waiting_for_simulator_slots'))
     with lease.open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
         m=json.loads((root/'manifest.json').read_text());results=[]
         if m['producer_sha256']!=hashlib.sha256(Path(__file__).read_bytes()).hexdigest() or m['simulator_provenance']!=provenance():raise ValueError('Characterization producer changed')
-        for name in m['cases']:
-            out=root/name;atomic(root/'state.json',dict(status='running',case=name,completed=len(results)))
-            r=subprocess.run(command(out/(engine()+'.log'),out/'bench.cir'),cwd=out,capture_output=True,text=True)
+        if hashlib.sha256((root/'candidate.spice').read_bytes()).hexdigest()!=m['candidate_sha256']:
+            raise ValueError('Characterization source changed')
+        def execute(name):
+            out=root/name
+            def validate_inputs():
+                if any(hashlib.sha256((out/f).read_bytes()).hexdigest()!=value for f,value in m['case_files'][name].items()):
+                    raise ValueError('Characterization fixture changed')
+            validate_inputs()
+            atomic(out/'execution.json',dict(status='waiting_for_slot'))
+            with slot():
+                atomic(out/'execution.json',dict(status='running'))
+                r=subprocess.run(command(out/(engine()+'.log'),out/'bench.cir'),cwd=out,capture_output=True,text=True)
             (out/'console.log').write_text(r.stdout+r.stderr);result=dict(case=name,passed=False,returncode=r.returncode)
             if r.returncode==0:
                 names,w=read_raw(out/'bench.raw');ix={v:i for i,v in enumerate(names)};t=w[:,ix['time']]
@@ -93,13 +108,26 @@ def run(root):
                     input_offset_max_v=offset,thin_terminal_absolute_max_v=thin,
                     passed=bool(t[-1]>=len(m['grid'])*10e-9-1e-12 and all(p['gm_s']>1e-6 for p in points) and offset<.01 and thin<=1.95))
             result['files']={n:hashlib.sha256((out/n).read_bytes()).hexdigest() for n in ['library.spice','bench.cir']+(['bench.raw'] if (out/'bench.raw').exists() else [])}
-            atomic(out/'summary.json',result);results.append(result);print(name,result['passed'],flush=True)
+            if m['producer_sha256']!=hashlib.sha256(Path(__file__).read_bytes()).hexdigest() or m['simulator_provenance']!=provenance():
+                raise ValueError('Characterization producer changed during a case')
+            validate_inputs()
+            atomic(out/'summary.json',result);print(name,result['passed'],flush=True)
+            atomic(out/'execution.json',dict(status='complete',passed=result['passed']))
+            return result
+        atomic(root/'state.json',dict(status='running',completed=0,max_jobs=jobs))
+        with ThreadPoolExecutor(max_workers=jobs) as pool:
+            for result in pool.map(execute,m['cases']):
+                results.append(result);atomic(root/'state.json',dict(status='running',completed=len(results),max_jobs=jobs))
         atomic(root/'summary.json',dict(diagnostic=True,qualified=False,passed=all(r['passed'] for r in results),results=results))
         atomic(root/'state.json',dict(status='complete',passed=all(r['passed'] for r in results)))
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('source',type=Path);p.add_argument('--run',action='store_true');a=p.parse_args()
-    out=prepare(a.source.resolve());print(out,flush=True)
-    if a.run:run(out)
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('source',type=Path);p.add_argument('--run',action='store_true')
+    p.add_argument('--common-mode',action='append',type=float,help='OTA input common mode; fixed supplies remain unchanged')
+    p.add_argument('--control',action='append',type=float,help='Forced OTA output signal voltage')
+    p.add_argument('--jobs',type=int,choices=range(1,7),default=1);a=p.parse_args()
+    out=prepare(a.source.resolve(),a.common_mode if a.common_mode is not None else (.4,.6,.9),
+                a.control if a.control is not None else (.7,.9,1.1,1.3,1.4));print(out,flush=True)
+    if a.run:run(out,a.jobs)
 
 if __name__=='__main__':main()
