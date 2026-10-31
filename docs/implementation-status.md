@@ -344,6 +344,7 @@ SS/0 °C, TT/25 °C and FF/0 °C pass the schematic loop screen. Its new layout
 passes DRC, strict LVS, exact RC extraction and the independent RC topology audit.
 The exact network is `0f0c41cbc75c`; its 15 analog ports are verified. Native
 qualification `d4d687cf4e0b5e1e` is running the first SS/0 °C monitor cases.
+The initial SS/0 °C monitor cases at 0 and +50 ps pass on this exact network.
 Its 336-case manifest holds the full matrix until the 24-case native screen and
 measured stability gates pass. The active release remains unchanged.
 
@@ -391,15 +392,23 @@ The backend passes actual RTL tests for settled lock, BAD-fault requalification,
 late clock-loss/rearm and rejection of unsafe native phase with a quiet BAD flag.
 Production W8/C4 recovery/readiness evidence remains pending.
 
-A diagnostic count experiment on the exact W8/C4 resistor network finds that
-degree-8 algebraic elimination reduces 95,814 resistor-graph nodes and 280,285
+A further exact RC profile is captured in `dll_layout/schur_00f7e3a63d66eb41`.
+Degree-8 algebraic elimination reduces 95,814 resistor-graph nodes and 280,285
 resistors to 10,484 nodes and 36,372 resistors. Protected nodes include every
-capacitor/device terminal and public port. Higher-degree elimination passes
-independent complex terminal-admittance tests. No replacement network has been
-published or substituted into a running simulation; a captured network,
-independent topology audit and native equivalence checks are still needed.
+capacitor/device terminal and public port. The new network `fae3e67dab9c` passes
+an independent topology audit and four complete-graph sparse numerical witnesses
+at all 7,431 protected resistor terminals. Maximum current difference is
+1.137e-12 A; relative solve residuals are below 2.84e-16. Capacitor, device and
+port statements are unchanged.
 
-All 141 tests pass across the host and container checks, including actual RTL
+Native equivalence benchmark `rc_equivalence/ebcffa26f586eebf` is active. Its
+SS/0 °C +50 ps trial passes; separate reanalysis finds maximum crossing/plateau
+differences of 0.858 ps/0.232 mV and a 3.75× time ratio excluding slot wait.
+The 0 ps trial is still queued. These partial results do not authorize profile
+selection or replace the fresh full native campaign. Existing simulations and
+active release pointers remain intact.
+
+All 154 tests pass across the host, container and analysis-environment checks, including actual RTL
 replay. Native W8/C4 qualification, the complete RX aperture
 table, analog characterization at the actual loop operating points, readiness
 replay, worst-model-corner recovery, the six-fixture RC certificate and the full

@@ -257,3 +257,47 @@ The advancement workflow runs both gates before staged PHY validation. Their
 production W8/C4 results remain pending. The replay backend passes actual RTL
 tests for startup, short/asynchronous BAD events, later BAD faults, late clock
 loss/rearm and rejection of unsafe phase even when BAD is optimistic.
+
+## Further exact resistor elimination
+
+The full W8/C4 extraction contains 95,814 resistor-graph nodes after the original
+degree-4 reduction. `exact_rc_candidate.py` eliminates additional internal
+resistor-only nodes by a positive-conductance Schur complement. It preserves
+every capacitor/device statement, their terminal names, and every public port.
+It is separate from the TICER capacitance approximation.
+
+The independent numerical witness uses sparse Dirichlet solves on both complete
+resistor graphs, with four deterministic clamped-terminal patterns. It compares
+currents at every protected resistor terminal and checks solver residuals.
+The result supplements analytic and small-network complex-admittance tests;
+it does not replace the native transient comparisons or electrical matrix.
+
+The analysis environment resides within OpenLVDS:
+
+```sh
+uv venv --python /usr/bin/python3 build/tools/exact-rc-venv
+UV_CACHE_DIR=build/cache/uv uv pip install --python build/tools/exact-rc-venv/bin/python --index-url https://pypi.org/simple -r scripts/exact_rc_requirements.txt
+build/tools/exact-rc-venv/bin/python scripts/exact_rc_candidate.py build/diagnostics/dll_layout/c465a14562c2ff4f --degree 8
+scripts/env.sh --ngspice python3 scripts/benchmark_exact_dll.py NEW_LAYOUT --reference ORIGINAL_QUALIFICATION
+```
+
+The candidate retains the original physical GDS and receives a new independent
+topology audit and exact-netlist hash. Its manifest captures the reduction
+producer, sparse-solver binaries, source evidence and numerical witnesses.
+The native benchmark preserves the original SS/0 °C 0/+50 ps fixtures except
+for their library include. It checks 20 ps crossings, 20 mV plateaus and every
+CTRL storage plate. Timing ratios exclude waiting for a shared simulator slot.
+Both comparisons must pass before selecting the profile for a fresh native
+qualification campaign; the benchmark cannot qualify a PHY.
+
+`advance_ota_candidate.py --layout NEW_LAYOUT` can run the complete workflow on
+an already audited alternate layout. Changing profiles clears the previous
+profile's stage and stability pointer. Restarting the same workflow reuses
+verified current stability evidence; failed or damaged evidence is retained
+for diagnosis rather than overwritten.
+
+The resident watchdog binds each OTA coordinator to its artifact. A profile
+change retires the old coordinator by interrupting only its Python main thread,
+allowing the executor to finish already submitted native work. A durable request
+prevents a second interrupt during cleanup. The new artifact has a distinct
+coordinator record; the same six native slots continue to protect the RX workers.
