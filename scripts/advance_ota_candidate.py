@@ -36,10 +36,7 @@ def cached_model(root,inputs,corners):
     return None
 
 
-def main():
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--layout',type=Path,default=DEFAULT_LAYOUT,help='Alternate layouts must already have a passing RC audit')
-    args=parser.parse_args();LAYOUT=args.layout.resolve()
+def advance(LAYOUT):
     if not LAYOUT.is_relative_to(ROOT/'build/diagnostics/dll_layout'):
         raise ValueError('Use an isolated DLL layout')
     if LAYOUT!=DEFAULT_LAYOUT and not (LAYOUT/'rc_audit.json').exists():
@@ -100,6 +97,12 @@ def main():
     atomic(config,old)
     wait_for(['completed'])
     report=model(True)
+    atomic(workflow,dict(status='characterizing_observed_ota_points',qualification=str(relative),qualified_phy=False))
+    result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/ota_operating_points.py',str(relative),
+        '--stability',str(report.relative_to(ROOT)),'--jobs','6'],cwd=ROOT,capture_output=True,text=True)
+    (LAYOUT/'ota_operating_points.log').write_text(result.stdout+result.stderr);result.check_returncode()
+    operating=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
+    if not json.loads(operating.read_text())['passed']:raise ValueError('Observed OTA operating range failed')
     atomic(workflow,dict(status='qualifying_limiting_corner_recovery',qualification=str(relative),qualified_phy=False))
     result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/qualify_dll_recovery.py',str(relative),
         '--stability',str(report.relative_to(ROOT)),'--jobs','6'],cwd=ROOT,capture_output=True,text=True)
@@ -150,8 +153,22 @@ def main():
     atomic(workflow,dict(status='link_matrix_complete_remaining_signoff',qualification=str(relative),
         stability=str(report.relative_to(ROOT)),bundle=relative_bundle,qualified_phy=False,
         recovery=str(recovery.relative_to(ROOT)),readiness=str(readiness.relative_to(ROOT)),
-        remaining=['actual_operating_range_ota_characterization',
-                   'release_checker_and_exact_byte_promotion']))
+        ota_operating_points=str(operating.relative_to(ROOT)),
+        remaining=['release_checker_and_exact_byte_promotion']))
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--layout',type=Path,default=DEFAULT_LAYOUT,help='Alternate layouts must already have a passing RC audit')
+    args=parser.parse_args();layout=args.layout.resolve()
+    try:return advance(layout)
+    except Exception as error:
+        workflow=layout/'workflow.json'
+        if workflow.exists():
+            previous=json.loads(workflow.read_text());status=previous.get('status','workflow')
+            if 'diagnosis' not in status:status+='_requires_diagnosis'
+            atomic(workflow,dict(previous,status=status,error=str(error),qualified_phy=False))
+        raise
 
 
 if __name__=='__main__':main()
