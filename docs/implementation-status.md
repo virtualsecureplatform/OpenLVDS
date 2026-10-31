@@ -229,12 +229,24 @@ Current bring-up evidence on 2026-10-31:
   its loaded native gate. The component preflight verifies original fixtures
   and starts no simulation while replay evidence is incomplete. Stronger and
   first-clamp verifiers are selected explicitly; no native improvement is claimed.
+- Host continuation `continue_receiver_candidate.py` waits on that actual native
+  owner and gates the prepared component/link jobs on complete, one-to-one
+  clock recovery. It binds all manifests/producers, repeats scientific checks
+  in the children and preserves both running jobs on failure. No release is
+  promoted by diagnostics. Its receipt is under the native replay's `followup/`.
+  The stronger clamp's live first-pulse observation still has CO peak 0.822 V
+  with RESTORE0 above 1.726 V; the output clock does not fall in that interval.
+- Wider input-pair source comparison `receiver_clamp/4e55a995d239fb38` is queued.
+  It changes only the four complementary input devices from 20 to 40 µm,
+  retaining tail-device bias, stronger clamp and restoration. Its original
+  three controls and native shared bias/digital load remain intact. Source and
+  physical/native improvement remain unproven.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Unit suite: 325 tests, 324 passed and one skipped in the pinned ngspice
+- Unit suite: 331 tests, 330 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.

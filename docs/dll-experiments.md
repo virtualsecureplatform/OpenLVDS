@@ -1201,6 +1201,50 @@ at pending native replay evidence. Both use the stronger variant's own waveform
 verifier; weak-clamp reports cannot substitute. Native cadence, component/PVT,
 headroom, new-network RC comparison and full-link gates remain mandatory.
 
+The host-side continuation is active for these exact artifacts:
+
+```sh
+python3 scripts/continue_receiver_candidate.py \
+  build/diagnostics/receiver_replay/13ab38f8a7b8e217 \
+  build/diagnostics/receiver_components/90fff4b7107aa5ae \
+  build/diagnostics/receiver_candidate_link/37d95b09d5fb0059 \
+  --producer-unit openlvds-receiver-strong-clamp-native-replay.service
+```
+
+It binds all three manifests and their producer context, waits for the actual
+native owner to exit, and requires both complete native cases with exactly one
+output edge per input period. The component and link children independently
+remeasure native evidence before taking shared simulator slots. Both children
+are allowed to finish if either fails; passing diagnostics do not promote a
+release. Receipts and logs are under the replay's `followup/` directory.
+
+The stronger clamp's live native trace still misses the first short negative
+pulse: CO reaches only 0.822 V, CO_TRACK moves 0.656–0.830 V, and RESTORE0 remains
+above 1.726 V in the 24.5–26.5 ns interval. The full replay continues to its
+original stop time. This is an engineering observation, not a completed verdict.
+
+## Wider input-pair source comparison
+
+The next source comparison doubles only XNP/XNN/XPP/XPN widths from 20 to
+40 µm in the stronger-clamp circuit. Tail-device sizes, reference current,
+mirrors, resistive loads, decision devices and restoration stages are retained.
+It tests whether greater input transconductance and lower current density help
+the small frontend differential reversal. Increased input loading still needs
+physical/native and full-link verification if this source is selected.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/receiver_wide_input_experiment.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171
+scripts/env.sh --ngspice python3 scripts/receiver_wide_input_experiment.py run \
+  build/diagnostics/receiver_clamp/4e55a995d239fb38
+```
+
+The same three source cases, saved pins, shared native bias and digital load,
+observations and scoring are retained. Its unclamped control remains the
+original schematic control. The scoped source invariant checks preserve all
+other receiver devices and all other circuit definitions. This experiment is
+queued; no source or native improvement is claimed.
+
 ## Xyce compatibility check
 
 The image already contains Xyce 7.10.0 built from release commit
