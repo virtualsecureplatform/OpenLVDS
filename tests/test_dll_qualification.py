@@ -6,10 +6,19 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts'))
 from dll_qualification_measurements import marker_latency, compare
-from qualify_dll_candidate import clock_wave, loop_fixture
+from qualify_dll_candidate import clock_wave, loop_fixture, clock_coverage, recovery_coverage
 
 
 class DLLQualification(unittest.TestCase):
+    def test_clock_and_recovery_cover_limiting_corners(self):
+        req={'clock_test_mhz':[390,400,410],'clock_duty':[.45,.5,.55]}
+        cases=clock_coverage(req)
+        self.assertEqual(len(set(cases)),27)
+        for corner in [('tt',25),('ss',0),('ff',0)]:
+            self.assertEqual({(f,d) for c,f,d in cases if c==corner},
+                             {(f,d) for f in req['clock_test_mhz'] for d in req['clock_duty']})
+            self.assertEqual({target for c,target in recovery_coverage() if c==corner},{390,410,None})
+
     def trace(self, alias=False, omit=True):
         t = np.arange(0, 80e-9, 2e-12)
         period = 2.5e-9

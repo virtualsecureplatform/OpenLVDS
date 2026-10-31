@@ -68,6 +68,16 @@ def clock_wave(stop_ns, mhz, duty=.5, marker_ns=None, step_mhz=None, interruptio
     return text, marker
 
 
+def clock_coverage(requirements):
+    """All nine clock/duty points at nominal and the limiting fast/slow corners."""
+    return list(itertools.product([('tt',25),('ss',0),('ff',0)],
+                                 requirements['clock_test_mhz'],requirements['clock_duty']))
+
+
+def recovery_coverage():
+    return list(itertools.product([('tt',25),('ss',0),('ff',0)],[390,410,None]))
+
+
 def loop_fixture(spec, observations=None):
     step = spec.get('step_mhz')
     recovery = spec.get('interruption', False)
@@ -215,15 +225,16 @@ def prepare(layout, pfd, screen, variant):
         if (process, temp) not in [('tt',25),('ss',0),('ff',0)]:
             add(f'loop_{process}_{temp}', dict(kind='loop', process=process, temperature=temp, mhz=400,
                 duty=.5, architecture=architecture), [nominal]+full_faults)
-    for mhz, duty in itertools.product(requirements['clock_test_mhz'], requirements['clock_duty']):
+    for (process,temp), mhz, duty in clock_coverage(requirements):
         if (mhz, duty) != (400, .5):
-            add(f'clock_{mhz}_{duty}', dict(kind='loop', process='tt', temperature=25, mhz=mhz,
+            suffix='' if (process,temp)==('tt',25) else f'_{process}_{temp}'
+            add(f'clock_{mhz}_{duty}'+suffix, dict(kind='loop', process=process, temperature=temp, mhz=mhz,
                 duty=duty, architecture=architecture), [nominal]+full_faults)
-    for mhz in [390, 410]:
-        add(f'step_400_to_{mhz}', dict(kind='loop', process='tt', temperature=25, mhz=400,
-            duty=.5, step_mhz=mhz, architecture=architecture), [nominal]+full_faults)
-    add('clock_loss_rearm', dict(kind='loop', process='tt', temperature=25, mhz=400, duty=.5,
-        interruption=True, architecture=architecture), [nominal]+full_faults)
+    for (process,temp), target in recovery_coverage():
+        suffix='' if (process,temp)==('tt',25) else f'_{process}_{temp}'
+        name='clock_loss_rearm' if target is None else f'step_400_to_{target}'
+        add(name+suffix, dict(kind='loop', process=process, temperature=temp, mhz=400, duty=.5,
+            step_mhz=target, interruption=target is None, architecture=architecture), [nominal]+full_faults)
     def dispatch_priority(task):
         name=task['id']
         for index,prefix in enumerate(['phase_ss_0_', 'loop_ss_0', 'phase_tt_25_', 'loop_tt_25', 'phase_ff_0_', 'loop_ff_0']):
