@@ -59,8 +59,9 @@ def replay_ready(replay):
     results=summary['results']
     if len(results)!=2 or {r['task'] for r in results}!={'captured','sharp_control'}:
         raise ValueError('Receiver replay coverage is incomplete')
-    if any(r['receiver_transport']['missing_output_edges'] for r in results):
-        raise ValueError('Receiver replay still loses clock edges')
+    if any(r['receiver_transport']['missing_output_edges'] or not r['receiver_transport']['pulses'] or
+           any(p['output_edges_in_next_input_period']!=1 for p in r['receiver_transport']['pulses']) for r in results):
+        raise ValueError('Receiver replay loses or repeats clock edges')
 
 
 def receiver_overlay(baseline,model,ports):

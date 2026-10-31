@@ -43,15 +43,24 @@ class ReceiverLinkDiagnostic(unittest.TestCase):
             recheck.assert_not_called()
 
     def test_completed_replay_is_reverified_and_missing_edges_hold_link(self):
-        results=[dict(task=name,receiver_transport=dict(missing_output_edges=count))
+        results=[dict(task=name,receiver_transport=dict(missing_output_edges=count,
+                 pulses=[dict(output_edges_in_next_input_period=1)]))
                  for name,count in [('captured',1),('sharp_control',0)]]
         with tempfile.TemporaryDirectory() as temp, patch.object(diagnostic,'recheck_replay') as recheck:
             root=Path(temp);self.fixture(root,results)
-            with self.assertRaisesRegex(ValueError,'loses clock edges'):diagnostic.replay_ready(root)
+            with self.assertRaisesRegex(ValueError,'clock edges'):diagnostic.replay_ready(root)
             recheck.assert_called_once_with(root)
             results[0]['receiver_transport']['missing_output_edges']=0
             (root/'summary.json').write_text(json.dumps(dict(diagnostic_complete=True,results=results)))
             diagnostic.replay_ready(root)
+
+    def test_no_missing_edges_does_not_allow_extra_clock_pulses(self):
+        results=[dict(task=name,receiver_transport=dict(missing_output_edges=0,
+                 pulses=[dict(output_edges_in_next_input_period=2 if name=='captured' else 1)]))
+                 for name in ['captured','sharp_control']]
+        with tempfile.TemporaryDirectory() as temp, patch.object(diagnostic,'recheck_replay'):
+            root=Path(temp);self.fixture(root,results)
+            with self.assertRaisesRegex(ValueError,'repeats clock edges'):diagnostic.replay_ready(root)
 
     def test_duplicate_replay_case_cannot_supply_coverage(self):
         results=[dict(task='captured',receiver_transport=dict(missing_output_edges=0))]*2
