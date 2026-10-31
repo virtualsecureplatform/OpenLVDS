@@ -866,3 +866,14 @@ with jitter and reset behavior (`rx_buffered_rtl/5b4107f583cb8aee`). Host unit
 checks: 224 total, 219 passed, 5 skipped. Actual GDS extraction and independent
 RC connectivity LVS are now running. Loaded native endpoint and full aperture
 qualification remain pending; this RX has not been selected or promoted.
+
+
+Buffered RX actual GDS extraction and independent strict RC connectivity LVS
+both pass. GDS SHA-256:
+`39552fad4164d50bf619b9c535a09eb422ea5688fbfe85abfe8db871adf84bf4`;
+exact reduced network SHA-256:
+`f6e4ef38f920772c845917e4e121929642fc9a897c65e1d6d40195c669a4d61e`.
+All 1,208 extracted capacitors and protected terminals are retained; exact
+positive-conductance algebraic elimination reduces 21,690 resistors to 4,267.
+The independent audit has zero topology errors. Native loaded endpoint tests
+and a fresh complete aperture matrix are still required for this network.
