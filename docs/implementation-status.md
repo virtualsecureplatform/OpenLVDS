@@ -5,7 +5,7 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 The pulse-area comparison milestone on 2026-10-29 is described at the end of
 this document and in [the experiment workflow](dll-experiments.md). Its circuits
-remain separate from the active PHY. All 107 current unit tests pass.
+remain separate from the active PHY. Current bring-up evidence is recorded below.
 
 The preceding canonical checks on 2026-10-28 include:
 
@@ -343,8 +343,9 @@ The completed architecture comparison selects W8/C4 for continued OTA work:
 SS/0 °C, TT/25 °C and FF/0 °C pass the schematic loop screen. Its new layout
 passes DRC, strict LVS, exact RC extraction and the independent RC topology audit.
 The exact network is `0f0c41cbc75c`; its 15 analog ports are verified. Native
-qualification `d4d687cf4e0b5e1e` is running the first SS/0 °C monitor cases.
-The initial SS/0 °C monitor cases at 0 and +50 ps pass on this exact network.
+qualification `d4d687cf4e0b5e1e` passes the initial SS/0 °C 0/+50 ps monitor
+cases but fails SS/0 °C ±150/+300 ps and TT/25 °C +150 ps. The old coordinator
+is draining already submitted cases; new dispatch has been retired.
 Its 336-case manifest holds the full matrix until the 24-case native screen and
 measured stability gates pass. The active release remains unchanged.
 
@@ -401,16 +402,52 @@ at all 7,431 protected resistor terminals. Maximum current difference is
 1.137e-12 A; relative solve residuals are below 2.84e-16. Capacitor, device and
 port statements are unchanged.
 
-Native equivalence benchmark `rc_equivalence/ebcffa26f586eebf` is active. Its
-SS/0 °C +50 ps trial passes; separate reanalysis finds maximum crossing/plateau
-differences of 0.858 ps/0.232 mV and a 3.75× time ratio excluding slot wait.
-The 0 ps trial is still queued. These partial results do not authorize profile
-selection or replace the fresh full native campaign. Existing simulations and
-active release pointers remain intact.
+Native equivalence benchmark `rc_equivalence/ebcffa26f586eebf` passes both
+SS/0 °C 0/+50 ps comparisons. Maximum crossing/plateau differences are
+0.858 ps/0.232 mV; native execution is 3.75–3.76× faster, excluding slot wait.
+The profile is eligible for fresh native qualification. These two quiet-offset
+comparisons do not qualify the electrical matrix or correct monitor failures.
 
-All 154 tests pass across the host, container and analysis-environment checks, including actual RTL
-replay. Native W8/C4 qualification, the complete RX aperture
-table, analog characterization at the actual loop operating points, readiness
-replay, worst-model-corner recovery, the six-fixture RC certificate and the full
-45-case link regression remain outstanding. No candidate or approximation is
-released.
+The native SS/0 °C +150 ps BAD output remains low through 160 ns. At +300 ps,
+BAD returns high only at 147.6 ns, too late for the unchanged 120–160 ns fault
+window. The filtered UP−DN difference remains approximately 89/161 mV,
+respectively. SS/0 °C −150 ps and TT/25 °C +150 ps also miss the fault.
+Exact-name extracted capacitance sums incident on PA/PB are 530/561 fF;
+comparator XPOS O/OB have 223/221 fF. These are network capacitance sums,
+including coupling. Slow readout under these loads is a hypothesis, not yet a
+confirmed cause; distributed resistance, device junctions and bias remain
+possible contributors.
+
+Monitor diagnostic `monitor_repair/9a9a9300e6682a18` is queued on two shared
+slots. Its repaired source divides monitor resistor lengths by four, replicates
+the two averaging capacitors four times and increases comparator branch widths
+fourfold. Nominal divider ratios and averaging R×C are preserved. Explicit
+unloaded/loaded baseline controls test the capacitive-loading hypothesis, then
+all seven offsets run at SS/0 °C, TT/25 °C and FF/0 °C. The proxy retains native
+extracted PFD/bias, but omits analog distributed resistance and device junction
+geometry; it cannot replace fresh layout and native qualification. The held
+unchanged-profile campaign `4f6072867e73460a` and advancement service remain
+inactive while this failure is diagnosed. RX characterization continues.
+
+A source-specific three-corner screen producer now accepts the exact repaired
+source, captures native-finger schematic analog/delay devices with extracted
+PFD/bias, and binds its fixtures, source and producer hashes. Its prepared screen
+`dll_architecture/d8b9a06ef038cd76` has not run. An experimental layout build
+`dll_layout/88342cdbe6c80ac2` is active in parallel; it has not yet passed
+physical or electrical checks. Advancement accepts an explicit
+matching screen; it cannot reuse the old architecture evidence for new source
+bytes. A hold survives restarting the same candidate; selecting a new candidate
+clears only the previous OTA hold/stage, preserving the RX and CP settings.
+
+`ota_operating_points.py` implements correlated operating-point characterization
+from native loop and all-PVT step traces. Each observed UF/DF common mode and
+CTRL point receives ±20 mV/±10 mV guards, with finite-difference gain at zero
+and actual differential input, offset and thin-device terminal checks. It keeps
+corner/condition correlations instead of combining unrelated extremes. This
+production gate has not run and requires passing native/model evidence first.
+
+The current host test run completes 169 tests: 164 pass and five skip for the
+container/analysis backends checked separately in earlier runs. Native W8/C4
+qualification, the complete RX aperture table, operating-point characterization,
+readiness replay, limiting-corner recovery, six-fixture RC certification and the
+full 45-case link regression remain outstanding. No candidate is released.

@@ -301,3 +301,52 @@ change retires the old coordinator by interrupting only its Python main thread,
 allowing the executor to finish already submitted native work. A durable request
 prevents a second interrupt during cleanup. The new artifact has a distinct
 coordinator record; the same six native slots continue to protect the RX workers.
+
+
+## Monitor loading repair and source-specific screen
+
+The physical W8/C4 monitor misses ±150 ps faults at SS/0 °C and +150 ps at
+TT/25 °C; its SS/0 °C +300 ps response is too late. The original qualification
+window and voltage thresholds remain unchanged. `repair_dll_monitor.py` compares
+unloaded baseline, baseline with captured extracted coupling capacitances, and
+repaired devices with the same captured loads. It scales monitor resistors by
+1/4, averaging capacitance by four and comparator branch widths by four.
+The OTA and CTRL storage remain unchanged. This tests a loading hypothesis;
+it omits distributed resistance and extracted device junction geometry.
+
+After a passing proxy, build and independently audit a new layout. Before native
+qualification, prepare a separate architecture screen of that exact source:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/screen_repaired_dll.py prepare CANDIDATE_SOURCE --reference ORIGINAL_QUALIFICATION --layout EXACT_REFERENCE_PROFILE
+scripts/env.sh --ngspice python3 scripts/screen_repaired_dll.py run NEW_SCREEN --jobs 2
+scripts/env.sh --ngspice python3 scripts/advance_ota_candidate.py --layout NEW_AUDITED_LAYOUT --screen NEW_SCREEN
+```
+
+The three-corner architecture screen uses native-finger schematic analog devices
+including the delay line, extracted PFD/bias, the unchanged startup/load fixture
+and 1200–1500 ns loop criteria. All workers use the six-slot project lease.
+Source bytes, libraries, fixtures, simulator and producer hashes are captured;
+qualification independently rechecks each waveform. This evidence is diagnostic:
+the new GDS and full native matrix must pass separately. An explicitly held
+candidate cannot silently resume through advancement; a new artifact retires
+the previous OTA hold and cached stage without enabling CP or changing RX.
+
+## Correlated OTA operating points
+
+After native electrical and all-PVT model qualification, run:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/ota_operating_points.py QUALIFICATION --stability ALL_PVT_REPORT --jobs 6
+```
+
+The tool takes observed common mode, CTRL and UF−DF from each native loop and
+late frequency-step scoring window. It guards each correlated point by ±20 mV
+common mode and ±10 mV CTRL, rather than sweeping a cross product of unrelated
+corner extremes. Six perturbation slots measure gain at zero and at the actual
+input difference. Both gains must exceed 1 µS, input offset must stay below
+10 mV, and every thin-device terminal pair must stay within 1.95 V. Thick-oxide
+input/tail devices are treated separately. Fixed supplies and the single 35 µA
+reference remain unchanged. These native-finger schematic checks complement
+the extracted loop; they do not establish mismatch/yield or general tapeout
+stress qualification.
