@@ -1276,3 +1276,32 @@ FF/0 °C passes at CTRL variation 3.163 mV, feedback error 6.493 ps and quarter
 delay 632.701–633.013 ps. The exact-profile handoff starts native screen
 `dll_qualification/15cac0ba813a9333`; all 312 non-screen cases remain held for
 the measured native model. No native acquisition pass is claimed.
+
+The stronger-clamp native captured case completes with 11 missing rising and
+11 missing falling edges, worse than the baseline's nine of each. Its sharp
+control is still running. The loaded recovery gate therefore prevents the
+prepared component/link continuation from advancing this candidate.
+
+The wider-input candidate has separate physical and native producers. Run these
+only after its three source comparisons finish; the layout producer remeasures
+the cached waveforms and requires exactly one output edge per input period in
+every control. It also checks the exact source, so the earlier strong-clamp
+comparison cannot qualify the wider input devices.
+
+```sh
+scripts/env.sh --tools --ngspice /usr/bin/python3 \
+  scripts/layout_receiver_wide_input_candidate.py \
+  build/diagnostics/receiver_clamp/4e55a995d239fb38
+# Use the layout root printed above for both commands below.
+scripts/env.sh --tools python3 scripts/receiver_candidate_rc.py LAYOUT_ROOT
+scripts/env.sh --ngspice python3 scripts/probe_receiver_wide_input_candidate.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171 LAYOUT_ROOT
+scripts/env.sh --ngspice python3 scripts/probe_receiver_wide_input_candidate.py run REPLAY_ROOT
+```
+
+`LAYOUT_ROOT` and `REPLAY_ROOT` are the actual returned artifact paths. Extraction
+must pass the independent connectivity audit before replay preparation. The new
+identity is `strong_wide_input`, with input width 40 µm; it cannot be substituted
+for the previous strong-clamp identity. Receiver replay remains diagnostic and
+does not select a release. Full component, RC comparison, aperture and link
+checks remain required if this native candidate recovers every clock edge.

@@ -223,7 +223,10 @@ Current bring-up evidence on 2026-10-31:
   and independent RC audit (91 devices, nine ports; native SHA256 starts
   `32579bcd62e88ff5`). It moves only the added replica/clamp devices beside CO;
   existing receiver devices and connections are retained. Actual native replay
-  `receiver_replay/13ab38f8a7b8e217` is queued under the unchanged six-slot budget.
+  `receiver_replay/13ab38f8a7b8e217` runs under the unchanged six-slot budget.
+  Its completed captured-input case misses 11 rising and 11 falling edges,
+  worse than the original receiver's nine of each. The sharp control is running;
+  the stronger clamp is not selected for component or link qualification.
   Matching link fixture `receiver_candidate_link/37d95b09d5fb0059` and 60-case
   component campaign `receiver_components/90fff4b7107aa5ae` are prepared behind
   its loaded native gate. The component preflight verifies original fixtures
@@ -241,12 +244,16 @@ Current bring-up evidence on 2026-10-31:
   retaining tail-device bias, stronger clamp and restoration. Its original
   three controls and native shared bias/digital load remain intact. Source and
   physical/native improvement remain unproven.
+  Dedicated layout/replay producers now bind the exact 40 µm input source and
+  its three complete, one-to-one source controls. They reject earlier clamp
+  evidence and preserve native shared bias, digital load, nine-port order and
+  replay timing. No wider-input physical build or native simulation is claimed.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Unit suite: 331 tests, 330 passed and one skipped in the pinned ngspice
+- Unit suite: 337 tests, 336 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
