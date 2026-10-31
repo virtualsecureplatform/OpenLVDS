@@ -143,7 +143,8 @@ Current bring-up evidence on 2026-10-31:
   `30154843ced35188`. Captured and sharper-input native replays are active at
   `receiver_replay/cb6fffffb0809887`, with PP/PN/CO and both restoration nodes
   observed. The complete captured case loses nine rising and nine falling edges,
-  unchanged from the input-tail-only candidate; the sharper control is running.
+  unchanged from the input-tail-only candidate. The sharper control also
+  completes and loses one rising and one falling edge; the diagnostic is terminal.
   Electrical improvement and PVT qualification remain unproven.
   Isolated full-link fixture `receiver_candidate_link/467b30dda15cf743` is
   prepared with only the analog receiver replaced. It retains buf_4 and the
@@ -175,16 +176,26 @@ Current bring-up evidence on 2026-10-31:
   use schematic fingers; the shared bias and native early RX load are retained.
   The complete unclamped/captured schematic control recovers every edge, with
   no missing rising or falling transition and diagnostic latencies 296–413 ps.
-  Its CO reaches 1.792 V. Clamped cases remain pending. The schematic/native
+  Its CO reaches 1.792 V. The clamped/captured case also completes with zero
+  missing edges; its latency is 309–442 ps and CO_TRACK moves 0.503–1.127 V,
+  so reference stiffness and native performance remain unproven. Its sharper
+  control remains pending. The schematic/native
   contrast implicates extracted parasitics, but does not isolate wire capacitance
   from explicit extracted device junction geometry. No physical receiver fix
   or clamp improvement is claimed yet.
+- `layout_receiver_clamp_candidate.py` and `probe_receiver_clamp_candidate.py`
+  prepare the physical/native path behind complete zero-missing-edge clamped
+  source replays. They remeasure actual source traces, require exact source
+  agreement, preserve original device order except the four added clamp devices,
+  and bind source/physical/native proofs. The real incomplete-source preflight
+  rejects layout without creating an artifact. Full-link gating selects the
+  clamp replay's own verifier. No new GDS or native clamp result is claimed yet.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Unit suite: 307 tests, 306 passed and one skipped in the pinned ngspice
+- Unit suite: 313 tests, 312 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.

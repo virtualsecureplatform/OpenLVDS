@@ -1055,6 +1055,45 @@ explicit junction geometry: schematic finger models use schematic geometry
 defaults. The clamped cases still need complete results, followed by actual
 physical/native proof if selected.
 
+The clamped/captured case now also completes with zero missing edges. Its
+diagnostic latency is 308.507–441.512 ps, compared with 296.120–412.380 ps for
+the unclamped schematic. CO ranges 0.0773–1.6157 V, while CO_TRACK moves
+0.5034–1.1273 V under loading. Thus the reference is not stiff and this test
+does not establish a speed improvement. The clamped sharper-input case remains
+the final schematic gate.
+
+The physical path is prepared behind both completed, zero-missing-edge clamped
+replays. It remeasures all three schematic traces and verifies that their exact
+candidate source matches the source to be laid out. It holds on incomplete,
+failed, changed or mismatched evidence before creating a layout. The four added
+clamp devices are placed immediately before the first restoration inverter;
+every preceding device/finger retains its relative order and terminals.
+
+```sh
+scripts/env.sh --tools --ngspice /usr/bin/python3 \
+  scripts/layout_receiver_clamp_candidate.py \
+  build/diagnostics/receiver_clamp/e888b13239fc158e
+```
+
+Use the base `/usr/bin/python3` with NumPy inside the physical tools shell for
+the source-waveform recheck. Once this command produces a passing layout, use
+its printed path as `CLAMP_LAYOUT` below:
+
+```sh
+scripts/env.sh --tools python3 scripts/receiver_candidate_rc.py CLAMP_LAYOUT
+scripts/env.sh --ngspice python3 scripts/probe_receiver_clamp_candidate.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171 CLAMP_LAYOUT
+scripts/env.sh --ngspice python3 scripts/probe_receiver_clamp_candidate.py run CLAMP_REPLAY
+```
+
+Replace `CLAMP_REPLAY` with the prepared replay path. Native preparation checks
+the exact source, physical/extraction proofs and current schematic witnesses;
+the replay observes PP/PN/CO, both restoration nodes and CO_TRACK. It preserves
+the original two pin stimuli, shared bias, native early RX load and scoring.
+`probe_receiver_candidate_link.py` dispatches to this replay's own verifier
+before integration, so a passing gain-only report cannot stand in for a clamp
+report. No new physical result or full-link qualification is claimed yet.
+
 ## Xyce compatibility check
 
 The image already contains Xyce 7.10.0 built from release commit
