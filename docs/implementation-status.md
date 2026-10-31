@@ -15,17 +15,16 @@ Current bring-up evidence on 2026-10-31:
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
   cases pass (128 words). Its original 480-condition aperture campaign
-  (`rx_aperture/20b04dcf527af283`) is running; six SS/40 °C
-  conditions pass. Rising-clock setup bounds are 120/210 ps for rising/falling
-  data; both rising-clock hold bounds are zero. Falling-clock setup bounds are
-  0/90 ps for rising/falling data; falling-clock hold searches remain active. The preceding three
+  (`rx_aperture/20b04dcf527af283`) is running; eleven conditions pass,
+  including the complete SS/40 °C group at 200 ps clock/data slew. Its largest
+  guarded setup/hold bounds are 210/50 ps. Other slew/PVT coverage remains active. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
   generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
   is running. The driver fixture passes with 0.396 ps maximum edge difference
   and 0.541 mV maximum plateau difference; a complete certificate is still pending.
-- Current component evidence verifies 82/90 distinct proofs: all 45 schematic
-  driver/receiver cases, all 30 native analog receiver cases and seven native
+- Current component evidence verifies 83/90 distinct proofs: all 45 schematic
+  driver/receiver cases, all 30 native analog receiver cases and eight native
   drivers. Remaining native driver refresh continues. Historical numerical
   failures remain archived separately from the current-proof receipt.
 - Unit suite: 256 tests, 251 passed and five skipped. The shared native budget
@@ -1247,3 +1246,27 @@ supplies. A 60 ns diagnostic training override shortens this supplementary test;
 it does not replace the required measured-DLL-phase diagnostic or full trained
 link matrix. The new window analyzer is committed as `d9d73eb`; this producer is
 now held unchanged while the test runs. No integration result is claimed yet.
+
+
+The complete SS/40 °C group at 200 ps clock and data slew passes all eight
+original boundary conditions. Each guarded witness was actually simulated:
+
+| Capture clock edge | Data transition | Setup bound (ps) | Hold bound (ps) |
+| --- | --- | ---: | ---: |
+| Rising | Rising | 120 | 0 |
+| Rising | Falling | 210 | 0 |
+| Falling | Rising | 0 | 50 |
+| Falling | Falling | 90 | 0 |
+
+These are guarded/rounded requirements, including conservative zero clamping
+of negative boundaries. This group does not replace the other original slew
+combinations or remaining PVT points. Eleven of 480 conditions currently pass,
+with no failed completed condition.
+
+Native SS/40 °C driver characterization also completes successfully. Its settled
+differential output is 0.288671–0.288713 V into 100 Ω; positive-polarity common
+mode is 1.249158–1.249705 V. Original polarity, cadence and transition checks
+pass (propagation 1.37523–1.39375 ns). The independent current-proof receipt now
+verifies 83/90 cases. Native SS/25 and FS/0 drivers are active; five subsequent
+native driver cases remain stale until refreshed. The exact-RC integration
+probe remains queued under the six-slot limit, with no result claimed.
