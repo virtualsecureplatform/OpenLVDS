@@ -617,3 +617,19 @@ source public limits. Cached results are remeasured and changed inputs are
 rejected. All execution uses the global six-slot budget and one diagnostic
 coordinator lease. The zero-load comparison is diagnostic only; the 20 fF
 qualification requirement and 0.36/1.44 V thresholds remain unchanged.
+
+
+After starting the three SS seed probes, queue static expansion separately:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/continue_native_static.py build/diagnostics/dll_qualification/1d201e9ed2f89f56 --jobs 3
+```
+
+This coordinator waits on the same native campaign lease. It then requires all
+three seed summaries to pass, verifies deck/raw/export hashes, and remeasures
+all three waveforms. It also checks the actual architecture PFD/bias binding.
+Missing, failed or changed evidence holds expansion. Only the remaining 18
+full-RC static fixtures at SS/0 °C, TT/25 °C and FF/0 °C dispatch; original
+windows, supplies and ±50/±150/±300/0 ps coverage are unchanged. All workers
+use global SPICE slots. The separate follow-up record is diagnostic and never
+marks the full campaign, architecture screen or complete PHY qualified.
