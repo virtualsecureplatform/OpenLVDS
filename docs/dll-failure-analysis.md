@@ -103,3 +103,18 @@ monitor are being compared with captured coupling capacitances. The repair's
 new GDS passes DRC/LVS/extraction/audit, but its electrical response has not yet
 been established. The old coordinator is draining submitted work without new
 dispatch; the RX characterization remains intact.
+
+
+The loaded-baseline SS/0 °C +150 ps control now reproduces the missed fault:
+BAD stays below 4.5 µV in 120–160 ns while UF−DF averages 89.51 mV. Its
+comparator O rises from about 0.55 V at 120 ns to 0.69 V at 160 ns without
+asserting POS. This makes captured capacitance a demonstrated contributor;
+it does not exclude further native resistance or junction effects.
+
+With monitor resistor lengths divided by four, averaging capacitance multiplied
+by four and comparator branch widths multiplied by four, the same loaded
++150 ps test passes. BAD reasserts at 88.271 ns and stays near 1.8 V throughout
+the original scoring window. Comparator O averages 1.127 V instead of 0.643 V.
+The repaired filtered difference is 85.86 mV. This is one proxy condition,
+not native signoff: quiet ±50 ps, both fault polarities, the remaining corners,
+source-specific loop screening and fresh extracted qualification remain required.

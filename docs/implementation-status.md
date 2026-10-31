@@ -420,8 +420,11 @@ confirmed cause; distributed resistance, device junctions and bias remain
 possible contributors.
 
 Monitor diagnostic `monitor_repair/9a9a9300e6682a18` uses two shared
-slots; its loaded-baseline SS/0 °C +150 ps control is running, with the first
-repair case waiting. Its repaired source divides monitor resistor lengths by four, replicates
+slots. The loaded-baseline SS/0 °C +150 ps control reproduces the missed
+fault (filtered error 89.51 mV, BAD below 4.5 µV). The repaired loaded +150 ps
+case passes: BAD returns high at 88.271 ns and stays near 1.8 V throughout
+120–160 ns; comparator O averages 1.127 V versus 0.643 V in the control.
+Remaining controls and repaired offsets are pending. Its repaired source divides monitor resistor lengths by four, replicates
 the two averaging capacitors four times and increases comparator branch widths
 fourfold. Nominal divider ratios and averaging R×C are preserved. Explicit
 unloaded/loaded baseline controls test the capacitive-loading hypothesis, then
@@ -434,15 +437,15 @@ inactive while this failure is diagnosed. RX characterization continues.
 A source-specific three-corner screen producer now accepts the exact repaired
 source, captures native-finger schematic analog/delay devices with extracted
 PFD/bias, and binds its fixtures, source and producer hashes. Its prepared screen
-`dll_architecture/d8b9a06ef038cd76` has not run. The repaired layout
+`dll_architecture/d8b9a06ef038cd76` is queued on one shared simulator slot. The repaired layout
 `dll_layout/88342cdbe6c80ac2` passes DRC (zero errors), strict LVS, exact RC
 extraction and the independent topology audit. It has 518 devices and 15
 verified public ports. Further exact degree-8 reduction
 `schur_e4b240c20b314964` retains 53,508 resistors and 14,631 resistor-graph
 nodes, with four passing sparse witnesses at 10,035 protected terminals
 (maximum current difference 3.91e-13 A). The new native qualification
-`0cc06862af2fae63` is prepared but not dispatched. No
-electrical repair results are available yet. Advancement accepts an explicit
+`0cc06862af2fae63` is prepared but not dispatched. The first loaded +150 ps proxy passes; full native electrical qualification
+remains pending. Advancement accepts an explicit
 matching screen; it cannot reuse the old architecture evidence for new source
 bytes. A hold survives restarting the same candidate; selecting a new candidate
 clears only the previous OTA hold/stage, preserving the RX and CP settings.
