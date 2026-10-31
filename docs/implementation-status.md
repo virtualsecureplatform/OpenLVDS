@@ -15,9 +15,13 @@ Current bring-up evidence on 2026-10-31:
   progression are held. Measured model and full native qualification remain gated.
 - Captured native diagnosis `dll_loop_diagnosis/43f094030fe944fc` separates
   32.977 mV cycle-mean movement from at most 1.659 mV cycle ripple. This supports
-  slow startup settling; it does not establish stability. Its four native AC
-  diagnostics are queued under the shared simulator budget, with no qualification
-  verdict. New passive-preset experiment `dll_architecture/9e0ebce74ac41dcd`
+  slow startup settling; it does not establish stability. Three of its four native
+  AC fixtures are complete. The completed clock-low G/Y pair estimates 271 kHz
+  unity-gain frequency, 93.54° phase margin and 42.44 dB gain margin
+  (`partial_clock0_diagnostic.json` in the diagnostic directory). These use
+  trajectory-inferred delay gain and do not provide an independent model or
+  transient-step validation; no qualification verdict is issued. The fourth AC
+  fixture remains queued. New passive-preset experiment `dll_architecture/9e0ebce74ac41dcd`
   changes only the startup divider to nominal 1.2 V. It retains W8/C4, the actual
   fast-reset PFD, fixed supplies and original three source-screen fixtures.
   Physical candidate `dll_layout/dfb62f717c9bdb42` passes DRC/LVS and independent
