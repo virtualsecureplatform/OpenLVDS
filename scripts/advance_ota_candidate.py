@@ -68,6 +68,12 @@ def main():
     atomic(config,old)
     wait_for(['completed'])
     report=model(True)
+    atomic(workflow,dict(status='qualifying_limiting_corner_recovery',qualification=str(relative),qualified_phy=False))
+    result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/qualify_dll_recovery.py',str(relative),
+        '--stability',str(report.relative_to(ROOT)),'--jobs','6'],cwd=ROOT,capture_output=True,text=True)
+    (LAYOUT/'limiting_recovery.log').write_text(result.stdout+result.stderr);result.check_returncode()
+    recovery=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
+    if not json.loads(recovery.read_text())['passed']:raise ValueError('Limiting-corner native recovery failed')
     result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/stage_phy_candidate.py',str(relative)],
         cwd=ROOT,capture_output=True,text=True)
     (LAYOUT/'bundle_prepare.log').write_text(result.stdout+result.stderr);result.check_returncode()
@@ -104,8 +110,9 @@ def main():
         ['--bundle',relative_bundle,'--fast-rc','--jobs','6'],'bundle_regression.log')
     atomic(workflow,dict(status='link_matrix_complete_remaining_signoff',qualification=str(relative),
         stability=str(report.relative_to(ROOT)),bundle=relative_bundle,qualified_phy=False,
+        recovery=str(recovery.relative_to(ROOT)),
         remaining=['actual_operating_range_ota_characterization','native_readiness_replay',
-                   'worst_model_corner_recovery','release_checker_and_exact_byte_promotion']))
+                   'release_checker_and_exact_byte_promotion']))
 
 
 if __name__=='__main__':main()
