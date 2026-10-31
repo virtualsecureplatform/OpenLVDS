@@ -31,18 +31,25 @@ Current bring-up evidence on 2026-10-31:
   The preset-only layout retains this gradient (`dll_stage_loading/33a2a3dbcde34f95`).
   New `dll_layout/9368e5712c444b03` uses five local delay islands (four sections
   plus the existing replica), preserving all 519 devices and the preset source.
-  DRC/LVS pass; independent extraction/audit is running. The preset-only waiting
+  DRC/LVS and independent extraction/connectivity audit pass. Measured incident
+  routing capacitances now match across all four sections: N = 34.472 fF,
+  S = 36.991 fF, B = 36.310 fF and PCTRL = 106.921 fF
+  (`dll_stage_loading/96132db0d653d2ff`). The preset-only waiting
   native handoff was archived and superseded without stopping any simulation.
-  The local-island handoff (`queue_preset_native_screen.py`, receipt
-  `dll_layout/9368e5712c444b03/native_handoff.json`) waits for the same source
-  screens and its own RC audit before preparing/running native screening. It
-  holds on failed gates, ended producers or changed inputs. Native acquisition,
-  matched extracted loading and omitted-pulse timing remain unproven.
+  Exact resistor-only profile `dll_layout/schur_513f603fc5e6c3aa` further reduces
+  146,526 resistors to 43,836 while preserving every device, capacitor and port.
+  Four independent terminal-admittance witnesses and a fresh connectivity audit
+  pass; native transient qualification remains mandatory. Its handoff
+  (`queue_preset_native_screen.py`, receipt
+  `dll_layout/schur_513f603fc5e6c3aa/native_handoff.json`) waits for the same source
+  screens before preparing/running native screening. It
+  holds on failed gates, ended producers or changed inputs. Native acquisition
+  and omitted-pulse timing remain unproven.
 - The early-publication RX (`rx_early_physical_v1`) passes physical DRC/LVS,
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
   cases pass (128 words). Its original 480-condition aperture campaign
-  (`rx_aperture/20b04dcf527af283`) is running, with 21 completed conditions
+  (`rx_aperture/20b04dcf527af283`) is running, with 23 completed conditions
   passing and no completed failures. The complete SS/40 °C group
   at 200 ps clock/data slew passes, with largest guarded setup/hold bounds of
   210/50 ps. Other slew/PVT coverage remains active. The preceding three
@@ -67,12 +74,20 @@ Current bring-up evidence on 2026-10-31:
   measured-DLL qualification.
 - Loaded receiver replay `clock_restore/50565a94b3b04171` retains the captured
   analog receiver pins, exact native analog/data receivers, shared bias and
-  early-RX digital load. Its captured and sharper-edge control fixtures are
-  running under the same six-slot budget. In the captured fixture's 15–35 ns
-  prefix, eight input rising/falling crossings produce only five output edges
-  of each polarity. This reproduces pulse loss without the live TX/driver;
+  early-RX digital load. The complete captured-input replay reproduces the link
+  clock loss: 25 input rising crossings produce only 16 output rising edges
+  during 15–75 ns. The sharper-edge control fixture remains running under the
+  same six-slot budget. This reproduces pulse loss without the live TX/driver;
   the complete control comparison remains pending and is diagnostic only.
-- Unit suite: 283 tests, 278 passed and five skipped. The shared native budget
+- Matched `buf_8` TX experiment (`tx_buffer8_physical`) passes the full 54-case
+  RTL/native functional regression (2,373,588 bits;
+  `tx_buffer8/ed7e08ca1a8e22f7`), physical flow/topology and independent RC audit.
+  Its native TX network SHA256 starts `d849e11e2470e9ec`. Diagnostic
+  `tx_candidate_link/b1c1b53a01dc8564` replaces only TX in the saved SS/40 °C/
+  410 MHz/45% duty/+100 ps skew link, preserving every clock/data stimulus,
+  analog/RX/DLL circuit and scoring window. It is queued; the current staged
+  candidate assembly continues to require buf_4 and no release is published.
+- Unit suite: 285 tests, 280 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
