@@ -1059,8 +1059,8 @@ The clamped/captured case now also completes with zero missing edges. Its
 diagnostic latency is 308.507–441.512 ps, compared with 296.120–412.380 ps for
 the unclamped schematic. CO ranges 0.0773–1.6157 V, while CO_TRACK moves
 0.5034–1.1273 V under loading. Thus the reference is not stiff and this test
-does not establish a speed improvement. The clamped sharper-input case remains
-the final schematic gate.
+does not establish a speed improvement. The clamped sharper-input case also completes with zero missing edges. All
+three original source comparisons are complete.
 
 The physical path is prepared behind both completed, zero-missing-edge clamped
 replays. It remeasures all three schematic traces and verifies that their exact
@@ -1076,23 +1076,31 @@ scripts/env.sh --tools --ngspice /usr/bin/python3 \
 ```
 
 Use the base `/usr/bin/python3` with NumPy inside the physical tools shell for
-the source-waveform recheck. Once this command produces a passing layout, use
-its printed path as `CLAMP_LAYOUT` below:
+the source-waveform recheck. Current layout `receiver_layout/f576c6a98d893590`
+passes DRC (zero errors), LVS and independent RC audit. It retains 85 devices
+and all nine ports. Its native network SHA256 begins `ad5ac6a6d26b0b33`. The
+following steps have prepared and started its native comparison:
 
 ```sh
-scripts/env.sh --tools python3 scripts/receiver_candidate_rc.py CLAMP_LAYOUT
+scripts/env.sh --tools python3 scripts/receiver_candidate_rc.py \
+  build/diagnostics/receiver_layout/f576c6a98d893590
 scripts/env.sh --ngspice python3 scripts/probe_receiver_clamp_candidate.py prepare \
-  build/diagnostics/clock_restore/50565a94b3b04171 CLAMP_LAYOUT
-scripts/env.sh --ngspice python3 scripts/probe_receiver_clamp_candidate.py run CLAMP_REPLAY
+  build/diagnostics/clock_restore/50565a94b3b04171 \
+  build/diagnostics/receiver_layout/f576c6a98d893590
+scripts/env.sh --ngspice python3 scripts/probe_receiver_clamp_candidate.py run \
+  build/diagnostics/receiver_replay/7b46eef599fb6e55
 ```
 
-Replace `CLAMP_REPLAY` with the prepared replay path. Native preparation checks
+Native preparation checks
 the exact source, physical/extraction proofs and current schematic witnesses;
 the replay observes PP/PN/CO, both restoration nodes and CO_TRACK. It preserves
 the original two pin stimuli, shared bias, native early RX load and scoring.
 `probe_receiver_candidate_link.py` dispatches to this replay's own verifier
 before integration, so a passing gain-only report cannot stand in for a clamp
-report. No new physical result or full-link qualification is claimed yet.
+report. Matching full-link fixture `receiver_candidate_link/14504581ae296019`
+is prepared and held behind both completed, zero-missing-edge native replays.
+Physical checks pass, while native clock recovery, all-PVT component behavior
+and full-link qualification remain unproven.
 
 ## Xyce compatibility check
 

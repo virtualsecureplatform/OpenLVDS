@@ -179,7 +179,8 @@ Current bring-up evidence on 2026-10-31:
   Its CO reaches 1.792 V. The clamped/captured case also completes with zero
   missing edges; its latency is 309–442 ps and CO_TRACK moves 0.503–1.127 V,
   so reference stiffness and native performance remain unproven. Its sharper
-  control remains pending. The schematic/native
+  control also completes with zero missing edges; all three source comparisons
+  are complete. The schematic/native
   contrast implicates extracted parasitics, but does not isolate wire capacitance
   from explicit extracted device junction geometry. No physical receiver fix
   or clamp improvement is claimed yet.
@@ -189,7 +190,12 @@ Current bring-up evidence on 2026-10-31:
   agreement, preserve original device order except the four added clamp devices,
   and bind source/physical/native proofs. The real incomplete-source preflight
   rejects layout without creating an artifact. Full-link gating selects the
-  clamp replay's own verifier. No new GDS or native clamp result is claimed yet.
+  clamp replay's own verifier. Layout `receiver_layout/f576c6a98d893590`
+  now passes DRC/LVS and independent RC audit (85 devices, nine ports; native
+  SHA256 starts `ad5ac6a6d26b0b33`). Its actual native replay
+  `receiver_replay/7b46eef599fb6e55` is running. Matching full-link fixture
+  `receiver_candidate_link/14504581ae296019` is prepared behind native replay
+  gates. No native clamp or full-link result is claimed yet.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
