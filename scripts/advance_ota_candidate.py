@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Advance an audited OTA layout through native qualification and staged PHY tests."""
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -120,28 +121,67 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD,rx=None,aperture_tabl
     atomic(config,old)
     wait_for(['completed'])
     report=model(True)
+    return finalize(artifact,report,rx,aperture_table,workroot=LAYOUT)
+
+
+def finalize(qualification,stability,rx=None,aperture_table=None,workroot=None):
+    """Resume only after rechecking completed native and all-PVT model proofs."""
+    artifact=Path(qualification).resolve();report=Path(stability).resolve()
+    if not artifact.is_relative_to(ROOT/'build/diagnostics/dll_qualification'):
+        raise ValueError('Use an isolated native qualification')
+    if rx is not None:
+        rx=Path(rx).resolve()
+        if not rx.is_relative_to(ROOT/'build/diagnostics') or aperture_table is None:
+            raise ValueError('Select an audited RX and its explicit aperture table')
+    if aperture_table is not None:
+        aperture_table=Path(aperture_table).resolve()
+        if not aperture_table.is_relative_to(ROOT/'build/characterization/rx_aperture'):
+            raise ValueError('Use a captured RX aperture table')
+    workroot=Path(workroot).resolve() if workroot is not None else artifact/'advancement'
+    if not workroot.is_relative_to(ROOT/'build/diagnostics'):
+        raise ValueError('Keep advancement artifacts under build/diagnostics')
+    manifest=json.loads((artifact/'manifest.json').read_text())
+    if not manifest['identity']['variant'].startswith('ota_'):raise ValueError('Expected an OTA qualification')
+    summary=artifact/'summary.json'
+    if not summary.is_file() or not json.loads(summary.read_text()).get('passed'):
+        raise ValueError('Complete native qualification must pass before downstream advancement')
+    os.environ['OPENLVDS_SPICE']='ngspice'
+    from dll_native_evidence import verify as verify_native
+    from qualify_dll_recovery import inputs as verify_complete_inputs
+    verify_native(artifact)
+    verify_complete_inputs(artifact,report)
+    # Both entry paths share this lease; no resident dispatcher is registered
+    # or modified by the completed-evidence resume path.
+    with (artifact/'.advancement.lock').open('a') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        workroot.mkdir(parents=True,exist_ok=True)
+        return signoff(artifact,report,workroot,rx,aperture_table)
+
+
+def signoff(artifact,report,workroot,rx,aperture_table):
+    relative=artifact.relative_to(ROOT);workflow=workroot/'workflow.json'
     atomic(workflow,dict(status='characterizing_observed_ota_points',qualification=str(relative),qualified_phy=False))
     result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/ota_operating_points.py',str(relative),
         '--stability',str(report.relative_to(ROOT)),'--jobs','6'],cwd=ROOT,capture_output=True,text=True)
-    (LAYOUT/'ota_operating_points.log').write_text(result.stdout+result.stderr);result.check_returncode()
+    (workroot/'ota_operating_points.log').write_text(result.stdout+result.stderr);result.check_returncode()
     operating=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not json.loads(operating.read_text())['passed']:raise ValueError('Observed OTA operating range failed')
     atomic(workflow,dict(status='qualifying_limiting_corner_recovery',qualification=str(relative),qualified_phy=False))
     result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/qualify_dll_recovery.py',str(relative),
         '--stability',str(report.relative_to(ROOT)),'--jobs','6'],cwd=ROOT,capture_output=True,text=True)
-    (LAYOUT/'limiting_recovery.log').write_text(result.stdout+result.stderr);result.check_returncode()
+    (workroot/'limiting_recovery.log').write_text(result.stdout+result.stderr);result.check_returncode()
     recovery=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not json.loads(recovery.read_text())['passed']:raise ValueError('Limiting-corner native recovery failed')
     atomic(workflow,dict(status='qualifying_native_readiness',qualification=str(relative),qualified_phy=False))
     result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/qualify_dll_readiness.py',str(relative),
         '--stability',str(report.relative_to(ROOT)),'--recovery',str(recovery.relative_to(ROOT)),'--jobs','6'],
         cwd=ROOT,capture_output=True,text=True)
-    (LAYOUT/'native_readiness.log').write_text(result.stdout+result.stderr);result.check_returncode()
+    (workroot/'native_readiness.log').write_text(result.stdout+result.stderr);result.check_returncode()
     readiness=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not json.loads(readiness.read_text())['passed']:raise ValueError('Native readiness replay failed')
     result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/stage_phy_candidate.py',str(relative)]+(['--rx',str(rx.relative_to(ROOT))] if rx is not None else []),
         cwd=ROOT,capture_output=True,text=True)
-    (LAYOUT/'bundle_prepare.log').write_text(result.stdout+result.stderr);result.check_returncode()
+    (workroot/'bundle_prepare.log').write_text(result.stdout+result.stderr);result.check_returncode()
     bundle=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not (bundle/'manifest.json').is_file():raise ValueError('Staged PHY manifest missing')
     def bundle_job(status,script,args,log,use_tools=False):
@@ -149,9 +189,9 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD,rx=None,aperture_tabl
         result=subprocess.run(['scripts/env.sh']+(['--tools'] if use_tools else [])+
             ['--ngspice','/usr/bin/python3','scripts/'+script]+args,
             cwd=ROOT,capture_output=True,text=True)
-        (LAYOUT/log).write_text(result.stdout+result.stderr)
+        (workroot/log).write_text(result.stdout+result.stderr)
         if result.returncode:
-            atomic(workflow,dict(status=status+'_requires_diagnosis',bundle=str(bundle.relative_to(ROOT)),log=str((LAYOUT/log).relative_to(ROOT)),qualified_phy=False))
+            atomic(workflow,dict(status=status+'_requires_diagnosis',bundle=str(bundle.relative_to(ROOT)),log=str((workroot/log).relative_to(ROOT)),qualified_phy=False))
             result.check_returncode()
         return result
     relative_bundle=str(bundle.relative_to(ROOT))
@@ -199,15 +239,23 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD,rx=None,aperture_tabl
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--layout',type=Path,default=DEFAULT_LAYOUT,help='Alternate layouts must already have a passing RC audit')
+    entry=parser.add_mutually_exclusive_group()
+    entry.add_argument('--layout',type=Path,default=DEFAULT_LAYOUT,help='Alternate layouts must already have a passing RC audit')
+    entry.add_argument('--qualified-native',type=Path,help='Resume downstream gates from completed native qualification; do not register a dispatcher')
+    parser.add_argument('--all-pvt-stability',type=Path,help='Verified all-PVT model report required with --qualified-native')
     parser.add_argument('--screen',type=Path,default=DEFAULT_SCREEN,help='Architecture screen of the exact candidate source bytes')
     parser.add_argument('--pfd',type=Path,default=DEFAULT_PFD,help='Audited physical PFD matching the architecture screen')
     parser.add_argument('--rx',type=Path,help='Audited isolated RX candidate')
     parser.add_argument('--aperture-table',type=Path,help='Complete or in-progress native table of the selected RX')
     args=parser.parse_args();layout=args.layout.resolve()
-    try:return advance(layout,args.screen.resolve(),args.pfd.resolve(),args.rx.resolve() if args.rx else None,args.aperture_table.resolve() if args.aperture_table else None)
+    if bool(args.qualified_native)!=bool(args.all_pvt_stability):parser.error('--qualified-native requires --all-pvt-stability, and vice versa')
+    if args.qualified_native and (args.screen!=DEFAULT_SCREEN or args.pfd!=DEFAULT_PFD):
+        parser.error('Completed native resume uses its captured screen/PFD; do not select replacements')
+    workflow=(args.qualified_native.resolve()/'advancement/workflow.json') if args.qualified_native else layout/'workflow.json'
+    try:
+        if args.qualified_native:return finalize(args.qualified_native,args.all_pvt_stability,args.rx,args.aperture_table)
+        return advance(layout,args.screen.resolve(),args.pfd.resolve(),args.rx.resolve() if args.rx else None,args.aperture_table.resolve() if args.aperture_table else None)
     except Exception as error:
-        workflow=layout/'workflow.json'
         if workflow.exists():
             previous=json.loads(workflow.read_text());status=previous.get('status','workflow')
             if 'diagnosis' not in status:status+='_requires_diagnosis'

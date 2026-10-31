@@ -27,7 +27,7 @@ Current bring-up evidence on 2026-10-31:
   driver/receiver cases, all 30 native analog receiver cases and eight native
   drivers. Remaining native driver refresh continues. Historical numerical
   failures remain archived separately from the current-proof receipt.
-- Unit suite: 256 tests, 251 passed and five skipped. The shared native budget
+- Unit suite: 261 tests, 256 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
@@ -1270,3 +1270,18 @@ pass (propagation 1.37523–1.39375 ns). The independent current-proof receipt n
 verifies 83/90 cases. Native SS/25 and FS/0 drivers are active; five subsequent
 native driver cases remain stale until refreshed. The exact-RC integration
 probe remains queued under the six-slot limit, with no result claimed.
+
+The downstream workflow now has an explicit completed-native resume path:
+`advance_ota_candidate.py --qualified-native ... --all-pvt-stability ...`.
+It reanalyzes complete native qualification and verifies the all-PVT model before
+any downstream command. It carries the selected RX/table through all original
+operating-point, recovery, readiness, RTL, RC, diagnostic, full-link and release
+gates, without preparing a new native campaign or modifying resident dispatcher
+configuration. A qualification-wide nonblocking lock prevents duplicate owners.
+
+Tests cover incomplete/failed/native-damaged/model-damaged evidence, rejection
+of CP artifacts, selected RX preservation, unchanged resident configuration and
+exclusive advancement ownership. An actual attempt against the currently
+incomplete native campaign stops at the native gate, creates no advancement
+directory and starts no downstream job. Unit suite: 261 tests, 256 passed, five
+skipped. Active qualification producers and fixtures remain unchanged.

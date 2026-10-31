@@ -59,3 +59,69 @@ class SelectedRXAperture(unittest.TestCase):
             result=verify_aperture(Path('/bundle'),Path('/table.json'))
             self.assertTrue(result['qualified'])
             read.assert_called_once_with(Path('/table.json'),'selected-native-rx','tt',25)
+
+
+class CompletedNativeResume(unittest.TestCase):
+    def setup_case(self,root,passed=True):
+        artifact=root/'build/diagnostics/dll_qualification/native';artifact.mkdir(parents=True)
+        (artifact/'manifest.json').write_text(json.dumps(dict(identity=dict(variant='ota_w8_c4'))))
+        (artifact/'summary.json').write_text(json.dumps(dict(passed=passed)))
+        stability=artifact/'stability_all_pvt/generation/summary.json'
+        config=root/'build/diagnostics/resident_jobs/config.json';config.parent.mkdir(parents=True)
+        config.write_bytes(b'{"disabled":["qualify_cp","qualify_ota"]}')
+        return artifact,stability,config
+
+    def test_failed_or_incomplete_native_evidence_cannot_start_signoff(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);artifact,model,config=self.setup_case(root,False)
+            with patch.object(advance,'ROOT',root),patch.object(advance,'signoff') as run:
+                with self.assertRaisesRegex(ValueError,'Complete native qualification'):advance.finalize(artifact,model)
+                (artifact/'summary.json').unlink()
+                with self.assertRaisesRegex(ValueError,'Complete native qualification'):advance.finalize(artifact,model)
+            run.assert_not_called();self.assertFalse((artifact/'advancement').exists())
+            self.assertEqual(config.read_bytes(),b'{"disabled":["qualify_cp","qualify_ota"]}')
+
+    def test_resume_revalidates_native_and_all_pvt_model_without_dispatcher_changes(self):
+        import os
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);artifact,model,config=self.setup_case(root)
+            before=config.read_bytes();rx=root/'build/diagnostics/selected_rx'
+            aperture=root/'build/characterization/rx_aperture/selected/table.json'
+            with patch.object(advance,'ROOT',root),patch.dict(os.environ),\
+                 patch('dll_native_evidence.verify') as native,patch('qualify_dll_recovery.inputs') as inputs,\
+                 patch.object(advance,'signoff',return_value='finished') as run:
+                self.assertEqual(advance.finalize(artifact,model,rx,aperture),'finished')
+                native.assert_called_once_with(artifact);inputs.assert_called_once_with(artifact,model)
+                run.assert_called_once_with(artifact,model,artifact/'advancement',rx,aperture)
+            self.assertEqual(config.read_bytes(),before)
+
+    def test_damaged_native_or_model_proof_stops_before_any_downstream_job(self):
+        import os
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);artifact,model,config=self.setup_case(root)
+            with patch.object(advance,'ROOT',root),patch.dict(os.environ),patch.object(advance,'signoff') as run:
+                with patch('dll_native_evidence.verify',side_effect=ValueError('changed native trace')),patch('qualify_dll_recovery.inputs') as inputs:
+                    with self.assertRaisesRegex(ValueError,'changed native trace'):advance.finalize(artifact,model)
+                    inputs.assert_not_called()
+                with patch('dll_native_evidence.verify'),patch('qualify_dll_recovery.inputs',side_effect=ValueError('incomplete all-PVT model')):
+                    with self.assertRaisesRegex(ValueError,'all-PVT'):advance.finalize(artifact,model)
+            run.assert_not_called();self.assertFalse((artifact/'advancement').exists())
+
+    def test_duplicate_signoff_owner_cannot_launch_another_pipeline(self):
+        import fcntl,os
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);artifact,model,_=self.setup_case(root)
+            with (artifact/'.advancement.lock').open('a') as lock:
+                fcntl.flock(lock,fcntl.LOCK_EX)
+                with patch.object(advance,'ROOT',root),patch.dict(os.environ),patch('dll_native_evidence.verify'),\
+                     patch('qualify_dll_recovery.inputs'),patch.object(advance,'signoff') as run:
+                    with self.assertRaises(BlockingIOError):advance.finalize(artifact,model)
+                    run.assert_not_called()
+
+    def test_resume_rejects_charge_pump_fallback(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);artifact,model,_=self.setup_case(root)
+            (artifact/'manifest.json').write_text(json.dumps(dict(identity=dict(variant='cp_baseline'))))
+            with patch.object(advance,'ROOT',root),patch.object(advance,'signoff') as run:
+                with self.assertRaisesRegex(ValueError,'Expected an OTA'):advance.finalize(artifact,model)
+                run.assert_not_called()

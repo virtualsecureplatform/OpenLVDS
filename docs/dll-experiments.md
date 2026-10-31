@@ -857,3 +857,27 @@ is a diagnostic override. The required stressed diagnostic and full qualificatio
 still require measured DLL phase, original training, a current complete aperture
 table and the six-fixture certificate. No result from this supplementary run can
 release a PHY. The shared six-slot pool also applies to this queued test.
+
+## Resume downstream signoff after standalone native qualification
+
+A campaign owned by a standalone service can continue after complete native and
+all-PVT model validation, without registering another resident dispatcher:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/advance_ota_candidate.py --qualified-native build/diagnostics/dll_qualification/1d201e9ed2f89f56 --all-pvt-stability ALL_PVT_REPORT --rx build/diagnostics/rx_early_physical_v1 --aperture-table build/characterization/rx_aperture/20b04dcf527af283/table.json
+```
+
+Replace `ALL_PVT_REPORT` with the completed report path. Entry reanalyzes the
+entire native qualification and verifies all 15 model corners before starting
+any downstream work. Incomplete/failed/stale proofs stop advancement; a CP
+artifact is rejected. This path leaves resident configuration and native
+fixtures unchanged. Both entry paths take one qualification-wide advancement
+lock, so a second owner cannot launch duplicate signoff jobs.
+
+Resume writes logs and `workflow.json` under the qualification's `advancement/`
+directory. The same existing gates remain: observed/guarded OTA operating points,
+limiting-corner recovery, readiness, selected-macro RTL, six-fixture RC comparison,
+measured-DLL-phase diagnostic, complete selected-RX aperture table, full link
+matrix, strict release recheck and exact-byte local promotion. Selecting an RX
+requires its explicit aperture table. The original resident-dispatch entry
+continues to use the selected layout's workflow directory.
