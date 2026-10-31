@@ -458,7 +458,7 @@ and actual differential input, offset and thin-device terminal checks. It keeps
 corner/condition correlations instead of combining unrelated extremes. This
 production gate has not run and requires passing native/model evidence first.
 
-The current host test run completes 200 tests: 195 pass and five skip for the
+The current host test run completes 203 tests: 198 pass and five skip for the
 container/analysis backends checked separately in earlier runs. Native W8/C4
 qualification, the complete RX aperture table, operating-point characterization,
 readiness replay, limiting-corner recovery, six-fixture RC certification and the
@@ -666,3 +666,22 @@ post-route connectivity, GDS/netlist/audit hashes and matched reference fixtures
 before preparing native −850/+850/0 ps capture probes. The probe coordinator is
 active, waiting for the shared simulation slots. No physical capture or
 closed-loop pass is claimed yet.
+
+
+The local-port native SS/0 °C quiet 0 ps follow-up passes: BAD remains below
+0.713 nV in 120–160 ns, with UF−DF = −1.595 mV. Its native waveform is
+`d9081dfbd79416c63fd16120a83d020a8e4cd976e2a6e5ef2763af8eade0a26f`.
+The −150 ps follow-up is running.
+
+The physical internal-Q-reset variant fails the −850 ps capture control:
+UP−DN = +260.742 mV, close to the preceding native PFD's +261.069 mV.
+The passing schematic controls therefore did not predict a working physical
+repair. This candidate remains unselected, with +850/0 ps controls continuing.
+A distinct single-AOI reset experiment replaces the two-gate coincidence/clear
+chain with `a22oi_4`, using a high-tied fourth input to implement
+`clear_b = !(raw_up & raw_dn | disallow)`. A separate `nand2_1` derives disallow
+from RESET_N/PD_ENABLE outside the Q-to-reset critical path. The new structural
+policy checks this exact wiring, high ties, direct clocks and buffered outputs.
+Its first build stopped at lint on a reserved instance name and is preserved;
+corrected `pfd_fast_reset_physical_v2` is undergoing physical implementation.
+No native success or acquisition result is claimed for it.

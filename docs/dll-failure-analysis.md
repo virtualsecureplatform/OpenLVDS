@@ -279,3 +279,19 @@ zero LVS device/net/property/pin differences and the new structural check.
 interface rejection. The accepted summary explicitly names `pulse-area-q-reset`
 and archives the producer files; it is not registered as the active PFD.
 Extraction/audit and matched native capture tests are pending.
+
+
+The physical internal-Q-reset candidate's −850 ps probe fails too:
+UP/DN = 0.815017/0.554276 V, raw difference +260.742 mV and filtered
+UF/DF = 0.687823/0.529048 V. Moving coincidence before buf_8 alone is
+insufficient. Its retained report is
+`pfd_physical_capture/390d2193239c4bbe/-850/summary.json`; waveform SHA-256
+is `3868e5fb79b7e5cd56a70c70786f6cd2e85b6361cf581b625eea96a4638e18b4`.
+
+The next hardware experiment shortens the reset logic itself to one AOI gate.
+With disallow = NAND(RESET_N, PD_ENABLE), an a22oi_4 cell with B2 tied high
+implements clear_b = NOT((raw_up AND raw_dn) OR disallow). The raw-Q reset
+path crosses one cell instead of the coincidence AND and following clear gate.
+The enable/reset truth table and separate buf_8 output paths remain required
+by `pfd_fast_reset_policy.py`. This is a timing hypothesis; new physical capture,
+quiet/activity and closed-loop tests are still needed.
