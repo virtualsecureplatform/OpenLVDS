@@ -344,8 +344,8 @@ SS/0 °C, TT/25 °C and FF/0 °C pass the schematic loop screen. Its new layout
 passes DRC, strict LVS, exact RC extraction and the independent RC topology audit.
 The exact network is `0f0c41cbc75c`; its 15 analog ports are verified. Native
 qualification `d4d687cf4e0b5e1e` passes the initial SS/0 °C 0/+50 ps monitor
-cases but fails SS/0 °C ±150/±300 ps and TT/25 °C +150 ps. The old coordinator
-is draining already submitted cases; new dispatch has been retired.
+cases but fails SS/0 °C ±150/±300 ps and TT/25 °C ±150 ps. The old coordinator
+has finished draining submitted cases and is retired; no old-campaign worker remains.
 Its 336-case manifest holds the full matrix until the 24-case native screen and
 measured stability gates pass. The active release remains unchanged.
 
@@ -527,3 +527,22 @@ producer files must match both current files and their captured archive hashes.
 The original and repaired campaign bindings pass these checks. Fault-injection
 unit tests reject changed screened sources, producer files and archived copies.
 Running simulation producers were not modified.
+
+
+The unloaded SS/0 °C +150 ps control passes with BAD reasserting at 28.794 ns;
+the matched loaded control fails, and the repaired loaded control passes at
+88.271 ns. Filtered differences are 90.03, 89.51 and 85.86 mV respectively.
+This controlled triplet strengthens the loading diagnosis. At +300 ps the
+unloaded/loaded controls assert at 22.119/121.023 ns and both pass reference-cycle
+scoring, while the native old layout asserts at 147.595 ns and fails. The proxy
+therefore does not reproduce the full native delay; its original negative-control
+expectation remains recorded as a mismatch. No limits or expectations were edited
+in response to these results.
+
+The original qualification coordinator is confirmed retired after its final
+TT/25 °C −150 ps case failed (no BAD reassertion, filtered difference −93.17 mV).
+The repaired native SS/0 °C +150 ps probe is now running on the actual exact-RC
+network. A between-transient priority handoff held only the slot-free proxy
+coordinator for about 0.15 seconds, then resumed it after the probe acquired its
+slot; no SPICE process was signalled. The native result and remaining proxy
+conditions are pending.

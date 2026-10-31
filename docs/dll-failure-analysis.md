@@ -118,3 +118,18 @@ the original scoring window. Comparator O averages 1.127 V instead of 0.643 V.
 The repaired filtered difference is 85.86 mV. This is one proxy condition,
 not native signoff: quiet ±50 ps, both fault polarities, the remaining corners,
 source-specific loop screening and fresh extracted qualification remain required.
+
+
+The matched unloaded +150 ps control passes, with BAD rising at 28.794 ns and
+comparator O averaging 1.505 V. Its loaded counterpart has a similar filtered
+error (89.51 versus 90.03 mV) but O averages 0.643 V and BAD never reasserts.
+The repaired loaded case restores a passing response at 88.271 ns. These controls
+hold the PFD/bias and analog device definitions constant while adding the captured
+capacitance, establishing a causal loading effect within the proxy.
+
+The +300 ps loaded control instead passes its reference-cycle scoring, with BAD
+rising at 121.023 ns, versus 22.119 ns unloaded. The original native result remains
+a failure at 147.595 ns. The missing distributed resistance and extracted device
+junction geometry remain candidates for the remaining timing difference; they
+have not been isolated. The negative-control expectation is preserved as a
+mismatch. Full native qualification remains necessary.
