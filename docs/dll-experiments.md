@@ -592,3 +592,28 @@ before dispatch. Each case records its producer, manifest and result hashes;
 these diagnostic requests cannot mark the complete campaign or PHY qualified.
 The three architecture loops run independently. Full campaign expansion still
 requires their success and the measured stability gate.
+
+
+## Isolate RX public-output degradation
+
+```sh
+scripts/env.sh --ngspice python3 scripts/probe_rx_publication.py prepare build/characterization/rx_aperture/e9ca7d2f2ae6d61b
+scripts/env.sh --ngspice python3 scripts/probe_rx_publication.py run build/diagnostics/rx_publication/dd89f11b1af99f29 --jobs 1
+```
+
+The six diagnostic cases reuse the original +800 ps setup endpoint for rising
+clock/rising data at SS/0 °C (20 ps clock), TT/0 °C (200 ps clock), and a
+passing FF/0 °C control (200 ps clock), all with 20 ps data slew. Each has the
+original 20 fF external output load and a separate zero-external-load control;
+VALID loading stays unchanged. Actual extracted output-stage drain/source,
+gate and local supply terminals are saved for three successive stages of both
+data outputs and VALID. Resistive connectivity identifies related terminals;
+it never collapses the simulated network or modifies transistor geometry.
+
+Preparation verifies original waveform witnesses, saves unchanged native RC,
+and archives its producer dependencies. Each result reports original-window
+public output measurements, internal voltage limits and difference from its
+source public limits. Cached results are remeasured and changed inputs are
+rejected. All execution uses the global six-slot budget and one diagnostic
+coordinator lease. The zero-load comparison is diagnostic only; the 20 fF
+qualification requirement and 0.36/1.44 V thresholds remain unchanged.

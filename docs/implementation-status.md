@@ -811,3 +811,13 @@ RX diagnosis rechecks all 248 endpoints of the 124 failed conditions. Both
 endpoints fail in every condition; every +800 ps endpoint has high VALID but
 illegal data levels. The detailed receipt and proposed isolated RX controls
 are recorded in `dll-failure-analysis.md`. The complete PHY remains unqualified.
+
+
+RX publication diagnostic `rx_publication/dd89f11b1af99f29` prepares six
+source-bound SS/TT/FF endpoint controls with internal extracted output-stage
+and supply probes. Three preserve 20 fF data loading; three remove only that
+external load to isolate its contribution. All use the original observation
+window. Native terminal discovery passes on the actual extraction. Host tests:
+221 total, 216 passed, 5 skipped. Service `openlvds-rx-publication-controls`
+will use one worker, waiting for a global SPICE slot while the six current DLL
+simulations continue. Results do not qualify RX or the PHY.
