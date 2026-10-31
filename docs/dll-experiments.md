@@ -399,3 +399,31 @@ Staging retains the same exact shared bias in both electrical views. The fast
 baseline is normalized before driver/RX closure protection, avoiding a silent
 replacement of a separately approximated bias during the DLL overlay. The
 complete six-fixture comparison still qualifies the resulting fast view.
+
+
+## Exact-byte local release promotion
+
+After all staged release checks pass, `promote_phy_candidate.py BUNDLE` repeats
+them from their selected proofs before writing a package. It preserves the exact
+tested full/fast libraries, copies eight macro GDS/LEF pairs and matching source
+files, and validates each LEF pin set against extraction. Package contents receive
+hashes; an existing package cannot be overwritten with changed bytes. The current
+pointer is replaced only after packaging and source revalidation complete, with
+the preceding pointer retained in the release history.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/promote_phy_candidate.py BUNDLE
+scripts/env.sh --ngspice python3 scripts/released_phy.py inspect
+scripts/env.sh --ngspice python3 scripts/released_phy.py check
+scripts/env.sh --ngspice python3 scripts/released_phy.py link --fast-rc --settled-start --dll-phase
+```
+
+`make release-library` locates the published libraries, GDS/LEF files and matching
+sources; `make release-current` rechecks the published proof selection. The
+schematic is `PACKAGE/source/analog/openlvds.spice`. The RTL snapshot contains the
+15/8-port assembly and captured buf_4 implementation. Release packages live under
+`build/release/packages/`; native waveform evidence remains referenced within
+the OpenLVDS workspace. This is a local macro release, not an independently
+exported evidence archive or an assembled PHY GDS. The canonical development
+flows remain available for subsequent experiments. No package is published while
+any required electrical or link gate is missing or failed.

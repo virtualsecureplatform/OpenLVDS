@@ -23,6 +23,7 @@ outputs. Physical and release checks reject bypassed or asymmetric drivers.
 | Extracted complete-link waveforms and bit checks | `build/link/<case>/<fingerprint>/` |
 | Aggregate extracted regression | `build/regression/summary.json` |
 | Release decision with every missing/failed gate | `build/release/status.json` |
+| Published exact-byte macro library | `build/release/current.json` (`make release-library`) |
 | Isolated OTA bundle release decision | `BUNDLE/release/status.json` (`check_release.py --bundle ...`) |
 
 Behavioral models check logic and ordering only. The functional DLL measures a

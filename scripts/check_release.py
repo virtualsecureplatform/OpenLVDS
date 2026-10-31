@@ -199,7 +199,10 @@ def main():
         except (OSError,ValueError,KeyError,TypeError) as error:check('staged six-fixture RC certificate',False,str(error))
     out=release_out;out.mkdir(parents=True,exist_ok=True)
     result=dict(passed=all(c['passed'] for c in checks),checks=checks)
-    if bundle:result.update(staged_context,checker_sha256=digest(Path(__file__)),staged_gate_sha256=digest(ROOT/'scripts/staged_release.py'))
+    if bundle:result.update(staged_context,checker_sha256=digest(Path(__file__)),
+        staged_gate_sha256=digest(ROOT/'scripts/staged_release.py'),
+        native_gate_sha256=digest(ROOT/'scripts/dll_native_evidence.py'),
+        candidate_rtl_gate_sha256=digest(ROOT/'scripts/verify_candidate_rtl.py'))
     (out/'status.json').write_text(json.dumps(result,indent=2)+'\n')
     failed=[c['name'] for c in checks if not c['passed']]
     print(json.dumps(dict(passed=result['passed'],checks=len(checks),failed=failed),indent=2))

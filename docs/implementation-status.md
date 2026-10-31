@@ -457,7 +457,7 @@ and actual differential input, offset and thin-device terminal checks. It keeps
 corner/condition correlations instead of combining unrelated extremes. This
 production gate has not run and requires passing native/model evidence first.
 
-The current host test run completes 174 tests: 169 pass and five skip for the
+The current host test run completes 184 tests: 179 pass and five skip for the
 container/analysis backends checked separately in earlier runs. Native W8/C4
 qualification, the complete RX aperture table, operating-point characterization,
 readiness replay, limiting-corner recovery, six-fixture RC certification and the
@@ -473,8 +473,8 @@ qualifier gates are replaced by native OTA/PFD-area/readiness evidence for this
 path. All 336 current native fixtures reconstruct exactly under the pinned
 container. A missing-bundle negative control fails with a saved isolated report;
 there is no positive production release result. Advancement runs this gate after
-the matrix. Exact-byte promotion remains unimplemented and blocked by electrical
-qualification, not merely by release-tool availability.
+the matrix. Exact-byte promotion tooling is implemented below; electrical
+qualification and a passing production release remain required.
 
 
 Candidate RTL assembly now uses the matching 15-port analog macro and 8-port
@@ -485,3 +485,15 @@ elaboration. Its source/probe wiring agrees with the characterized SPICE core.
 The canonical development wrapper remains unchanged. Staging now keeps the
 exact shared bias in both views before applying the protected-circuit checks.
 The six-fixture certificate and electrical qualification remain pending.
+
+
+Local release promotion is now implemented. It repeats the staged checker,
+seals exact full/fast library bytes, the eight GDS/LEF macro pairs, the matching
+candidate schematic/RTL sources and evidence summaries, then atomically publishes
+`build/release/current.json`. The prior pointer is retained on gate or copy
+failure. Unit tests cover stale/failed input, mandatory reanalysis, byte copying,
+immutable-package rejection and LEF pin mismatches; all eight real macro LEF
+interfaces match the corresponding extraction port sets. No production package
+or current release pointer has been published. The workflow invokes promotion
+only after candidate RTL, native electrical/model/recovery/readiness/OTA gates,
+six-fixture RC certification and all 45 link cases pass.

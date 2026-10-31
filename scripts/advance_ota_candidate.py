@@ -126,9 +126,10 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN):
     (LAYOUT/'bundle_prepare.log').write_text(result.stdout+result.stderr);result.check_returncode()
     bundle=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not (bundle/'manifest.json').is_file():raise ValueError('Staged PHY manifest missing')
-    def bundle_job(status,script,args,log):
+    def bundle_job(status,script,args,log,use_tools=False):
         atomic(workflow,dict(status=status,qualification=str(relative),bundle=str(bundle.relative_to(ROOT)),qualified_phy=False))
-        result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/'+script]+args,
+        result=subprocess.run(['scripts/env.sh']+(['--tools'] if use_tools else [])+
+            ['--ngspice','/usr/bin/python3','scripts/'+script]+args,
             cwd=ROOT,capture_output=True,text=True)
         (LAYOUT/log).write_text(result.stdout+result.stderr)
         if result.returncode:
@@ -136,6 +137,12 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN):
             result.check_returncode()
         return result
     relative_bundle=str(bundle.relative_to(ROOT))
+    if (bundle/'rtl_validation/current.json').exists():
+        from verify_candidate_rtl import verify as verify_candidate_rtl
+        verify_candidate_rtl(bundle)
+    else:
+        bundle_job('verifying_candidate_rtl','verify_candidate_rtl.py',
+            [relative_bundle],'bundle_rtl.log',use_tools=True)
     bundle_job('validating_six_fixture_rc','validate_fast.py',
         ['--bundle',relative_bundle,'--resume','--jobs','6'],'bundle_rc.log')
     from rc_certificate import valid
@@ -159,11 +166,16 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN):
         ['--bundle',relative_bundle,'--stability',str(report.relative_to(ROOT)),
          '--recovery',str(recovery.relative_to(ROOT)),'--readiness',str(readiness.relative_to(ROOT)),
          '--ota-operating-points',str(operating.relative_to(ROOT))],'bundle_release.log')
-    atomic(workflow,dict(status='link_matrix_complete_remaining_signoff',qualification=str(relative),
-        stability=str(report.relative_to(ROOT)),bundle=relative_bundle,qualified_phy=False,
+    bundle_job('promoting_tested_phy','promote_phy_candidate.py',[relative_bundle],'bundle_promotion.log')
+    from released_phy import current
+    package,released_bundle,_=current()
+    if released_bundle!=bundle:raise ValueError('Published release belongs to another candidate')
+    atomic(workflow,dict(status='released',qualification=str(relative),
+        stability=str(report.relative_to(ROOT)),bundle=relative_bundle,qualified_phy=True,
+        package=str(package.relative_to(ROOT)),
         recovery=str(recovery.relative_to(ROOT)),readiness=str(readiness.relative_to(ROOT)),
         ota_operating_points=str(operating.relative_to(ROOT)),
-        remaining=['exact_byte_promotion']))
+        remaining=[]))
 
 
 def main():

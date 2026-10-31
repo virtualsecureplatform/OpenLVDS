@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-.PHONY: setup ngspice tools rtl rtl-smoke analog analog-corners dll-clocks layout digital-physical extract fast-rc compare-rc link regression characterize openpll test release
+.PHONY: setup ngspice tools rtl rtl-smoke analog analog-corners dll-clocks layout digital-physical extract fast-rc compare-rc link regression characterize openpll test release release-current release-library
 setup:
 	./scripts/setup.sh
 ngspice:
@@ -40,3 +40,7 @@ test:
 	./scripts/env.sh python3 -m unittest discover -s tests
 release:
 	./scripts/env.sh python3 scripts/check_release.py
+release-current:
+	./scripts/env.sh --ngspice python3 scripts/released_phy.py check
+release-library:
+	./scripts/env.sh --ngspice python3 scripts/released_phy.py inspect
