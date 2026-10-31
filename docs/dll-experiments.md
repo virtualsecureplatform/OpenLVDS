@@ -843,3 +843,17 @@ It acquires the same shared native slot as other simulations and stops on the
 first failed case. Tests independently derive sampled words from serial events
 at actual jittered clock edges and reject corrupted, invalid or incomplete
 waveforms.
+
+A supplementary exact-RC data-path diagnostic can expose TX/receiver integration
+issues while native DLL and approximate-RC qualification run:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/simulate_link.py --bundle build/diagnostics/phy_candidate/8f364c6a8fdabafb --diagnostic --settled-start --bits 32 --process ss --temperature 40 --mhz 410 --duty .45 --skew-ps 100 --training-ns 60
+```
+
+This uses the actual selected full-RC TX, drivers, analog receivers and early RX,
+with ideal quarter-phase clocks and fixed-supply DC startup. Its 60 ns training
+is a diagnostic override. The required stressed diagnostic and full qualification
+still require measured DLL phase, original training, a current complete aperture
+table and the six-fixture certificate. No result from this supplementary run can
+release a PHY. The shared six-slot pool also applies to this queued test.

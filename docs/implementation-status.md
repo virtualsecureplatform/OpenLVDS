@@ -1237,3 +1237,13 @@ actual completed native guarded witnesses correctly (rising setup 120/210 ps and
 falling-clock hold 50 ps). Unit suite: 256 tests, 251 passed, five skipped.
 The analyzer's runner fingerprint gives future link runs a fresh identity; no
 active native DLL, aperture, component or RC producer was modified.
+
+Supplementary exact-RC integration probe `openlvds-early-exact-link-probe` is
+queued under the six-slot budget. Its artifact is
+`build/link/ss_40_410m_d0.45_s100_e0_ideal_32/6735242e52a2`. It uses 32 bits at
+SS/40 °C, 410 MHz, 45% duty, +100 ps data skew and 100 ps peak-to-peak jitter,
+actual full-RC data-path macros, ideal quarter-phase clocks and solved fixed
+supplies. A 60 ns diagnostic training override shortens this supplementary test;
+it does not replace the required measured-DLL-phase diagnostic or full trained
+link matrix. The new window analyzer is committed as `d9d73eb`; this producer is
+now held unchanged while the test runs. No integration result is claimed yet.
