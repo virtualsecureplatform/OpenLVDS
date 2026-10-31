@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import re
 
-from dll_campaign import bias_reference_count
+from dll_campaign import bias_reference_count, closure
 from dll_measurements import read_wave
 from dll_qualification_measurements import compare
 from qualify_dll_candidate import validate, evaluate, phase_fixture, loop_fixture, screen_status
@@ -18,6 +18,16 @@ FIELDS=('kind','process','temperature','mhz','duty','offset_ps','reference_slew_
 
 
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def protected_closure(library,name):
+    lines=[]
+    for line in closure(library,[name]).splitlines():
+        words=line.split()
+        if not words or words[0].startswith('*'):continue
+        if words[0].lower()=='.ends':words=['.ends']
+        lines.append(' '.join(words).lower())
+    return '\n'.join(lines)
 
 
 def architecture_sources(root,manifest):
@@ -44,6 +54,21 @@ def architecture_sources(root,manifest):
         if (not current.is_relative_to(ROOT/'scripts') or not archive.is_relative_to(screen/'inputs/scripts') or
             digest(current)!=value or digest(archive)!=value):
             raise ValueError('Architecture screen producer or its archive changed: '+name)
+    native_file=Path(root)/'full.spice'
+    if digest(native_file)!=identity['full_library_sha256']:
+        raise ValueError('Native DLL library changed')
+    library=native_file.read_text()
+    protected={name:protected_closure(library,name) for name in ['lvds_pfd','lvds_bias']}
+    tasks=[t for t in captured['tasks'] if t['spec'].get('variant')==identity['variant'] and t['spec']['kind']=='loop']
+    if len(tasks)!=3:raise ValueError('Need three source-matched architecture fixtures')
+    for task in tasks:
+        path=(screen/task['id']/'library.spice').resolve()
+        if not path.is_relative_to(screen) or digest(path)!=task['files']['library.spice']:
+            raise ValueError('Architecture library changed')
+        text=path.read_text()
+        for name,expected in protected.items():
+            if protected_closure(text,name)!=expected:
+                raise ValueError('Architecture screen differs from the native '+name+' circuit')
 
 
 def signature(spec,fast=False):

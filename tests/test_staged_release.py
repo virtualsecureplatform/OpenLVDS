@@ -65,10 +65,19 @@ class ArchitectureSourceBinding(unittest.TestCase):
         (layout/'candidate.spice').write_text('exact source\n');(screen/'inputs/ota_w8_c4.spice').write_text('exact source\n')
         scripts=root/'scripts';scripts.mkdir();producer=scripts/'screen_repaired_dll.py';producer.write_text('producer version one\n')
         archive=screen/'inputs/scripts/screen_repaired_dll.py';archive.write_bytes(producer.read_bytes())
-        (screen/'manifest.json').write_text(json.dumps(dict(identity=dict(producer_code={producer.name:native.digest(producer)}))))
+        library=('.subckt lvds_pfd REF FB RESET_N PD_ENABLE UP DN VDDD VSS\nC1 UP VSS 2f\n.ends lvds_pfd\n'
+                 '.subckt lvds_bias IREF NB VDDIO VSS\nC2 IREF VSS 3f\n.ends lvds_bias\n')
+        tasks=[]
+        for name in ['ss_0','tt_25','ff_0']:
+            folder=screen/name;folder.mkdir();(folder/'library.spice').write_text(library)
+            tasks.append(dict(id=name,spec=dict(variant='ota_w8_c4',kind='loop'),
+                              files={'library.spice':native.digest(folder/'library.spice')}))
+        (screen/'manifest.json').write_text(json.dumps(dict(identity=dict(producer_code={producer.name:native.digest(producer)}),tasks=tasks)))
         q=root/'build/diagnostics/dll_qualification/native';q.mkdir(parents=True)
+        (q/'full.spice').write_text(library)
         manifest=dict(identity=dict(screen=str(screen.relative_to(root)),screen_manifest_sha256=native.digest(screen/'manifest.json'),
-            variant='ota_w8_c4',full_models=dict(layout=str(layout.relative_to(root)),source_sha256=native.digest(layout/'candidate.spice'))))
+            full_library_sha256=native.digest(q/'full.spice'),variant='ota_w8_c4',
+            full_models=dict(layout=str(layout.relative_to(root)),source_sha256=native.digest(layout/'candidate.spice'))))
         return q,manifest,screen,producer,archive
 
     def test_changed_screened_source_cannot_qualify_the_physical_candidate(self):
@@ -78,6 +87,34 @@ class ArchitectureSourceBinding(unittest.TestCase):
                 native.architecture_sources(q,m)
                 (screen/'inputs/ota_w8_c4.spice').write_text('different source\n')
                 with self.assertRaisesRegex(ValueError,'differs from the physical'):
+                    native.architecture_sources(q,m)
+
+    def test_native_pfd_and_bias_must_match_the_actual_screened_circuits(self):
+        for token in ['C1 UP VSS 2f','C2 IREF VSS 3f']:
+            with self.subTest(circuit=token),tempfile.TemporaryDirectory() as directory:
+                root=Path(directory).resolve();q,m,_,_,_=self.fixture(root)
+                path=q/'full.spice';path.write_text(path.read_text().replace(token,token[:-2]+'9f'))
+                m['identity']['full_library_sha256']=native.digest(path)
+                with patch.object(native,'ROOT',root):
+                    with self.assertRaisesRegex(ValueError,'differs from the native'):
+                        native.architecture_sources(q,m)
+
+    def test_unchanged_top_adapter_cannot_hide_a_different_physical_detector(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory).resolve();q,m,screen,_,_=self.fixture(root)
+            original=(q/'full.spice').read_text();start=original.index('.subckt lvds_bias')
+            tail=original[start:]
+            detector=('.subckt lvds_pfd REF FB RESET_N PD_ENABLE UP DN VDDD VSS\n'
+                      'XPHY UP DN lvds_pfd_physical\n.ends lvds_pfd\n'
+                      '.subckt lvds_pfd_physical UP DN\nCLOAD UP DN 2f\n.ends lvds_pfd_physical\n')
+            (q/'full.spice').write_text(detector+tail);m['identity']['full_library_sha256']=native.digest(q/'full.spice')
+            saved=json.loads((screen/'manifest.json').read_text())
+            for task in saved['tasks']:
+                path=screen/task['id']/'library.spice';path.write_text(detector.replace('CLOAD UP DN 2f','CLOAD UP DN 3f')+tail)
+                task['files']['library.spice']=native.digest(path)
+            (screen/'manifest.json').write_text(json.dumps(saved));m['identity']['screen_manifest_sha256']=native.digest(screen/'manifest.json')
+            with patch.object(native,'ROOT',root):
+                with self.assertRaisesRegex(ValueError,'native lvds_pfd'):
                     native.architecture_sources(q,m)
 
     def test_current_producer_and_archived_copy_must_both_match(self):
