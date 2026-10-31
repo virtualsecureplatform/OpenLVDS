@@ -1381,3 +1381,33 @@ Both original native cases must complete with every input period producing
 exactly one output edge before it can run either campaign. The scientific
 children repeat the native waveform/input/producer checks. No downstream
 simulation or release result is claimed at preparation.
+
+The wider-input native trace reaches 28.365 ns while still running. Its first
+short negative pin pulse fails to restore the output: over 24.5–26.5 ns, CO
+peaks at 0.810757 V, RESTORE0 stays above 1.744051 V and no output falling
+crossing occurs in 24–27 ns. Both original 80 ns native cases continue to full
+reports; no partial trace is used to qualify or promote the receiver.
+
+The next isolated comparison removes decision-stage doubling while retaining
+input-tail doubling, the stronger clamp and three restoration stages. It returns
+XCT to 64 µm and XC0/XC1/XCD/XCM to 8 µm, their original widths. All other
+devices, including original 20 µm input pairs, are unchanged. This tests whether
+the added decision loading outweighs its extra current: previous native first
+pulse traces show PP−PN minima −66.1 mV before, versus −43.4 mV after, decision
+doubling. Those observations also include the restoration change and do not
+isolate a cause. Improvement requires new source and physical/native evidence.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/receiver_light_decision_experiment.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171
+scripts/env.sh --ngspice python3 scripts/receiver_light_decision_experiment.py run \
+  build/diagnostics/receiver_clamp/af769bd4767fe6c2
+```
+
+Service `openlvds-light-decision-source-screen` queues the original three source
+controls with the same fixed supplies, pin traces, native bias/digital load,
+80 ns duration and 15–75 ns scoring window. The unclamped source control remains
+the original gain-doubled source; the clamped architecture and historical strong
+source comparison provide separate context. Three tests verify exact coherent
+decision sizes, all other devices/ports, unchanged control and rejection of
+unexpected topology. This source experiment does not select a physical receiver.

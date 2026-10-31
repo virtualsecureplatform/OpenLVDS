@@ -280,12 +280,25 @@ Current bring-up evidence on 2026-10-31:
   original loaded link diagnostic. Host service `openlvds-wide-input-receiver-followup`
   waits on the native continuation and starts them only after both native cases
   recover every edge exactly once. No component/link simulation has started.
+  The live native trace already fails the first short pulse: over 24.5–26.5 ns,
+  CO peaks at 0.810757 V, RESTORE0 remains above 1.744 V and the output clock
+  has no falling crossing in 24–27 ns. Both original 80 ns controls continue
+  to completion; these partial observations are not a qualification verdict.
+- New source comparison `receiver_clamp/af769bd4767fe6c2` restores the five
+  decision-stage devices to original widths (tail 64 µm, differential pair
+  and mirror devices 8 µm). It retains doubled input tails, original 20 µm
+  input pairs, stronger clamp and three restoration stages. Earlier native
+  traces show a larger first-pulse PP−PN excursion before the decision-stage
+  doubling; reducing its input/device/routing load is a hypothesis, not a
+  demonstrated improvement. Three structural tests pass. The original source
+  controls are queued under the same six-slot budget; no physical result or
+  release selection is claimed.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Unit suite: 342 tests, 341 passed and one skipped in the pinned ngspice
+- Last full unit suite: 342 tests, 341 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
