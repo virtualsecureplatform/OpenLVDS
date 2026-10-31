@@ -586,3 +586,28 @@ local signal-port escapes within each child. It passes zero-error DRC and
 strict LVS with the same source and control-island bytes. Its extraction,
 audit and immutable native preparation are running. The failed original
 physical monitor's internal transient is also running with added probes.
+
+
+The revised local-port layout now passes extraction and the independent RC audit.
+Its incident O/OB/L/T capacitances are 50.792/25.048/49.620/75.144 fF;
+PA/PB are 491.374/527.494 fF, NA/NB 405.852/455.232 fF and S 418.688 fF.
+LAD1/LAD12 are 313.825/333.271 fF, slightly higher than the preceding layout's
+279.620/313.360 fF. The source-bound comparison is retained under
+`b0aa9ac2faf0887f/monitor_capacitance_comparison.json`. Exact degree-8 profile
+`schur_6ce2c5e21bf17f36` and native qualification `c47b7dc98d92327b` are prepared.
+Its unchanged SS/0 °C +150 ps fixture is queued as an early diagnostic; full
+dispatch remains held.
+
+The repaired source-specific SS/0 °C loop screen `d8b9a06ef038cd76` has now
+completed and fails. In 1200–1500 ns CTRL averages 1.783719 V, feedback error
+reaches 845.001 ps, quarter delays span 223.578–223.622 ps and BAD is high.
+Cadence and CTRL ripple (1.509 mV) pass, which does not establish phase lock.
+UF/DF means are 0.760554/0.601174 V. Local monitor routing alone cannot establish
+passing acquisition for this source. The earlier passing screen used a different
+captured PFD and an extracted standalone delay line; the newer screen uses the
+8-port PFD and native-finger schematic delay. Those changes must be separated
+from the monitor R/C repair before attributing the acquisition failure. The next
+loop investigation should check detector area polarity over the startup phase
+range and compare reset-path timing/precharge, while preserving these failed
+traces and all original limits. TT/FF screen work and RX characterization remain
+under their original coordinators.

@@ -182,3 +182,32 @@ loading. `monitor_capacitance_comparison.json` under layout `0a4253d72e392de9`
 records both netlist/GDS hashes and the node sums. A fresh local-port variant
 passes DRC/LVS and is being extracted before native selection. No transient
 improvement has yet been demonstrated by either layout.
+
+
+## Source-specific acquisition failure
+
+The new source-specific SS/0 °C screen completes 1500 ns but settles at the
+high CTRL rail instead of lock: CTRL = 1.783719 V, feedback error = 845.001 ps,
+quarter delay about 223.6 ps, UF−DF = +159.381 mV, and BAD high. At 90–120 ns
+CTRL already averages 1.782274 V and stays near that value. This is not merely
+a late monitor assertion or a small CTRL-ripple failure.
+
+At 1200 ns, PH0 rises at 1200.087699 ns, PH180 at 1200.521840 ns and PD_REF
+at 1201.366732 ns. Thus the PFD feedback edge precedes its reference by about
+845 ps, while raw UP/DN means across 1200–1500 ns are 0.886011/0.690257 V.
+The positive area imbalance drives the OTA toward higher CTRL, rather than
+correcting this leading-feedback condition. This makes wide-range detector
+capture/reset timing a priority for diagnosis; a reduced precharge voltage is
+another experiment, not an established fix. Matched ±850 ps input controls and
+a reset coincidence taken before the UP/DN output buffers can test that hypothesis.
+
+The old passing W8/C4 screen is not a matched control: it retains an extracted
+standalone delay line and the preceding captured PFD, while the new screen uses
+fully native-finger schematic analog/delay devices and the 8-port PFD. Common
+non-monitor analog device rows are unchanged, but the delay implementation and
+PFD view differ. Do not attribute the new failure solely to monitor scaling or
+reuse the old success as qualification of the repaired source. The completed
+new summary binds waveform
+`dbb036ab1be26613944e759c5e7aa7a1918f96d0b6b73ddc5d77eb9653bc0874`
+and raw trace
+`045ef5b90e21ca5fe7b2aae9bb88e88c8c96d106f8407d7ab2fa8e52a26025ca`.
