@@ -27,13 +27,14 @@ from spice_engine import command, engine, provenance
 from spice_probes import ProbeNetwork
 from spice_slots import slot
 from stability_evidence import verified as stability_verified
+from dll_case import trace_duty
 from verify_phase_detector import response_cases
 
 ROOT = Path(__file__).resolve().parents[1]
 CODE = ['qualify_dll_candidate.py', 'dll_candidate_library.py', 'dll_qualification_measurements.py',
         'dll_measurements.py', 'dll_campaign.py', 'digital_candidate_rc.py', 'dll_design.py',
         'layout.py', 'physical_policy.py', 'spice_library.py', 'spice_scope.py', 'rc_fast.py',
-        'reduce_rc.py', 'run_ngspice.py', 'spice_engine.py', 'verify_phase_detector.py', 'lvs_utils.py', 'spice_probes.py', 'spice_slots.py','stability_evidence.py']
+        'reduce_rc.py', 'run_ngspice.py', 'spice_engine.py', 'verify_phase_detector.py', 'lvs_utils.py', 'spice_probes.py', 'spice_slots.py','stability_evidence.py','dll_case.py']
 
 
 def sha(data):
@@ -138,9 +139,13 @@ def prepare(layout, pfd, screen, variant):
     fast, fast_models = assemble(layout, pfd, True)
     req = (ROOT/'requirements.json').read_bytes()
     requirements = json.loads(req)
+    captures=[]
+    for name,filename in [('rtl','clock.csv'),('physical','physical_clock.csv')]:
+        path=ROOT/'build/openpll'/filename
+        if path.exists():captures.append(dict(name=name,path=str(path.relative_to(ROOT)),sha256=sha(path.read_bytes()),duty=trace_duty(path)))
     identity = dict(code=code_hashes(), simulator_provenance=provenance(), requirements_sha256=sha(req),
                     full_library_sha256=sha(full.encode()), fast_library_sha256=sha(fast.encode()),
-                    full_models=full_models, fast_models=fast_models, variant=variant,
+                    full_models=full_models, fast_models=fast_models, variant=variant,captured_clocks=captures,
                     screen=str(screen.relative_to(ROOT)), screen_manifest_sha256=sha((screen/'manifest.json').read_bytes()))
     root = ROOT/'build/diagnostics/dll_qualification'/sha(json.dumps(identity, sort_keys=True).encode())[:16]
     if (root/'manifest.json').exists():
@@ -230,6 +235,10 @@ def prepare(layout, pfd, screen, variant):
             suffix='' if (process,temp)==('tt',25) else f'_{process}_{temp}'
             add(f'clock_{mhz}_{duty}'+suffix, dict(kind='loop', process=process, temperature=temp, mhz=mhz,
                 duty=duty, architecture=architecture), [nominal]+full_faults)
+    for capture in captures:
+        if capture['duty'] not in requirements['clock_duty']:
+            add('clock_openpll_'+capture['name']+'_mean_duty',dict(kind='loop',process='tt',temperature=25,
+                mhz=400,duty=capture['duty'],architecture=architecture),[nominal]+full_faults)
     for (process,temp), target in recovery_coverage():
         suffix='' if (process,temp)==('tt',25) else f'_{process}_{temp}'
         name='clock_loss_rearm' if target is None else f'step_400_to_{target}'
@@ -257,6 +266,9 @@ def validate(root, manifest):
     for path, stamp in identity['full_models']['physical_reports'].items():
         if sha((ROOT/path).read_bytes()) != stamp:
             raise ValueError('Physical candidate evidence changed')
+    for capture in identity.get('captured_clocks',[]):
+        if sha((ROOT/capture['path']).read_bytes())!=capture['sha256']:
+            raise ValueError('Captured OpenPLL duty source changed')
 
 
 def screen_status(manifest):
