@@ -1472,3 +1472,11 @@ Service `openlvds-light-clamp-source-screen` queues these three original source
 controls. Two targeted tests verify that only the two resistor instances are
 removed and the unclamped control is byte-identical. No physical candidate is
 selected from this source experiment.
+
+Both wider-input native controls now complete: captured and sharp each miss
+nine rising and nine falling edges. The native continuation and its downstream
+follow-up both record `held_for_diagnosis` for failed clock recovery. Neither
+component root `f82998633770e370` nor link root `a1fe429613422650` contains an
+execution receipt or raw simulation trace. The wider-input candidate is not
+selected. The reduced-clamp source control and previous original-decision sharp
+source control are now running within the same six-slot budget.

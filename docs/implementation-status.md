@@ -287,7 +287,10 @@ Current bring-up evidence on 2026-10-31:
   The captured native case now completes with nine missing rising and nine
   missing falling edges. This improves on the preceding strong-clamp count of
   11 each, but matches baseline pulse loss and does not pass the native recovery
-  gate. The sharp control is queued; component/link simulations remain held.
+  gate. The sharp control now also completes with nine missing rising and nine
+  missing falling edges. Native continuation and component/link follow-up both
+  record `held_for_diagnosis`. Neither downstream campaign starts a simulation.
+  The wider-input candidate is not selected for qualification.
 - New source comparison `receiver_clamp/af769bd4767fe6c2` restores the five
   decision-stage devices to original widths (tail 64 µm, differential pair
   and mirror devices 8 µm). It retains doubled input tails, original 20 µm
@@ -310,13 +313,13 @@ Current bring-up evidence on 2026-10-31:
   missing falling edge around the 58.920 ns negative pulse (514.802 ps,
   83.068 mV peak). CO peaks at 0.948352 V over 58.7–60.7 ns, but the restored
   clock remains above 1.702 V. The source gate therefore cannot admit layout;
-  its sharp control remains queued and is allowed to finish.
+  its sharp control is running and is allowed to finish.
 - Source comparison `receiver_clamp/7002b1f71a4ff337` removes only XCLAMP2/3,
   reducing parallel clamp units from four to two while retaining the original
   decision sizes, doubled input tails, strong replica reference and restoration.
   This tests reduced output loading after the smaller-decision source failure.
   Two structural tests pass. Service `openlvds-light-clamp-source-screen` is live
-  and queued under the same six-slot limit. No electrical or physical
+  and runs its unchanged source control under the same six-slot limit. No electrical or physical
   improvement is claimed; all original controls and scoring requirements remain.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
