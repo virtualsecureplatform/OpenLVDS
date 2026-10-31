@@ -15,13 +15,13 @@ Current bring-up evidence on 2026-10-31:
   progression are held. Measured model and full native qualification remain gated.
 - Captured native diagnosis `dll_loop_diagnosis/43f094030fe944fc` separates
   32.977 mV cycle-mean movement from at most 1.659 mV cycle ripple. This supports
-  slow startup settling; it does not establish stability. Three of its four native
-  AC fixtures are complete. The completed clock-low G/Y pair estimates 271 kHz
-  unity-gain frequency, 93.54° phase margin and 42.44 dB gain margin
-  (`partial_clock0_diagnostic.json` in the diagnostic directory). These use
+  slow startup settling. All four native AC fixtures are complete. Both clock
+  states and their averaged G/Y response estimate 271 kHz unity-gain frequency,
+  93.54° phase margin and 42.44 dB gain margin (`summary.json` in the diagnostic
+  directory). These use
   trajectory-inferred delay gain and do not provide an independent model or
-  transient-step validation; no qualification verdict is issued. The fourth AC
-  fixture remains queued. New passive-preset experiment `dll_architecture/9e0ebce74ac41dcd`
+  transient-step validation; no qualification verdict is issued.
+  New passive-preset experiment `dll_architecture/9e0ebce74ac41dcd`
   changes only the startup divider to nominal 1.2 V. It retains W8/C4, the actual
   fast-reset PFD, fixed supplies and original three source-screen fixtures.
   Physical candidate `dll_layout/dfb62f717c9bdb42` passes DRC/LVS and independent
@@ -53,10 +53,10 @@ Current bring-up evidence on 2026-10-31:
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
   cases pass (128 words). Its original 480-condition aperture campaign
-  (`rx_aperture/20b04dcf527af283`) is running, with 25 completed conditions
-  passing and no completed failures. The complete SS/40 °C group
-  at 200 ps clock/data slew passes, with largest guarded setup/hold bounds of
-  210/50 ps. Other slew/PVT coverage remains active. The preceding three
+  (`rx_aperture/20b04dcf527af283`) is running. All 32 SS/40 °C conditions pass,
+  across both clock/data slew endpoints, both edge/data polarities and setup/hold.
+  Its largest guarded setup/hold bounds are 270/110 ps; the 200 ps clock/data
+  subset remains 210/50 ps. Other PVT coverage remains active. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
   generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
@@ -67,10 +67,14 @@ Current bring-up evidence on 2026-10-31:
   the bundle manifest). These proofs cover this bundle's original networks;
   new DLL/analog/TX networks require their own comparison evidence. A complete
   certificate is still pending.
-- Current component evidence verifies 88/90 distinct proofs: all 45 schematic
-  driver/receiver cases, all 30 native analog receiver cases and thirteen native
-  drivers. Remaining native driver refresh continues. Historical numerical
-  failures remain archived separately from the current-proof receipt.
+- Current component evidence verifies all 90/90 distinct proofs: all 45 schematic
+  driver/receiver cases, all 30 native analog receiver cases and all 15 native
+  drivers. The final SF/40 °C native driver passes. Both refresh processes are
+  terminal, and `component_refresh/current_evidence.json` verifies every current
+  source/fixture/waveform/runtime/producer proof. The original refresh batch's
+  historical failure remains recorded; it is not rewritten as a passing batch.
+  This completes baseline component evidence. The new receiver candidate,
+  DLL, full aperture and link qualifications remain required.
 - The 32-bit exact-RC data-path diagnostic at SS/40 °C/410 MHz, 45% duty,
   +100 ps skew and 100 ps peak-to-peak jitter completed and failed payload
   alignment (`build/link/ss_40_410m_d0.45_s100_e0_ideal_32/6735242e52a2`).
@@ -103,7 +107,8 @@ Current bring-up evidence on 2026-10-31:
   Its native TX network SHA256 starts `d849e11e2470e9ec`. Diagnostic
   `tx_candidate_link/b1c1b53a01dc8564` replaces only TX in the saved SS/40 °C/
   410 MHz/45% duty/+100 ps skew link, preserving every clock/data stimulus,
-  analog/RX/DLL circuit and scoring window. It is queued; the current staged
+  analog/RX/DLL circuit and scoring window. Its native simulation is running;
+  the current staged
   candidate assembly continues to require buf_4 and no release is published.
 - Unit suite: 288 tests, 283 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
