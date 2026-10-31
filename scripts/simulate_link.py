@@ -21,6 +21,7 @@ from spice_engine import command as spice_command,engine,provenance
 from evidence_scope import matches as evidence_matches
 from dll_case import case_name,trace_duty
 from rx_aperture_evidence import load as load_rx_aperture
+from spice_slots import slot
 
 ROOT=Path(__file__).resolve().parents[1]
 REQ_BYTES=(ROOT/'requirements.json').read_bytes()
@@ -80,17 +81,23 @@ def clocks(a,total):
     # A measured DLL phase can be replayed as the clock partition's delay.
     phase=t/4
     if a.dll_phase:
-        case=case_name(a.process,a.temperature,a.mhz,duty)
-        path=ROOT/'build/analog_extracted'/case/'summary.json'
-        status=json.loads(path.read_text())
-        if not status['passed']:raise ValueError('DLL phase characterization failed')
-        expected,_,_=library(extracted=True,designs={'openlvds_dll_analog','lvds_bias'})
-        if not evidence_matches(status,path.with_name('source.spice'),expected,'dll'):
-            raise ValueError('Measured DLL phase belongs to another active circuit')
-        if status.get('simulator')!=engine():raise ValueError('Measured DLL phase uses a different simulator')
+        if getattr(a,'bundle',None):
+            from phy_candidate import phase as candidate_phase
+            status=candidate_phase(a.bundle,a.process,a.temperature,a.mhz,duty)
+            phase_stamp=status['evidence_sha256']
+        else:
+            case=case_name(a.process,a.temperature,a.mhz,duty)
+            path=ROOT/'build/analog_extracted'/case/'summary.json'
+            status=json.loads(path.read_text())
+            if not status['passed']:raise ValueError('DLL phase characterization failed')
+            expected,_,_=library(extracted=True,designs={'openlvds_dll_analog','lvds_bias'})
+            if not evidence_matches(status,path.with_name('source.spice'),expected,'dll'):
+                raise ValueError('Measured DLL phase belongs to another active circuit')
+            if status.get('simulator')!=engine():raise ValueError('Measured DLL phase uses a different simulator')
+            phase_stamp=hashlib.sha256(path.read_bytes()).hexdigest()
         if abs(status.get('clock_duty',.5)-duty)>5e-7:raise ValueError('Measured DLL phase uses another clock duty')
         phase=(status['quarter_phase_min_ps']+status['quarter_phase_max_ps'])/2000*(t/(1000/a.mhz))
-        scope+='; full-RC DLL phase at this process, temperature, frequency and duty; characterization SHA256 '+hashlib.sha256(path.read_bytes()).hexdigest()
+        scope+='; full-RC DLL phase at this process, temperature, frequency and duty; characterization SHA256 '+phase_stamp
     def waveform(offset):
         p=[(0,0.)]
         for at,value in events:
@@ -235,6 +242,7 @@ def main():
     p.add_argument('--jitter-pp-ps',type=float,default=100)
     p.add_argument('--clock-source',choices=['ideal','openpll-rtl','openpll-physical'],default='ideal')
     p.add_argument('--fast-rc',action='store_true')
+    p.add_argument('--bundle',help='Use an isolated staged PHY instead of active extraction pointers')
     p.add_argument('--diagnostic',action='store_true',help='Permit an unqualified approximation for bring-up; cannot release')
     p.add_argument('--aperture-table',help='Completed full-RC capture table; otherwise discover the latest current table')
     p.add_argument('--dll-phase',action='store_true')
@@ -246,13 +254,19 @@ def main():
     if a.bits<32 or a.bits%2:p.error('Even bit count >= 32 required')
     certificate=None
     if a.fast_rc and not a.diagnostic:
-        certificate=json.loads((ROOT/'build/rc_validation/summary.json').read_text())
+        certificate_path=Path(a.bundle)/'rc_certificate.json' if a.bundle else ROOT/'build/rc_validation/summary.json'
+        certificate=json.loads(certificate_path.read_text())
         if not certificate['passed']:p.error('Fast-RC comparison is not qualified')
-    source_bytes=(ROOT/'analog/openlvds.spice').read_bytes()
+    source_path=Path(a.bundle)/'full.spice' if a.bundle else ROOT/'analog/openlvds.spice'
+    source_bytes=source_path.read_bytes()
     runner_bytes=Path(__file__).read_bytes()
     simulator_stamp=provenance()
-    lib,inputs,models=library(extracted=True,digital=True,fast=a.fast_rc)
-    if (ROOT/'analog/openlvds.spice').read_bytes()!=source_bytes:p.error('Analog source changed while assembling the circuit')
+    if a.bundle:
+        from phy_candidate import load
+        lib,inputs,models=load(a.bundle,a.fast_rc)
+        a.bundle=str(Path(a.bundle).resolve().relative_to(ROOT))
+    else:lib,inputs,models=library(extracted=True,digital=True,fast=a.fast_rc)
+    if source_path.read_bytes()!=source_bytes:p.error('Analog source changed while assembling the circuit')
     if certificate and not valid_certificate(certificate,inputs):p.error('Fast-RC certificate is stale or incomplete')
     rx_model=models['openlvds_ddr_rx']
     try:
@@ -261,6 +275,7 @@ def main():
         if not a.diagnostic or a.aperture_table:p.error(str(error))
         aperture=dict(qualified=False,setup_ps=200,hold_ps=80,qualification='legacy diagnostic estimate')
     config=dict(vars(a),simulator=engine(),rx_aperture=aperture)
+    if a.bundle:config['bundle_manifest_sha256']=hashlib.sha256((Path(a.bundle)/'manifest.json').read_bytes()).hexdigest()
     nominal_period=1000/a.mhz
     minimum_training=256*nominal_period
     training=a.training_ns if a.training_ns is not None else minimum_training if a.settled_start else max(800,minimum_training)
@@ -345,7 +360,8 @@ def main():
         '.print tran V(RP) V(RN) V(RCP) V(RCN) V(RXDATA) V(RXCLOCK) V(Q0) V(Q1) V(RXVALID) V(TXREADY) V(TP) V(TN) V(CP) V(CN) V(TXDATA) V(TXCLOCK) V(CLK0) V(CLK90)',
         '.end'])
     deck=out/'bench.cir';deck.write_text('\n'.join(lines)+'\n')
-    result=subprocess.run(spice_command(out/(engine()+'.log'),deck),cwd=out,capture_output=True,text=True)
+    with slot():
+        result=subprocess.run(spice_command(out/(engine()+'.log'),deck),cwd=out,capture_output=True,text=True)
     (out/'console.log').write_text(result.stdout+result.stderr)
     rows=[];prn=out/'bench.cir.prn'
     if prn.exists():

@@ -73,8 +73,39 @@ def main():
     (LAYOUT/'bundle_prepare.log').write_text(result.stdout+result.stderr);result.check_returncode()
     bundle=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not (bundle/'manifest.json').is_file():raise ValueError('Staged PHY manifest missing')
-    atomic(workflow,dict(status='ready_for_bundle_validation',qualification=str(relative),
-        stability=str(report.relative_to(ROOT)),bundle=str(bundle.relative_to(ROOT)),qualified_phy=False))
+    def bundle_job(status,script,args,log):
+        atomic(workflow,dict(status=status,qualification=str(relative),bundle=str(bundle.relative_to(ROOT)),qualified_phy=False))
+        result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/'+script]+args,
+            cwd=ROOT,capture_output=True,text=True)
+        (LAYOUT/log).write_text(result.stdout+result.stderr)
+        if result.returncode:
+            atomic(workflow,dict(status=status+'_requires_diagnosis',bundle=str(bundle.relative_to(ROOT)),log=str((LAYOUT/log).relative_to(ROOT)),qualified_phy=False))
+            result.check_returncode()
+        return result
+    relative_bundle=str(bundle.relative_to(ROOT))
+    bundle_job('validating_six_fixture_rc','validate_fast.py',
+        ['--bundle',relative_bundle,'--resume','--jobs','6'],'bundle_rc.log')
+    from rc_certificate import valid
+    from phy_candidate import load
+    certificate=json.loads((bundle/'rc_certificate.json').read_text())
+    if not valid(certificate,load(bundle,True)[1]):raise ValueError('Staged six-fixture RC certificate failed verification')
+    bundle_job('running_stressed_link_diagnostic','simulate_link.py',
+        ['--bundle',relative_bundle,'--fast-rc','--diagnostic','--settled-start','--dll-phase',
+         '--bits','32','--process','ss','--temperature','0','--mhz','410','--duty','0.55','--skew-ps','100'],
+        'bundle_link_diagnostic.log')
+    capture=ROOT/'build/characterization/rx_aperture/e9ca7d2f2ae6d61b'
+    while not (capture/'table.json').exists():
+        state=json.loads((capture/'state.json').read_text())
+        atomic(workflow,dict(status='waiting_for_rx_aperture_table',bundle=relative_bundle,observed=state['status'],qualified_phy=False))
+        if state['status'] in ['complete','completed_with_failures']:
+            raise RuntimeError('RX characterization ended without a complete table')
+        time.sleep(10)
+    bundle_job('running_full_link_matrix','regression.py',
+        ['--bundle',relative_bundle,'--fast-rc','--jobs','6'],'bundle_regression.log')
+    atomic(workflow,dict(status='link_matrix_complete_remaining_signoff',qualification=str(relative),
+        stability=str(report.relative_to(ROOT)),bundle=relative_bundle,qualified_phy=False,
+        remaining=['actual_operating_range_ota_characterization','native_readiness_replay',
+                   'worst_model_corner_recovery','release_checker_and_exact_byte_promotion']))
 
 
 if __name__=='__main__':main()

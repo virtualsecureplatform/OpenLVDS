@@ -15,6 +15,7 @@ from spice_library import library
 from rc_certificate import REQUIRED,MODEL_SCOPES,TOPS
 from spice_engine import command as spice_command,engine,provenance
 from spice_scope import closure_hash
+from spice_slots import slot
 import rc_trace
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -92,9 +93,12 @@ VD1 D1 0 PULSE(1.8 0 3n 100p 100p 4.9n 10n)
         else:raise ValueError(kind)
     return common+body,print_nodes
 
-def simulate(kind,fast,reuse_full=False,analyze_only=False,resume=False,simulator_stamp=None):
+def simulate(kind,fast,reuse_full=False,analyze_only=False,resume=False,simulator_stamp=None,bundle=None):
     mode='fast' if fast else 'full';stamp=simulator_stamp or provenance()
-    lib,inputs,models=library(extracted=True,digital=True,fast=fast)
+    if bundle:
+        from phy_candidate import load
+        lib,inputs,models=load(bundle,fast)
+    else:lib,inputs,models=library(extracted=True,digital=True,fast=fast)
     scope=closure_hash(lib,TOPS[kind]);inputs={k:v for k,v in inputs.items() if k in MODELS[kind]}
     body,nodes=fixture(kind,models)
     stop='2560n' if kind=='driver' else '1500n' if kind=='dll' else '60n'
@@ -128,7 +132,8 @@ def simulate(kind,fast,reuse_full=False,analyze_only=False,resume=False,simulato
             (out/'library.spice').write_bytes(lib);path.write_text(deck)
             (out/'producer.py').write_bytes(PROGRAM_BYTES)
             prn.unlink(missing_ok=True)
-            result=subprocess.run(spice_command(out/(engine()+'.log'),path),cwd=out,capture_output=True,text=True)
+            with slot():
+                result=subprocess.run(spice_command(out/(engine()+'.log'),path),cwd=out,capture_output=True,text=True)
             (out/'console.log').write_text(result.stdout+result.stderr)
             if result.returncode or not prn.exists():return kind,mode,None,inputs,dict(error=engine()+' failed',returncode=result.returncode)
         rows=[]
@@ -189,11 +194,16 @@ def main():
     p.add_argument('--reuse-full',action='store_true',help='Reuse completed references with identical circuit snapshots')
     p.add_argument('--analyze-only',action='store_true',help='Recheck completed full/fast snapshots without resimulation')
     p.add_argument('--resume',action='store_true',help='Reuse completed, identical instantiated circuit closures')
+    p.add_argument('--bundle',type=Path,help='Validate an isolated staged PHY; leave active evidence untouched')
     a=p.parse_args();kinds=a.tests.split(',');simulator_stamp=provenance()
-    (ROOT/'build/rc_validation/summary.json').unlink(missing_ok=True)
+    destination=a.bundle.resolve()/'rc_certificate.json' if a.bundle else ROOT/'build/rc_validation/summary.json'
+    if a.bundle:
+        from phy_candidate import load
+        load(a.bundle);load(a.bundle,True)
+    destination.unlink(missing_ok=True)
     jobs=[(k,f) for k in kinds for f in [False,True]]
     if any(k not in REQUIRED for k in kinds):p.error('Unknown fixture')
-    with ThreadPoolExecutor(max_workers=a.jobs) as pool:r=list(pool.map(lambda j:simulate(*j,reuse_full=a.reuse_full,analyze_only=a.analyze_only,resume=a.resume,simulator_stamp=simulator_stamp),jobs))
+    with ThreadPoolExecutor(max_workers=a.jobs) as pool:r=list(pool.map(lambda j:simulate(*j,reuse_full=a.reuse_full,analyze_only=a.analyze_only,resume=a.resume,simulator_stamp=simulator_stamp,bundle=a.bundle),jobs))
     data={(x[0],x[1]):x for x in r}
     cases={k:compare(k,data[k,'full'],data[k,'fast']) for k in kinds}
     inputs_full={};inputs_fast={};consistent=True
@@ -214,7 +224,12 @@ def main():
         runner_sha256=hashlib.sha256(PROGRAM_BYTES).hexdigest(),
         requirements_sha256=REQUIREMENTS_HASH,trace_policy_sha256=TRACE_POLICY_HASH,
         qualification='Nonlinear operating-window full-RC comparison after settling; active outputs required; 20ps edges, 20mV plateaus')
-    path=ROOT/'build/rc_validation/summary.json';path.parent.mkdir(parents=True,exist_ok=True)
+    if a.bundle:
+        from phy_candidate import load
+        consistent &= load(a.bundle)[1]==inputs_full and load(a.bundle,True)[1]==inputs_fast
+        summary['passed'] &= consistent
+        summary['bundle_manifest_sha256']=hashlib.sha256((a.bundle/'manifest.json').read_bytes()).hexdigest()
+    path=destination;path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(summary,indent=2)+'\n');print(json.dumps(summary,indent=2))
     return 0 if summary['passed'] else 1
 

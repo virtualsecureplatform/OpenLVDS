@@ -189,3 +189,39 @@ establish phase margin or noise performance. Candidate selection and promotion
 also require stability assessment, the complete six-fixture RC comparison,
 and the full 45-case extracted link matrix. The work does not make an MTBF,
 mismatch/yield, pad/ESD or assembled-PHY-GDS qualification claim.
+
+## Staged PHY validation
+
+`stage_phy_candidate.py QUALIFICATION` writes isolated full/fast libraries under
+`build/diagnostics/phy_candidate`. It changes no active extraction pointer.
+Both libraries retain the audited candidate DLL, pulse-area PFD and matched
+buf_4 serializer. The loader checks captured circuit scopes, physical reports,
+qualification producers and requirements before use.
+
+Run the same six nonlinear RC fixtures and then the link matrix on that bundle:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/validate_fast.py --bundle BUNDLE --resume --jobs 6
+scripts/env.sh --ngspice python3 scripts/simulate_link.py --bundle BUNDLE --fast-rc --diagnostic --settled-start --dll-phase --bits 32 --process ss --temperature 0 --mhz 410 --duty .55 --skew-ps 100
+scripts/env.sh --ngspice python3 scripts/regression.py --bundle BUNDLE --fast-rc --jobs 6
+```
+
+The certificate is `BUNDLE/rc_certificate.json`; the matrix report is
+`BUNDLE/regression/summary.json`. Per-case waveforms remain hash-separated under
+`build/link`. Certificate references may reuse completed traces only when their
+instantiated circuit, fixture, requirements and simulator evidence match.
+New simulations use the shared six-slot pool, preserving the four reserved RX
+workers while the frozen capture characterization is active.
+
+Staged link phase comes from the exact native qualification case at the requested
+process, temperature, frequency and duty, with fresh waveform reanalysis. The
+captured OpenPLL mean duties are additional TT qualification inputs when outside
+the nine nominal clock/duty combinations. As in the existing link partition,
+the settled DLL phase scales with the captured clock period; this does not prove
+the DLL's response to individual captured jitter edges.
+
+The advancement service runs these steps only after W8/C4 native electrical
+and all-PVT stability qualification. The non-diagnostic matrix waits for the
+complete 480-boundary capture table. A passing matrix still requires the
+remaining analog operating-range, readiness replay, worst-model-corner recovery
+and release checks before promotion.

@@ -31,12 +31,16 @@ def matrix():
 def main():
     p=argparse.ArgumentParser();p.add_argument('--jobs',type=int,default=4)
     p.add_argument('--fast-rc',action='store_true');p.add_argument('--list',action='store_true')
+    p.add_argument('--bundle',type=Path,help='Run against an isolated staged PHY')
     p.add_argument('--case',help='Run a single named case')
     a=p.parse_args();cases=matrix()
     if a.case:cases=[c for c in cases if c['name']==a.case]
     if not cases:p.error('Unknown case')
     if a.list:print(json.dumps(cases,indent=2));return 0
-    out=ROOT/'build/regression';out.mkdir(parents=True,exist_ok=True)
+    if a.bundle:
+        from phy_candidate import load
+        load(a.bundle,a.fast_rc)
+    out=a.bundle.resolve()/'regression' if a.bundle else ROOT/'build/regression';out.mkdir(parents=True,exist_ok=True)
     (out/'summary.json').unlink(missing_ok=True)
     def run(case):
         cmd=[sys.executable,str(ROOT/'scripts/simulate_link.py')]
@@ -46,6 +50,7 @@ def main():
                 if v:cmd.append(flag)
             else:cmd.extend([flag,str(v)])
         if a.fast_rc:cmd.append('--fast-rc')
+        if a.bundle:cmd.extend(['--bundle',str(a.bundle)])
         r=subprocess.run(cmd,cwd=ROOT,capture_output=True,text=True)
         (out/(case['name']+'.log')).write_text(r.stdout+r.stderr)
         try:summary=json.loads(r.stdout)

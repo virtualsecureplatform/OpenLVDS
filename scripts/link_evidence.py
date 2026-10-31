@@ -49,7 +49,14 @@ def matches(summary,case,requirements,library):
             return False,'Captured receiver aperture evidence changed'
         runner=(ROOT/'scripts/simulate_link.py').read_bytes()
         req=(ROOT/'requirements.json').read_bytes()
-        source=(ROOT/'analog/openlvds.spice').read_bytes()
+        if config.get('bundle'):
+            from phy_candidate import load
+            bundle=ROOT/config['bundle'];selected,inputs,_=load(bundle,fast)
+            if (selected!=library or inputs!=summary['inputs'] or
+                config['bundle_manifest_sha256']!=digest((bundle/'manifest.json').read_bytes())):
+                return False,'Staged PHY bundle changed'
+            source=(bundle/'full.spice').read_bytes()
+        else:source=(ROOT/'analog/openlvds.spice').read_bytes()
         for filename,data,key in [('runner.py',runner,'runner_sha256'),
                 ('requirements.json',req,'requirements_sha256'),
                 ('analog_source.spice',source,'source_sha256'),

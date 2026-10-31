@@ -366,7 +366,15 @@ unchanged. A smoke assembly with the previously extracted W4/C8 circuit passes;
 this is tool validation, not W8/C4 qualification. The automatic workflow stages
 W8/C4 only after its native electrical and all-PVT stability gates pass.
 
-All 121 unit tests pass. Native W8/C4 qualification, the complete RX aperture
+The staged bundle now connects to the six-fixture RC validator, the stressed
+32-bit diagnostic and the full 45-case regression. Its certificate and matrix
+summary stay within the bundle directory. The OpenPLL mean duty is captured
+as a native TT DLL qualification input; the link phase reader checks the matching
+native trace instead of consulting active-circuit characterization. The automatic
+workflow waits for a complete RX table before the non-diagnostic link matrix.
+These tools have not yet produced passing W8/C4 bundle results.
+
+All 128 unit tests pass. Native W8/C4 qualification, the complete RX aperture
 table, analog characterization at the actual loop operating points, readiness
 replay, worst-model-corner recovery, the six-fixture RC certificate and the full
 45-case link regression remain outstanding. No candidate or approximation is
