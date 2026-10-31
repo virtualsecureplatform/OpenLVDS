@@ -49,7 +49,7 @@ Current bring-up evidence on 2026-10-31:
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
   cases pass (128 words). Its original 480-condition aperture campaign
-  (`rx_aperture/20b04dcf527af283`) is running, with 23 completed conditions
+  (`rx_aperture/20b04dcf527af283`) is running, with 25 completed conditions
   passing and no completed failures. The complete SS/40 °C group
   at 200 ps clock/data slew passes, with largest guarded setup/hold bounds of
   210/50 ps. Other slew/PVT coverage remains active. The preceding three
@@ -58,8 +58,8 @@ Current bring-up evidence on 2026-10-31:
   generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
   is running. The driver fixture passes with 0.396 ps maximum edge difference
   and 0.541 mV maximum plateau difference; a complete certificate is still pending.
-- Current component evidence verifies 87/90 distinct proofs: all 45 schematic
-  driver/receiver cases, all 30 native analog receiver cases and twelve native
+- Current component evidence verifies 88/90 distinct proofs: all 45 schematic
+  driver/receiver cases, all 30 native analog receiver cases and thirteen native
   drivers. Remaining native driver refresh continues. Historical numerical
   failures remain archived separately from the current-proof receipt.
 - The 32-bit exact-RC data-path diagnostic at SS/40 °C/410 MHz, 45% duty,
@@ -76,9 +76,18 @@ Current bring-up evidence on 2026-10-31:
   analog receiver pins, exact native analog/data receivers, shared bias and
   early-RX digital load. The complete captured-input replay reproduces the link
   clock loss: 25 input rising crossings produce only 16 output rising edges
-  during 15–75 ns. The sharper-edge control fixture remains running under the
-  same six-slot budget. This reproduces pulse loss without the live TX/driver;
-  the complete control comparison remains pending and is diagnostic only.
+  during 15–75 ns. The complete sharper-edge control improves that count only
+  to 18. Both fixtures retain the measured pulse widths. This reproduces pulse
+  loss without the live TX/driver and supports a receiver bandwidth limitation
+  in addition to TX duty distortion; it does not qualify the link.
+- Receiver input-current candidate `receiver_layout/2ec2942caa46a841` changes
+  only XNT/XPT widths from 12 to 24 µm in the source, retaining complementary
+  inputs, signal mirrors, decision stage and all nine ports. Source invariants,
+  DRC/LVS and the independent RC audit pass (native network SHA256 starts
+  `45fbff442fad8e43`). Both original receiver-replay stimuli are queued against
+  this actual network at `receiver_replay/f55b204c5e5256b7`, including native
+  digital loading and new PP/PN/CO observations. Bandwidth, node headroom,
+  full input-range/PVT behavior and complete-link timing remain unproven.
 - Matched `buf_8` TX experiment (`tx_buffer8_physical`) passes the full 54-case
   RTL/native functional regression (2,373,588 bits;
   `tx_buffer8/ed7e08ca1a8e22f7`), physical flow/topology and independent RC audit.
@@ -87,7 +96,7 @@ Current bring-up evidence on 2026-10-31:
   410 MHz/45% duty/+100 ps skew link, preserving every clock/data stimulus,
   analog/RX/DLL circuit and scoring window. It is queued; the current staged
   candidate assembly continues to require buf_4 and no release is published.
-- Unit suite: 285 tests, 280 passed and five skipped. The shared native budget
+- Unit suite: 288 tests, 283 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
