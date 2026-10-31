@@ -3,6 +3,7 @@
 """Host service watchdog for the DLL campaign and its dependent coordinators."""
 import argparse
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ import subprocess
 import sys
 import time
 import shutil
+import signal
 from run_dll_comparison import alive, process_identity
 from dll_campaign import atomic
 
@@ -53,6 +55,81 @@ def snapshot(state, pid, heartbeat_age):
     return status
 
 
+def qualifier_owners(pgid):
+    result=[]
+    for path in Path('/proc').glob('[0-9]*/stat'):
+        try:
+            tail=path.read_text().rpartition(')')[2].split()
+            if tail[0]=='Z' or int(tail[2])!=pgid:continue
+            argv=(path.parent/'cmdline').read_bytes().decode().split('\0')
+            if not Path(argv[0]).name.startswith('python'):continue
+            for i,word in enumerate(argv[:-2]):
+                if Path(word).name=='qualify_dll_candidate.py' and argv[i+1]=='run':
+                    artifact=Path(argv[i+2])
+                    if artifact.is_absolute():
+                        for prefix in [Path('/work/OpenLVDS'),ROOT]:
+                            if artifact.is_relative_to(prefix):artifact=artifact.relative_to(prefix);break
+                    if artifact.is_absolute() or '..' in artifact.parts:raise ValueError('Invalid qualifier artifact')
+                    result.append((int(path.parent.name),str(artifact)))
+        except (OSError,IndexError):pass
+    return result
+
+
+def configure_ota(jobs,records,previous,artifact,command):
+    key='qualify_ota'
+    records.setdefault(key,dict(previous.get(key,{})))
+    record=records[key]
+    if record and not record.get('artifact'):
+        if alive(record.get('pid'),record.get('identity')):
+            found={a for _,a in qualifier_owners(record.get('pgid'))}
+            if len(found)!=1:raise RuntimeError('Cannot bind the live OTA coordinator to one artifact')
+            record['artifact']=found.pop()
+        else:record['artifact']=str(artifact)
+    if record.get('artifact',str(artifact))!=str(artifact):
+        old='qualify_ota_retired_'+hashlib.sha256(record['artifact'].encode()).hexdigest()[:12]
+        records[old]=dict(record,retired=True,superseded_by=str(artifact))
+        jobs[old]=(ROOT/record['artifact']/'state.json',[])
+        records[key]=dict(artifact=str(artifact))
+    records[key].setdefault('artifact',str(artifact))
+    jobs[key]=(ROOT/artifact/'state.json',command)
+
+
+def retire_qualifier(record,primary_artifact=None):
+    if record.get('state')=='retired':return
+    if alive(record.get('pid'),record.get('identity')):
+        if not record.get('retirement_requested'):
+            owners=[pid for pid,artifact in qualifier_owners(record.get('pgid')) if artifact==record['artifact']]
+            if len(owners)!=1:raise RuntimeError('Cannot safely identify the retiring Python coordinator')
+            # Interrupt the coordinator's main thread only. ThreadPoolExecutor
+            # drains submitted native work before exiting; no SPICE or RX
+            # process receives this signal. Never send a second interrupt.
+            try:owner=process_identity(owners[0])
+            except OSError:
+                record['state']='waiting_for_coordinator_exit';return
+            request=ROOT/record['artifact']/'supervisor_retirement.json'
+            saved=json.loads(request.read_text()) if request.exists() else {}
+            if saved.get('pid')==owners[0] and saved.get('identity')==owner:
+                record['retirement_requested']=saved
+            else:
+                pending=dict(pid=owners[0],identity=owner,at_unix=time.time())
+                # Persist before signalling: a watchdog restart must not send
+                # a second interrupt into the executor's cleanup/join path.
+                atomic(request,pending)
+                record['retirement_requested']=pending
+                try:os.kill(owners[0],signal.SIGINT)
+                except ProcessLookupError:pass
+        record['state']='draining_submitted_native_cases'
+    elif group_alive(record.get('pgid')):
+        record['state']='retired_workers_finishing'
+    else:
+        record['state']='retired'
+        statefile=ROOT/record['artifact']/'state.json'
+        if statefile.exists() and primary_artifact!=record['artifact']:
+            state=json.loads(statefile.read_text())
+            if state.get('status')!='retired':
+                atomic(statefile,dict(state,status='retired',qualified=False,superseded_by=record['superseded_by']))
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--campaign', default=DEFAULT)
@@ -79,6 +156,10 @@ def main():
                 if alive(pid):
                     record = dict(pid=pid, identity=process_identity(pid), pgid=os.getpgid(pid), adopted=True)
             records[label] = record
+        for label,record in previous.items():
+            if record.get('retired'):
+                records[label]=record
+                jobs[label]=(ROOT/record['artifact']/'state.json',[])
         children = {}
         while True:
             config_path=logs/'config.json'
@@ -87,13 +168,16 @@ def main():
                 artifact=Path(config['ota_qualification'])
                 if artifact.is_absolute() or '..' in artifact.parts:
                     raise ValueError('OTA artifact must be relative to OpenLVDS')
-                jobs['qualify_ota']=(ROOT/artifact/'state.json', ['scripts/env.sh','--ngspice','python3',
+                command=['scripts/env.sh','--ngspice','python3',
                     'scripts/qualify_dll_candidate.py','run',str(artifact),'--jobs','6',
-                    '--stage',config.get('ota_stage','screen')]+(['--stability',config['ota_stability']] if config.get('ota_stage')=='full' else []))
-                records.setdefault('qualify_ota',{})
+                    '--stage',config.get('ota_stage','screen')]+(['--stability',config['ota_stability']] if config.get('ota_stage')=='full' else [])
+                configure_ota(jobs,records,previous,artifact,command)
             for label, (statefile, command) in jobs.items():
                 state = json.loads(statefile.read_text()) if statefile.exists() else {}
                 record = records[label]
+                if record.get('retired'):
+                    retire_qualifier(record,config.get('ota_qualification'))
+                    continue
                 if label in config.get('disabled',[]):
                     record['state']='deferred_by_configuration'
                     continue
