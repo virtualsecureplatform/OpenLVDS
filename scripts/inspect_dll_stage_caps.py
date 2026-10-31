@@ -15,7 +15,7 @@ from spice_library import checked_netlist
 ROOT=Path(__file__).resolve().parents[1]
 
 
-def routing_caps(text):
+def routing_caps(text, with_components=False):
     parents={};ranks={}
     def find(node):
         parents.setdefault(node,node);ranks.setdefault(node,0);head=node
@@ -38,20 +38,21 @@ def routing_caps(text):
             a,b=find(row[1]),find(row[2]);value=number(row[3])
             if value<0:raise ValueError('Negative extracted capacitance')
             if a!=b:caps[a]+=value;caps[b]+=value
-    return {node:caps[find(node)] for node in parents}
+    values={node:caps[find(node)] for node in parents}
+    return (values,{node:find(node) for node in parents}) if with_components else values
 
 
 def sections(text):
-    caps=routing_caps(text);result={}
+    caps,components=routing_caps(text,with_components=True);result={}
     for i in range(4):
         nets={}
         for leaf in ['N','S','B','PCTRL','X0__T','X0__F','X1__T','X1__F']:
             # Hierarchical layout can add private cell prefixes. Preserve the
             # flattened schematic label suffix, including Magic's .tN splits.
             suffix='openlvds_dll_analog__XL__X'+str(i)+'__'+leaf
-            values={v for n,v in caps.items() if re.search(r'(?:^|\.)'+re.escape(suffix)+r'(?:\.t\d+)?$',n)}
-            if len(values)!=1:raise ValueError('Missing or disconnected section net '+suffix)
-            nets[leaf]=values.pop()*1e15
+            matches=[n for n in caps if re.search(r'(?:^|\.)'+re.escape(suffix)+r'(?:\.t\d+)?$',n)]
+            if len({components[n] for n in matches})!=1:raise ValueError('Missing or disconnected section net '+suffix)
+            nets[leaf]=caps[matches[0]]*1e15
         result[str(i)]=nets
     return result
 

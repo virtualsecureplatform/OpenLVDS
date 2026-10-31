@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from inspect_dll_stage_caps import routing_caps
+from inspect_dll_stage_caps import routing_caps,sections
 
 
 class RoutingCapInspection(unittest.TestCase):
@@ -18,3 +18,8 @@ class RoutingCapInspection(unittest.TestCase):
 
     def test_negative_capacitance_rejected(self):
         with self.assertRaisesRegex(ValueError,'Negative'):routing_caps('C0 a 0 -1f')
+
+    def test_equal_capacitance_does_not_hide_disconnected_label_fragments(self):
+        prefix='openlvds_dll_analog__XL__X0__N'
+        with self.assertRaisesRegex(ValueError,'disconnected section net'):
+            sections(f'C0 {prefix}.t0 0 1f\nC1 {prefix}.t1 0 1f')
