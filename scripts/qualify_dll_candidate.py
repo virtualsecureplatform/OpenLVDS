@@ -34,7 +34,8 @@ ROOT = Path(__file__).resolve().parents[1]
 CODE = ['qualify_dll_candidate.py', 'dll_candidate_library.py', 'dll_qualification_measurements.py',
         'dll_measurements.py', 'dll_campaign.py', 'digital_candidate_rc.py', 'dll_design.py',
         'layout.py', 'physical_policy.py', 'spice_library.py', 'spice_scope.py', 'rc_fast.py',
-        'reduce_rc.py', 'run_ngspice.py', 'spice_engine.py', 'verify_phase_detector.py', 'lvs_utils.py', 'spice_probes.py', 'spice_slots.py','stability_evidence.py','dll_case.py']
+        'reduce_rc.py', 'run_ngspice.py', 'spice_engine.py', 'verify_phase_detector.py', 'lvs_utils.py', 'spice_probes.py', 'spice_slots.py','stability_evidence.py','dll_case.py',
+        'pfd_candidate_policy.py','pfd_fast_reset_policy.py']
 
 
 def sha(data):

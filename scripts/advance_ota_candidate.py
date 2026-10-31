@@ -14,6 +14,7 @@ from stability_evidence import PRODUCERS,verified as verify_stability
 ROOT=Path(__file__).resolve().parents[1]
 DEFAULT_LAYOUT=ROOT/'build/diagnostics/dll_layout/c465a14562c2ff4f'
 DEFAULT_SCREEN=ROOT/'build/diagnostics/dll_architecture/6d99d42cf3eb5d31'
+DEFAULT_PFD=ROOT/'build/diagnostics/pfd_area_physical'
 
 
 def qualification_config(old,relative):
@@ -39,9 +40,11 @@ def cached_model(root,inputs,corners):
     return None
 
 
-def advance(LAYOUT, screen=DEFAULT_SCREEN):
+def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD):
     if not LAYOUT.is_relative_to(ROOT/'build/diagnostics/dll_layout'):
         raise ValueError('Use an isolated DLL layout')
+    if not pfd.is_relative_to(ROOT/'build/diagnostics'):
+        raise ValueError('Use an isolated PFD physical artifact')
     if LAYOUT!=DEFAULT_LAYOUT and not (LAYOUT/'rc_audit.json').exists():
         raise ValueError('Prepare and independently audit the alternate layout first')
     os.environ['OPENLVDS_SPICE']='ngspice'
@@ -53,7 +56,7 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN):
     if not json.loads((LAYOUT/'rc_audit.json').read_text())['passed']:
         raise RuntimeError('W8/C4 RC connectivity audit failed')
     command=['scripts/env.sh','--ngspice','python3','scripts/qualify_dll_candidate.py','prepare',
-        '--layout',str(LAYOUT.relative_to(ROOT)),'--pfd','build/diagnostics/pfd_area_physical',
+        '--layout',str(LAYOUT.relative_to(ROOT)),'--pfd',str(pfd.relative_to(ROOT)),
         '--screen',str(screen.relative_to(ROOT)),'--variant','ota_w8_c4']
     result=subprocess.run(command,cwd=ROOT,capture_output=True,text=True)
     (LAYOUT/'qualification_prepare.log').write_text(result.stdout+result.stderr)
@@ -184,8 +187,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--layout',type=Path,default=DEFAULT_LAYOUT,help='Alternate layouts must already have a passing RC audit')
     parser.add_argument('--screen',type=Path,default=DEFAULT_SCREEN,help='Architecture screen of the exact candidate source bytes')
+    parser.add_argument('--pfd',type=Path,default=DEFAULT_PFD,help='Audited physical PFD matching the architecture screen')
     args=parser.parse_args();layout=args.layout.resolve()
-    try:return advance(layout,args.screen.resolve())
+    try:return advance(layout,args.screen.resolve(),args.pfd.resolve())
     except Exception as error:
         workflow=layout/'workflow.json'
         if workflow.exists():

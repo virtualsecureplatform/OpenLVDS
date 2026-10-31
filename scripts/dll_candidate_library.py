@@ -9,7 +9,8 @@ from digital_candidate_rc import captured_inputs
 from dll_campaign import closure, text_block, bias_reference_count
 from dll_design import ANALOG_PORTS, PFD_PORTS
 from layout import circuits, flatten, schematic_text
-from physical_policy import pfd_area_paths_retained, delay_cells_absent
+from physical_policy import delay_cells_absent
+from pfd_candidate_policy import pfd_candidate_paths_retained
 from rc_fast import fast
 from spice_library import checked_netlist, library, replace
 
@@ -95,11 +96,11 @@ def assemble(layout, pfd, fast_rc=False):
     audited(layout, analog)
     observations = observation_nodes(checked_netlist(analog))
     digital = json.loads((pfd / 'summary.json').read_text())
-    if captured_inputs(pfd, digital) != 'lvds_pfd' or digital.get('pfd_policy') != 'pulse-area':
+    if captured_inputs(pfd, digital) != 'lvds_pfd':
         raise ValueError('Expected the isolated pulse-area PFD')
     nl = ROOT / digital['run'] / 'final/nl/lvds_pfd.nl.v'
-    if not pfd_area_paths_retained(nl.read_text()) or not delay_cells_absent(nl.read_text()):
-        raise ValueError('PFD no longer retains its native cell paths')
+    if not pfd_candidate_paths_retained(nl.read_text(),digital.get('pfd_policy')) or not delay_cells_absent(nl.read_text()):
+        raise ValueError('PFD no longer retains its declared native topology')
     detector = json.loads((pfd / 'extraction.json').read_text())
     if not (detector['source_sha256'] == digital['source_sha256'] and
             digest(ROOT / digital['run'] / 'final/gds/lvds_pfd.gds') == detector['gds_sha256']):
@@ -128,6 +129,7 @@ def assemble(layout, pfd, fast_rc=False):
         raise ValueError('PFD extracted terminals differ from candidate schematic')
     body = checked_netlist(detector)
     body = re.sub(r'(?im)^(\.subckt\s+)lvds_pfd\b', r'\1lvds_pfd_physical', body)
+    body = re.sub(r'(?im)^(\.ends\s+)lvds_pfd\b', r'\1lvds_pfd_physical', body)
     adapter = ('.subckt lvds_pfd ' + ' '.join(expected) + '\nXPHYS ' +
                ' '.join(mapping[p] for p in detector['ports']) + ' lvds_pfd_physical\n.ends lvds_pfd')
     source = replace(source, 'lvds_pfd', body + '\n' + adapter)
@@ -135,7 +137,7 @@ def assemble(layout, pfd, fast_rc=False):
     if bias_reference_count('XL CLK RST EN P0 P90 P180 P270 FB BAD UP DN VR PB VA VD 0 openlvds_dll', result) != 1:
         raise ValueError('Assembled DLL must contain exactly one reference generator')
     metadata = dict(approximate_transient=fast_rc, qualified=False, layout=str(layout.relative_to(ROOT)),
-                    pfd=str(pfd.relative_to(ROOT)), source_sha256=physical['source_sha256'],
+                    pfd=str(pfd.relative_to(ROOT)),pfd_policy=digital['pfd_policy'],source_sha256=physical['source_sha256'],
                     full_inputs=dict(source_inputs, **bias_inputs), observation_nodes=observations,
                     inputs={name: analog['netlist_sha256'], 'lvds_pfd': detector['netlist_sha256'], **bias_inputs},
                     physical_reports={str(p.relative_to(ROOT)): digest(p) for p in

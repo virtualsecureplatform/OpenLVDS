@@ -777,3 +777,23 @@ A missing-candidate negative control still fails and writes its isolated report
 (561 checks); no release package or passing production report is produced.
 Native qualification assembly support will be integrated after the remaining
 old-source simulation drains, preserving its producer snapshot.
+
+
+Native DLL assembly now accepts the explicitly declared single-AOI reset policy
+and archives both policy helpers. Prepared candidate
+`dll_qualification/1d201e9ed2f89f56` contains 336 original fixtures, the exact
+repaired analog network and the fast-reset physical PFD. Input validation passes.
+Advancement accepts an explicit `--pfd` selection instead of silently substituting
+the preceding PFD. The full campaign remains held pending the source screen.
+
+Architecture evidence now compares the actual PFD and bias dependency closures
+in each of the three screen libraries against the native library. Matching source
+text alone cannot authorize a different physical detector. The prepared candidate
+passes this check; a preceding-PFD substitution is rejected. Unit regressions
+also reject changed PFD, bias and private physical implementation bodies.
+Host validation: 216 tests, 211 passed and 5 backend-dependent skips.
+
+The frozen RX aperture campaign has completed all 480 conditions; its table has
+`passed: false` and cannot qualify a release. Its original artifacts are retained
+for diagnosis. All three new source-screen loops are now running concurrently;
+there is no settled-loop qualification result yet.
