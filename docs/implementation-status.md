@@ -6,29 +6,39 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up evidence on 2026-10-31:
 
-- Local comparator routing passes native SS/0 °C 0 and ±150 ps monitor tests
-  with the preceding PFD (`c47b7dc98d92327b`). These results do not qualify the
-  combined fast-reset PFD candidate.
-- The preceding PFD and an internal-Q-reset physical variant give the wrong
-  correction sign at −850 ps. The single-AOI reset physical PFD passes all
-  three native −850/+850/0 ps capture controls, as well as DRC/LVS, extraction
-  and the independent RC audit (`6562211b6d43fb89`).
-- Three source-matched SS/TT/FF architecture loops are running
-  (`0ca8225b328ecaa1`). Combined native candidate `1d201e9ed2f89f56` has 336
-  prepared fixtures. All seven SS/0 °C static offsets pass; TT/25 °C
-  0/+50/±150 ps also pass. Remaining static coverage is running.
-- The frozen RX aperture campaign completes 480 conditions: 356 pass, 124 fail.
-  All failed +800 ps endpoints have high VALID but illegal public data levels.
-  Native internal publication probes reproduce the failed SS 20 fF endpoint
-  exactly; its matched zero-load control passes. Controls continue under
-  `rx_publication/dd89f11b1af99f29`. The failed table cannot qualify RX.
-- Full DLL/PVT/model/recovery/readiness/operating-point evidence, a passing RX
-  aperture table, the six-fixture certificate and full link matrix remain required.
+- All three source-matched SS/TT/FF fast-reset architecture loops pass
+  (`dll_architecture/0ca8225b328ecaa1`). All 21 selected native static offsets
+  pass. Combined native candidate `dll_qualification/1d201e9ed2f89f56` has 336
+  prepared fixtures; native SS acquisition is live, with TT/FF acquisitions
+  queued behind it. Measured model and full native qualification remain gated.
+- The early-publication RX (`rx_early_physical_v1`) passes physical DRC/LVS,
+  strict topology checks and an independent exact-RC connectivity audit. All
+  12 loaded admissions pass. All four native continuous-data duty/jitter/skew
+  cases pass (128 words). Its original 480-condition aperture campaign
+  (`rx_aperture/20b04dcf527af283`) is running; the first completed SS/40 °C
+  rising-data setup condition has a guarded 120 ps bound. The preceding three
+  publication variants remain timing failures and cannot qualify this RX.
+- Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
+  generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
+  is running. The driver fixture passes with 0.396 ps maximum edge difference
+  and 0.541 mV maximum plateau difference; a complete certificate is still pending.
+- Current component evidence verifies 81/90 distinct proofs: all 45 schematic
+  driver/receiver cases, all 30 native analog receiver cases and six native
+  drivers. Remaining native driver refresh continues. Historical numerical
+  failures remain archived separately from the current-proof receipt.
+- Unit suite: 248 tests, 243 passed and five skipped. The shared native budget
+  remains six real simultaneous simulator leases. Captured active producers,
+  fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
+- Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
+  boundaries, the complete six-fixture certificate and full link matrix remain
+  required. No PHY release has been published.
 
+Earlier entries below preserve the bring-up history; their running-state and
+coverage statements describe the snapshot at the time, not the current status.
 
 The pulse-area comparison milestone on 2026-10-29 is described at the end of
 this document and in [the experiment workflow](dll-experiments.md). Its circuits
-remain separate from the active PHY. Current bring-up evidence is recorded below.
+remain separate from the active PHY. Subsequent bring-up evidence is recorded below.
 
 The preceding canonical checks on 2026-10-28 include:
 
@@ -1154,3 +1164,19 @@ and checks exact case names rather than overlapping receiver globs. Source:
 `scripts/verify_component_evidence.py`; output:
 `component_refresh/current_evidence.json`. Read-only shared locking has also
 been exercised on this workspace's NFS filesystem. No active producer changed.
+
+
+The early RX completes its first full boundary condition at SS/40 °C with
+200 ps clock and data slew, rising clock edge and rising data: 87.5 ps fails,
+90.625 ps passes, resolution 3.125 ps, retained guard 20 ps, rounded setup bound
+120 ps. This is one actual condition in the required 480, not a complete table.
+All three boundary workers now have real simulator leases. Current component
+receipt advances to 81/90 after the FF/40 native driver passes.
+
+The staged driver's completed exact/approximate comparison passes with 32
+matching transitions, maximum edge difference 0.395436 ps, differential plateau
+difference 0.540915 mV and common-mode plateau difference 0.367787 mV. Both traces
+are reverified through their captured circuit/simulator/fixture attestations;
+no resimulation or looser comparison was used. Supplementary result:
+`phy_candidate/8f364c6a8fdabafb/driver_rc_diagnostic.json`. The original six-fixture
+coordinator continues and no complete certificate is claimed from this subset.
