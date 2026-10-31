@@ -963,3 +963,29 @@ first. Failure now holds queued work while active searches finish, and incomplet
 coverage cannot produce a complete table. The shared six-slot budget is intact.
 Unit checks: 239 total, 234 passed, 5 skipped. The stronger RX has no loaded
 native endpoint or full-aperture qualification result yet.
+
+
+The fast-reset source-matched architecture screen completes FF/0 °C successfully
+under the unchanged 1200–1500 ns window: maximum feedback error 6.5465 ps,
+quarter-cycle delay 632.6245–632.9995 ps, CTRL mean 0.731602 V and total variation
+3.1627 mV; BAD maximum 0.423 µV. Raw waveform SHA-256:
+`793a3351d06c56c8523e6489b2f31e1580bdc06adc01cfc87101b723d8b54dbf`;
+exported waveform:
+`015ef69ccdf88f033ac37066a78998e9c514da1c551860a0ada8057700bcfe72`.
+TT/SS source screens and full native-RC loop qualification remain outstanding.
+
+Release checking also exposes stale driver/analog-receiver characterization.
+A refresh coordinator now runs all 15 PVT points for schematic and exact native
+views of driver, static receiver and rate receiver (90 component cases), using
+fixed solved supplies and no voltage sweep. Every new simulator subprocess now
+acquires a real shared SPICE slot; cached valid waveforms are reanalyzed without
+acquiring a slot. Mismatched prior evidence is moved to content-hashed case
+history before regeneration, preserving original traces, decks, sources and
+producer files. Tests verify cache/slot behavior and archived file hashes.
+
+The initial refreshed TT/0 °C driver passes both settled polarities into 100 Ω:
+differential 0.31558–0.31612 V and common-mode 1.24470–1.25612 V. TT/25,
+TT/40, FF/0 and FF/25 schematic drivers also pass with current analysis. Service
+`openlvds-component-evidence-refresh` continues the remaining component cases.
+The shared SPICE budget remains six; active DLL/RX fixtures and producers were
+not modified. Unit regression remains 239 tests (234 passed, 5 skipped).

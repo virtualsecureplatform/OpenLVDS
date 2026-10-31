@@ -18,6 +18,7 @@ from spice_engine import command as spice_command,engine,provenance
 from spice_scope import closure_hash
 from evidence_scope import TOPS,matches as evidence_matches
 from dll_case import case_name,trace_duty
+from spice_slots import slot
 
 ROOT=Path(__file__).resolve().parents[1]
 REQ=json.loads((ROOT/'requirements.json').read_text())
@@ -48,6 +49,21 @@ VIO VDDIO 0 PWL(0 0 1n 3.3)
 VDIG VDDD 0 PWL(0 0 1n 1.8)
 VREF VREF 0 PWL(0 0 1n 1.2)
 '''
+
+def archive_previous(out):
+    files=[p for p in out.iterdir() if p.is_file() and not p.name.startswith('.')]
+    if not files:return
+    hashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(files)}
+    stamp=hashlib.sha256(json.dumps(hashes,sort_keys=True).encode()).hexdigest()[:16]
+    history=out/'history'/stamp;history.mkdir(parents=True,exist_ok=True)
+    for path in files:
+        target=history/path.name
+        if target.exists():
+            if hashlib.sha256(target.read_bytes()).hexdigest()!=hashes[path.name]:raise ValueError('Analog history collision')
+            path.unlink()
+        else:path.replace(target)
+    (history/'archive.json').write_text(json.dumps(dict(files=hashes,qualified_phy=False,
+        reason='Prior evidence did not match the current fixture/circuit/provenance',producer_sha256=SCRIPT_HASH),indent=2)+'\n')
 
 def run_deck(name,deck):
     out=ARTIFACT_ROOT/name
@@ -95,12 +111,14 @@ def run_deck(name,deck):
             if cached:REUSED[out]=old
         except (OSError,ValueError,KeyError):cached=False
     if not cached:
+        archive_previous(out)
         (out/'summary.json').unlink(missing_ok=True);data.unlink(missing_ok=True)
         snapshot.write_bytes(SOURCE_BYTES)
         (out/'runner.py').write_bytes(SCRIPT_BYTES)
         path.write_text(deck)
-        result=subprocess.run(spice_command(out/(engine()+'.log'),path),
-                               cwd=out,capture_output=True,text=True)
+        with slot():
+            result=subprocess.run(spice_command(out/(engine()+'.log'),path),
+                                   cwd=out,capture_output=True,text=True)
         (out/'console.log').write_text(result.stdout+result.stderr)
         if result.returncode or not data.exists():
             return out,None,dict(passed=False,error=engine()+' failed',returncode=result.returncode)

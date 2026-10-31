@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 import hashlib
+from contextlib import nullcontext
 from pathlib import Path
 import sys
 import tempfile
@@ -24,6 +25,7 @@ class AnalogResume(unittest.TestCase):
                     SCRIPT_HASH=hashlib.sha256(script).hexdigest(),SCHEMATIC_HASH=hashlib.sha256(source).hexdigest(),
                     EXTRACTED=False,EXTRACTION_INPUTS={},SETTLED_START=False,MAX_STEP_PS=None,
                     RESUME=True,REUSED={},CASE_LOCKS={},SIMULATOR_STAMP='unit provenance'), \
+                    patch.object(runner,'slot',return_value=nullcontext()) as slots, \
                     patch.object(runner,'engine',return_value='unit'), \
                     patch.object(runner,'spice_command',return_value=['unit simulator']), \
                     patch.object(runner.subprocess,'run',side_effect=simulate) as call:
@@ -35,6 +37,7 @@ class AnalogResume(unittest.TestCase):
                 runner.SOURCE_BYTES=source+b'.subckt unused A B\nR2 A B 100\n.ends unused\n'
                 self.assertTrue(execute()['reused_waveform'])
                 self.assertEqual(call.call_count,1)
+                self.assertEqual(slots.call_count,1)
                 wave=root/'driver_tt_25/bench.cir.prn'
                 wave.write_text(wave.read_text().replace('1.375','1.3'))
                 self.assertFalse(execute()['reused_waveform'])
@@ -42,6 +45,15 @@ class AnalogResume(unittest.TestCase):
                 runner.SOURCE_BYTES=source.replace(b'B 10',b'B 11')
                 self.assertFalse(execute()['reused_waveform'])
                 self.assertEqual(call.call_count,3)
+                self.assertEqual(slots.call_count,3)
+                history=list((root/'driver_tt_25/history').glob('*/archive.json'))
+                self.assertEqual(len(history),2)
+                for report in history:
+                    import json
+                    record=json.loads(report.read_text())
+                    self.assertFalse(record['qualified_phy'])
+                    for name,digest in record['files'].items():
+                        self.assertEqual(hashlib.sha256((report.parent/name).read_bytes()).hexdigest(),digest)
 
 
 if __name__=='__main__':unittest.main()
