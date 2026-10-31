@@ -359,6 +359,19 @@ Current bring-up evidence on 2026-10-31:
   Component preflight reconstructs all 60 fixtures and correctly holds at the
   incomplete native gate, with zero execution receipts or raw traces. Its
   `gate_preflight.json` binds the manifest, verifier and simulator provenance.
+  The live captured native trace still fails the first short pulse: over
+  24.5–26.5 ns CO peaks at 0.859699 V and RESTORE0 remains above 1.667761 V;
+  there is no output falling crossing in 24–27 ns. CO_TRACK spans
+  0.738464–0.836576 V in that interval. Both complete original controls continue;
+  no partial trace supplies a qualification verdict.
+- New source comparison `receiver_clamp/0244d3fb608b9d06` connects the two CO
+  resistors to the existing 1.2 V VREF port instead of CO_TRACK. The replica is
+  retained unloaded as an observation node; every device size and all other
+  connections are unchanged. This tests a fixed reference against movement of
+  the loaded replica, using the existing fixture reference and fixed supplies.
+  Two structural tests pass. Service `openlvds-vref-clamp-source-screen` is live
+  and queued; no electrical, physical or native improvement is claimed. Reference
+  loading and full input-range/PVT behavior still require qualification if selected.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains

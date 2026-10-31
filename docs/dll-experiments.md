@@ -1555,3 +1555,31 @@ Native DLL screen `15cac0ba813a9333` also completes all 21 selected static
 offsets: exact SS/0, TT/25 and FF/0 coverage at 0, ±50, ±150 and ±300 ps.
 Acquisition loops remain outstanding; static passes do not admit the measured
 loop model or the remaining 312 qualification fixtures.
+
+The reduced-clamp captured native trace reaches 27.585 ns while running. The
+first short pulse still fails to restore: in 24.5–26.5 ns CO reaches only
+0.859699 V, RESTORE0 stays above 1.667761 V, and no RXCLOCK falling crossing
+occurs in 24–27 ns. CO_TRACK spans 0.738464–0.836576 V. These are partial
+engineering observations; both original native controls continue to full reports.
+
+Next comparison `receiver_vref_clamp_experiment.py` changes exactly the reference
+terminal of XCLAMP0/1 from CO_TRACK to the existing VREF port. The source fixture
+already supplies VREF at 1.2 V. Two approximately 2 kΩ resistor units remain in
+parallel; original decision sizes, doubled input tails and restoration are
+unchanged. The replica remains present but unloaded as an observation node.
+This tests reference binding independently of device size or clamp conductance;
+no threshold, timing or PVT improvement is assumed. Additional VREF loading and
+full component/headroom/PVT behavior must be checked if this variant is selected.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/receiver_vref_clamp_experiment.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171
+scripts/env.sh --ngspice python3 scripts/receiver_vref_clamp_experiment.py run \
+  build/diagnostics/receiver_clamp/0244d3fb608b9d06
+```
+
+Service `openlvds-vref-clamp-source-screen` queues the original three controls,
+retaining 80 ns stimuli, native bias/digital RX load and 15–75 ns scoring. Two
+targeted tests verify that only those resistor terminals change, CO_TRACK is
+connected only to the replica, and the unclamped source control is unchanged.
+No physical candidate or qualification verdict is selected from this experiment.
