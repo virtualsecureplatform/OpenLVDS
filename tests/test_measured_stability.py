@@ -4,10 +4,17 @@ import sys
 import unittest
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from measure_dll_stability import settling_time,pulse_train
+from measure_dll_stability import settling_time,pulse_train,instrument_source
 
 
 class MeasuredStability(unittest.TestCase):
+    def test_instrumentation_only_exposes_an_existing_node(self):
+        source='.subckt openlvds_dll_analog A VSS\nC0 CTRL.t1 VSS 4p\n.ends\n.subckt lvds_bias PB NB VP VN\n.ends\n'
+        result=instrument_source(source,'CTRL.t1')
+        self.assertIn('.subckt openlvds_dll_analog A VSS CTRL.t1',result)
+        self.assertIn('C0 CTRL.t1 VSS 4p',result)
+        with self.assertRaises(ValueError):instrument_source(source,'nonexistent')
+
     def test_settling_requires_staying_in_the_band(self):
         t=np.arange(6,dtype=float)
         values=np.array([0,.95,1.2,1.01,1.,1.])

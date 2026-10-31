@@ -25,6 +25,15 @@ ROOT=Path(__file__).resolve().parents[1]
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def instrument_source(library,anchor):
+    """Expose an existing storage terminal without changing any device or wire."""
+    instrument=closure(library,['openlvds_dll_analog','lvds_bias'])
+    match=re.search(r'(?im)^\.subckt openlvds_dll_analog[^\n]*(?:\n\+[^\n]*)*',instrument)
+    if match is None or not re.search(r'(?<!\S)'+re.escape(anchor)+r'(?!\S)',instrument):
+        raise ValueError('Storage observation terminal not found')
+    return instrument[:match.end()]+' '+anchor+instrument[match.end():]
+
+
 def pulse_train(stop,step=None):
     at=5.;points=[(0,0)]
     while at<stop:
@@ -79,9 +88,7 @@ def measure_corner(qualification,manifest,root,process,temp):
     dc={n:average(wave[keep,1],column(wave,header,n)[keep]) for n in ['CTRL','UP','DN']}
     fields=manifest['identity']['full_models'];anchor=fields['observation_nodes']['CTRL'][0]
     library=(qualification/'full.spice').read_text()
-    instrument=closure(library,['openlvds_dll_analog','lvds_bias'])
-    match=re.search(r'(?im)^\.subckt openlvds_dll_analog[^\n]*(?:\n\+[^\n]*)*',instrument)
-    instrument=instrument[:match.end()]+' '+anchor+instrument[match.end():]
+    instrument=instrument_source(library,anchor)
     (out/'instrument.spice').write_text(instrument)
     pdk=Path(os.environ['PDK_ROOT'])/'sky130A/libs.tech/ngspice/sky130.lib.spice'
     def prefix(lib):
