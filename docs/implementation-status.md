@@ -432,9 +432,15 @@ inactive while this failure is diagnosed. RX characterization continues.
 A source-specific three-corner screen producer now accepts the exact repaired
 source, captures native-finger schematic analog/delay devices with extracted
 PFD/bias, and binds its fixtures, source and producer hashes. Its prepared screen
-`dll_architecture/d8b9a06ef038cd76` has not run. An experimental layout build
-`dll_layout/88342cdbe6c80ac2` is active in parallel; it has not yet passed
-physical or electrical checks. Advancement accepts an explicit
+`dll_architecture/d8b9a06ef038cd76` has not run. The repaired layout
+`dll_layout/88342cdbe6c80ac2` passes DRC (zero errors), strict LVS, exact RC
+extraction and the independent topology audit. It has 518 devices and 15
+verified public ports. Further exact degree-8 reduction
+`schur_e4b240c20b314964` retains 53,508 resistors and 14,631 resistor-graph
+nodes, with four passing sparse witnesses at 10,035 protected terminals
+(maximum current difference 3.91e-13 A). The new native qualification
+`0cc06862af2fae63` is prepared but not dispatched. No
+electrical repair results are available yet. Advancement accepts an explicit
 matching screen; it cannot reuse the old architecture evidence for new source
 bytes. A hold survives restarting the same candidate; selecting a new candidate
 clears only the previous OTA hold/stage, preserving the RX and CP settings.
@@ -446,8 +452,21 @@ and actual differential input, offset and thin-device terminal checks. It keeps
 corner/condition correlations instead of combining unrelated extremes. This
 production gate has not run and requires passing native/model evidence first.
 
-The current host test run completes 169 tests: 164 pass and five skip for the
+The current host test run completes 174 tests: 169 pass and five skip for the
 container/analysis backends checked separately in earlier runs. Native W8/C4
 qualification, the complete RX aperture table, operating-point characterization,
 readiness replay, limiting-corner recovery, six-fixture RC certification and the
 full 45-case link regression remain outstanding. No candidate is released.
+
+
+The staged release checker now accepts a bundle plus all-PVT model, recovery,
+readiness and correlated OTA reports. It reconstructs the audited DLL and PHY
+libraries, rechecks all native DLL cases and full/fast waveform comparisons,
+then checks the unchanged analog/RTL/OpenPLL evidence and the full link matrix.
+Source reuse is limited by circuit closure; obsolete CP/copy and raw-clock
+qualifier gates are replaced by native OTA/PFD-area/readiness evidence for this
+path. All 336 current native fixtures reconstruct exactly under the pinned
+container. A missing-bundle negative control fails with a saved isolated report;
+there is no positive production release result. Advancement runs this gate after
+the matrix. Exact-byte promotion remains unimplemented and blocked by electrical
+qualification, not merely by release-tool availability.

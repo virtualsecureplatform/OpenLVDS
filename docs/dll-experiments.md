@@ -350,3 +350,28 @@ input/tail devices are treated separately. Fixed supplies and the single 35 µA
 reference remain unchanged. These native-finger schematic checks complement
 the extracted loop; they do not establish mismatch/yield or general tapeout
 stress qualification.
+
+
+## Staged release evidence
+
+The staged checker preserves the active release status and writes to
+`BUNDLE/release/status.json`:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/check_release.py --bundle BUNDLE --stability ALL_PVT_REPORT --recovery RECOVERY_REPORT --readiness READINESS_REPORT --ota-operating-points OPERATING_REPORT
+```
+
+It reconstructs both tested libraries from the audited physical inputs, checks
+15-port OTA topology without a control-copy branch, and verifies the complete
+native case coverage independently of the saved success flags. Every fixture is
+reconstructed to preserve loads, scoring windows, supplies, probes and the one
+reference generator. Every native waveform is remeasured; all ten full/fast DLL
+comparisons are recomputed. Model, recovery, readiness and OTA reports must share
+the same native candidate and selected model/recovery inputs.
+
+The common checks still require scoped schematic/extracted driver and receiver
+characterization, DC driver levels, current RTL/OpenPLL evidence, independent
+RC audits, the complete six-fixture certificate and every case in the 45-case
+link matrix. The candidate PFD-area and buf_4 physical policies use their archived
+inputs; inactive CP/copy and raw-clock-qualifier checks do not substitute for
+candidate-specific native evidence. A checker pass does not itself promote files.

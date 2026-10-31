@@ -155,11 +155,15 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN):
         time.sleep(10)
     bundle_job('running_full_link_matrix','regression.py',
         ['--bundle',relative_bundle,'--fast-rc','--jobs','6'],'bundle_regression.log')
+    bundle_job('verifying_staged_release','check_release.py',
+        ['--bundle',relative_bundle,'--stability',str(report.relative_to(ROOT)),
+         '--recovery',str(recovery.relative_to(ROOT)),'--readiness',str(readiness.relative_to(ROOT)),
+         '--ota-operating-points',str(operating.relative_to(ROOT))],'bundle_release.log')
     atomic(workflow,dict(status='link_matrix_complete_remaining_signoff',qualification=str(relative),
         stability=str(report.relative_to(ROOT)),bundle=relative_bundle,qualified_phy=False,
         recovery=str(recovery.relative_to(ROOT)),readiness=str(readiness.relative_to(ROOT)),
         ota_operating_points=str(operating.relative_to(ROOT)),
-        remaining=['release_checker_and_exact_byte_promotion']))
+        remaining=['exact_byte_promotion']))
 
 
 def main():
