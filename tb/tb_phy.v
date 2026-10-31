@@ -47,10 +47,10 @@ module tb_phy;
     end
     initial begin
         #10;reset_n=1;enable=1;clock_ready=1;
-        repeat(1800) @(negedge clk);
+        repeat(2600) @(negedge clk);
         #0.1;reset_n=0;clock_ready=0;
         #10;reset_n=1;clock_ready=1;
-        repeat(1800) @(negedge clk);
+        repeat(2600) @(negedge clk);
         if (checked<5000) $fatal(1,"Insufficient PHY traffic: %d",checked);
         $display("PASS complete PHY functional assembly bits=%0d",checked);$finish;
     end

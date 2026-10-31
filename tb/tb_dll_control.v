@@ -17,13 +17,21 @@ module tb_dll_control;
             @(posedge clk); #0.1; phase_bad=1; #0.2; phase_bad=0;
         end
         if (locked) $fatal(1,"Locked during phase errors");
-        repeat(70) @(posedge clk);
+        repeat(600) begin
+            @(posedge clk); #0.01;
+            if (locked) $fatal(1,"Lock asserted before acquisition guard");
+        end
+        repeat(25) @(posedge clk);
         #0.1; if (!locked || !pd_enable) $fatal(1,"Good phase failed to qualify");
         phase_bad=1;
         repeat(5) @(posedge clk);
         #0.1; if (locked) $fatal(1,"Persistent phase error did not revoke lock");
         phase_bad=0;
-        repeat(70) @(posedge clk);
+        repeat(600) begin
+            @(posedge clk); #0.01;
+            if (locked) $fatal(1,"Fault did not restart acquisition guard");
+        end
+        repeat(25) @(posedge clk);
         #0.1; if (!locked) $fatal(1,"Failed to relock");
         clock_ready=0;
         #0.1; if (locked || pd_enable) $fatal(1,"Clock readiness not enforced");
