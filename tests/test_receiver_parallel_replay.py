@@ -65,3 +65,11 @@ class ParallelReceiverReplay(unittest.TestCase):
             self.assertTrue((artifact/'sharp_control/summary.json').exists())
             self.assertFalse((artifact/'captured/summary.json').exists())
             self.assertFalse((artifact/'summary.json').exists())
+
+    def test_vref_variant_also_runs_both_controls_and_preserves_the_other_on_failure(self):
+        import probe_receiver_vref_clamp_candidate as selected
+        for fail in [False,True]:
+            with self.subTest(fail=fail),tempfile.TemporaryDirectory() as temp,patch.dict(globals(),replay=selected):
+                artifact=self.exercise(Path(temp),fail_captured=fail)
+                self.assertTrue((artifact/'sharp_control/summary.json').exists())
+                self.assertEqual((artifact/'summary.json').exists(),not fail)
