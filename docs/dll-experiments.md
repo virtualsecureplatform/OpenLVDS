@@ -1305,3 +1305,28 @@ identity is `strong_wide_input`, with input width 40 µm; it cannot be substitut
 for the previous strong-clamp identity. Receiver replay remains diagnostic and
 does not select a release. Full component, RC comparison, aperture and link
 checks remain required if this native candidate recovers every clock edge.
+
+Host continuation `continue_receiver_wide_input.py` is active as
+`openlvds-wide-input-native-continuation`. It waits on the actual source owner,
+requires successful terminal service status and all three reports, then invokes
+the gated layout producer, independent RC audit and original two native replays.
+It binds the source/parent manifests and downstream producer hashes. Observation
+errors retry; a failed gate holds the pipeline. Its receipt, captured producer
+and stage logs are under `receiver_clamp/4e55a995d239fb38/native_continuation/`.
+It does not start component/link qualification or publish a PHY release.
+
+```sh
+/usr/bin/python3 scripts/continue_receiver_wide_input.py \
+  build/diagnostics/receiver_clamp/4e55a995d239fb38 \
+  build/diagnostics/clock_restore/50565a94b3b04171 \
+  --source-unit openlvds-receiver-wide-input-source-screen.service
+```
+
+Completed captured-waveform inspection compares the same negative pin pulse at
+24.777 ns (526.689 ps width). In the interval from that crossing through 500 ps
+after the following pin rising crossing, weak→strong clamp changes the sampled
+PP−PN negative duration from 291.929 to 284.538 ps and its minimum from −37.791
+to −35.982 mV. CO peak rises from 0.789424 to 0.821754 V, but neither restores
+the output clock. Durations here integrate a sampled sign mask and are diagnostic,
+not refined zero-crossing or setup/hold measurements. Stronger clamping alone
+has not solved the short-pulse loss; the wider-input experiment remains unproven.

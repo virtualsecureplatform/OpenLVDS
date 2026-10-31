@@ -248,12 +248,16 @@ Current bring-up evidence on 2026-10-31:
   its three complete, one-to-one source controls. They reject earlier clamp
   evidence and preserve native shared bias, digital load, nine-port order and
   replay timing. No wider-input physical build or native simulation is claimed.
+  Host service `openlvds-wide-input-native-continuation` now waits on the actual
+  source owner, then runs those physical/RC/native gates in sequence. It freezes
+  source and parent manifests plus downstream producers; failed gates hold the
+  pipeline. It stops before component/link qualification and release selection.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Unit suite: 337 tests, 336 passed and one skipped in the pinned ngspice
+- Unit suite: 341 tests, 340 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
