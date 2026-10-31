@@ -662,3 +662,30 @@ schematic. No schematic-only or unloaded pass qualifies the required 20 fF
 native RX endpoint. Fresh loaded controls must pass before a new full aperture
 matrix; staged PHY integration and all release evidence still need that exact
 new RX network.
+
+
+## Buffered RX loaded endpoints and complete aperture matrix
+
+```sh
+scripts/env.sh --ngspice python3 scripts/rx_candidate_aperture.py prepare build/diagnostics/rx_buffer4_physical_v1
+scripts/env.sh --ngspice python3 scripts/rx_candidate_aperture.py run build/characterization/rx_aperture/7636dbd7a4c55979 --stage all --jobs 3 --wait-slot 1
+```
+
+The artifact binds actual audited candidate GDS/RC, source/producer archives,
+physical reports, original aperture producer, requirements and simulator. Six
++800 ps loaded setup endpoints cover both data polarities at SS/0 °C (20 ps
+clock slew), TT/0 °C (200 ps) and FF/0 °C (200 ps), with 20 ps data slew and
+the original 20 fF public loads. The `all` stage first runs those endpoints
+with one worker; a failure holds full expansion. All six completed witnesses
+are remeasured before starting the complete 480-condition matrix. Public level
+limits, original observation windows, ±800 ps search bracket, ≤5 ps boundary
+resolution, 20 ps guard and 200 ps additional link margin remain unchanged.
+
+Each endpoint or complete boundary search owns one global SPICE lease. Optional
+`--wait-slot` blocks on one of the existing six lease files for the endpoint
+stage; it does not create a seventh slot or signal a live coordinator. Slot 1
+was selected behind a short native DLL fixture to avoid repeated reacquisition
+by the larger DLL queue. Full matrix workers return to the shared pool. Frozen
+original aperture code is reused unchanged and never called without a wrapper
+lease. Partial endpoints and physical/functional passes cannot qualify the
+aperture table, staged PHY or release.

@@ -877,3 +877,19 @@ All 1,208 extracted capacitors and protected terminals are retained; exact
 positive-conductance algebraic elimination reduces 21,690 resistors to 4,267.
 The independent audit has zero topology errors. Native loaded endpoint tests
 and a fresh complete aperture matrix are still required for this network.
+
+
+Source-bound buffered RX aperture artifact `7636dbd7a4c55979` is prepared with
+all 480 original conditions and exact native network `f6e4ef38f920772c...`.
+Service `openlvds-rx-buffer4-aperture` queues six loaded both-polarity SS/TT/FF
+endpoints, then expands only after their intact passing waveforms are rechecked.
+The full matrix uses up to three workers under the global six-slot budget.
+Original frozen producer files are unchanged. Unit checks: 230 total, 225
+passed, 5 skipped; admission rejects incomplete/duplicate matrices and missing,
+failed or changed endpoint evidence, and the selected-slot lease is exclusive.
+No buffered native endpoint or aperture qualification result is claimed yet.
+
+Combined native DLL static follow-up now passes six SS/0 °C offsets: 0, ±50,
+±150 and +300 ps. −300 ps and TT/FF static coverage remain in the queue, and
+all three source architecture loops are still running. The complete PHY remains
+unqualified.
