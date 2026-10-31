@@ -357,3 +357,16 @@ incident external capacitances are about 2.81/2.80 fF before the separate 20 fF
 fixture loads (coupling-inclusive sums, excluding native junction capacitance).
 The queued internal-stage and zero-external-load controls will distinguish
 output loading from delay already present in the flop/publication path.
+
+
+The first native internal control reproduces all SS +800 ps baseline public
+limits exactly. During the observation window, data[0]'s publication flop Q is
+1.79989–1.80001 V, the final buffer gates are 1.30–1.73 mV, and its local PFET
+supply is 1.7772–1.7833 V. Thus the final-stage input is already established
+while its public output still charges. The matched zero-external-data-load
+control passes, with Q0/Q1 minima 1.79890/1.79842 V. Original 20 fF loading
+fails with minima 0.72308/0.71469 V. Both records are under
+`rx_publication/dd89f11b1af99f29`; all other stimulus, original scoring and
+VALID loading are preserved. This establishes external data loading as a cause
+for this SS failure and motivates stronger public drivers, while preserving
+the original timing/level requirements and the full-RC test requirement.

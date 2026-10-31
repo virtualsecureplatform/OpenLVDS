@@ -15,11 +15,13 @@ Current bring-up evidence on 2026-10-31:
   and the independent RC audit (`6562211b6d43fb89`).
 - Three source-matched SS/TT/FF architecture loops are running
   (`0ca8225b328ecaa1`). Combined native candidate `1d201e9ed2f89f56` has 336
-  prepared fixtures and is running the first SS/0 °C 0/±150 ps static probes.
+  prepared fixtures. All three SS/0 °C 0/±150 ps static seeds pass, and the
+  remaining 18 SS/TT/FF static phase fixtures are running conditionally.
 - The frozen RX aperture campaign completes 480 conditions: 356 pass, 124 fail.
   All failed +800 ps endpoints have high VALID but illegal public data levels.
-  Native internal publication probes and matched external-load controls are
-  queued (`rx_publication/dd89f11b1af99f29`). The failed table cannot qualify RX.
+  Native internal publication probes reproduce the failed SS 20 fF endpoint
+  exactly; its matched zero-load control passes. Controls continue under
+  `rx_publication/dd89f11b1af99f29`. The failed table cannot qualify RX.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, a passing RX
   aperture table, the six-fixture certificate and full link matrix remain required.
 
@@ -828,3 +830,25 @@ window. Native terminal discovery passes on the actual extraction. Host tests:
 221 total, 216 passed, 5 skipped. Service `openlvds-rx-publication-controls`
 will use one worker, waiting for a global SPICE slot while the six current DLL
 simulations continue. Results do not qualify RX or the PHY.
+
+
+The combined fast-reset physical PFD plus repaired analog macro now passes all
+three original SS/0 °C static seed fixtures under 120–160 ns scoring. At +150 ps,
+BAD stays at 1.8 V and filtered UF−DF is +107.721 mV; at −150 ps BAD stays at
+1.8 V and filtered UF−DF is −103.105 mV. At 0 ps, BAD remains below 1 nV and
+filtered UF−DF is +1.826 mV. Waveform hashes (+150/−150/0 ps):
+`c65660edb4987a757042a06c1a535b246759f1048056d6caa3def3285ef01792`,
+`62985221b3935b6c3e23b5a646a4840ba6984a658d07439cf7238a63b799b74c`,
+`896088cdbe0a82ad4d40c2d297d776ed22500cf3275e4ae8b5be33df52daf6d4`.
+The conditional follow-up rechecked all seed artifacts and dispatched the
+remaining 18 static SS/TT/FF cases. Architecture acquisition is still pending.
+
+RX SS/0 °C internal publication control with 20 fF external loads reproduces
+the baseline public measurements exactly (maximum reported limit difference
+0 V). The publication flop output is already near 1.8 V and the final buffer
+input near 0 V while the public outputs still charge. Final-driver local VDD
+remains above 1.77 V. Removing only the two 20 fF external data loads makes the
+same fixture pass: Q0/Q1 minima become 1.79890/1.79842 V. This demonstrates an
+external-load contribution in the native circuit, with the original window and
+VALID load preserved. Other controls and a separately hardened stronger-driver
+candidate must establish the repair before any RX qualification.
