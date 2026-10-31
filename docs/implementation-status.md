@@ -9,13 +9,26 @@ Current bring-up evidence on 2026-10-31:
 - All three source-matched SS/TT/FF fast-reset architecture loops pass
   (`dll_architecture/0ca8225b328ecaa1`). All 21 selected native static offsets
   pass. Combined native candidate `dll_qualification/1d201e9ed2f89f56` has 336
-  prepared fixtures; native SS acquisition is live, with TT/FF acquisitions
-  queued behind it. Measured model and full native qualification remain gated.
+  prepared fixtures. Native SS acquisition completed and failed: CTRL varies
+  34.693 mV against 20 mV; the omitted-pulse final section measures 731.772 ps
+  against the 625 ± 100 ps section limit. TT/FF acquisition and downstream
+  progression are held. Measured model and full native qualification remain gated.
+- Captured native diagnosis `dll_loop_diagnosis/43f094030fe944fc` separates
+  32.977 mV cycle-mean movement from at most 1.659 mV cycle ripple. This supports
+  slow startup settling; it does not establish stability. Its four native AC
+  diagnostics are queued under the shared simulator budget, with no qualification
+  verdict. New passive-preset experiment `dll_architecture/9e0ebce74ac41dcd`
+  changes only the startup divider to nominal 1.2 V. It retains W8/C4, the actual
+  fast-reset PFD, fixed supplies and original three source-screen fixtures.
+  Physical candidate `dll_layout/dfb62f717c9bdb42` passes DRC/LVS; independent RC
+  extraction/audit is running. Source screens and native verification remain
+  pending. This experiment does not yet resolve the omitted-pulse failure.
 - The early-publication RX (`rx_early_physical_v1`) passes physical DRC/LVS,
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
   cases pass (128 words). Its original 480-condition aperture campaign
-  (`rx_aperture/20b04dcf527af283`) is running. The complete SS/40 °C group
+  (`rx_aperture/20b04dcf527af283`) is running, with 18 completed conditions
+  passing and no completed failures. The complete SS/40 °C group
   at 200 ps clock/data slew passes, with largest guarded setup/hold bounds of
   210/50 ps. Other slew/PVT coverage remains active. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
@@ -23,11 +36,21 @@ Current bring-up evidence on 2026-10-31:
   generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
   is running. The driver fixture passes with 0.396 ps maximum edge difference
   and 0.541 mV maximum plateau difference; a complete certificate is still pending.
-- Current component evidence verifies 85/90 distinct proofs: all 45 schematic
-  driver/receiver cases, all 30 native analog receiver cases and ten native
+- Current component evidence verifies 86/90 distinct proofs: all 45 schematic
+  driver/receiver cases, all 30 native analog receiver cases and eleven native
   drivers. Remaining native driver refresh continues. Historical numerical
   failures remain archived separately from the current-proof receipt.
-- Unit suite: 264 tests, 259 passed and five skipped. The shared native budget
+- The 32-bit exact-RC data-path diagnostic at SS/40 °C/410 MHz, 45% duty,
+  +100 ps skew and 100 ps peak-to-peak jitter completed and failed payload
+  alignment (`build/link/ss_40_410m_d0.45_s100_e0_ideal_32/6735242e52a2`).
+  Read-only clock diagnosis `link_clock/b7266f117369574e` finds 25 receiver-pin
+  rising crossings but only 16 digital receiver-clock rising edges in 60–120 ns.
+  Digital TX low pulses reach 858.520 ps; receiver-pin low pulses reach 514.807 ps.
+  Cumulative duty distortion and receiver clock pulse loss require a separate
+  loaded pulse-width investigation; moving the payload decoder window cannot
+  repair missing clock edges. This remains an ideal-phase diagnostic, without
+  measured-DLL qualification.
+- Unit suite: 274 tests, 269 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
