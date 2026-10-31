@@ -22,6 +22,7 @@ from stage_phy_candidate import overlay
 ROOT=Path(__file__).resolve().parents[1]
 CODE=['probe_receiver_candidate_link.py','probe_receiver_gain_candidate.py','layout_receiver_gain_candidate.py',
       'probe_receiver_clamp_candidate.py','layout_receiver_clamp_candidate.py','receiver_clamp_experiment.py',
+      'probe_receiver_strong_clamp_candidate.py','layout_receiver_strong_clamp_candidate.py','receiver_strong_clamp_experiment.py',
       'layout_receiver_variant.py','layout_receiver_tail_candidate.py','receiver_candidate_rc.py',
       'probe_link_clock_restore.py','diagnose_link_clock.py','spice_scope.py','spice_probes.py','dll_candidate_library.py',
       'dll_campaign.py','dll_measurements.py','physical_policy.py','simulate_link.py',
@@ -33,7 +34,9 @@ def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def recheck_replay(root):
     identity=json.loads((root/'manifest.json').read_text())['identity']
-    if identity.get('decision_clamped'):
+    if identity.get('clamp_variant')=='strong':
+        from probe_receiver_strong_clamp_candidate import run
+    elif identity.get('decision_clamped'):
         from probe_receiver_clamp_candidate import run
     else:
         from probe_receiver_gain_candidate import run
@@ -87,7 +90,11 @@ def prepare(link,replay):
     if not physical['passed'] or (layout/'rejected_candidate.json').exists():raise ValueError('Physical receiver did not pass')
     clamped=capture['identity'].get('decision_clamped',False)
     if clamped!=physical['identity'].get('decision_clamped',False):raise ValueError('Receiver replay architecture differs from layout')
-    if clamped:
+    if capture['identity'].get('clamp_variant')!=physical['identity'].get('clamp_variant'):
+        raise ValueError('Receiver replay clamp variant differs from layout')
+    if capture['identity'].get('clamp_variant')=='strong':
+        from receiver_strong_clamp_experiment import source_variant as selected_source
+    elif clamped:
         from receiver_clamp_experiment import source_variant as selected_source
     else:selected_source=source_variant
     if (layout/'candidate.spice').read_text()!=selected_source((ROOT/'analog/openlvds.spice').read_text()):
