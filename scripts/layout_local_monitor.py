@@ -41,7 +41,15 @@ def draw(out, top, ports, devices, library):
     children = {}; cursor = 100.; ceiling = 0.
     for name, group in groups.items():
         cell = 'monitor_' + name
-        info = draw_macro(out, cell, public[name], group, library)
+        # Reuse the established DLL local-port routing policy. The control
+        # island has already been renamed, and main() writes the final parent
+        # and full schematic after these private children have been captured.
+        scratch = 'openlvds_dll_analog'
+        if (out / (scratch + '.mag')).exists():
+            raise ValueError('Control island must be captured before local monitor routing')
+        info = draw_macro(out, scratch, public[name], group, library)
+        for suffix in ['.mag', '.sch.spice']:
+            (out / (scratch + suffix)).replace(out / (cell + suffix))
         bb = bounds(out / (cell + '.mag'))
         xy = (cursor - bb[0], 10. - bb[1])
         ceiling = max(ceiling, bb[3] + xy[1])
@@ -61,11 +69,13 @@ def draw(out, top, ports, devices, library):
             if net not in positions[name]:
                 continue
             pin = positions[name][net]
-            if pin['layer'] != 'metal3':
-                raise ValueError('Expected local child ports on metal3')
-            x = child['xy'][0] + child['bbox'][0] - 10. - 4. * i
-            geometry.wire('metal3', x, pin['y_um'], pin['x_um'], pin['y_um'], width)
-            geometry.via34(x, pin['y_um'])
+            x = pin['x_um']
+            if pin['layer'] == 'metal3':
+                x = child['xy'][0] + child['bbox'][0] - 10. - 4. * i
+                geometry.wire('metal3', x, pin['y_um'], pin['x_um'], pin['y_um'], width)
+                geometry.via34(x, pin['y_um'])
+            elif pin['layer'] != 'metal4':
+                raise ValueError('Expected local child ports on metal3 or metal4')
             geometry.wire('metal4', x, pin['y_um'], x, y, .6)
             geometry.via34(x, y); ends.append(x)
         geometry.wire('metal3', min(ends), y, max(ends), y, width)

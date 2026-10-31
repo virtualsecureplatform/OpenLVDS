@@ -173,3 +173,12 @@ A source-identical local comparator layout passes DRC/LVS. Keeping O/OB/L/T
 inside small comparator islands avoids their long drops through the passive
 bank. Its extracted capacitance and native response must improve before this
 physical change is selected. The failed 160 ns trace remains unchanged.
+
+
+The first local layout reduces O/OB/L/T incident external capacitances to
+93.272/41.225/94.846/143.083 fF, from 396.255/199.656/339.985/570.225 fF.
+Its long child-port escapes instead increase PA/PB and activity-reference
+loading. `monitor_capacitance_comparison.json` under layout `0a4253d72e392de9`
+records both netlist/GDS hashes and the node sums. A fresh local-port variant
+passes DRC/LVS and is being extracted before native selection. No transient
+improvement has yet been demonstrated by either layout.

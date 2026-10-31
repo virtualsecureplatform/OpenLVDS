@@ -458,7 +458,7 @@ and actual differential input, offset and thin-device terminal checks. It keeps
 corner/condition correlations instead of combining unrelated extremes. This
 production gate has not run and requires passing native/model evidence first.
 
-The current host test run completes 186 tests: 181 pass and five skip for the
+The current host test run completes 191 tests: 186 pass and five skip for the
 container/analysis backends checked separately in earlier runs. Native W8/C4
 qualification, the complete RX aperture table, operating-point characterization,
 readiness replay, limiting-corner recovery, six-fixture RC certification and the
@@ -569,3 +569,20 @@ of the four comparators and the output logic in separate child islands.
 Comparator O/OB/L/T nodes remain local. The candidate schematic and control
 island bytes match layout `88342cdbe6c80ac2`; extracted capacitance, the RC
 audit and native electrical response remain to be checked.
+
+
+The first local layout's RC extraction/audit passes. Exact degree-8 profile
+`schur_7d612d8097709e6d` passes four independent witnesses at 9,935 protected
+terminals (maximum current difference 1.14e-12 A); qualification
+`a101ed246a85e135` is prepared but has not been dispatched. Incident positive
+O capacitance falls from 396.255 to 93.272 fF and OB from 199.656 to 41.225 fF.
+However PA/PB increase to 706.290/832.032 fF and LAD1 to 1281.820 fF, because
+its child signal ports extend across the passive bank. These are external
+network capacitance sums including coupling. This layout is retained as a
+diagnostic, not selected for full native dispatch.
+
+The revised local-port variant `dll_layout/b0aa9ac2faf0887f` reuses the DLL's
+local signal-port escapes within each child. It passes zero-error DRC and
+strict LVS with the same source and control-island bytes. Its extraction,
+audit and immutable native preparation are running. The failed original
+physical monitor's internal transient is also running with added probes.
