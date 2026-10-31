@@ -1593,3 +1593,27 @@ root `57488d46b26d09ec` nor link root `cb4be133271a71ea` has an execution receip
 or raw simulation trace. The candidate is not selected for qualification.
 The VREF-bias experiment's unchanged source control is running under the same
 six-slot limit; no result for its modified circuit is available yet.
+
+The VREF-biased captured source case now completes: all 47 checked periods
+produce exactly one output edge, with no missing/repeated edges. Diagnostic
+latency is 260.642–508.359 ps. CO spans 0.387500–1.533384 V and the unloaded
+replica remains near 0.832621 V in the original scoring window. The unchanged
+control also passes, but the sharp source control remains outstanding. No
+physical/native improvement is established by these source results.
+
+Dedicated physical/native producers bind identity `vref_1k_clamp`,
+`clamp_reference=VREF`, original decision sizes, two parallel resistor units and
+`replica_monitor_unloaded=true`. The physical source gate remeasures all three
+complete source controls and requires exact source agreement. Native preparation
+requires DRC/LVS and independent RC audit, preserves all nine ports and original
+80 ns pin fixtures, native bias, digital RX load and scoring windows. Both native
+controls run concurrently with separate shared simulator leases; failures do
+not interrupt the other control. Tests reject tracked-reference source or
+metadata, check unchanged devices/placement, exact verifier dispatch and parallel
+completion/error behavior. The downstream dispatcher selects this VREF variant
+explicitly rather than using an older clamp replay verifier.
+
+Service `openlvds-vref-clamp-native-continuation` waits on the actual source owner
+before attempting layout, RC audit and native replay. Its receipt is under
+`receiver_clamp/0244d3fb608b9d06/native_continuation/`. No VREF-biased physical
+artifact or native simulation is claimed while that source gate is incomplete.

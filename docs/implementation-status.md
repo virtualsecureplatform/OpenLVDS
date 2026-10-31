@@ -375,14 +375,26 @@ Current bring-up evidence on 2026-10-31:
   connections are unchanged. This tests a fixed reference against movement of
   the loaded replica, using the existing fixture reference and fixed supplies.
   Two structural tests pass. Service `openlvds-vref-clamp-source-screen` is live
-  and running its unchanged control; no electrical, physical or native improvement is claimed. Reference
+  and has completed its unchanged and modified captured controls. The modified
+  captured case recovers exactly one output edge in all 47 checked periods,
+  with latency 260.642–508.359 ps. CO spans 0.387500–1.533384 V, while the
+  unloaded replica remains near 0.832621 V. The sharp source control remains
+  outstanding; no physical/native improvement is claimed. Reference
   loading and full input-range/PVT behavior still require qualification if selected.
+  Dedicated VREF-biased physical/native producers bind the exact resistor
+  reference and unloaded-monitor topology. They reject earlier tracked-reference
+  source evidence, retain original replay stimuli/bias/digital RX load, and run
+  both native controls concurrently within the shared six-slot pool. Downstream
+  dispatch selects this variant's exact source factory and waveform verifier.
+  Host service `openlvds-vref-clamp-native-continuation` waits on the actual source
+  owner and requires all three source controls before layout/RC audit/native replay.
+  No VREF-biased physical/native result is claimed yet.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 359 tests, 358 passed and one skipped in the pinned ngspice
+- Last full unit suite: 368 tests, 367 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
