@@ -28,7 +28,9 @@ Current bring-up evidence on 2026-10-31:
   RC extraction/connectivity audit. Its exact reduced network SHA256 starts
   `403eb354e54c2dc8`; all 15 ports are verified. The SS/0 °C source screen passes in its original 1200–1500 ns
   window: CTRL variation 2.576 mV, feedback error 10.045 ps and quarter
-  delay 634.257–634.482 ps. TT/25 °C and FF/0 °C remain running.
+  delay 634.257–634.482 ps. TT/25 °C also passes: CTRL variation
+  3.014 mV, feedback error 7.853 ps and quarter delay 633.198–633.558 ps.
+  FF/0 °C remains running.
 - Routing-capacitance inspection (`dll_stage_loading/c26dc74a57838968`) finds
   monotonically increasing internal loads across the four native delay sections:
   N = 48.174/56.614/65.053/73.493 fF and S =
@@ -63,14 +65,18 @@ Current bring-up evidence on 2026-10-31:
   subset remains 210/50 ps. Other PVT coverage remains active. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
-  generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
-  is running. The driver fixture passes with 0.396 ps maximum edge difference
+  generic/native functional cases (2,373,588 bits). Its complete six-fixture RC
+  comparison
+  passes, with all 12 actual reference/approximation traces verified by
+  `rc_certificate.valid` against the current simulator, source and trace policy.
+  The driver fixture passes with 0.396 ps maximum edge difference
   and 0.541 mV maximum plateau difference. The completed DLL fixture also passes:
   each of four outputs has 232 matching edges, with at most 0.785 ps crossing
   difference and 0.123 mV plateau difference (`dll_rc_diagnostic.json` beside
   the bundle manifest). These proofs cover this bundle's original networks;
-  new DLL/analog/TX networks require their own comparison evidence. A complete
-  certificate is still pending.
+  new DLL/analog/TX networks require their own comparison evidence. The largest
+  difference across this complete suite is 2.992 ps for edges and 4.160 mV for
+  plateaus, below the unchanged 20 ps/20 mV limits.
 - Current component evidence verifies all 90/90 distinct proofs: all 45 schematic
   driver/receiver cases, all 30 native analog receiver cases and all 15 native
   drivers. The final SF/40 °C native driver passes. Both refresh processes are
@@ -137,17 +143,22 @@ Current bring-up evidence on 2026-10-31:
   `30154843ced35188`. Captured and sharper-input native replays are active at
   `receiver_replay/cb6fffffb0809887`, with PP/PN/CO and both restoration nodes
   observed. Electrical improvement and PVT qualification remain unproven.
+  Isolated full-link fixture `receiver_candidate_link/467b30dda15cf743` is
+  prepared with only the analog receiver replaced. It retains buf_4 and the
+  entire original stimulus/channel/scoring. Its run gate remeasures both
+  completed replays and requires zero missing edges before allocating a slot;
+  no full-link run or passing receiver result is claimed.
 - Standalone `continue_native_dll.py` waits for the selected native screen owner
   to pass and exit, then rechecks its captured screening evidence. Measured
   SS/TT/FF models gate full native expansion; verified full-native evidence
   gates all 15 model corners. Failed or changed evidence holds progression,
   with no resident-dispatcher edits or release claim.
-- Unit suite: 297 tests, 296 passed and one skipped in the pinned ngspice
+- Unit suite: 301 tests, 300 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
-  boundaries, the complete six-fixture certificate and full link matrix remain
+  boundaries, certificates for any replacement networks and the full link matrix remain
   required. No PHY release has been published.
 
 Earlier entries below preserve the bring-up history; their running-state and

@@ -935,3 +935,21 @@ native early-RX loading and scoring interval are retained; PP/PN/CO and the two
 added restoration nodes are observed. Any selected receiver still needs fresh
 component PVT, headroom, sensitivity, continuous-clock and full-link evidence.
 The buf_8 TX comparison failed and the baseline remains buf_4.
+
+The matching full-link fixture can be prepared before the pin replays finish:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/probe_receiver_candidate_link.py prepare \
+  build/link/ss_40_410m_d0.45_s100_e0_ideal_32/6735242e52a2 \
+  build/diagnostics/receiver_replay/cb6fffffb0809887
+scripts/env.sh --ngspice python3 scripts/probe_receiver_candidate_link.py run \
+  build/diagnostics/receiver_candidate_link/467b30dda15cf743
+```
+
+The run command first remeasures both completed replay waveforms through their
+original verifier and requires zero missing clock edges. Incomplete or failed
+replays hold the link experiment. Only the two analog receiver instances change
+from the original full-RC fixture: buf_4 TX, driver, shared bias, ideal phase
+stimuli, channel, early digital RX, payload and scoring remain identical. This
+checks actual driver loading by the new receiver rather than clamping its input
+pins to saved voltages. It remains a diagnostic and does not qualify a PHY.
