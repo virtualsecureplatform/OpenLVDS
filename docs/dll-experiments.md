@@ -953,3 +953,54 @@ from the original full-RC fixture: buf_4 TX, driver, shared bias, ideal phase
 stimuli, channel, early digital RX, payload and scoring remain identical. This
 checks actual driver loading by the new receiver rather than clamping its input
 pins to saved voltages. It remains a diagnostic and does not qualify a PHY.
+
+## Receiver placement comparison
+
+The decision-current candidate's early native trace still misses the first
+short negative pulse. Its PP−PN reversal shrinks from 367.259 to 310.085 ps,
+and CO reaches only about 0.697 V. The complete replay is retained. Independent
+wire-capacitance inspection also shows that the new global row increased PP/PN
+loads, partly offsetting its intended current and gate-load changes.
+
+The placement comparison preserves the decision-current source byte for byte,
+including all device sizes, terminal connections and finger banks. Deterministic
+bank swaps minimize a weighted wire-span estimate, with extra emphasis on PP,
+PN and CO. This estimate guides placement; extracted RC and native waveforms
+remain the evidence for electrical behavior.
+
+```sh
+scripts/env.sh --tools python3 scripts/layout_receiver_compact_candidate.py
+scripts/env.sh --tools python3 scripts/receiver_candidate_rc.py \
+  build/diagnostics/receiver_layout/f2492f47d0df06ca
+scripts/env.sh --ngspice python3 scripts/inspect_receiver_loading.py \
+  build/diagnostics/receiver_layout/f2492f47d0df06ca
+scripts/env.sh --ngspice python3 scripts/probe_receiver_compact_candidate.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171 \
+  build/diagnostics/receiver_layout/f2492f47d0df06ca
+scripts/env.sh --ngspice python3 scripts/probe_receiver_compact_candidate.py run \
+  build/diagnostics/receiver_replay/17c5587a5df91855
+```
+
+Physical DRC/LVS and independent RC audit pass. Incident routing capacitances
+change as follows; these sum full coupling values, exclude device/MIM capacitance,
+and are not effective AC loads:
+
+| Net | Original decision-current placement (fF) | Reordered placement (fF) |
+| --- | ---: | ---: |
+| PP | 109.141 | 66.413 |
+| PN | 115.726 | 62.576 |
+| CO | 45.447 | 42.437 |
+| CL | 50.169 | 50.380 |
+| CT | 138.108 | 165.735 |
+
+The CT load increase is a tradeoff to measure in the native replay. Actual
+receiver-loading receipts are `receiver_loading/28d53f03bd0b5df5` and
+`receiver_loading/5401712c60ce2946`. The replay adapter captures every selected
+physical producer without changing the live replay implementation. Its original
+stimuli, shared bias, native early RX load, observations and scoring interval
+remain unchanged. Both cases still need complete native results; no improved
+clock recovery is claimed from layout metrics.
+
+Full-link fixture `receiver_candidate_link/98985df18860704a` is prepared for this
+layout and the same original buf_4 link. Its run gate still requires both complete
+pin replays to recover every edge before any integration simulation starts.

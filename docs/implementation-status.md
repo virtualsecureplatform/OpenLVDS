@@ -153,7 +153,19 @@ Current bring-up evidence on 2026-10-31:
   SS/TT/FF models gate full native expansion; verified full-native evidence
   gates all 15 model corners. Failed or changed evidence holds progression,
   with no resident-dispatcher edits or release claim.
-- Unit suite: 301 tests, 300 passed and one skipped in the pinned ngspice
+- Receiver placement experiment `receiver_layout/f2492f47d0df06ca` preserves
+  the preceding decision-current source and all finger banks, changing only
+  device-bank order. DRC/LVS and independent RC audit pass; exact network SHA256
+  starts `b6d987db3ef27b9b`. Incident routing capacitance falls PP 109.141→66.413 fF,
+  PN 115.726→62.576 fF and CO 45.447→42.437 fF; CT rises 138.108→165.735 fF.
+  These exclude device/MIM capacitance and count full coupling values. Native
+  replay `receiver_replay/17c5587a5df91855` is running with both original stimuli
+  and loads; no recovery improvement is claimed yet. Matching isolated link
+  fixture `receiver_candidate_link/98985df18860704a` is prepared and held behind
+  both completed, zero-missing-edge replays. The previous decision-current
+  placement's live trace still misses the first short negative pulse; its
+  complete replay is preserved.
+- Unit suite: 305 tests, 304 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
