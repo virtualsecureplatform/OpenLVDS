@@ -1098,3 +1098,16 @@ No promotion or release claim is made. Current unit regression: 241 tests,
 236 passed and 5 skipped. A second native-driver refresh service uses two workers
 with shared slots and existing per-case locks, accelerating the remaining cases
 without overwriting running evidence.
+
+The selected early RX bundle passes all 54 full generic/native TX+RX functional
+cases (2,373,588 bits), including DLL-control and functional-PHY checks. Evidence:
+`8f364c6a8fdabafb/rtl_validation/c7d7efce94da841f`. Its first two native admissions
+both pass SS/40 °C with 200 ps clock slew and 20 fF loads. Rising data Q0/Q1
+minima are 1.79999958/1.79999895 V; falling-data maxima are 0.300/0.0133 µV.
+The original window and 0.36/1.44 V thresholds are unchanged. Remaining ten
+admissions and the full 480-condition matrix remain outstanding.
+
+`openlvds-early-phy-rc-validation` now compares all six exact/approximate nonlinear
+fixtures for this bundle with two workers. Shared leases keep actual native
+DLL, driver refresh, RX and certificate simulations within six total. There
+is no passing RC certificate, complete native RX table or released PHY yet.
