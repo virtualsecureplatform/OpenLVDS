@@ -56,3 +56,37 @@ class ReleaseProofBinding(unittest.TestCase):
                 proof_binding(report,q,q/'stability/other/summary.json',recovery)
             with self.assertRaisesRegex(ValueError,'another recovery'):
                 proof_binding(report,q,model,q/'recovery/other/summary.json')
+
+
+class ArchitectureSourceBinding(unittest.TestCase):
+    def fixture(self,root):
+        screen=root/'build/diagnostics/dll_architecture/screen';(screen/'inputs/scripts').mkdir(parents=True)
+        layout=root/'build/diagnostics/dll_layout/layout';layout.mkdir(parents=True)
+        (layout/'candidate.spice').write_text('exact source\n');(screen/'inputs/ota_w8_c4.spice').write_text('exact source\n')
+        scripts=root/'scripts';scripts.mkdir();producer=scripts/'screen_repaired_dll.py';producer.write_text('producer version one\n')
+        archive=screen/'inputs/scripts/screen_repaired_dll.py';archive.write_bytes(producer.read_bytes())
+        (screen/'manifest.json').write_text(json.dumps(dict(identity=dict(producer_code={producer.name:native.digest(producer)}))))
+        q=root/'build/diagnostics/dll_qualification/native';q.mkdir(parents=True)
+        manifest=dict(identity=dict(screen=str(screen.relative_to(root)),screen_manifest_sha256=native.digest(screen/'manifest.json'),
+            variant='ota_w8_c4',full_models=dict(layout=str(layout.relative_to(root)),source_sha256=native.digest(layout/'candidate.spice'))))
+        return q,manifest,screen,producer,archive
+
+    def test_changed_screened_source_cannot_qualify_the_physical_candidate(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory).resolve();q,m,screen,_,_=self.fixture(root)
+            with patch.object(native,'ROOT',root):
+                native.architecture_sources(q,m)
+                (screen/'inputs/ota_w8_c4.spice').write_text('different source\n')
+                with self.assertRaisesRegex(ValueError,'differs from the physical'):
+                    native.architecture_sources(q,m)
+
+    def test_current_producer_and_archived_copy_must_both_match(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory).resolve();q,m,_,producer,archive=self.fixture(root);original=producer.read_bytes()
+            with patch.object(native,'ROOT',root):
+                for target in [producer,archive]:
+                    target.write_text('changed producer\n')
+                    with self.assertRaisesRegex(ValueError,'producer or its archive changed'):
+                        native.architecture_sources(q,m)
+                    target.write_bytes(original)
+                native.architecture_sources(q,m)

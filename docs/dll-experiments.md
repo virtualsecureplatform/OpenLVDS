@@ -445,3 +445,10 @@ architecture, model or PHY qualification. A completed unchanged case can be
 rechecked and reused by the later campaign. Loop and approximate fixtures are
 rejected by this early-probe entry point. This is particularly useful when actual
 new-layout capacitance differs from the older loading used in a schematic proxy.
+
+
+Independent architecture provenance checks bind the screened source bytes to the
+physical candidate before native registration and at final release. They verify
+source-specific screen producers and their archived copies alongside the shared
+campaign dependencies; a changed helper or candidate source cannot inherit the
+previous screen's success.

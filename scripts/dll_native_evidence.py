@@ -20,6 +20,32 @@ FIELDS=('kind','process','temperature','mhz','duty','offset_ps','reference_slew_
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def architecture_sources(root,manifest):
+    if not Path(root).resolve().is_relative_to(ROOT/'build/diagnostics/dll_qualification'):
+        raise ValueError('Native DLL evidence outside candidate directory')
+    identity=manifest['identity'];screen=(ROOT/identity['screen']).resolve()
+    if not screen.is_relative_to(ROOT/'build/diagnostics/dll_architecture'):
+        raise ValueError('Architecture evidence outside candidate directory')
+    if digest(screen/'manifest.json')!=identity['screen_manifest_sha256']:
+        raise ValueError('Architecture manifest changed')
+    layout=(ROOT/identity['full_models']['layout']).resolve()
+    source=(screen/'inputs'/(identity['variant']+'.spice')).resolve()
+    if (not layout.is_relative_to(ROOT/'build/diagnostics/dll_layout') or
+        not source.is_relative_to(screen/'inputs') or
+        (layout/'candidate.spice').read_bytes()!=source.read_bytes() or
+        digest(source)!=identity['full_models']['source_sha256']):
+        raise ValueError('Architecture screen source differs from the physical candidate')
+    captured=json.loads((screen/'manifest.json').read_text())
+    # Source-specific screens add their own producer attestation to the shared
+    # campaign dependencies checked by screen_status(). Validate both archives
+    # and current files; a stale helper must not inherit old screen success.
+    for name,value in captured['identity'].get('producer_code',{}).items():
+        current=(ROOT/'scripts'/name).resolve();archive=(screen/'inputs/scripts'/name).resolve()
+        if (not current.is_relative_to(ROOT/'scripts') or not archive.is_relative_to(screen/'inputs/scripts') or
+            digest(current)!=value or digest(archive)!=value):
+            raise ValueError('Architecture screen producer or its archive changed: '+name)
+
+
 def signature(spec,fast=False):
     return (fast,)+tuple(spec.get(k) for k in FIELDS)+(bool(spec.get('interruption')),)
 
@@ -89,6 +115,7 @@ def verify(root):
     root=Path(root).resolve();manifest=json.loads((root/'manifest.json').read_text());validate(root,manifest)
     if not root.is_relative_to(ROOT/'build/diagnostics/dll_qualification'):
         raise ValueError('Native DLL evidence outside candidate directory')
+    architecture_sources(root,manifest)
     requirements=json.loads((root/'requirements.json').read_text())
     if digest(root/'requirements.json')!=digest(ROOT/'requirements.json'):
         raise ValueError('Native DLL requirements changed')

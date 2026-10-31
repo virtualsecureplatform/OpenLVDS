@@ -61,6 +61,8 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN):
     inside=Path(result.stdout.strip().splitlines()[-1]);relative=inside.relative_to('/work/OpenLVDS')
     artifact=ROOT/relative
     if not (artifact/'manifest.json').is_file():raise ValueError('Prepared manifest missing')
+    from dll_native_evidence import architecture_sources
+    architecture_sources(artifact,json.loads((artifact/'manifest.json').read_text()))
     config=ROOT/'build/diagnostics/resident_jobs/config.json'
     old=json.loads(config.read_text()) if config.exists() else {}
     old=qualification_config(old,str(relative))

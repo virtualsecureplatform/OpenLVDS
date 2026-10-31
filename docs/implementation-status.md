@@ -457,7 +457,7 @@ and actual differential input, offset and thin-device terminal checks. It keeps
 corner/condition correlations instead of combining unrelated extremes. This
 production gate has not run and requires passing native/model evidence first.
 
-The current host test run completes 184 tests: 179 pass and five skip for the
+The current host test run completes 186 tests: 181 pass and five skip for the
 container/analysis backends checked separately in earlier runs. Native W8/C4
 qualification, the complete RX aperture table, operating-point characterization,
 readiness replay, limiting-corner recovery, six-fixture RC certification and the
@@ -518,3 +518,12 @@ coupling and are not independent grounded loads. An early native SS/0 °C
 It uses the unchanged full-RC fixture and the same six-slot lease, with no claim
 of campaign or PHY qualification. The source-specific SS loop remains running;
 all architecture/model/full-matrix requirements still apply.
+
+
+Architecture provenance is independently rechecked before registering a native
+campaign and during release verification. The screened candidate source must
+match the audited physical source byte for byte, and source-specific screen
+producer files must match both current files and their captured archive hashes.
+The original and repaired campaign bindings pass these checks. Fault-injection
+unit tests reject changed screened sources, producer files and archived copies.
+Running simulation producers were not modified.
