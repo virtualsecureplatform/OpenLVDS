@@ -881,3 +881,57 @@ measured-DLL-phase diagnostic, complete selected-RX aperture table, full link
 matrix, strict release recheck and exact-byte local promotion. Selecting an RX
 requires its explicit aperture table. The original resident-dispatch entry
 continues to use the selected layout's workflow directory.
+
+## Continue the preset and local-delay native experiment
+
+The standalone native handoff ends after screening. Its continuation can wait
+for that owner to exit, recheck cached screen waveforms, measure the SS/TT/FF
+model, run all 336 native fixtures and verify their proofs, then measure and
+verify the model at all 15 process/temperature corners:
+
+```sh
+python3 scripts/continue_native_dll.py \
+  build/diagnostics/dll_qualification/15cac0ba813a9333 \
+  build/diagnostics/dll_layout/schur_513f603fc5e6c3aa/native_handoff.json \
+  --producer-unit openlvds-local-delay-exact-native-handoff.service
+```
+
+The waiting job runs on the host to inspect user services and enters the pinned
+container for simulator provenance, evidence verification and simulations.
+The job uses the existing six-slot simulator pool. An exclusive progression
+lock prevents duplicate continuation owners. Its receipt under the qualification's
+`continuation/` directory binds the original handoff identity, qualification
+manifest and producer sources. Failed or changed evidence holds progression;
+current model evidence is verified before reuse. The full matrix requires the
+measured native model, including independently forced-control delay gain and
+390/410 MHz transient validation. The trajectory-inferred AC diagnostic cannot
+satisfy this gate. Resident dispatcher configuration is untouched. Successful
+completion still requires the downstream signoff described above.
+
+## Receiver decision and restoration experiment
+
+The doubled-input-tail receiver restores every sharper-control clock edge but
+still loses nine rising and nine falling edges with captured pins. During its
+first lost negative pulse, PP−PN reverses for 367.259 ps while CO reaches only
+0.665 V. The next physical experiment retains those input tails, doubles the
+decision-stage current/mirror/input widths, and drives three inverters sized
+P/N = 4/2, 8/4 and 16/8 µm. This reduces the CO gate load while retaining output
+polarity and final drive. It remains a diagnostic candidate.
+
+```sh
+scripts/env.sh --tools python3 scripts/layout_receiver_gain_candidate.py
+scripts/env.sh --tools python3 scripts/receiver_candidate_rc.py \
+  build/diagnostics/receiver_layout/784114a01817b339
+scripts/env.sh --ngspice python3 scripts/probe_receiver_gain_candidate.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171 \
+  build/diagnostics/receiver_layout/784114a01817b339
+scripts/env.sh --ngspice python3 scripts/probe_receiver_gain_candidate.py run \
+  build/diagnostics/receiver_replay/cb6fffffb0809887
+```
+
+Run commands only when their existing owner has exited. Physical DRC/LVS and
+independent RC audit pass for this candidate. Both original pin stimuli, bias,
+native early-RX loading and scoring interval are retained; PP/PN/CO and the two
+added restoration nodes are observed. Any selected receiver still needs fresh
+component PVT, headroom, sensitivity, continuous-clock and full-link evidence.
+The buf_8 TX comparison failed and the baseline remains buf_4.

@@ -26,7 +26,9 @@ Current bring-up evidence on 2026-10-31:
   fast-reset PFD, fixed supplies and original three source-screen fixtures.
   Physical candidate `dll_layout/dfb62f717c9bdb42` passes DRC/LVS and independent
   RC extraction/connectivity audit. Its exact reduced network SHA256 starts
-  `403eb354e54c2dc8`; all 15 ports are verified. Source screens remain pending.
+  `403eb354e54c2dc8`; all 15 ports are verified. The SS/0 °C source screen passes in its original 1200–1500 ns
+  window: CTRL variation 2.576 mV, feedback error 10.045 ps and quarter
+  delay 634.257–634.482 ps. TT/25 °C and FF/0 °C remain running.
 - Routing-capacitance inspection (`dll_stage_loading/c26dc74a57838968`) finds
   monotonically increasing internal loads across the four native delay sections:
   N = 48.174/56.614/65.053/73.493 fF and S =
@@ -46,9 +48,11 @@ Current bring-up evidence on 2026-10-31:
   pass; native transient qualification remains mandatory. Its handoff
   (`queue_preset_native_screen.py`, receipt
   `dll_layout/schur_513f603fc5e6c3aa/native_handoff.json`) waits for the same source
-  screens before preparing/running native screening. It
-  holds on failed gates, ended producers or changed inputs. Native acquisition
-  and omitted-pulse timing remain unproven.
+  screens before running native screening. Native qualification
+  `dll_qualification/15cac0ba813a9333` has all 336 fixtures prepared and native
+  observation terminals validated; no new native loop result is claimed. The
+  handoff holds on failed gates, ended producers or changed inputs. Native
+  acquisition and omitted-pulse timing remain unproven.
 - The early-publication RX (`rx_early_physical_v1`) passes physical DRC/LVS,
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
@@ -100,26 +104,46 @@ Current bring-up evidence on 2026-10-31:
   `45fbff442fad8e43`). Both original receiver-replay stimuli are retained for
   this actual network at `receiver_replay/f55b204c5e5256b7`, including native
   digital loading and new PP/PN/CO observations. The captured-input fixture is
-  now running; the sharper-edge control follows it. Bandwidth, node headroom,
-  full input-range/PVT behavior and complete-link timing remain unproven.
+  complete and still loses nine rising and nine falling output edges. The
+  complete sharper-edge control loses none. In the first missing captured
+  negative pulse, the input remains negative for 526.689 ps and PP−PN reverses
+  for 367.259 ps, but CO reaches only 0.665 V and does not restore the output.
+  More input current alone is insufficient with the actual pin waveform.
+  Full input-range/PVT behavior and complete-link timing remain unproven.
 - Matched `buf_8` TX experiment (`tx_buffer8_physical`) passes the full 54-case
   RTL/native functional regression (2,373,588 bits;
   `tx_buffer8/ed7e08ca1a8e22f7`), physical flow/topology and independent RC audit.
   Its native TX network SHA256 starts `d849e11e2470e9ec`. Diagnostic
   `tx_candidate_link/b1c1b53a01dc8564` replaces only TX in the saved SS/40 °C/
   410 MHz/45% duty/+100 ps skew link, preserving every clock/data stimulus,
-  analog/RX/DLL circuit and scoring window. Its native simulation is running;
-  the current staged
-  candidate assembly continues to require buf_4 and no release is published.
+  analog/RX/DLL circuit and scoring window. Its native simulation completes and
+  fails payload alignment. In 60–120 ns,
+  25 receiver-pin rising crossings produce only 13 digital clock rises, versus
+  16 with buf_4. The experiment is not selected; the staged assembly retains
+  buf_4 and no release is published.
 - Snapshot `tx_training_compare/18e4e22fc301ba34` compares the original buf_4
-  and running buf_8 designs over the same 20–35 ns training interval. Maximum
+  and buf_8 designs over the same 20–35 ns training interval. Maximum
   digital clock slew improves from 357.342 to 194.375 ps. The shortest negative
   receiver-pin clock pulse narrows from 556.159 to 460.960 ps, and the weakest
   negative peak decreases from 121.521 to 78.663 mV. Both designs miss six
-  restored edges under the same per-input-period diagnostic. The complete TX
-  payload run is preserved and continues; these training observations issue no
-  payload or qualification verdict.
-- Unit suite: 288 tests, 283 passed and five skipped. The shared native budget
+  restored edges under the same per-input-period diagnostic. The completed TX
+  payload run independently fails, as recorded above; the
+  training observations themselves issue no qualification verdict.
+- Receiver decision/restoration candidate `receiver_layout/784114a01817b339`
+  retains doubled input tails, doubles decision-stage current/mirror/input widths,
+  and reduces the CO inverter gate from P16/N8 to P4/N2. Three inverter stages
+  restore the original output polarity and P16/N8 final drive. Source invariants,
+  DRC/LVS and independent RC audit pass; native network SHA256 starts
+  `30154843ced35188`. Captured and sharper-input native replays are active at
+  `receiver_replay/cb6fffffb0809887`, with PP/PN/CO and both restoration nodes
+  observed. Electrical improvement and PVT qualification remain unproven.
+- Standalone `continue_native_dll.py` waits for the selected native screen owner
+  to pass and exit, then rechecks its captured screening evidence. Measured
+  SS/TT/FF models gate full native expansion; verified full-native evidence
+  gates all 15 model corners. Failed or changed evidence holds progression,
+  with no resident-dispatcher edits or release claim.
+- Unit suite: 297 tests, 296 passed and one skipped in the pinned ngspice
+  environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
