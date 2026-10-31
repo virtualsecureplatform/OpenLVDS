@@ -313,13 +313,18 @@ Current bring-up evidence on 2026-10-31:
   missing falling edge around the 58.920 ns negative pulse (514.802 ps,
   83.068 mV peak). CO peaks at 0.948352 V over 58.7–60.7 ns, but the restored
   clock remains above 1.702 V. The source gate therefore cannot admit layout;
-  its sharp control is running and is allowed to finish.
+  its sharp control now also completes, with no missing edges. All three source
+  cases are complete, but the captured failure remains. Native continuation
+  records `held_for_diagnosis` after the physical source gate rejects lost
+  clock edges. No physical artifact, RC extraction or native replay is produced
+  for this candidate.
 - Source comparison `receiver_clamp/7002b1f71a4ff337` removes only XCLAMP2/3,
   reducing parallel clamp units from four to two while retaining the original
   decision sizes, doubled input tails, strong replica reference and restoration.
   This tests reduced output loading after the smaller-decision source failure.
   Two structural tests pass. Service `openlvds-light-clamp-source-screen` is live
-  and runs its unchanged source control under the same six-slot limit. No electrical or physical
+  and has completed its unchanged source control with no missing edges. Its
+  modified captured source case is queued under the same six-slot limit. No electrical or physical
   improvement is claimed; all original controls and scoring requirements remain.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4

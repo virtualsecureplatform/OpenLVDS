@@ -1480,3 +1480,12 @@ component root `f82998633770e370` nor link root `a1fe429613422650` contains an
 execution receipt or raw simulation trace. The wider-input candidate is not
 selected. The reduced-clamp source control and previous original-decision sharp
 source control are now running within the same six-slot budget.
+
+The original-decision source comparison now completes all three controls.
+Unclamped captured and clamped sharp controls have zero missing edges; clamped
+captured still misses one rising and one falling edge. Its native continuation
+rechecks all source waveforms, then holds when the physical source gate rejects
+the lost clock edges. No physical artifact is generated for that source, and
+neither extraction nor native replay starts. The reduced-clamp experiment's
+unchanged source control also completes with zero missing edges; its modified
+captured case is queued. No circuit improvement is claimed from a control alone.
