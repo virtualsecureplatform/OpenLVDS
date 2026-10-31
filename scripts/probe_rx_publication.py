@@ -53,6 +53,10 @@ def groups(library):
             gates={d[1] for d in selected}
             result[f'{pin}_gate_{depth}']=sorted(gates)
             roots={find(n) for n in gates}
+    clock_devices=[d for d in devices if find(d[1])==find('clk')]
+    result['CLK_LOCAL_GATES']=sorted({d[1] for d in clock_devices})
+    result['CLK_CONTROLLED_SIGNALS']=sorted({n for d in clock_devices for n in [d[0],d[2]] if find(n) not in rails})
+    if not result['CLK_LOCAL_GATES']:raise ValueError('No native clock input transistor terminals')
     return result
 
 
@@ -65,7 +69,8 @@ def validate(root,m):
     capture.validate(source,captured)
     if (identity['producer_code']!=code_hashes() or identity['simulator_provenance']!=provenance() or
             identity['source_manifest_sha256']!=sha(source/'manifest.json') or
-            identity['source_table_sha256']!=sha(source/'table.json') or
+            identity['source_report'] not in ['table.json','seed_summary.json'] or
+            identity['source_report_sha256']!=sha(source/identity['source_report']) or
             identity['library_sha256']!=sha(root/'library.spice')):
         raise ValueError('RX diagnostic input or producer changed')
     for name,value in identity['producer_code'].items():
@@ -74,14 +79,15 @@ def validate(root,m):
         if sha(root/task['id']/'bench.cir')!=task['deck_sha256']:raise ValueError('RX diagnostic deck changed')
 
 
-def prepare(source):
+def prepare(source,case=None):
     source=source.resolve()
     if not source.is_relative_to(ROOT/'build/characterization/rx_aperture'):raise ValueError('Use a captured RX campaign')
     m=json.loads((source/'manifest.json').read_text());capture.validate(source,m)
     lib=(source/'library.spice').read_text();observations=groups(lib)
+    report='seed_summary.json' if case is not None and (source/'seed_summary.json').exists() else 'table.json'
     identity=dict(campaign=str(source.relative_to(ROOT)),source_manifest_sha256=sha(source/'manifest.json'),
-        source_table_sha256=sha(source/'table.json'),library_sha256=sha(source/'library.spice'),
-        producer_code=code_hashes(),simulator_provenance=provenance())
+        source_report=report,source_report_sha256=sha(source/report),library_sha256=sha(source/'library.spice'),
+        producer_code=code_hashes(),simulator_provenance=provenance(),selected_case=case)
     root=ROOT/'build/diagnostics/rx_publication'/hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()[:16]
     if (root/'manifest.json').exists():
         validate(root,json.loads((root/'manifest.json').read_text()));return root
@@ -89,9 +95,14 @@ def prepare(source):
     archive=root/'producers';archive.mkdir()
     for n in CODE:(archive/n).write_bytes((ROOT/'scripts'/n).read_bytes())
     tasks=[]
-    # SS fails strongly, TT fails at slow clock slew, FF is the passing control.
-    for process,temp,clock in [('ss',0,20),('tt',0,200),('ff',0,200)]:
-        spec=dict(process=process,temperature=temp,edge='rising',polarity='rise',clock_slew_ps=clock,data_slew_ps=20,kind='setup')
+    if case is None:
+        specs=[dict(process=p,temperature=t,edge='rising',polarity='rise',clock_slew_ps=clock,data_slew_ps=20,kind='setup')
+            for p,t,clock in [('ss',0,20),('tt',0,200),('ff',0,200)]]
+    else:
+        specs=[s for s in m['conditions'] if capture.condition_id(s)==case]
+        if len(specs)!=1:raise ValueError('Select one captured aperture condition')
+    for spec in specs:
+        process,temp,clock=(spec[n] for n in ['process','temperature','clock_slew_ps'])
         distance=800.;base=source/capture.condition_id(spec)/'point_800p000000'
         record=json.loads((base/'summary.json').read_text());verify_witness(source,m,spec,distance,record['measurement']['passed'])
         for load in [20,0]:
@@ -151,8 +162,8 @@ def run(root,jobs):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);s=p.add_subparsers(dest='action',required=True)
-    a=s.add_parser('prepare');a.add_argument('campaign',type=Path)
+    a=s.add_parser('prepare');a.add_argument('campaign',type=Path);a.add_argument('--case',help='One captured endpoint condition')
     a=s.add_parser('run');a.add_argument('artifact',type=Path);a.add_argument('--jobs',type=int,default=1)
     a=p.parse_args()
-    if a.action=='prepare':print(prepare(a.campaign),flush=True)
+    if a.action=='prepare':print(prepare(a.campaign,a.case),flush=True)
     else:run(a.artifact,a.jobs)

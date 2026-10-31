@@ -17,6 +17,7 @@ class NativePublicationProbes(unittest.TestCase):
                     f'X{len(rows)} {node}.t0 {gate} VGND VGND sky130_fd_pr__nfet_01v8 w=1 l=.15',
                     # Opposite D/S orientation must select the same signal.
                     f'X{len(rows)+1} VPWR {gate} {node}.t0 VPWR sky130_fd_pr__pfet_01v8_hvt w=2 l=.15']
+        rows += ['Xclk clock_bar clk VGND VGND sky130_fd_pr__nfet_01v8 w=1 l=.15']
         return '\n'.join(rows)
 
     def test_native_rc_terminals_are_saved_without_treating_supply_as_signal(self):
@@ -25,6 +26,8 @@ class NativePublicationProbes(unittest.TestCase):
         self.assertEqual(result['data[0]_gate_0'],['data[0]_g0'])
         self.assertEqual(result['data[0]_stage_2'],['data[0]_g1.t0'])
         self.assertEqual(result['valid_supply_0'],['VGND','VPWR'])
+        self.assertEqual(result['CLK_LOCAL_GATES'],['clk'])
+        self.assertEqual(result['CLK_CONTROLLED_SIGNALS'],['clock_bar'])
 
     def test_missing_output_or_supply_short_prevents_probe_preparation(self):
         with self.assertRaisesRegex(ValueError,'No native output driver'):

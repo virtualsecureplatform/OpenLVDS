@@ -759,3 +759,18 @@ An incomplete matrix writes `incomplete_summary.json` and a failed hold state,
 not a complete aperture table. Twelve seed witnesses and all 480 actual boundary
 results remain mandatory for qualification. Unit regressions cover failure holds,
 exclusive real-slot ownership, complete coverage and selected-slot batch release.
+
+
+Internal publication diagnosis can target one captured failed endpoint before
+a full aperture table exists:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/probe_rx_publication.py prepare build/characterization/rx_aperture/f99deb414f62ab19 --case ss_40_rising_rise_200_20_setup
+scripts/env.sh --ngspice python3 scripts/probe_rx_publication.py run build/diagnostics/rx_publication/3efd83d2a44327ab --jobs 1
+```
+
+The diagnostic binds either the existing complete table or the selected seed
+report, verifies the original endpoint waveform and retains fixed scoring.
+Additional probes include native external-clock gate terminals and D/S terminals
+of clock-controlled MOS devices, alongside the existing output-stage gates,
+outputs and local supplies. It does not reinterpret a failed seed as qualified.

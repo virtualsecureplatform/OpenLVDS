@@ -989,3 +989,22 @@ TT/40, FF/0 and FF/25 schematic drivers also pass with current analysis. Service
 `openlvds-component-evidence-refresh` continues the remaining component cases.
 The shared SPICE budget remains six; active DLL/RX fixtures and producers were
 not modified. Unit regression remains 239 tests (234 passed, 5 skipped).
+
+
+The stronger RX's first loaded native admission point fails SS/40 °C with
+200 ps clock slew: Q0/Q1 minima are 1.21208/1.10179 V, below 1.44 V in the
+unchanged publication window. Its fail-stop logic correctly holds the remaining
+11 endpoints and never expands the full aperture matrix. Root
+`rx_aperture/f99deb414f62ab19` records the failed witness and held cases.
+Physical/functional passes do not qualify this timing result.
+
+New staged bundle `754e8b6301c3cc78` with the stronger RX passes the complete
+54-case generic/native TX+RX functional regression (2,373,588 bits). Its native
+publication timing remains a failure. Internal diagnostics at
+`rx_publication/3efd83d2a44327ab` now target this exact failed SS/40 condition,
+retain the original stimulus/window, observe actual output-stage, clock-input
+and clock-controlled transistor terminals, and compare 20 fF versus zero
+external data loading. The diagnostic accepts a source-bound failed seed report
+without requiring a complete aperture table. Service
+`openlvds-rx-strong-publication-probe` is queued under the six-slot budget.
+Another width change is held until those native internal traces identify delay.
