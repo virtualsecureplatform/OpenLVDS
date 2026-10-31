@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Check isolated buffered RX functionality with the existing link scoreboard."""
 from concurrent.futures import ThreadPoolExecutor
+import argparse
 import hashlib
 import itertools
 import json
@@ -16,9 +17,13 @@ def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--source',type=Path,default=ROOT/'rtl/experiments/openlvds_ddr_rx_buffer4.v')
+    p.add_argument('--rx-model',type=Path,default=ROOT/'models/experiments/sky130_rx_functional.v')
+    a=p.parse_args();source=a.source.resolve();rx_model=a.rx_model.resolve()
+    if not all(path.is_relative_to(ROOT) for path in [source,rx_model]):raise ValueError('Keep RX sources/models in OpenLVDS')
     sources=[p for p in sorted((ROOT/'rtl').glob('*.v')) if p.name!='openlvds_ddr_rx.v']
-    sources += [ROOT/'rtl/experiments/openlvds_ddr_rx_buffer4.v',ROOT/'tb/tb_link.v',
-        ROOT/'models/sky130_tx_functional.v',ROOT/'models/experiments/sky130_rx_functional.v']
+    sources += [source,ROOT/'tb/tb_link.v',ROOT/'models/sky130_tx_functional.v',rx_model]
     requirements=json.loads((ROOT/'requirements.json').read_text())
     identity=dict(files={str(p.relative_to(ROOT)):digest(p) for p in sources+[Path(__file__),ROOT/'requirements.json']})
     out=ROOT/'build/diagnostics/rx_buffered_rtl'/hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()[:16]

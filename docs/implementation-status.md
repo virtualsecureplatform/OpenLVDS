@@ -15,8 +15,8 @@ Current bring-up evidence on 2026-10-31:
   and the independent RC audit (`6562211b6d43fb89`).
 - Three source-matched SS/TT/FF architecture loops are running
   (`0ca8225b328ecaa1`). Combined native candidate `1d201e9ed2f89f56` has 336
-  prepared fixtures. All three SS/0 °C 0/±150 ps static seeds pass, and the
-  remaining 18 SS/TT/FF static phase fixtures are running conditionally.
+  prepared fixtures. All seven SS/0 °C static offsets pass; TT/25 °C
+  0/+50/±150 ps also pass. Remaining static coverage is running.
 - The frozen RX aperture campaign completes 480 conditions: 356 pass, 124 fail.
   All failed +800 ps endpoints have high VALID but illegal public data levels.
   Native internal publication probes reproduce the failed SS 20 fF endpoint
@@ -921,3 +921,20 @@ the 20 ps clock-slew SS endpoints and TT endpoints does not qualify `buf_4`.
 The original limits remain fixed. Remaining broad RX work is being held at an
 idle coordinator boundary, preserving native traces, before a stronger native
 publication/output path is evaluated. The DLL source/static jobs continue.
+
+
+The current selected-RX staged bundle `712bb74a908d85f4` passes actual physical
+reconstruction, archived RTL and canonical source-fingerprint gates in a fresh
+565-check release negative control. Release remains false because required
+native DLL/PVT/proofs, current analog evidence, complete RX aperture, six-fixture
+certificate and full link matrix are incomplete. Exact/fast digital model and
+GDS metadata agree. No package or current release pointer is published.
+
+The `buf_4` RX fails both polarities at SS/0 and SS/40 with 200 ps clock slew.
+A hold request is active for its full matrix coordinator at the next idle search
+boundary. Current native work is not interrupted. Stronger source
+`openlvds_ddr_rx_buffer8_publish4.v` retains data `dfrtp_4` publication and
+`buf_8` outputs, with unchanged pipeline and VALID behavior. Its 54-case generic
+and native RX functional regression passes 1,186,794 bits per mode. Physical
+and loaded native timing validation remain pending. Shared RX producer helpers
+stay unchanged while the preceding active users drain.

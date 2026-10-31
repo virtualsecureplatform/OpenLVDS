@@ -713,3 +713,15 @@ table to the complete link regression. Link evidence checks the selected bundle'
 RX rather than an unrelated canonical RX pointer. All original DLL, analog,
 readiness/recovery, six-fixture RC certificate and 45-case link gates remain
 mandatory. No advancement or promotion has been launched for the failing RX.
+
+
+The stronger publication/output prototype has an isolated functional check:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/verify_rx_buffered_rtl.py --source rtl/experiments/openlvds_ddr_rx_buffer8_publish4.v --rx-model models/experiments/sky130_rx_buffer8_functional.v
+```
+
+The verifier captures the explicitly selected source and functional cell models,
+checks all 54 clock/duty/skew combinations with jitter/reset, and requires one
+million bits per generic/native mode. This does not replace actual GDS extraction,
+loaded native endpoint timing, aperture search or staged link qualification.

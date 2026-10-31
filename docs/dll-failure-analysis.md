@@ -397,3 +397,25 @@ and original 20 fF loads. This uses the same audited parent network, captured
 original fixture/measurement code and shared real slot leases. Its artifact and
 pass flags are explicitly diagnostic. These early limiting cases do not replace
 any condition in the complete aperture table or relax its requirements.
+
+
+The limiting `buf_4` diagnostics expose insufficient margin outside the initial
+seed set. At SS/0 °C with 200 ps clock slew, the rising-data +800 ps endpoint
+has Q0/Q1 minima 1.40981/1.29742 V. The falling-data endpoint has maxima
+1.27975/1.36301 V. SS/40 °C also fails: rising minima 1.40837/1.30168 V,
+falling maxima 1.29609/1.38573 V. The original 1.44/0.36 V criteria and
+0.80–1.05 ns publication window remain unchanged. Completed diagnostic records
+are under `rx_limiting/c004ea34d7420fa7`; these failures prevent selecting the
+candidate despite its passing faster-clock-slew SS seeds and TT seeds.
+
+The stronger proposed path uses retained `dfrtp_4` data-publication flops and
+retained `buf_8` public data drivers. Sampler polarity/edge, run/reset behavior,
+pair ordering, pipeline latency and unit-strength VALID drive are preserved.
+Stronger publication flops account for the larger buffer input load; actual
+native timing must establish the result. The independent generic/native RX
+functional regression passes all 54 cases with 1,186,794 bits per mode under
+`rx_buffered_rtl/0adf6d1bf20dab6c`. No physical/electrical pass is claimed for
+this new source. Its hardening, extraction/audit and loaded limiting tests are
+next, after active users of shared RX flow helpers finish. A watcher requests
+retirement of the failed candidate coordinator only when it owns no SPICE lease
+and has no SPICE descendants; all current native traces are preserved.
