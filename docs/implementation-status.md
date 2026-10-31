@@ -893,3 +893,12 @@ Combined native DLL static follow-up now passes six SS/0 °C offsets: 0, ±50,
 ±150 and +300 ps. −300 ps and TT/FF static coverage remain in the queue, and
 all three source architecture loops are still running. The complete PHY remains
 unqualified.
+
+
+Buffered RX loaded native endpoints now pass both SS/0 °C data polarities and
+TT/0 °C rising data at slow clock slew, using the original windows and limits.
+Remaining seeds continue under service `openlvds-rx-buffer4-aperture`.
+A separate six-case SS/0, SS/40 and SF/40 slow-clock diagnostic is queued under
+`openlvds-rx-buffer4-limiting` to expose limiting publication behavior early.
+Both services use the existing six real SPICE leases without signalling any
+active simulator. Full aperture, full DLL and PHY qualification remain pending.

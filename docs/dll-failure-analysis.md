@@ -370,3 +370,30 @@ fails with minima 0.72308/0.71469 V. Both records are under
 VALID loading are preserved. This establishes external data loading as a cause
 for this SS failure and motivates stronger public drivers, while preserving
 the original timing/level requirements and the full-RC test requirement.
+
+
+## Loaded native buffered RX repair evidence
+
+The audited `buf_4` candidate passes the previously failed SS/0 °C rising-data
++800 ps setup endpoint with the original 20 fF loads and original observation
+window: public Q0/Q1 minima improve from 0.72308/0.71469 V to
+1.67781/1.63361 V. The falling-data control passes with maxima
+0.26292/0.33213 V, below the unchanged 0.36 V low-level limit. Both preserve
+valid publication, stimulus separation and the actual native extracted network.
+Their waveform hashes are
+`329480d28d4bd690ac5e78f6347bd3f4b6d4c89fd3a4f8b714cdc017c41e359d`
+and `1df929d81345dd1a571613fce069b88bd4ee7bbd92f122917b39e89cd2342593`.
+
+The TT/0 °C 200 ps clock-slew rising-data endpoint also passes: Q0/Q1 minima
+are 1.79954/1.79937 V instead of the preceding 1.43671/1.43155 V. Waveform:
+`6c045bcf6310bccb204d57013219aee5605ebb85b0eaab84a84484a851990b4d`.
+Results are under `rx_aperture/7636dbd7a4c55979`. These three endpoints
+establish improvement in matched loaded native fixtures, not complete RX timing
+qualification. All remaining endpoint and 480-condition gates are unchanged.
+
+`probe_rx_limiting.py` separately queues both-polarity +800 ps setup diagnostics
+at SS/0 °C, SS/40 °C and SF/40 °C, all with 200 ps clock slew, 20 ps data slew
+and original 20 fF loads. This uses the same audited parent network, captured
+original fixture/measurement code and shared real slot leases. Its artifact and
+pass flags are explicitly diagnostic. These early limiting cases do not replace
+any condition in the complete aperture table or relax its requirements.
