@@ -485,3 +485,32 @@ strict LVS. Extraction/audit and new immutable native fixtures follow separately
 Source equality allows reuse of a matching schematic screen only; previous
 native electrical results never qualify the new physical network. Select the
 layout only after its native fault, quiet and loop checks pass.
+
+
+## Isolated internal-Q-reset PFD physical experiment
+
+The wide-range capture diagnosis compares the existing PFD with a separate
+physical implementation whose reset coincidence senses the flip-flop Q outputs
+before buf_8 output delay. Existing sources and policies remain unchanged.
+
+```sh
+scripts/env.sh --tools --ngspice python3 scripts/harden_qreset_pfd.py --artifact-dir build/diagnostics/pfd_qreset_physical_v1
+scripts/env.sh --tools --ngspice python3 scripts/digital_candidate_rc.py build/diagnostics/pfd_qreset_physical_v1
+scripts/env.sh --ngspice python3 scripts/probe_pfd_physical_candidate.py build/diagnostics/pfd_qreset_physical_v1 --reference build/diagnostics/pfd_capture/b65a8cceadd819c0
+```
+
+Choose a fresh physical artifact directory for a new build. The wrapper retains
+the preceding policy's rejection and independently applies the explicit
+`pulse-area-q-reset` structural policy. DRC/LVS, unchanged archived inputs,
+direct clocks, separate buffered outputs, high-tied data and reset/enable wiring
+remain required. The source and producer archive are included in the physical
+evidence. The standard RC extraction performs an independent connectivity audit.
+
+The native probe requires those audited physical artifacts and the same analog
+loading, bias, simulator and immutable −850/+850/0 ps reference fixtures. Its
+adapter follows actual extracted port order. The PFD is native extracted GDS;
+the DLL analog/delay remain native-finger schematics for this isolated component
+comparison. It checks pulse-area direction over 60–80 ns, not closed-loop lock,
+monitor fault timing or full-PHY readiness. Near-zero activity, full static
+monitor windows, PVT, acquisition and all release gates must still pass before
+this PFD can replace the previous implementation.

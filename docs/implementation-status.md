@@ -654,3 +654,15 @@ At −850 ps the matched schematic output-reset and Q-reset controls both give
 correct negative area (−617.441/−612.378 mV); they do not reproduce the native
 +261.069 mV error. The new physical variant therefore needs native proof before
 selection. No passing acquisition result is inferred from these controls.
+
+
+The physical Q-reset PFD's RC extraction and independent connectivity audit
+now pass. GDS SHA-256 is
+`bb3a28c1372cd12ba24160dc91341b51b056aad6da37595e028f4d0f8416e3dd`
+and extracted netlist SHA-256 is
+`810a134361f82d9051ca1524bbc44ef14e25c22f64a3e44be88317fe77a9f8e6`.
+`probe_pfd_physical_candidate.py` verifies source/producer archives, actual
+post-route connectivity, GDS/netlist/audit hashes and matched reference fixtures
+before preparing native −850/+850/0 ps capture probes. The probe coordinator is
+active, waiting for the shared simulation slots. No physical capture or
+closed-loop pass is claimed yet.
