@@ -2,8 +2,9 @@
 
 The experiment compares a repaired charge pump and NMOS control follower with
 an averaged-PFD current-mirror OTA integrator. Both use independently averaged
-UP/DN signals for phase and activity monitoring. The active PHY is unchanged
-until a candidate passes qualification. Supplies remain fixed at 3.3/1.8 V,
+UP/DN signals for phase and activity monitoring. Active analog and transmitter
+macros remain unchanged until qualification; the readiness controller now includes
+a conservative acquisition guard. Supplies remain fixed at 3.3/1.8 V,
 with VREF 1.2 V and one external 35 µA reference per standalone DLL fixture.
 The clock range is 390/400/410 MHz, and temperatures are 0/25/40 °C.
 
@@ -68,6 +69,39 @@ reanalyzed in the corrected campaign. Interrupted startup traces are retained
 for diagnosis and never counted as complete qualification.
 
 ## Physical candidates
+
+W8/C4 has now passed zero-error DRC and strict LVS in
+`build/diagnostics/dll_layout/c465a14562c2ff4f`. Exact extraction and independent
+RC audit run under `openlvds-w8c4-rc.service`. The separate
+`openlvds-w8c4-advance.service` waits for a passing audit, prepares a new
+qualification generation, and registers it with the resident watchdog.
+Its source is the unchanged W8/C4 snapshot from the completed architecture
+campaign (51 passing and three failing cases).
+
+The resident configuration defers the old CP qualification. New qualification
+workers use six shared slot locks, reserving four slots for the frozen receiver
+aperture producer until it completes. This allows two new OTA workers alongside
+the existing RX work without modifying that producer or its provenance.
+The current artifact path is published in
+`build/diagnostics/resident_jobs/config.json` once preparation succeeds.
+
+New native campaigns default to `--stage screen`: SS monitor/acquisition cases
+precede TT and FF, with bulk work held for stability assessment. `--stage full`
+requires `--stability` pointing to a passing measured report for the same exact
+model inputs, with at least 60 degrees estimated phase margin and 6 dB gain
+margin. The report is not yet available; native operating-point, delay-gain,
+AC transfer and recovery measurements remain necessary.
+
+The AC backend uses the original verified engine without changing transient
+producer provenance. Its complex-data parser and measured-G/Y margin estimator
+have unit coverage, and the backend passes a native RC reference. These checks
+are tool validation and are not W8/C4 stability evidence.
+
+The readiness guard adds `MIN_ACQUIRE_CYCLES=615` to DLL control, preserving
+32 precharge cycles, 64 good cycles and public ports. Acquisition and good-cycle
+counters run concurrently and reset qualification on faults. The PHY retains
+its 256-cycle warmup after lock. Full RTL coverage passes 54 cases and 2,373,588
+bits; 112 unit tests pass at this milestone.
 
 | Candidate | Layout and audit directory | Exact analog network hash |
 | --- | --- | --- |
