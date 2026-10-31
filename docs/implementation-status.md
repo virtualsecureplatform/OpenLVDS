@@ -374,21 +374,31 @@ Current bring-up evidence on 2026-10-31:
   retained unloaded as an observation node; every device size and all other
   connections are unchanged. This tests a fixed reference against movement of
   the loaded replica, using the existing fixture reference and fixed supplies.
-  Two structural tests pass. Service `openlvds-vref-clamp-source-screen` is live
-  and has completed its unchanged and modified captured controls. The modified
+  Two structural tests pass. Service `openlvds-vref-clamp-source-screen` has
+  completed all three source controls with exactly one edge in each of their
+  47 checked periods. The modified
   captured case recovers exactly one output edge in all 47 checked periods,
   with latency 260.642–508.359 ps. CO spans 0.387500–1.533384 V, while the
-  unloaded replica remains near 0.832621 V. The sharp source control remains
-  outstanding; no physical/native improvement is claimed. Reference
+  unloaded replica remains near 0.832621 V. No native improvement is claimed. Reference
   loading and full input-range/PVT behavior still require qualification if selected.
   Dedicated VREF-biased physical/native producers bind the exact resistor
   reference and unloaded-monitor topology. They reject earlier tracked-reference
   source evidence, retain original replay stimuli/bias/digital RX load, and run
   both native controls concurrently within the shared six-slot pool. Downstream
   dispatch selects this variant's exact source factory and waveform verifier.
-  Host service `openlvds-vref-clamp-native-continuation` waits on the actual source
-  owner and requires all three source controls before layout/RC audit/native replay.
-  No VREF-biased physical/native result is claimed yet.
+  Host service `openlvds-vref-clamp-native-continuation` rechecked the completed
+  source controls, then built `receiver_layout/c9b54df2758e600a`. It passes
+  DRC/LVS (77 devices, nine ports) and independent RC connectivity audit.
+  Native network SHA256 starts `36e80ac228591149`; both original controls now
+  run concurrently at `receiver_replay/77252e9aa3abb333`. Incident PP/PN/CO wire
+  sums are 102.831/109.899/42.695 fF (`receiver_loading/3b41530840a8d2e7`), not
+  effective AC loads or timing qualification.
+  All 60 component fixtures (`receiver_components/a09b869f2ffff52b`) and the
+  loaded link diagnostic (`receiver_candidate_link/3635f229cd4efe04`) are prepared.
+  Their preflight reconstructs every component fixture, then holds at the
+  incomplete native gate with no simulation started (`gate_preflight.json`).
+  Service `openlvds-vref-clamp-receiver-followup` waits for complete one-to-one
+  native recovery before running them. No native/component/link pass is claimed.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains

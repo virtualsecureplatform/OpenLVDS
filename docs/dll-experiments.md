@@ -1617,3 +1617,25 @@ Service `openlvds-vref-clamp-native-continuation` waits on the actual source own
 before attempting layout, RC audit and native replay. Its receipt is under
 `receiver_clamp/0244d3fb608b9d06/native_continuation/`. No VREF-biased physical
 artifact or native simulation is claimed while that source gate is incomplete.
+
+All three VREF-biased source controls now complete with exactly one output edge
+in each of 47 checked input periods. The native continuation remeasures these
+actual waveforms and passes the full source gate. Physical root
+`receiver_layout/c9b54df2758e600a` passes DRC/LVS and independent RC connectivity
+audit (77 devices, nine original ports). Native network SHA256 is
+`36e80ac2285911490ebebbd8d6a881a7d8c944d6f000c824478dd849cc1e2ad1`.
+Loading receipt `receiver_loading/3b41530840a8d2e7` reports incident PP/PN/CO
+wire sums 102.831/109.899/42.695 fF. These sums do not establish effective AC load
+or native timing. Both original native controls are running concurrently in
+`receiver_replay/77252e9aa3abb333`, with separate shared simulator leases.
+
+Fresh VREF-biased component root `receiver_components/a09b869f2ffff52b` prepares
+all 60 original source/native static/rate fixtures. Full-link diagnostic
+`receiver_candidate_link/3635f229cd4efe04` preserves the original loaded stimulus
+and scoring. Actual component preflight reconstructs all fixtures, then holds at
+the incomplete native gate; no execution receipt or raw component trace is
+created. Its `gate_preflight.json` binds manifest, verifier and runtime hashes.
+Service `openlvds-vref-clamp-receiver-followup` waits on the actual native owner,
+requires complete one-to-one edge recovery, and lets both scientific children
+repeat the native waveform/provenance checks before simulation. No native
+improvement, component/link pass or release is claimed at this preparation stage.
