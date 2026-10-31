@@ -458,7 +458,7 @@ and actual differential input, offset and thin-device terminal checks. It keeps
 corner/condition correlations instead of combining unrelated extremes. This
 production gate has not run and requires passing native/model evidence first.
 
-The current host test run completes 193 tests: 188 pass and five skip for the
+The current host test run completes 200 tests: 195 pass and five skip for the
 container/analysis backends checked separately in earlier runs. Native W8/C4
 qualification, the complete RX aperture table, operating-point characterization,
 readiness replay, limiting-corner recovery, six-fixture RC certification and the
@@ -640,3 +640,17 @@ and DN six; the longest complete UP high spans 2.858485 ns, exceeding the
 is identical to the failing source-specific loop library. This isolates a
 wide-range PFD capture problem from feedback acquisition dynamics. The matched
 schematic output-reset and internal-Q-reset controls remain in progress.
+
+
+An isolated internal-Q-reset PFD implementation now passes physical checks under
+its separate strict topology policy. Magic and KLayout report zero DRC errors;
+LVS reports zero device, net, property and pin errors. Source/archive fingerprint
+is `4806b668e84e4f0d173affb62cea988375034d0f6330206882d6734cfb9dcf9f`.
+The previous policy's rejection is retained, and the summary explicitly records
+`pulse-area-q-reset`. Actual RC extraction/audit are running. The preceding PFD
+source, policy, active manifests and frozen producers remain unchanged.
+
+At −850 ps the matched schematic output-reset and Q-reset controls both give
+correct negative area (−617.441/−612.378 mV); they do not reproduce the native
++261.069 mV error. The new physical variant therefore needs native proof before
+selection. No passing acquisition result is inferred from these controls.

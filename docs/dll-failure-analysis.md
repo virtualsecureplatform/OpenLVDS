@@ -254,3 +254,28 @@ for the pulse-area sign error. The source-bound `cycle_diagnosis.json` under
 complete pulse widths and waveform/report hashes. These results justify the
 matched reset-tap comparison; they do not yet prove an internal-Q reset fixes
 physical capture, near-zero activity indication or closed-loop acquisition.
+
+
+## Matched schematic capture controls and physical Q-reset experiment
+
+At −850 ps the PDK transistor schematic with buffered-output reset gives
+UP−DN = −617.441 mV; the same schematic with internal-Q reset gives
+−612.378 mV. Both signs are correct, unlike the native extracted PFD's
++261.069 mV. Thus the schematic control does not reproduce the failure. Its
+Q-reset result establishes neither causality for the native fault nor a physical
+repair. Extracted routing/device parasitics must be included in the next test.
+
+`sky130/experiments/lvds_pfd_area_qreset.v` changes only the coincidence inputs
+from UP/DN to the corresponding flip-flop Q outputs. The public eight-terminal
+interface and buf_8 output drivers are retained. `pfd_qreset_policy.py` requires
+this topology plus direct clocks, high-tied data, the original enable/reset
+connections, separate output buffers and absence of clock-delay cells. It
+rejects the preceding buffered-reset topology, and the preceding policy rejects
+the new topology. Neither policy is silently broadened.
+
+`pfd_qreset_physical_v1` passes the physical flow, zero-error Magic/KLayout DRC,
+zero LVS device/net/property/pin differences and the new structural check.
+`preceding_policy_check.json` preserves the unchanged hardener's expected
+interface rejection. The accepted summary explicitly names `pulse-area-q-reset`
+and archives the producer files; it is not registered as the active PFD.
+Extraction/audit and matched native capture tests are pending.
