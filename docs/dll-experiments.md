@@ -725,3 +725,37 @@ The verifier captures the explicitly selected source and functional cell models,
 checks all 54 clock/duty/skew combinations with jitter/reset, and requires one
 million bits per generic/native mode. This does not replace actual GDS extraction,
 loaded native endpoint timing, aperture search or staged link qualification.
+
+
+## Stronger publication candidate and failure-aware aperture dispatch
+
+```sh
+scripts/env.sh --tools --ngspice python3 scripts/harden_rx_buffer4.py build/diagnostics/rx_buffer8_publish4_physical_v1 --strength 8 --publication4
+scripts/env.sh --tools --ngspice python3 scripts/rx_candidate_rc.py build/diagnostics/rx_buffer8_publish4_physical_v1
+scripts/env.sh --ngspice python3 scripts/rx_candidate_aperture.py prepare build/diagnostics/rx_buffer8_publish4_physical_v1
+scripts/env.sh --ngspice python3 scripts/rx_candidate_aperture.py run build/characterization/rx_aperture/f99deb414f62ab19 --stage all --jobs 3 --wait-slot 2
+```
+
+The existing hardener now selects either the preceding `public-data-buf4`
+policy or explicit `public-data-buf8-publish4` policy. The stronger policy checks
+both retained publication `dfrtp_4` cells, their direct clock/reset and Q-to-driver
+connections, both `buf_8` data drivers, original falling sampler and unit VALID
+driver. Unknown labels and incompatible strength/publication combinations fail.
+The exact captured source and blackboxes are selected before hardening; policy
+and producer changes create new physical/electrical evidence, never inherited
+success. Staged RTL selects the matching functional RX cell models.
+
+Admission now requires 12 loaded both-polarity endpoints: SS/40 slow clock,
+SS/0 slow clock, SF/40 slow clock, SS/0 fast clock, TT/0 slow clock and FF/0
+slow clock, with the original +800 ps separation and 20 fF loads. The selected
+single endpoint slot is retained for the batch, preventing a long unrelated
+fixture from taking the slot between each short endpoint. Full boundary workers
+return to the shared six-slot pool. All 480 original conditions remain required;
+slow SS/SF publication cases are dispatched first.
+
+A failed endpoint or boundary holds queued work. Active boundary searches finish
+and their traces are retained. Held cases have no simulated coverage claim.
+An incomplete matrix writes `incomplete_summary.json` and a failed hold state,
+not a complete aperture table. Twelve seed witnesses and all 480 actual boundary
+results remain mandatory for qualification. Unit regressions cover failure holds,
+exclusive real-slot ownership, complete coverage and selected-slot batch release.

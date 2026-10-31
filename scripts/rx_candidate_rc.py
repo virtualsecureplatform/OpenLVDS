@@ -13,7 +13,7 @@ from digital_candidate_rc import reference_schematic
 from extract import extract
 from harden_rx_buffer4 import atomic, digest
 from lvs_utils import clean_match, strict_setup
-from rx_buffered_policy import retained
+from rx_buffered_policy import retained, policy_parameters
 from spice_library import checked_netlist
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -21,8 +21,9 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def captured_inputs(out):
     manifest=json.loads((out/'summary.json').read_text());identity=json.loads((out/'identity.json').read_text())
+    parameters=policy_parameters(manifest['rx_policy'])
     if not (manifest['passed'] and manifest['returncode']==0 and manifest['inputs_unchanged'] and
-            manifest['interface_verified'] and manifest['rx_policy']=='public-data-buf4' and
+            manifest['interface_verified'] and identity.get('rx_policy',manifest['rx_policy'])==manifest['rx_policy'] and
             manifest['source_sha256']==hashlib.sha256(json.dumps(identity['inputs'],sort_keys=True).encode()).hexdigest()):
         raise ValueError('RX physical candidate has not passed')
     archive=ROOT/manifest['input_archive']
@@ -31,7 +32,7 @@ def captured_inputs(out):
     for name,stamp in identity['producer_code'].items():
         if digest(ROOT/'scripts'/name)!=stamp or digest(out/'producers'/name)!=stamp:raise ValueError('RX physical producer changed')
     netlist=ROOT/manifest['run']/'final/nl/openlvds_ddr_rx.nl.v'
-    if not retained(netlist.read_text()):raise ValueError('RX native output/sampling topology changed')
+    if not retained(netlist.read_text(),**parameters):raise ValueError('RX native output/sampling topology changed')
     return manifest
 
 

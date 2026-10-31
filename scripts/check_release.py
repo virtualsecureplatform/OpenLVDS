@@ -102,8 +102,10 @@ def main():
             from physical_policy import tx_buffered_paths_retained
             check('TX native serializer cells and connections',tx_buffered_paths_retained(text,4) if bundle else tx_cells_retained(text))
         if kind=='rx' and candidate:
-            from rx_buffered_policy import retained
-            check('RX retained data drivers and sampler clocks',evidence.get('rx_policy')=='public-data-buf4' and retained(text))
+            from rx_buffered_policy import retained,policy_parameters
+            try:topology=retained(text,**policy_parameters(evidence.get('rx_policy')))
+            except ValueError:topology=False
+            check('RX retained data drivers and sampler clocks',topology)
         if candidate:
             try:
                 from digital_candidate_rc import captured_inputs

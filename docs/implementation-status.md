@@ -938,3 +938,28 @@ boundary. Current native work is not interrupted. Stronger source
 and native RX functional regression passes 1,186,794 bits per mode. Physical
 and loaded native timing validation remain pending. Shared RX producer helpers
 stay unchanged while the preceding active users drain.
+
+
+The failed `buf_4` aperture dispatcher has been retired after its active native
+children finished. Receipt `rx_aperture/7636dbd7a4c55979/drain.json` preserves
+12 collected point reports and separately reanalyzes one completed uncollected
+trace. No native SPICE process was signalled; its partial matrix is unqualified.
+The limiting coordinator was retired while idle after both SS/0 and SS/40
+polarities failed. Old source/producer archives and native traces remain intact.
+
+Stronger RX `rx_buffer8_publish4_physical_v1` passes Magic/KLayout DRC and strict
+LVS with zero errors, retains its declared native publication/driver topology,
+and passes actual GDS extraction plus independent RC connectivity LVS. Source:
+`b3125079c567f616dfd9985185f8d9f16942961bb3b1bc46fc7386a893d6a21f`;
+GDS `e1fa7f2fcbade1245e4ee29dd6e77011cfeecbbf0c08a7dd013189d449d366ac`;
+exact native network `4a62593449b1e94de0c224de1e00caff25f197eae0397b8ed82899631407865b`.
+All 1,413 extracted capacitors are retained. Exact algebraic reduction reduces
+22,046 resistors to 4,633 without removing protected terminals or devices.
+
+Aperture artifact `f99deb414f62ab19` is prepared. Service
+`openlvds-rx-buffer8-publish4-aperture` runs 12 stronger loaded admission points,
+then only on success the complete 480-condition matrix with worst SS/SF cases
+first. Failure now holds queued work while active searches finish, and incomplete
+coverage cannot produce a complete table. The shared six-slot budget is intact.
+Unit checks: 239 total, 234 passed, 5 skipped. The stronger RX has no loaded
+native endpoint or full-aperture qualification result yet.
