@@ -1111,3 +1111,14 @@ admissions and the full 480-condition matrix remain outstanding.
 fixtures for this bundle with two workers. Shared leases keep actual native
 DLL, driver refresh, RX and certificate simulations within six total. There
 is no passing RC certificate, complete native RX table or released PHY yet.
+
+Supplementary native burst artifact `rx_burst/0a6a8b72e9d5e53d` now probes the
+new half-cycle path under continuous data. Its first SS/40 °C case passes all
+32 consecutive words at 410 MHz, 45% duty, -100 ps skew, independent ±50 ps
+clock-edge jitter, 200 ps clock/data slew and 20 fF public loads. Across the
+unchanged publication windows, the minimum high is 1.79999127 V and maximum low
+95.912 µV. Three further duty/skew cases remain; this is supplementary evidence,
+not a replacement for aperture or link qualification. Six original RX admissions
+have now passed. New diagnostic and corruption/fixture tests are committed as
+`03fcd7a`; unit suite: 243 tests, 238 passed, 5 skipped. All active producers and
+original coverage/limits remain unchanged.
