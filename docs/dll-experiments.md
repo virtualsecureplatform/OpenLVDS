@@ -1004,3 +1004,42 @@ clock recovery is claimed from layout metrics.
 Full-link fixture `receiver_candidate_link/98985df18860704a` is prepared for this
 layout and the same original buf_4 link. Its run gate still requires both complete
 pin replays to recover every edge before any integration simulation starts.
+
+## Tracked decision-node clamp at schematic level
+
+The current-and-buffer candidate's complete captured replay still loses nine
+rising and nine falling edges. The reordered placement's early trace also misses
+the first short negative pulse: PP−PN reverses for only about 216 ps and CO peaks
+at about 0.561 V. A smaller sum of wire capacitors alone has not established
+better dynamic behavior; both native comparisons continue to completion.
+
+`receiver_clamp_experiment.py` compares the decision-current schematic with and
+without a local clamp. A replica inverter with P8/N4 µm devices connects its
+input to its output at CO_TRACK. It retains the first restoration inverter's
+P/N ratio and channel lengths at twice its size. Two parallel existing 1.25 µm
+high-poly resistor units connect CO to this reference (nominally about 1 kΩ
+together). The aim is to reduce the CO excursion and restore edges near the
+tracked inverter trip point. All preceding transistor sizes and connections,
+the public nine-port interface and fixed supplies are retained.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/receiver_clamp_experiment.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171
+scripts/env.sh --ngspice python3 scripts/receiver_clamp_experiment.py run \
+  build/diagnostics/receiver_clamp/e888b13239fc158e
+```
+
+The three fixtures are unclamped/captured, clamped/captured and clamped/sharper
+control. Both analog cores use flattened schematic device fingers, while the
+exact shared bias and native early digital RX load remain unchanged. The saved
+pin waveforms, reset, 80 ns stop time and 15–75 ns observation interval are
+identical to the preceding replay. PP/PN/CO and the replica trip point are
+observed. Source, fixture, library, waveform, producer and runtime hashes bind
+the comparison; cached waveforms are remeasured.
+
+These are schematic architecture diagnostics, with no analog receiver wire RC
+or physical/electrical qualification claim. Passing results would require an
+actual layout, independent extraction, native replay and fresh component/PVT
+and full-link checks before selection. The first preparation containing optional
+current probes was retired before any simulation; the frozen exporter supports
+voltage probes only. Its no-run receipt remains in `receiver_clamp/877040209e65a9d0`.

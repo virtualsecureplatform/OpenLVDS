@@ -142,7 +142,9 @@ Current bring-up evidence on 2026-10-31:
   DRC/LVS and independent RC audit pass; native network SHA256 starts
   `30154843ced35188`. Captured and sharper-input native replays are active at
   `receiver_replay/cb6fffffb0809887`, with PP/PN/CO and both restoration nodes
-  observed. Electrical improvement and PVT qualification remain unproven.
+  observed. The complete captured case loses nine rising and nine falling edges,
+  unchanged from the input-tail-only candidate; the sharper control is running.
+  Electrical improvement and PVT qualification remain unproven.
   Isolated full-link fixture `receiver_candidate_link/467b30dda15cf743` is
   prepared with only the analog receiver replaced. It retains buf_4 and the
   entire original stimulus/channel/scoring. Its run gate remeasures both
@@ -165,7 +167,14 @@ Current bring-up evidence on 2026-10-31:
   both completed, zero-missing-edge replays. The previous decision-current
   placement's live trace still misses the first short negative pulse; its
   complete replay is preserved.
-- Unit suite: 305 tests, 304 passed and one skipped in the pinned ngspice
+- Schematic tracked-clamp comparison `receiver_clamp/e888b13239fc158e` is queued
+  under the shared simulator budget. It adds a diode-connected replica inverter
+  with the first restoration stage's P/N ratio and two parallel precision-poly
+  units from CO to the replica trip point. Three fixtures compare unclamped and
+  clamped circuits on captured pins, then clamped sharper inputs. Analog cores
+  use schematic fingers; the shared bias and native early RX load are retained.
+  No physical or electrical improvement is claimed before these results.
+- Unit suite: 307 tests, 306 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
