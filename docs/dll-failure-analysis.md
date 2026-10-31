@@ -133,3 +133,27 @@ a failure at 147.595 ns. The missing distributed resistance and extracted device
 junction geometry remain candidates for the remaining timing difference; they
 have not been isolated. The negative-control expectation is preserved as a
 mismatch. Full native qualification remains necessary.
+
+
+## Repaired physical monitor: native failure
+
+Qualification `0cc06862af2fae63`, case `phase_ss_0_150ps`, completes normally
+but fails electrically. BAD falls at 52.100 ns and never reasserts through
+160 ns; its maximum during 120–160 ns is 7.655 µV. Filtered UF−DF averages
+85.287 mV versus 85.863 mV for the passing repaired loaded proxy. The full-RC
+waveform SHA-256 is
+`81089b51decf8029d1a0ff80fada0243db8840a4a3b1a775ebf563d748f9d232`.
+
+The repair therefore has not solved the physical failure. Its positive comparator
+output has 396.3 fF incident extracted external capacitance, compared with
+222.7 fF in the proxy's old layout. Native junction geometry and distributed
+resistance are also absent from that proxy. These remain possible explanations,
+not isolated causes.
+
+The next diagnostic probes every actual PA/PB and comparator O/OB/L/T terminal,
+the positive tail's PC gate and local VDDD contacts. A separate native DC
+diagnostic adds three test ports to clamp UF/DF/CTRL to the measured fault-case
+means without replacing any extracted device or R/C. A high DC BAD with a
+failed transient would support a settling problem; a low DC BAD requires
+examining comparator input difference, gain, bias and readout headroom first.
+Neither result changes the original phase test or releases the candidate.

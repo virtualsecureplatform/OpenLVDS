@@ -444,8 +444,9 @@ verified public ports. Further exact degree-8 reduction
 `schur_e4b240c20b314964` retains 53,508 resistors and 14,631 resistor-graph
 nodes, with four passing sparse witnesses at 10,035 protected terminals
 (maximum current difference 3.91e-13 A). The new native qualification
-`0cc06862af2fae63` is prepared but not dispatched. The first loaded +150 ps proxy passes; full native electrical qualification
-remains pending. Advancement accepts an explicit
+`0cc06862af2fae63` has completed its early SS/0 °C +150 ps probe and fails:
+BAD never reasserts through 160 ns. The first loaded +150 ps proxy passes;
+the difference requires further native diagnosis before full dispatch. Advancement accepts an explicit
 matching screen; it cannot reuse the old architecture evidence for new source
 bytes. A hold survives restarting the same candidate; selecting a new candidate
 clears only the previous OTA hold/stage, preserving the RX and CP settings.
@@ -514,7 +515,7 @@ The repaired physical monitor has larger incident external capacitance sums than
 its proxy baseline: PA/PB are 664.7/699.2 fF (previously 530.2/560.7 fF), and
 positive-comparator O is 396.3 fF (previously 222.7 fF). These sums include
 coupling and are not independent grounded loads. An early native SS/0 °C
-+150 ps static monitor probe is queued under qualification `0cc06862af2fae63`.
++150 ps static monitor probe under qualification `0cc06862af2fae63` has failed.
 It uses the unchanged full-RC fixture and the same six-slot lease, with no claim
 of campaign or PHY qualification. The source-specific SS loop remains running;
 all architecture/model/full-matrix requirements still apply.
@@ -541,8 +542,20 @@ in response to these results.
 
 The original qualification coordinator is confirmed retired after its final
 TT/25 °C −150 ps case failed (no BAD reassertion, filtered difference −93.17 mV).
-The repaired native SS/0 °C +150 ps probe is now running on the actual exact-RC
-network. A between-transient priority handoff held only the slot-free proxy
+The repaired native SS/0 °C +150 ps probe completed on the actual exact-RC
+network and failed. A between-transient priority handoff held only the slot-free proxy
 coordinator for about 0.15 seconds, then resumed it after the probe acquired its
-slot; no SPICE process was signalled. The native result and remaining proxy
+slot; no SPICE process was signalled. The native failure remains recorded with the original limits; remaining proxy
 conditions are pending.
+
+
+The repaired native SS/0 °C +150 ps trace has BAD below 7.66 µV throughout
+120–160 ns and no rising edge after startup. UF−DF averages 85.287 mV, close
+to the passing loaded proxy's 85.863 mV. CTRL averages 0.752208 V. These
+measurements do not establish whether the remaining failure is settling time or
+DC gain/headroom. `diagnose_native_monitor.py` prepares source-bound internal-node
+transients and a separate DC diagnostic using the same native devices and R/C,
+with UF, DF and CTRL clamped to this trace's measured means. The DC task is
+queued on the existing slot pool. Neither diagnostic can qualify the PHY, and
+extended traces retain the original 120–160 ns phase result. Full dispatch and
+promotion of this failed candidate remain held.
