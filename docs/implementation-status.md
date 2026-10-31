@@ -239,11 +239,15 @@ Current bring-up evidence on 2026-10-31:
   promoted by diagnostics. Its receipt is under the native replay's `followup/`.
   The stronger clamp's live first-pulse observation still has CO peak 0.822 V
   with RESTORE0 above 1.726 V; the output clock does not fall in that interval.
-- Wider input-pair source comparison `receiver_clamp/4e55a995d239fb38` is queued.
+- Wider input-pair source comparison `receiver_clamp/4e55a995d239fb38` is active.
   It changes only the four complementary input devices from 20 to 40 µm,
   retaining tail-device bias, stronger clamp and restoration. Its original
-  three controls and native shared bias/digital load remain intact. Source and
-  physical/native improvement remain unproven.
+  three controls and native shared bias/digital load remain intact. The captured
+  source case completes with exactly one output edge in all 47 checked periods,
+  no missing/repeated edges and diagnostic latency 324.978–448.846 ps. Its
+  unchanged unclamped control also passes. The sharp-input source control is
+  queued, so the source gate is incomplete; physical/native improvement remains
+  unproven.
   Dedicated layout/replay producers now bind the exact 40 µm input source and
   its three complete, one-to-one source controls. They reject earlier clamp
   evidence and preserve native shared bias, digital load, nine-port order and

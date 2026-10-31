@@ -1330,3 +1330,10 @@ to −35.982 mV. CO peak rises from 0.789424 to 0.821754 V, but neither restores
 the output clock. Durations here integrate a sampled sign mask and are diagnostic,
 not refined zero-crossing or setup/hold measurements. Stronger clamping alone
 has not solved the short-pulse loss; the wider-input experiment remains unproven.
+
+The wider-input captured source case completes: all 47 checked input periods
+have exactly one output edge, with zero missing edges. Diagnostic latency is
+324.978–448.846 ps; CO spans 0.153–1.420 V and CO_TRACK spans 0.643–0.968 V
+in the original scoring window. The unchanged unclamped control also passes.
+The sharp-input source control remains queued, so layout is still held by the
+three-case source gate. These source results do not establish native improvement.
