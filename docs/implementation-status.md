@@ -1065,7 +1065,7 @@ positive-edge consumer. Explicit native cells and the distinct
 `half-cycle-publish-buf4` policy retain all sampler clocks, enables, word holding
 and VALID wiring through routing. This changes public update phase; integration
 must respect the positive-edge consumption contract. It remains an experiment,
-not a replacement for the qualified public interface.
+not a promoted receiver.
 
 Fresh functional evidence `rx_buffered_rtl/3fc750281ff3b4bb` passes 54 cases,
 1,186,794 bits per generic/native model. Directed evidence
@@ -1080,3 +1080,21 @@ Both parallel native analog receiver batches complete successfully: 15 static
 receiver and 15 rate-receiver cases, fixed supplies and 0/25/40 °C. Exact-RC
 driver refresh and native DLL acquisition remain running; their captured
 producers are unchanged.
+
+The early RX physical artifact completes with zero routing, Magic, KLayout and
+LVS errors. Its independent native RC audit passes. GDS SHA-256:
+`723b7149cab3a7ea6c936da1d15eff9ec255db889c6ce1f345f374807ce6bd9c`;
+exact network `6def14fbd570903751f922c3a86132bbd801957c3dfd3d09c7c81729361515c3`.
+All 1,171 capacitors are retained; exact algebraic elimination reduces 21,701
+resistors to 4,229. The nominal routed STA has no setup/hold violations; worst
+setup slack is 68.315 ps and hold slack 134.170 ps. These nominal checks are not
+PVT timing qualification.
+
+Native admission/full campaign `rx_aperture/20b04dcf527af283` now runs under
+`openlvds-rx-early-aperture`, with unchanged acceptance and fail-stop gates.
+Combined diagnostic bundle `phy_candidate/8f364c6a8fdabafb` selects this exact RX
+and its matching functional cell model. Its full RTL regression is running.
+No promotion or release claim is made. Current unit regression: 241 tests,
+236 passed and 5 skipped. A second native-driver refresh service uses two workers
+with shared slots and existing per-case locks, accelerating the remaining cases
+without overwriting running evidence.

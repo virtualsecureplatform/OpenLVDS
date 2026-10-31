@@ -792,3 +792,32 @@ outputs, original sampler/clock edges, pipeline and VALID driver. The shared
 slot pool allows this short admission batch alongside native DLL acquisition
 and component characterization. Physical/functional passes do not substitute
 for its original loaded native timing and full aperture requirements.
+
+## Half-cycle RX publication experiment
+
+Internal native traces show that the positive-edge publication flop plus output
+buffer is late in SS/40 °C, even when its input clock arrives on time. The new
+experiment holds the rising sample on the falling edge and publishes it beside
+the falling sample. VALID uses the same falling-edge holding convention. A
+positive-edge consumer receives the same first word and ordered stream, one
+cycle earlier than the old pre-edge interface; after each positive edge, valid
+pairs agree with the original receiver. This phase/latency change requires
+integration verification before promotion.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/verify_rx_early_contract.py
+scripts/env.sh --ngspice python3 scripts/verify_rx_buffered_rtl.py --source rtl/experiments/openlvds_ddr_rx_early.v --rx-model models/experiments/sky130_rx_early_functional.v
+scripts/env.sh --tools --ngspice python3 scripts/harden_rx_buffer4.py build/diagnostics/rx_early_physical_v1 --early-publish
+scripts/env.sh --tools --ngspice python3 scripts/rx_candidate_rc.py build/diagnostics/rx_early_physical_v1
+scripts/env.sh --ngspice python3 scripts/rx_candidate_aperture.py prepare build/diagnostics/rx_early_physical_v1
+scripts/env.sh --ngspice python3 scripts/rx_candidate_aperture.py run build/characterization/rx_aperture/20b04dcf527af283 --stage all --jobs 3
+```
+
+The distinct `half-cycle-publish-buf4` policy checks explicit inv_4 falling clock,
+three falling-clock FFs, the rising sampler, pair-start FF, shared run gating,
+and all three buf_4 public drivers in source and routed netlists. Reusing a
+positive-edge publication label is rejected. The original loaded output window,
+20 fF loads, 12 admission points, all 480 boundary conditions and timing margin
+stay unchanged. Native admission failure holds matrix expansion. Passing native
+coverage must additionally be followed by full link testing, including duty and
+jitter stress; RTL and nominal STA alone do not prove the half-cycle path at PVT.
