@@ -852,3 +852,17 @@ same fixture pass: Q0/Q1 minima become 1.79890/1.79842 V. This demonstrates an
 external-load contribution in the native circuit, with the original window and
 VALID load preserved. Other controls and a separately hardened stronger-driver
 candidate must establish the repair before any RX qualification.
+
+
+Isolated RX `buf_4` candidate `rx_buffer4_physical_v1` completes its physical
+flow with zero final routing, Magic and KLayout DRC errors; zero LVS device,
+net, property and pin errors; no antenna violations; and a passing retained
+native topology policy. Source identity is
+`5f8b2734b05398da11153ad596a40c0c037ed21e6c775e37586acdd7de7bb1af`.
+It preserves publication/sampling logic and explicit unit-strength VALID drive.
+Its isolated functional scoreboard passes all 54 generic/native-RX cases,
+1,186,794 bits per implementation, across the requested clock/duty/skew points
+with jitter and reset behavior (`rx_buffered_rtl/5b4107f583cb8aee`). Host unit
+checks: 224 total, 219 passed, 5 skipped. Actual GDS extraction and independent
+RC connectivity LVS are now running. Loaded native endpoint and full aperture
+qualification remain pending; this RX has not been selected or promoted.

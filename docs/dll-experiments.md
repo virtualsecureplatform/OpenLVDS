@@ -633,3 +633,32 @@ full-RC static fixtures at SS/0 °C, TT/25 °C and FF/0 °C dispatch; original
 windows, supplies and ±50/±150/±300/0 ps coverage are unchanged. All workers
 use global SPICE slots. The separate follow-up record is diagnostic and never
 marks the full campaign, architecture screen or complete PHY qualified.
+
+
+## Native RX output-drive repair experiment
+
+The SS publication/load controls justify strengthening only the public data
+drivers. Candidate `rtl/experiments/openlvds_ddr_rx_buffer4.v` retains the sampling
+and publication logic and falling-edge `inv_1`/`dfrtp_1` path. Two explicit
+retained `buf_4` drivers replace automatic `buf_1` data drivers; VALID retains
+an explicit `buf_1`. The generic RTL branch uses direct assignments. It changes
+no pipeline latency, sampling edge, public port, load requirement or score.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/verify_rx_buffered_rtl.py
+scripts/env.sh --tools --ngspice python3 scripts/harden_rx_buffer4.py build/diagnostics/rx_buffer4_physical_v1
+scripts/env.sh --tools --ngspice python3 scripts/rx_candidate_rc.py build/diagnostics/rx_buffer4_physical_v1
+```
+
+The isolated hardener uses the captured RX flow configuration with archived
+candidate/reset/blackbox/constraint sources and disables automatic output
+buffering. It leaves the frozen hardener and active physical evidence untouched.
+The strict candidate policy checks actual driver strengths, output wiring,
+unique public drivers, sampler/reset/clock connections and absence of inserted
+clock-delay cells. Source/producer drift rejects its physical result.
+`rx_candidate_rc.py` checks those archives, extracts the actual candidate GDS
+and independently LVS-checks the RC topology against the post-route transistor
+schematic. No schematic-only or unloaded pass qualifies the required 20 fF
+native RX endpoint. Fresh loaded controls must pass before a new full aperture
+matrix; staged PHY integration and all release evidence still need that exact
+new RX network.
