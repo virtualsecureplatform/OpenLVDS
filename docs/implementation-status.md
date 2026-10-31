@@ -15,15 +15,16 @@ Current bring-up evidence on 2026-10-31:
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
   cases pass (128 words). Its original 480-condition aperture campaign
-  (`rx_aperture/20b04dcf527af283`) is running; the first completed SS/40 °C
-  rising-data setup condition has a guarded 120 ps bound. The preceding three
+  (`rx_aperture/20b04dcf527af283`) is running; three SS/40 °C
+  rising-clock conditions pass: guarded setup bounds of 120/210 ps for rising/
+  falling data, and a conservative zero hold bound for falling data. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
   generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
   is running. The driver fixture passes with 0.396 ps maximum edge difference
   and 0.541 mV maximum plateau difference; a complete certificate is still pending.
-- Current component evidence verifies 81/90 distinct proofs: all 45 schematic
-  driver/receiver cases, all 30 native analog receiver cases and six native
+- Current component evidence verifies 82/90 distinct proofs: all 45 schematic
+  driver/receiver cases, all 30 native analog receiver cases and seven native
   drivers. Remaining native driver refresh continues. Historical numerical
   failures remain archived separately from the current-proof receipt.
 - Unit suite: 248 tests, 243 passed and five skipped. The shared native budget
@@ -1180,3 +1181,18 @@ are reverified through their captured circuit/simulator/fixture attestations;
 no resimulation or looser comparison was used. Supplementary result:
 `phy_candidate/8f364c6a8fdabafb/driver_rc_diagnostic.json`. The original six-fixture
 coordinator continues and no complete certificate is claimed from this subset.
+
+
+Three original full-aperture conditions now pass at SS/40 °C with 200 ps clock
+and data slew. Rising-clock/rising-data setup retains its 120 ps guarded bound.
+Rising-clock/falling-data setup brackets 178.125 ps failing and 181.25 ps passing,
+then verifies the 210 ps guarded witness. Rising-clock/falling-data hold brackets
+-181.25 ps failing and -178.125 ps passing; the original guard/rounding policy
+conservatively clamps the reported hold requirement to zero and verifies that
+actual zero-offset witness. Remaining conditions continue under unchanged code.
+
+The native SS/0 °C driver completes and passes, with settled differential levels
+0.294919–0.295079 V into 100 Ω and common mode 1.24841–1.25159 V for its positive
+polarity. Its delayed transition stream also passes original polarity/cadence
+checks (propagation 1.34898–1.38597 ns). The independent current receipt verifies
+82/90 component proofs. Eight native driver PVT cases remain outstanding.
