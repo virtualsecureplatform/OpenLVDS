@@ -15,16 +15,16 @@ Current bring-up evidence on 2026-10-31:
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
   cases pass (128 words). Its original 480-condition aperture campaign
-  (`rx_aperture/20b04dcf527af283`) is running; eleven conditions pass,
-  including the complete SS/40 °C group at 200 ps clock/data slew. Its largest
-  guarded setup/hold bounds are 210/50 ps. Other slew/PVT coverage remains active. The preceding three
+  (`rx_aperture/20b04dcf527af283`) is running. The complete SS/40 °C group
+  at 200 ps clock/data slew passes, with largest guarded setup/hold bounds of
+  210/50 ps. Other slew/PVT coverage remains active. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
   generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
   is running. The driver fixture passes with 0.396 ps maximum edge difference
   and 0.541 mV maximum plateau difference; a complete certificate is still pending.
-- Current component evidence verifies 83/90 distinct proofs: all 45 schematic
-  driver/receiver cases, all 30 native analog receiver cases and eight native
+- Current component evidence verifies 85/90 distinct proofs: all 45 schematic
+  driver/receiver cases, all 30 native analog receiver cases and ten native
   drivers. Remaining native driver refresh continues. Historical numerical
   failures remain archived separately from the current-proof receipt.
 - Unit suite: 264 tests, 259 passed and five skipped. The shared native budget
@@ -1298,3 +1298,23 @@ TX/PFD/RX netlist handoff, and a Nix-shell child exposes the advancement CLI.
 The waiting downstream watcher was stopped for this correction; no native
 simulation was stopped or restarted. Unit suite: 264 tests, 259 passed, five
 skipped. The resume path retains complete native/all-PVT and downstream gates.
+
+
+The native SS/25 °C and FS/0 drivers complete successfully. Their original
+transition propagation ranges are 1.36533–1.39077 ns and 1.16675–1.22170 ns,
+respectively. The independent current receipt verifies 85/90 component cases;
+five native driver PVT cases remain outstanding. Thirteen RX aperture conditions
+have passed, with no failed completed condition. The exact-RC link simulator has
+started its operating-point solve; absence of a raw file during that solve is
+not evidence that the job is queued or stopped.
+
+Service `openlvds-early-phy-post-native` now waits on the existing standalone
+native/model progression, then invokes the completed-native resume path with
+the explicit early RX/table. Its source and qualification/RX manifest hashes are
+bound in `resident_jobs/early_phy_post_native.json`; source drift, RX failure or
+terminal upstream failure holds downstream execution. It tolerates transient
+status-read failures and checks actual service state. Resume itself repeats
+complete native and all-PVT verification before signoff. Current state is
+`waiting_for_native_and_all_pvt_model`; no native or model completion is claimed.
+The prior waiting watcher's source and receipt are preserved in resident job
+history. No scientific simulator was stopped for the workflow corrections.
