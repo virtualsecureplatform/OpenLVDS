@@ -28,7 +28,7 @@ Current bring-up evidence on 2026-10-31:
   driver/receiver cases, all 30 native analog receiver cases and seven native
   drivers. Remaining native driver refresh continues. Historical numerical
   failures remain archived separately from the current-proof receipt.
-- Unit suite: 248 tests, 243 passed and five skipped. The shared native budget
+- Unit suite: 253 tests, 248 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
@@ -1206,3 +1206,19 @@ zero-offset witness passes. Falling data brackets 59.375 ps failing and 62.5 ps
 passing, with a verified guarded 90 ps bound. Together with both rising-clock
 setup and hold results, six of 480 full-aperture conditions pass. The remaining
 falling-clock hold searches are active; no complete PVT aperture table is claimed.
+
+A release handoff review found that digital GDS/LEF and synthesis sources were
+included, but the routed digital netlists were omitted. Promotion now includes
+both logical and power-aware netlists for the exact selected TX, PFD and RX.
+Their expanded interfaces, logic connectivity and cell supply/body connections
+are checked before packaging; validated byte hashes also prevent a changed file
+from being copied after validation. The native tap cell's two supply terminals
+are handled explicitly, while logic cells require all four supply/body ties.
+
+The new non-publishing `--check-netlists` preflight passes against actual selected
+bundle `8f364c6a8fdabafb`, including the early RX. Its receipt is
+`netlist_preflight.json`, with no electrical qualification or release pointer
+change. Tests reject swapped/missing power ties, changed logic, wrong bus widths,
+wrong directions and duplicate cells, and verify that preflight preserves an
+existing current release. Unit suite: 253 tests, 248 passed, five skipped. Active
+DLL, RX, component and RC producers remain unchanged.

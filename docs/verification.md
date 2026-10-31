@@ -152,3 +152,19 @@ The output is `build/diagnostics/component_refresh/current_evidence.json`; exit
 status is zero only when all 90 current proofs pass. Historical failed traces
 and batch return codes are retained. This receipt covers components only and
 does not replace the strict DLL, aperture, link or release checks.
+
+The digital macro handoff can be checked before electrical release:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/promote_phy_candidate.py build/diagnostics/phy_candidate/8f364c6a8fdabafb --check-netlists
+```
+
+This checks the selected TX, PFD and RX routed logical (`.nl.v`) and power-aware
+(`.pnl.v`) netlists. Expanded bus pins must match the extracted macro interface;
+cell types, logic terminals, wire declarations and continuous assignments must
+agree between the two forms. Every cell's supply/body ties must be correct,
+including the native two-supply-pin tap cell. Preflight writes only
+`netlist_preflight.json` with `qualified_phy=false`; it cannot seal a package or
+replace the current release pointer. Successful promotion rechecks these files
+and packages both netlist forms alongside each digital GDS/LEF, with hashes of
+the same validated bytes. All electrical, timing and release gates still apply.
