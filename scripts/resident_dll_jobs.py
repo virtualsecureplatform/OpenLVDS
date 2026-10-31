@@ -88,7 +88,8 @@ def main():
                 if artifact.is_absolute() or '..' in artifact.parts:
                     raise ValueError('OTA artifact must be relative to OpenLVDS')
                 jobs['qualify_ota']=(ROOT/artifact/'state.json', ['scripts/env.sh','--ngspice','python3',
-                    'scripts/qualify_dll_candidate.py','run',str(artifact),'--jobs','6'])
+                    'scripts/qualify_dll_candidate.py','run',str(artifact),'--jobs','6',
+                    '--stage',config.get('ota_stage','screen')]+(['--stability',config['ota_stability']] if config.get('ota_stage')=='full' else []))
                 records.setdefault('qualify_ota',{})
             for label, (statefile, command) in jobs.items():
                 state = json.loads(statefile.read_text()) if statefile.exists() else {}
@@ -109,7 +110,9 @@ def main():
                        ['completed', 'completed_with_failures', 'complete', 'rejected_by_architecture_screen'] for key in predecessors):
                     record['state'] = 'waiting_for_previous_campaign'
                     continue
-                if state.get('status') in ['completed', 'completed_with_failures', 'complete', 'rejected_by_architecture_screen','screen_passed']:
+                terminal=['completed', 'completed_with_failures', 'complete', 'rejected_by_architecture_screen']
+                if label!='qualify_ota' or config.get('ota_stage','screen')!='full':terminal+=['screen_passed']
+                if state.get('status') in terminal:
                     record['state'] = state['status']
                     continue
                 if label != 'architecture' and group_alive(record.get('pgid')):

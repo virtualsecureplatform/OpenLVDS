@@ -26,13 +26,14 @@ from run_ngspice import read_raw
 from spice_engine import command, engine, provenance
 from spice_probes import ProbeNetwork
 from spice_slots import slot
+from stability_evidence import verified as stability_verified
 from verify_phase_detector import response_cases
 
 ROOT = Path(__file__).resolve().parents[1]
 CODE = ['qualify_dll_candidate.py', 'dll_candidate_library.py', 'dll_qualification_measurements.py',
         'dll_measurements.py', 'dll_campaign.py', 'digital_candidate_rc.py', 'dll_design.py',
         'layout.py', 'physical_policy.py', 'spice_library.py', 'spice_scope.py', 'rc_fast.py',
-        'reduce_rc.py', 'run_ngspice.py', 'spice_engine.py', 'verify_phase_detector.py', 'lvs_utils.py', 'spice_probes.py', 'spice_slots.py']
+        'reduce_rc.py', 'run_ngspice.py', 'spice_engine.py', 'verify_phase_detector.py', 'lvs_utils.py', 'spice_probes.py', 'spice_slots.py','stability_evidence.py']
 
 
 def sha(data):
@@ -365,10 +366,7 @@ def run(root, jobs, stage='screen', stability=None):
     manifest = json.loads((root/'manifest.json').read_text())
     if stage=='full':
         if stability is None:raise ValueError('Full expansion requires a measured stability report')
-        report=json.loads(stability.read_text())
-        if not (report.get('passed') and report.get('full_inputs')==manifest['identity']['full_models']['inputs'] and
-                report.get('phase_margin_min_deg',0)>=60 and report.get('gain_margin_min_db',0)>=6):
-            raise ValueError('Stability evidence is missing, failed, or belongs to another candidate')
+        stability_verified(stability,manifest['identity']['full_models']['inputs'])
     atomic(root/'state.json', dict(status='waiting_for_architecture_screen', tasks={t['id']:dict(status='pending') for t in manifest['tasks']}))
     while True:
         status = screen_status(manifest)

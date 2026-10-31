@@ -97,6 +97,23 @@ producer provenance. Its complex-data parser and measured-G/Y margin estimator
 have unit coverage, and the backend passes a native RC reference. These checks
 are tool validation and are not W8/C4 stability evidence.
 
+`measure_dll_stability.py` now measures PFD area gain from the native ±50 ps
+cases, signed delay sensitivity from ±10 mV CTRL perturbations, and native AC
+G/Y at both static clock states. The averaged model uses conservative
+one-reference-cycle latency. It validates predicted control-step amplitude and
+90% settling time against separate native 400→390/410 MHz steps, applied only
+after 1700 ns to avoid mixing startup drift with the step response. Both errors
+must remain within 25%. All original qualification timing limits remain intact.
+
+The advancement service waits for the early extracted screen, runs these
+measurements, verifies the report and source hashes, and only then requests full
+matrix expansion. After a passing full matrix it repeats the model assessment
+over all 15 PVT points. Failed model or electrical gates stop advancement for
+diagnosis; no CP fallback is selected. A passing all-PVT model only marks the
+candidate ready for staged bundle integration, not PHY release. The measurement
+and validation tools have been implemented but W8/C4 native measurements have
+not yet run. There are 117 passing unit tests at this milestone.
+
 The readiness guard adds `MIN_ACQUIRE_CYCLES=615` to DLL control, preserving
 32 precharge cycles, 64 good cycles and public ports. Acquisition and good-cycle
 counters run concurrently and reset qualification on faults. The PHY retains

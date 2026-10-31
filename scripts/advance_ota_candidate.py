@@ -13,6 +13,7 @@ LAYOUT=ROOT/'build/diagnostics/dll_layout/c465a14562c2ff4f'
 
 
 def main():
+    os.environ['OPENLVDS_SPICE']='ngspice'
     while not (LAYOUT/'rc_audit.json').exists():
         state=subprocess.run(['systemctl','--user','is-active','openlvds-w8c4-rc.service'],capture_output=True,text=True)
         if state.stdout.strip() in ['failed','inactive']:
@@ -34,6 +35,40 @@ def main():
     old.update(disabled=['qualify_cp'],ota_qualification=str(relative))
     atomic(config,old)
     print('Registered OTA extracted screen:',relative,flush=True)
+    workflow=LAYOUT/'workflow.json'
+    def wait_for(statuses):
+        while True:
+            state=json.loads((artifact/'state.json').read_text())
+            atomic(workflow,dict(status='waiting_for_'+','.join(statuses),qualification=str(relative),observed=state['status']))
+            if state['status'] in statuses:return state['status']
+            if state['status'] in ['completed_with_failures','rejected_by_architecture_screen']:
+                atomic(workflow,dict(status='candidate_requires_diagnosis',qualification=str(relative),observed=state['status']))
+                raise RuntimeError('OTA electrical gate failed; retain candidate for diagnosis')
+            time.sleep(10)
+    wait_for(['screen_passed'])
+    def model(all_pvt=False):
+        args=['scripts/env.sh','--ngspice','python3','scripts/measure_dll_stability.py',str(relative)]
+        if all_pvt:args+=['--all-pvt']
+        result=subprocess.run(args,cwd=ROOT,capture_output=True,text=True)
+        (LAYOUT/('stability_all.log' if all_pvt else 'stability_screen.log')).write_text(result.stdout+result.stderr)
+        result.check_returncode()
+        report=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
+        if not json.loads(report.read_text())['passed']:
+            atomic(workflow,dict(status='stability_requires_diagnosis',report=str(report.relative_to(ROOT))))
+            raise RuntimeError('Measured stability or model validation failed')
+        from stability_evidence import verified
+        inputs=json.loads((artifact/'manifest.json').read_text())['identity']['full_models']['inputs']
+        corners=('ss_0','tt_25','ff_0')
+        if all_pvt:
+            req=json.loads((artifact/'requirements.json').read_text());corners=tuple(f'{p}_{t}' for p in req['process_corners'] for t in req['temperatures_c'])
+        verified(report,inputs,corners)
+        return report
+    report=model()
+    old=json.loads(config.read_text());old.update(ota_stage='full',ota_stability=str(report.relative_to(ROOT)))
+    atomic(config,old)
+    wait_for(['completed'])
+    report=model(True)
+    atomic(workflow,dict(status='ready_for_bundle_integration',qualification=str(relative),stability=str(report.relative_to(ROOT)),qualified_phy=False))
 
 
 if __name__=='__main__':main()
