@@ -211,3 +211,23 @@ new summary binds waveform
 `dbb036ab1be26613944e759c5e7aa7a1918f96d0b6b73ddc5d77eb9653bc0874`
 and raw trace
 `045ef5b90e21ca5fe7b2aae9bb88e88c8c96d106f8407d7ab2fa8e52a26025ca`.
+
+
+The native internal-node transient now completes and reproduces the original
+phase metrics exactly. In 120–160 ns PA/PB average 0.381463/0.370171 V
+(+11.292 mV input difference), but comparator O averages only 0.640525 V
+and spans 0.566044–0.694506 V. POS stays low and BAD never reasserts.
+Comparator L/T average 0.707203/1.558706 V, PC 0.612662 V, and local VDDD
+1.799777 V; LOW/HIGH remain near zero. Comparing these measurements with the
+DC solution supports slow positive-comparator output settling despite a valid
+input margin, rather than a missing input difference or collapsed bias/supply.
+The report is `monitor_native/0fcf74f7d7868e78/transient/summary.json`.
+
+`diagnose_pfd_capture.py` separately prepares matched SS/0 °C controls at
+−850, +850 and 0 ps. It compares the captured exact-RC PFD with PDK transistor
+cell schematics, then changes only the schematic coincidence inputs from
+buffered UP/DN to the internal flip-flop Q outputs. All views retain the same
+native-finger schematic analog loading and extracted bias. Measurements use
+raw UP/DN area during 60–80 ns; the filters need not have reached equilibrium.
+These controls diagnose capture sign and reset feedback, not monitor fault
+timing or PHY qualification. The Q-reset view has no new physical implementation.

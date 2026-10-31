@@ -458,7 +458,7 @@ and actual differential input, offset and thin-device terminal checks. It keeps
 corner/condition correlations instead of combining unrelated extremes. This
 production gate has not run and requires passing native/model evidence first.
 
-The current host test run completes 191 tests: 186 pass and five skip for the
+The current host test run completes 193 tests: 188 pass and five skip for the
 container/analysis backends checked separately in earlier runs. Native W8/C4
 qualification, the complete RX aperture table, operating-point characterization,
 readiness replay, limiting-corner recovery, six-fixture RC certification and the
@@ -611,3 +611,13 @@ loop investigation should check detector area polarity over the startup phase
 range and compare reset-path timing/precharge, while preserving these failed
 traces and all original limits. TT/FF screen work and RX characterization remain
 under their original coordinators.
+
+
+The original failed monitor's internal transient has completed with phase metrics
+identical to the original test. It confirms a positive 11.292 mV comparator
+input difference but O averaging only 0.640525 V, with normal PC/local VDDD
+and quiet LOW/HIGH flags. The local-port variant's early native +150 ps probe
+is now running. Detector capture controls `pfd_capture/b65a8cceadd819c0` are
+prepared and waiting for a slot: exact-RC native output-reset PFD, matched PDK
+schematic output-reset PFD and schematic internal-Q-reset PFD at −850/+850/0 ps.
+No physical PFD change or passing acquisition result is claimed.
