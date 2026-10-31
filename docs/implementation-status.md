@@ -7,14 +7,21 @@ The SKY130 macro implementation and reproducible build flows are present.
 Current bring-up evidence on 2026-10-31:
 
 - Local comparator routing passes native SS/0 °C 0 and ±150 ps monitor tests
-  under the original scoring windows (`c47b7dc98d92327b`). Other PVT/offsets
-  and integrated acquisition remain unqualified.
-- The preceding PFD and an internal-Q-reset physical variant both give the
-  wrong correction sign at −850 ps. The schematic controls do not reproduce it.
-- A single-AOI reset variant passes DRC/LVS, extraction and the independent RC
-  audit. Its native capture probes are queued (`6562211b6d43fb89`).
-- Full DLL/PVT/model/recovery/readiness/operating-point evidence, the completed
-  RX aperture table, six-fixture certificate and full link matrix remain required.
+  with the preceding PFD (`c47b7dc98d92327b`). These results do not qualify the
+  combined fast-reset PFD candidate.
+- The preceding PFD and an internal-Q-reset physical variant give the wrong
+  correction sign at −850 ps. The single-AOI reset physical PFD passes all
+  three native −850/+850/0 ps capture controls, as well as DRC/LVS, extraction
+  and the independent RC audit (`6562211b6d43fb89`).
+- Three source-matched SS/TT/FF architecture loops are running
+  (`0ca8225b328ecaa1`). Combined native candidate `1d201e9ed2f89f56` has 336
+  prepared fixtures and is running the first SS/0 °C 0/±150 ps static probes.
+- The frozen RX aperture campaign completes 480 conditions: 356 pass, 124 fail.
+  All failed +800 ps endpoints have high VALID but illegal public data levels.
+  Native internal publication probes and matched external-load controls are
+  queued (`rx_publication/dd89f11b1af99f29`). The failed table cannot qualify RX.
+- Full DLL/PVT/model/recovery/readiness/operating-point evidence, a passing RX
+  aperture table, the six-fixture certificate and full link matrix remain required.
 
 
 The pulse-area comparison milestone on 2026-10-29 is described at the end of

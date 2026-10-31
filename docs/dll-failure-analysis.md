@@ -324,7 +324,7 @@ bracket alone would fix characterization. It does not yet isolate the internal
 sampling, publication delay, output drive or extracted RC contribution.
 
 For TT/0 °C, rising data/rising clock, 200/20 ps clock/data slew, setup +800 ps,
-the two expected-high public outputs dip to 1.4367 and 1.4316 V. For SS/0 °C,
+the two expected-high public outputs have minima of 1.4367 and 1.4316 V. For SS/0 °C,
 20/20 ps slew and the same edge/polarity/setup, they range 0.7231–1.3389 V and
 0.7147–1.3328 V. VALID remains high in both examples. The original pass windows
 and limits remain unchanged, and the failed table cannot qualify link timing.
@@ -337,3 +337,23 @@ extraction and RC audit; passing selected controls would precede a fresh full
 480-condition table. Sampling or clock-buffer changes should follow only if
 internal waveforms establish an upstream fault. No RX circuit repair is claimed
 from the endpoint diagnosis.
+
+
+Reanalysis of the original +800 ps public traces identifies a delayed rising
+transition in these examples. SS/0 °C Q0/Q1 reach 1.44 V about 1.11 ns after
+publication; TT/0 °C with 200 ps clock slew reaches it about 0.80 ns after
+publication, just after the required window begins. The passing FF control
+reaches it about 0.61 ns after publication. At SS, Q0 rises from 0.723 V at
++0.80 ns to 1.339 V at +1.05 ns and 1.508 V at +1.15 ns. These are slow
+published transitions, rather than demonstrated rail collapse or a persistent
+wrong bit in those examples. The original window still fails.
+
+Source hashes, unchanged witness reanalysis, sampled profiles and interpolated
+1.44 V crossing times are captured in
+`build/diagnostics/rx_aperture_failure/publication_transition_timing.json`;
+producer `build/diagnostics/resident_jobs/rx_publication_timing.py`.
+The routed design uses `buf_1` at both public data outputs. Their extracted
+incident external capacitances are about 2.81/2.80 fF before the separate 20 fF
+fixture loads (coupling-inclusive sums, excluding native junction capacitance).
+The queued internal-stage and zero-external-load controls will distinguish
+output loading from delay already present in the flop/publication path.
