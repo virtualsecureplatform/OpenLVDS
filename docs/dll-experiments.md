@@ -1497,3 +1497,25 @@ endpoints and setup/hold. Maximum guarded setup/hold bounds are 280/120 ps at
 0 °C and 270/110 ps at 25 and 40 °C. Other process corners remain outstanding;
 the full 480-condition aperture table is not yet qualified. The reduced-clamp
 modified captured source case is now running under the shared six-slot budget.
+
+The reduced-clamp captured source case completes with no missing edges and
+exactly one output edge in all 47 checked periods. Diagnostic latency is
+301.890–510.435 ps. The unchanged control also passes, but the sharp source
+control remains outstanding; the three-case source gate is not yet satisfied.
+
+Dedicated reduced-clamp physical/native producers bind identity
+`light_decision_1k_clamp`, `decision_scale=1` and two parallel clamp resistor
+units. They check the exact source, three complete one-to-one source controls,
+physical DRC/LVS, independent RC connectivity audit and all captured producer
+hashes. Only the eight replica/clamp devices are moved beside the first
+restoration inverter; all other device order/connections are retained. Original
+pin waveforms, bias, native digital RX load and scoring windows remain intact.
+The downstream dispatcher uses this variant's source factory and waveform
+verifier explicitly; it does not reuse the failed four-unit replay.
+
+Host service `openlvds-light-clamp-native-continuation` is waiting on the actual
+source owner before running these stages. Its receipt is under
+`receiver_clamp/7002b1f71a4ff337/native_continuation/`. The source-unit observation
+helper retains complete-report checks and handles successful unloaded transient
+units; the physical gate independently remeasures the actual source waveforms.
+No reduced-clamp physical/native result or release selection is claimed.

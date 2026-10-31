@@ -327,14 +327,24 @@ Current bring-up evidence on 2026-10-31:
   This tests reduced output loading after the smaller-decision source failure.
   Two structural tests pass. Service `openlvds-light-clamp-source-screen` is live
   and has completed its unchanged source control with no missing edges. Its
-  modified captured source case is queued under the same six-slot limit. No electrical or physical
-  improvement is claimed; all original controls and scoring requirements remain.
+  modified captured source case now completes with exactly one output edge in
+  all 47 checked periods and diagnostic latency 301.890–510.435 ps. The sharp
+  source control remains outstanding. No physical/native improvement is claimed;
+  all original controls and scoring requirements remain.
+  Dedicated reduced-clamp physical/native producers use identity
+  `light_decision_1k_clamp`, original decision scale and two parallel clamp units.
+  They reject source evidence from the four-unit candidate and preserve original
+  pin stimuli, bias, digital RX load and scoring windows. Host service
+  `openlvds-light-clamp-native-continuation` waits on its actual source owner,
+  then runs layout, independent RC audit and both native controls only after
+  all source gates pass. The downstream dispatcher selects its exact source
+  factory and native verifier. No physical/native result is claimed yet.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 350 tests, 349 passed and one skipped in the pinned ngspice
+- Last full unit suite: 357 tests, 356 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
