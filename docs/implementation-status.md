@@ -797,3 +797,17 @@ The frozen RX aperture campaign has completed all 480 conditions; its table has
 `passed: false` and cannot qualify a release. Its original artifacts are retained
 for diagnosis. All three new source-screen loops are now running concurrently;
 there is no settled-loop qualification result yet.
+
+
+Combined native static service `openlvds-fast-reset-native-static.service` now
+runs SS/0 °C +150/0/−150 ps full-RC cases from candidate `1d201e9ed2f89f56`
+with three workers. Alongside the three source-screen loops this occupies all
+six native SPICE slots. No active simulation was interrupted or restarted.
+Host regression after the concurrency change: 219 tests, 214 passed, 5 skipped.
+The source-screen FF/TT/SS traces have reached approximately 501/118/72 ns;
+these are partial progress observations, before the 1200–1500 ns scoring window.
+
+RX diagnosis rechecks all 248 endpoints of the 124 failed conditions. Both
+endpoints fail in every condition; every +800 ps endpoint has high VALID but
+illegal data levels. The detailed receipt and proposed isolated RX controls
+are recorded in `dll-failure-analysis.md`. The complete PHY remains unqualified.

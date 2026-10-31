@@ -304,3 +304,36 @@ the reset logic as a working capture repair at this condition. Complementary
 polarity, quiet behavior, capture range, PVT and acquisition remain unproven.
 The matching source-specific loop screen is prepared and gated on the remaining
 native controls; no scoring window or phase limit has changed.
+
+
+## Completed receiver aperture failures, 2026-10-31
+
+The frozen full-RC RX campaign `rx_aperture/e9ca7d2f2ae6d61b` completes all
+480 conditions: 356 boundaries pass and 124 fail to bracket. The read-only
+`diagnose_rx_aperture.py` rechecks all 248 failed-condition endpoint waveforms
+through the original witness checker, including hashes, fixed supply, PVT,
+stimulus and original public-output observation window. Diagnostic receipt:
+`build/diagnostics/rx_aperture_failure/85a2639a36dfe760/summary.json`.
+
+Every failed condition has failing −800 and +800 ps endpoints. At every +800 ps
+endpoint VALID passes while at least one data output violates the original
+0.36/1.44 V logic limits. Failures group as 72 SS, 36 SF and 16 TT conditions;
+the TT failures all use 200 ps clock slew. This is an observed output-level
+failure at ample nominal stimulus separation, not evidence that a wider search
+bracket alone would fix characterization. It does not yet isolate the internal
+sampling, publication delay, output drive or extracted RC contribution.
+
+For TT/0 °C, rising data/rising clock, 200/20 ps clock/data slew, setup +800 ps,
+the two expected-high public outputs dip to 1.4367 and 1.4316 V. For SS/0 °C,
+20/20 ps slew and the same edge/polarity/setup, they range 0.7231–1.3389 V and
+0.7147–1.3328 V. VALID remains high in both examples. The original pass windows
+and limits remain unchanged, and the failed table cannot qualify link timing.
+
+The next isolated RX controls should use these two fixtures plus a passing FF
+control: compare native public-port waveforms with native internal publication
+and sampler outputs, then compare a retained stronger public output buffer
+under the same 20 fF load. Any buffered variant needs separate hardening,
+extraction and RC audit; passing selected controls would precede a fresh full
+480-condition table. Sampling or clock-buffer changes should follow only if
+internal waveforms establish an upstream fault. No RX circuit repair is claimed
+from the endpoint diagnosis.
