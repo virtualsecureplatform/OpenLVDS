@@ -1168,6 +1168,39 @@ checked input period (47 per case). The captured case gives CO =
 relative to the unclamped control. Physical/native behavior and full qualification
 remain pending; the first clamp's layout gate cannot accept this different source.
 
+The stronger source now has its own physical/native implementation, preserving
+that exact schematic and its preceding source witnesses. Six replica fingers
+and four clamp resistors sit beside CO before the first restoration inverter;
+all original receiver devices retain their relative order and connections.
+
+```sh
+scripts/env.sh --tools --ngspice /usr/bin/python3 \
+  scripts/layout_receiver_strong_clamp_candidate.py \
+  build/diagnostics/receiver_clamp/86e622030245e729
+scripts/env.sh --tools python3 scripts/receiver_candidate_rc.py \
+  build/diagnostics/receiver_layout/feb7596968046dd1
+scripts/env.sh --ngspice python3 scripts/probe_receiver_strong_clamp_candidate.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171 \
+  build/diagnostics/receiver_layout/feb7596968046dd1
+scripts/env.sh --ngspice python3 scripts/probe_receiver_strong_clamp_candidate.py run \
+  build/diagnostics/receiver_replay/13ab38f8a7b8e217
+```
+
+Current layout `receiver_layout/feb7596968046dd1` passes DRC (zero errors), LVS
+and independent RC audit, retaining 91 devices and nine ports. Its native network
+SHA256 starts `32579bcd62e88ff5`. Source admission additionally requires exactly
+one output edge per checked period in every original control. The stronger-clamp
+native producer observes PP/PN/CO, both restoration nodes and CO_TRACK and binds
+the exact source, physical, RC and schematic proofs. Its replay is queued under
+the unchanged six-slot budget. No native clock-recovery improvement is claimed.
+
+Matching full-link fixture `receiver_candidate_link/37d95b09d5fb0059` and all
+60 component conditions at `receiver_components/90fff4b7107aa5ae` are prepared.
+A real component preflight reconstructs all fixtures and holds before simulation
+at pending native replay evidence. Both use the stronger variant's own waveform
+verifier; weak-clamp reports cannot substitute. Native cadence, component/PVT,
+headroom, new-network RC comparison and full-link gates remain mandatory.
+
 ## Xyce compatibility check
 
 The image already contains Xyce 7.10.0 built from release commit
