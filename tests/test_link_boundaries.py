@@ -97,4 +97,40 @@ class LinkMeasurementBoundaries(unittest.TestCase):
         self.assertTrue(result['passed'],result)
 
 
+    def test_early_output_update_after_public_window_does_not_shift_payload(self):
+        args=list(self.fixture());wave=args[0].copy();t=wave[:,1]
+        # The next pair can arrive after +1.05 ns and before the old +T/2
+        # observation. Its timing must not change the decoded current word.
+        for col in [8,9]:wave[:,col]=np.interp(t+1.4e-9,t,wave[:,col])
+        args[0]=wave;result=analyze(*args)
+        self.assertTrue(result['passed'],result)
+        self.assertEqual(result['publication_window_ns'],[.8,1.05])
+        self.assertEqual(result['publication_step_ps'],5)
+        old_samples=(result['first_payload_publication_ns']+np.arange(len(args[1]))*args[3]+args[3]/2)*1e-9
+        old_decoded=(np.interp(old_samples,t,wave[:,8])>.9).astype(int)+2*(np.interp(old_samples,t,wave[:,9])>.9).astype(int)
+        self.assertTrue(np.any(old_decoded!=args[1]))
+
+    def test_brief_illegal_data_or_valid_in_public_window_cannot_hide_at_midcycle(self):
+        fixture=self.fixture();baseline=analyze(*fixture)
+        start=baseline['first_payload_publication_ns']+18*fixture[3]
+        for col in [8,9,10]:
+            args=list(fixture);wave=args[0].copy();t=wave[:,1]
+            keep=(t>=(start+.81)*1e-9)&(t<=(start+.84)*1e-9)
+            wave[keep,col]=1.;args[0]=wave
+            result=analyze(*args)
+            self.assertFalse(result['passed'],result)
+            self.assertEqual(result['word_errors'],1)
+
+    def test_window_checks_both_characterized_boundaries(self):
+        from simulate_link import decode_public_pairs
+        t=np.arange(0,2e-9,1e-12);zeros=np.zeros(len(t));high=np.full(len(t),1.8)
+        publication=np.array([0.])
+        self.assertEqual(decode_public_pairs(t,zeros,zeros,high,publication).tolist(),[0])
+        for offset in [.8,1.05]:
+            changed=zeros.copy();changed[abs(t-offset*1e-9)<2e-12]=1.
+            self.assertEqual(decode_public_pairs(t,changed,zeros,high,publication).tolist(),[-1])
+        changed=zeros.copy();changed[(t>1.10e-9)&(t<1.30e-9)]=1.
+        self.assertEqual(decode_public_pairs(t,changed,zeros,high,publication).tolist(),[0])
+
+
 if __name__=='__main__':unittest.main()

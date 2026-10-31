@@ -133,20 +133,35 @@ def parallel_stimulus(launch,words,previous_rise):
 def instance(label,name,nodes,models):
     return 'X'+label+' '+' '.join(nodes[x] for x in models[name]['ports'])+' '+name
 
+
+# Same public-output window used by the native capture characterization.
+PUBLICATION_WINDOW_NS=(.80,1.05)
+PUBLICATION_STEP_NS=.005
+
+
+def decode_public_pairs(t,q0,q1,valid,publication):
+    offsets=np.arange(PUBLICATION_WINDOW_NS[0],PUBLICATION_WINDOW_NS[1]+PUBLICATION_STEP_NS/2,PUBLICATION_STEP_NS)
+    samples=publication[:,None]+offsets[None,:]*1e-9
+    values=np.array([np.interp(samples.ravel(),t,v).reshape(samples.shape) for v in [q0,q1,valid]])
+    low=values.min(axis=2);high=values.max(axis=2)
+    legal=((high[0]<.36)|(low[0]>1.44))&((high[1]<.36)|(low[1]>1.44))&(low[2]>1.44)
+    pairs=(low[0]>1.44).astype(int)+2*(low[1]>1.44).astype(int)
+    return np.where(legal,pairs,-1)
+
+
 def analyze(wave,words,launch,period,data_delay_ns=1.2,aperture=None):
     t=wave[:,1];qclk=wave[:,7]
     edges=edge_times(t,qclk,rising=True)
-    publication=edges[(edges+period*.5e-9>launch[0]*1e-9)&(edges+period*.5e-9<t[-1])]
-    sample=publication+period*.5e-9
-    q0=np.interp(sample,t,wave[:,8]);q1=np.interp(sample,t,wave[:,9]);valid=np.interp(sample,t,wave[:,10])
-    legal=((q0<.36)|(q0>1.44))&((q1<.36)|(q1>1.44))&(valid>1.44)
-    pairs=(q0>.9).astype(int)+2*(q1>.9).astype(int)
-    decoded=np.where(legal,pairs,-1);sync=min(16,len(words));offset=None
+    window_end=PUBLICATION_WINDOW_NS[1]*1e-9
+    publication=edges[(edges+window_end>launch[0]*1e-9)&(edges+window_end<t[-1])]
+    decoded=decode_public_pairs(t,wave[:,8],wave[:,9],wave[:,10],publication)
+    sync=min(16,len(words));offset=None
     for i in range(min(16,len(decoded)-sync+1)):
         if list(decoded[i:i+sync])==words[:sync]:offset=i;break
     if offset is None:return dict(passed=False,error='No correctly ordered payload preamble',
         observed=decoded[:24].tolist(),expected=words[:24],
-        rx_clock_min_v=float(qclk.min()),rx_clock_max_v=float(qclk.max()),rx_clock_rising_edges=len(edges))
+        rx_clock_min_v=float(qclk.min()),rx_clock_max_v=float(qclk.max()),rx_clock_rising_edges=len(edges),
+        publication_window_ns=list(PUBLICATION_WINDOW_NS))
     received=decoded[offset:offset+len(words)]
     errors=sum(int(a)!=int(b) for a,b in zip(received,words))+max(0,len(words)-len(received))
     # Publication exports the preceding complete pair. Include its capture
@@ -218,6 +233,8 @@ def analyze(wave,words,launch,period,data_delay_ns=1.2,aperture=None):
         np.all(amplitudes>=REQ['rx_threshold_v']) and pin_min>=REQ['rx_pin_min_v'] and
         pin_max<=REQ['rx_pin_max_v'] and len(transmitter)==2 and (not aperture.get('qualified') or slew_ok))
     return dict(passed=errors==0 and electrical_ok,checked_bits=2*len(received),word_errors=errors,
+        publication_window_ns=list(PUBLICATION_WINDOW_NS),publication_step_ps=PUBLICATION_STEP_NS*1000,
+        first_payload_publication_ns=float(start_publication*1e9),
         electrical_passed=electrical_ok,capture_count_passed=capture_count_ok,
         capture_input_slew_ps=capture_slews,capture_aperture_slew_passed=slew_ok,
         signed_receive_eye_passed=signed_ok,clock_receive_eye_passed=clock_eye_ok,

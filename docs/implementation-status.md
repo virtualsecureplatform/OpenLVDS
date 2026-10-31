@@ -28,7 +28,7 @@ Current bring-up evidence on 2026-10-31:
   driver/receiver cases, all 30 native analog receiver cases and seven native
   drivers. Remaining native driver refresh continues. Historical numerical
   failures remain archived separately from the current-proof receipt.
-- Unit suite: 253 tests, 248 passed and five skipped. The shared native budget
+- Unit suite: 256 tests, 251 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
@@ -1222,3 +1222,18 @@ change. Tests reject swapped/missing power ties, changed logic, wrong bus widths
 wrong directions and duplicate cells, and verify that preflight preserves an
 existing current release. Unit suite: 253 tests, 248 passed, five skipped. Active
 DLL, RX, component and RC producers remain unchanged.
+
+A link-analysis review identified an observation mismatch: payload decoding used
+one sample at half a period, outside the RX's characterized +0.80–1.05 ns window.
+For the early RX, that sample can approach the next falling-edge publication
+under duty/jitter stress. The link analyzer now requires stable legal data and
+high VALID over all 51 points in the original window, with no timing/voltage
+relaxation. Input capture margins, analog checks, payload lengths and complete
+qualification coverage are unchanged.
+
+New tests cover early next-word updates after the window, brief illegal data or
+VALID inside it, and both window boundaries. The analyzer also decodes three
+actual completed native guarded witnesses correctly (rising setup 120/210 ps and
+falling-clock hold 50 ps). Unit suite: 256 tests, 251 passed, five skipped.
+The analyzer's runner fingerprint gives future link runs a fresh identity; no
+active native DLL, aperture, component or RC producer was modified.

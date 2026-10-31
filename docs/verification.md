@@ -168,3 +168,13 @@ including the native two-supply-pin tap cell. Preflight writes only
 replace the current release pointer. Successful promotion rechecks these files
 and packages both netlist forms alongside each digital GDS/LEF, with hashes of
 the same validated bytes. All electrical, timing and release gates still apply.
+
+Link payload decoding now uses the same public RX observation window as native
+aperture characterization: +0.80 to +1.05 ns after each received rising clock
+crossing, at 5 ps intervals. Both data bits must hold one legal value throughout
+that window and VALID must stay high. Sampling at half a clock period could
+instead observe the next early-publication update under duty/jitter stress.
+The input setup/hold subtraction, extra 200 ps margin, analog sensitivity,
+clock eye, pin limits, payload size and full link coverage are unchanged.
+Reports include the public window and the first payload publication time; their
+runner fingerprint rejects cached evidence from the preceding analyzer.
