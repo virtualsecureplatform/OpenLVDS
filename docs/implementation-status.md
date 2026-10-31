@@ -195,16 +195,18 @@ Current bring-up evidence on 2026-10-31:
   now passes DRC/LVS and independent RC audit (85 devices, nine ports; native
   SHA256 starts `ad5ac6a6d26b0b33`). Its actual native replay
   `receiver_replay/7b46eef599fb6e55` is running. Matching full-link fixture
-  `receiver_candidate_link/14504581ae296019` is prepared behind native replay
-  gates. Its live trace still misses the first short negative pulse: CO reaches
-  only 0.789 V while CO_TRACK moves 0.508–0.823 V in that interval. The complete
-  native clamp and full-link results remain pending.
-- Selected receiver component campaign `receiver_components/cc802e533e019b32`
+  `receiver_candidate_link/a3b07823d72b7aeb` is prepared behind native replay
+  gates. The complete captured replay loses nine rising and nine falling edges;
+  its sharper control continues. At its first lost pulse, CO reaches only
+  0.789 V while CO_TRACK moves 0.508–0.823 V. No full-link run is admitted.
+- Selected receiver component campaign `receiver_components/06ef0f1a751e6c5d`
   has all 60 original schematic/native static/rate PVT fixtures prepared.
   Baseline references verify, and the real run preflight reconstructs all
   fixtures before holding at incomplete loaded-native replay evidence. No new
   component simulation starts. Complete/unique coverage, unchanged stimuli/load/
-  scoring and fresh waveform reanalysis are enforced; baseline component proofs
+  scoring and fresh waveform reanalysis are enforced. Loaded replay admission
+  requires exactly one output edge per input period, rejecting extra pulses as
+  well as missing ones. Baseline component proofs
   and canonical pointers are retained.
 - Stronger schematic clamp `receiver_clamp/86e622030245e729` is running with
   P32/N16 reference widths and four parallel poly units (about 500 Ω). Other
@@ -216,7 +218,7 @@ Current bring-up evidence on 2026-10-31:
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Unit suite: 321 tests, 320 passed and one skipped in the pinned ngspice
+- Unit suite: 322 tests, 321 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.

@@ -1097,7 +1097,7 @@ the replay observes PP/PN/CO, both restoration nodes and CO_TRACK. It preserves
 the original two pin stimuli, shared bias, native early RX load and scoring.
 `probe_receiver_candidate_link.py` dispatches to this replay's own verifier
 before integration, so a passing gain-only report cannot stand in for a clamp
-report. Matching full-link fixture `receiver_candidate_link/14504581ae296019`
+report. Matching full-link fixture `receiver_candidate_link/a3b07823d72b7aeb`
 is prepared and held behind both completed, zero-missing-edge native replays.
 Physical checks pass, while native clock recovery, all-PVT component behavior
 and full-link qualification remain unproven.
@@ -1118,13 +1118,14 @@ scripts/env.sh --ngspice python3 scripts/qualify_receiver_components.py prepare 
   build/diagnostics/receiver_layout/f576c6a98d893590 \
   build/diagnostics/receiver_replay/7b46eef599fb6e55
 scripts/env.sh --ngspice python3 scripts/qualify_receiver_components.py run \
-  build/diagnostics/receiver_components/cc802e533e019b32 --jobs 3
+  build/diagnostics/receiver_components/06ef0f1a751e6c5d --jobs 3
 ```
 
 Only preparation has completed. A real run preflight reconstructs and checks
 all 60 original fixtures, then holds at the incomplete native replay gate,
 creating no component simulation. Both loaded native replay cases must complete
-with zero missing edges before this campaign can allocate simulator slots.
+with exactly one output transition per input period before this campaign can
+allocate simulator slots; zero missing edges alone cannot admit extra pulses.
 Missing, duplicate or mislabeled conditions and changed fixture/model bytes are
 rejected. Every cached candidate waveform is remeasured. This remains separate
 from the 90 passing baseline component proofs, with no canonical model-pointer
@@ -1133,8 +1134,8 @@ qualification.
 
 ## Stronger tracking-reference comparison
 
-The first native clamp's early trace still misses the first short negative
-pulse. CO reaches about 0.789 V and CO_TRACK moves 0.508–0.823 V over that pulse's
+The first native clamp's complete captured replay still loses nine rising and
+nine falling edges. Its sharper control continues. At the first lost pulse, CO reaches about 0.789 V and CO_TRACK moves 0.508–0.823 V over that pulse's
 24.5–26.5 ns interval; the output clock does not fall. The full native replay
 continues. This motivates a separate schematic comparison with P32/N16 µm
 reference devices, four times the original replica widths, and four parallel
@@ -1182,3 +1183,9 @@ still contains the same minimum-version fallback. The downloaded source's URL,
 commit and content hash are recorded under `xyce_compatibility/upstream/`.
 A newer build therefore has no demonstrated device-model or performance benefit
 for these fixtures yet. Current numerical campaigns retain their original runtime.
+
+The three completed first-clamp schematic controls each have 47 checked input
+periods with exactly one corresponding output edge. The integration/component
+gate now explicitly rejects repeated edges as well as missing ones. Previously
+prepared component/link manifests are retained; the current paths above bind
+this stricter producer generation.
