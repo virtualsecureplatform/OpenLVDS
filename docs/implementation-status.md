@@ -339,6 +339,35 @@ up to 10 ps. Link release evidence now requires a complete current table and
 rechecks its boundary witnesses. The extra 200 ps link margin is unchanged.
 Legacy 200/80 ps aperture estimates are permitted only for diagnostic runs.
 
-All 107 unit tests pass. Candidate selection, stability qualification, complete
-electrical results, the six-fixture RC certificate and the full 45-case link
-regression remain outstanding. No candidate or approximation is released.
+The completed architecture comparison selects W8/C4 for continued OTA work:
+SS/0 °C, TT/25 °C and FF/0 °C pass the schematic loop screen. Its new layout
+passes DRC and strict LVS; exact RC extraction is still running. The independent
+audit and native screen must finish before these results can qualify its physical
+implementation. The active release remains unchanged.
+
+The controller now requires 615 acquisition cycles after a phase fault, alongside
+the existing 32-cycle precharge and 64-good-cycle counters. The complete RTL
+regression passes 54 cases and 2,373,588 checked bits. The candidate qualifier
+now covers 27 clock/duty points across TT/25 °C, SS/0 °C and FF/0 °C and
+frequency-step/rearm cases at each of those three corners.
+
+The stability runner measures native G/Y with the clock held low and high,
+PFD pulse-area gain at ±50 ps, and delay sensitivity at CTRL ±10 mV. It tests
+the two clock states and their averaged model with one-cycle latency, then
+compares predicted amplitude and settling against native 400→390/410 MHz
+steps. Expansion requires at least 60° phase margin and 6 dB gain margin and
+at most 25% model disagreement. The AC backend and schematic OTA
+instrumentation smoke tests pass; extracted W8/C4 stability results are pending.
+
+An isolated bundle assembler captures the audited DLL/PFD and buf_4 serializer
+with the current driver, receiver and bias. It checks public TX terminals and
+proves that DLL/TX replacement leaves the other instantiated circuit closures
+unchanged. A smoke assembly with the previously extracted W4/C8 circuit passes;
+this is tool validation, not W8/C4 qualification. The automatic workflow stages
+W8/C4 only after its native electrical and all-PVT stability gates pass.
+
+All 121 unit tests pass. Native W8/C4 qualification, the complete RX aperture
+table, analog characterization at the actual loop operating points, readiness
+replay, worst-model-corner recovery, the six-fixture RC certificate and the full
+45-case link regression remain outstanding. No candidate or approximation is
+released.

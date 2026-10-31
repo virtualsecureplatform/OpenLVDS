@@ -68,7 +68,13 @@ def main():
     atomic(config,old)
     wait_for(['completed'])
     report=model(True)
-    atomic(workflow,dict(status='ready_for_bundle_integration',qualification=str(relative),stability=str(report.relative_to(ROOT)),qualified_phy=False))
+    result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/stage_phy_candidate.py',str(relative)],
+        cwd=ROOT,capture_output=True,text=True)
+    (LAYOUT/'bundle_prepare.log').write_text(result.stdout+result.stderr);result.check_returncode()
+    bundle=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
+    if not (bundle/'manifest.json').is_file():raise ValueError('Staged PHY manifest missing')
+    atomic(workflow,dict(status='ready_for_bundle_validation',qualification=str(relative),
+        stability=str(report.relative_to(ROOT)),bundle=str(bundle.relative_to(ROOT)),qualified_phy=False))
 
 
 if __name__=='__main__':main()
