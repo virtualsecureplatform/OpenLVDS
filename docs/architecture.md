@@ -47,7 +47,7 @@ Only the existing PH0/PH90 clocks are needed. Native cells remain explicit for
 the constant-input lane. This replaces XOR feedback, whose encoded internal
 state produced alternating clock-to-output delays in extracted simulation.
 
-RX samples both clock edges. At a rising edge it publishes the **previous**
+The canonical RX samples both clock edges. At a rising edge it publishes the **previous**
 complete pair with bit 0 from the previous rising sample and bit 1 from the
 previous falling sample. `valid` qualifies the pair after reset synchronization.
 All RX outputs belong to the received-clock domain; downstream logic needs a
@@ -58,6 +58,25 @@ flip-flop for the falling sampler. `OPENLVDS_SKY130_RX` selects that mapping for
 physical implementation; the generic RTL expresses its equivalent behavior.
 Receiver SDC uses a virtual launch clock at a quarter-cycle offset and constrains
 both input edges. TX SDC preserves true half-cycle paths between DDR registers.
+
+The staged early-publication RX candidate is implemented separately in
+`rtl/experiments/openlvds_ddr_rx_early.v`. It continuously samples the rising
+and falling serial bits with resettable native cells. At the falling edge, a
+second register holds the rising sample while the falling sampler captures the
+other bit. These two held bits drive the public outputs through explicit
+`buf_4` cells; a falling-edge register and another `buf_4` publish VALID.
+The falling clock comes from one retained `inv_4`. No additional external clock,
+CDR or analog supply is introduced.
+
+This candidate updates data and VALID during the falling half-cycle. After the
+following positive edge, each valid pair equals the canonical receiver's pair.
+A synchronous positive-edge consumer sees the same first word and ordered
+stream one cycle earlier, so consumers must qualify every word with VALID rather
+than assume the canonical latency. Directed first-word/reset tests and the
+staged functional regression cover this difference. Native timing must still
+prove the internal half-cycle transfer and the unchanged public voltage window
+under PVT, duty, jitter and skew. The candidate remains unpromoted while that
+qualification runs; the canonical RTL retains its existing behavior.
 
 Reset asserts asynchronously and releases synchronously in each local domain.
 `clock_ready` is an external clock contract, not a measured PLL lock detector.
