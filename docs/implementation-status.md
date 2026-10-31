@@ -341,9 +341,11 @@ Legacy 200/80 ps aperture estimates are permitted only for diagnostic runs.
 
 The completed architecture comparison selects W8/C4 for continued OTA work:
 SS/0 °C, TT/25 °C and FF/0 °C pass the schematic loop screen. Its new layout
-passes DRC and strict LVS; exact RC extraction is still running. The independent
-audit and native screen must finish before these results can qualify its physical
-implementation. The active release remains unchanged.
+passes DRC, strict LVS, exact RC extraction and the independent RC topology audit.
+The exact network is `0f0c41cbc75c`; its 15 analog ports are verified. Native
+qualification `d4d687cf4e0b5e1e` is running the first SS/0 °C monitor cases.
+Its 336-case manifest holds the full matrix until the 24-case native screen and
+measured stability gates pass. The active release remains unchanged.
 
 The controller now requires 615 acquisition cycles after a phase fault, alongside
 the existing 32-cycle precharge and 64-good-cycle counters. The complete RTL
@@ -374,7 +376,13 @@ native trace instead of consulting active-circuit characterization. The automati
 workflow waits for a complete RX table before the non-diagnostic link matrix.
 These tools have not yet produced passing W8/C4 bundle results.
 
-All 128 unit tests pass. Native W8/C4 qualification, the complete RX aperture
+W8 OTA signal characterization `c1c03f8e7a5e8dd9` is queued for two shared
+simulator slots. It covers all 15 PVT points, input common modes 0.32–0.75 V
+(including FF's observed 0.34 V), and CTRL 0.82–1.09 V, with unchanged fixed
+supplies and bias. It is a schematic diagnostic; it does not replace extracted
+loop qualification or general device-stress verification.
+
+All 129 unit tests pass. Native W8/C4 qualification, the complete RX aperture
 table, analog characterization at the actual loop operating points, readiness
 replay, worst-model-corner recovery, the six-fixture RC certificate and the full
 45-case link regression remain outstanding. No candidate or approximation is
