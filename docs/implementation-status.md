@@ -1143,3 +1143,14 @@ with three boundary workers for the original 480-condition matrix. Actual
 simulator dispatch remains limited by the six shared leases. This clears the
 publication admission failure that held the preceding three RX variants; it
 does not yet prove complete aperture bounds or full PHY qualification.
+
+The independent current-component receipt now verifies 80/90 actual proofs:
+all 45 schematic cases, all 30 native analog receiver cases and five native
+drivers. FF/40 and SS/0 native drivers are live; the other eight native drivers
+still have stale reports awaiting refresh. The native FF/25 driver completes
+and passes its original DC and transition criteria. The receipt distinguishes
+running/stale evidence from electrical failure, retains historical batch errors,
+and checks exact case names rather than overlapping receiver globs. Source:
+`scripts/verify_component_evidence.py`; output:
+`component_refresh/current_evidence.json`. Read-only shared locking has also
+been exercised on this workspace's NFS filesystem. No active producer changed.

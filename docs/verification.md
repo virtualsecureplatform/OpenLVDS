@@ -134,3 +134,21 @@ Its baseline replay directory named `full` means the unchanged baseline variant;
 it does not mean an exact RC network. A separate exact-driver replay keeps the
 original receiver/capture models to isolate the driver. This mixed-model test
 cannot replace the six-fixture certificate or the complete qualified link matrix.
+
+Current component receipts can be reconciled independently of historic batch
+exit codes:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/verify_component_evidence.py
+```
+
+This verifies exactly 90 distinct schematic/native driver, static-receiver and
+rate-receiver PVT reports. It checks active circuit scope, extraction identities,
+requirements, fixed-supply startup, simulator, producer/analyzer snapshots, deck
+and waveform hashes, plus the driver's DC result. A shared case lock prevents
+reading evidence while a producer rewrites it; active cases are reported as
+running, never counted as passes. Shared locks use readable descriptors for NFS.
+The output is `build/diagnostics/component_refresh/current_evidence.json`; exit
+status is zero only when all 90 current proofs pass. Historical failed traces
+and batch return codes are retained. This receipt covers components only and
+does not replace the strict DLL, aperture, link or release checks.
