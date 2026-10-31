@@ -20,9 +20,14 @@ Current bring-up evidence on 2026-10-31:
   verdict. New passive-preset experiment `dll_architecture/9e0ebce74ac41dcd`
   changes only the startup divider to nominal 1.2 V. It retains W8/C4, the actual
   fast-reset PFD, fixed supplies and original three source-screen fixtures.
-  Physical candidate `dll_layout/dfb62f717c9bdb42` passes DRC/LVS; independent RC
-  extraction/audit is running. Source screens and native verification remain
-  pending. This experiment does not yet resolve the omitted-pulse failure.
+  Physical candidate `dll_layout/dfb62f717c9bdb42` passes DRC/LVS and independent
+  RC extraction/connectivity audit. Its exact reduced network SHA256 starts
+  `403eb354e54c2dc8`; all 15 ports are verified. Source screens and native verification remain
+  pending. A captured handoff (`queue_preset_native_screen.py`, receipt
+  `dll_layout/dfb62f717c9bdb42/native_handoff.json`) automatically prepares and
+  runs the original native screen only after both gates pass. It holds on
+  failed gates, ended producers or changed inputs. This experiment does not
+  yet resolve the omitted-pulse failure.
 - The early-publication RX (`rx_early_physical_v1`) passes physical DRC/LVS,
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
@@ -50,7 +55,7 @@ Current bring-up evidence on 2026-10-31:
   loaded pulse-width investigation; moving the payload decoder window cannot
   repair missing clock edges. This remains an ideal-phase diagnostic, without
   measured-DLL qualification.
-- Unit suite: 274 tests, 269 passed and five skipped. The shared native budget
+- Unit suite: 276 tests, 271 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
