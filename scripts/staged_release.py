@@ -57,7 +57,7 @@ def gates(bundle,stability,recovery,readiness,operating,check):
                 raise ValueError('Native DLL library differs from current physical reconstruction')
             if models!=q['identity']['fast_models' if mode else 'full_models']:
                 raise ValueError('Native DLL physical model inputs changed')
-            reconstructed,info=assemble_phy(qualification,ROOT/identity['tx'],mode)
+            reconstructed,info=assemble_phy(qualification,ROOT/identity['tx'],mode,ROOT/identity['rx'] if identity.get('rx') else None)
             if reconstructed.encode()!=expected or info!=identity['fast' if mode else 'full']:
                 raise ValueError('PHY bundle differs from audited physical reconstruction')
     attempt('staged exact physical reconstruction and OTA topology',physical)

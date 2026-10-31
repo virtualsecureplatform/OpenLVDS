@@ -16,6 +16,7 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--smoke',action='store_true')
+    p.add_argument('--native-rx',action='store_true',help='Exercise retained SKY130 RX sampler and output cells')
     p.add_argument('--jobs',type=int,default=8)
     a=p.parse_args()
     req=json.loads((ROOT/'requirements.json').read_text())
@@ -27,7 +28,13 @@ def main():
     (out/'compile.log').write_text(compile.stdout+compile.stderr)
     if compile.returncode: print(compile.stderr); return 1
     native_model=ROOT/'models/sky130_tx_functional.v'
-    native_compile=subprocess.run(['iverilog','-g2012','-Wall','-DOPENLVDS_SKY130_TX','-s','tb_link','-o',str(out/'native_link.vvp'),*map(str,sources),str(native_model)],capture_output=True,text=True)
+    native_models=[native_model]
+    native_defines=['-DOPENLVDS_SKY130_TX']
+    if a.native_rx:
+        rx_model=ROOT/'models/sky130_rx_functional.v'
+        if not rx_model.exists():rx_model=ROOT/'models/experiments/sky130_rx_functional.v'
+        native_models.append(rx_model);native_defines.append('-DOPENLVDS_SKY130_RX')
+    native_compile=subprocess.run(['iverilog','-g2012','-Wall',*native_defines,'-s','tb_link','-o',str(out/'native_link.vvp'),*map(str,sources),*map(str,native_models)],capture_output=True,text=True)
     (out/'native_compile.log').write_text(native_compile.stdout+native_compile.stderr)
     if native_compile.returncode:print(native_compile.stderr);return 1
     dll_sources=[ROOT/'rtl/openlvds_dll_control.v',ROOT/'tb/tb_dll_control.v']
@@ -39,7 +46,7 @@ def main():
     subprocess.run(['iverilog','-g2012','-s','tb_phy','-o',str(out/'phy.vvp'),*map(str,phy_sources)],check=True)
     phy=subprocess.run(['vvp',str(out/'phy.vvp')],capture_output=True,text=True)
     (out/'phy.log').write_text(phy.stdout+phy.stderr)
-    subprocess.run(['iverilog','-g2012','-DOPENLVDS_SKY130_TX','-s','tb_phy','-o',str(out/'native_phy.vvp'),*map(str,phy_sources),str(native_model)],check=True)
+    subprocess.run(['iverilog','-g2012',*native_defines,'-s','tb_phy','-o',str(out/'native_phy.vvp'),*map(str,phy_sources),*map(str,native_models)],check=True)
     native_phy=subprocess.run(['vvp',str(out/'native_phy.vvp')],capture_output=True,text=True)
     (out/'native_phy.log').write_text(native_phy.stdout+native_phy.stderr)
     cases=list(itertools.product(['rtl','sky130'],req['clock_test_mhz'],req['clock_duty'],req['channel_skew_ps']))
@@ -64,10 +71,10 @@ def main():
                  dll_control_passed=control.returncode==0,
                  functional_phy_passed=phy.returncode==0,native_functional_phy_passed=native_phy.returncode==0,
                  native_total_bits=native_total,rtl_total_bits=rtl_total,
-                 smoke=a.smoke,total_bits=total,cases=results,
+                 smoke=a.smoke,native_rx=a.native_rx,total_bits=total,cases=results,
                  source_hash=hashlib.sha256(b''.join(p.read_bytes() for p in sources)+
                      b''.join(p.read_bytes() for p in dll_sources)+
-                     b''.join(p.read_bytes() for p in phy_sources)+native_model.read_bytes()+
+                     b''.join(p.read_bytes() for p in phy_sources)+b''.join(p.read_bytes() for p in native_models)+
                      (ROOT/'requirements.json').read_bytes()+Path(__file__).read_bytes()).hexdigest())
     (out/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
     print(json.dumps(dict(passed=summary['passed'],dll_control_passed=summary['dll_control_passed'],

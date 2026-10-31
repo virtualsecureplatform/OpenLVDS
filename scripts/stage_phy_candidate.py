@@ -38,7 +38,7 @@ def overlay(base,candidate,top,protected=()):
     return base
 
 
-def assemble(qualification,tx,fast=False):
+def assemble(qualification,tx,fast=False,rx=None):
     manifest=json.loads((qualification/'manifest.json').read_text())
     validate(qualification,manifest)
     physical=json.loads((tx/'summary.json').read_text())
@@ -68,26 +68,47 @@ def assemble(qualification,tx,fast=False):
     text=overlay(base.decode(),dll,'openlvds_dll',UNCHANGED)
     text=overlay(text,checked_netlist(extracted),'openlvds_tx_core',UNCHANGED+('openlvds_dll',))
     fields=manifest['identity']['fast_models' if fast else 'full_models']
+    pfd_root=ROOT/fields['pfd'];pfd_info=json.loads((pfd_root/'extraction.json').read_text())
+    if fast:pfd_info=approximate(pfd_root,pfd_info)
+    if pfd_info['netlist_sha256']!=fields['inputs']['lvds_pfd']:
+        raise ValueError('Staged PFD metadata differs from the native library')
+    models['lvds_pfd']=pfd_info
     inputs.update(fields['inputs']);inputs['openlvds_tx_core']=extracted['netlist_sha256']
     models['openlvds_tx_core']=extracted
     reports={str(p.relative_to(ROOT)):digest(p) for p in [tx/'summary.json',tx/'extraction.json',tx/'rc_audit.json',netlist]}
     reports.update(fields['physical_reports'])
+    exact_rx=None
+    if rx is not None:
+        from rx_candidate_aperture import audited_model
+        rx_info,rx_reports=audited_model(rx)
+        exact_rx=rx_info['netlist_sha256']
+        if fast:rx_info=approximate(rx,rx_info)
+        if set(rx_info['ports'])!=set(models['openlvds_ddr_rx']['ports']):
+            raise ValueError('RX candidate changes the public terminal set')
+        protected=tuple(n for n in UNCHANGED if n!='openlvds_ddr_rx')+('openlvds_dll','openlvds_tx_core')
+        text=overlay(text,checked_netlist(rx_info),'openlvds_ddr_rx',protected)
+        inputs['openlvds_ddr_rx']=rx_info['netlist_sha256'];models['openlvds_ddr_rx']=rx_info
+        reports.update(rx_reports)
     return text,dict(inputs=inputs,digital_models=models,physical_reports=reports,
-        exact_tx_sha256=exact_tx,observation_nodes=fields['observation_nodes'],
+        exact_tx_sha256=exact_tx,exact_rx_sha256=exact_rx,observation_nodes=fields['observation_nodes'],
         scopes={name:closure_hash(text,name) for name in UNCHANGED+('openlvds_dll','openlvds_tx_core')})
 
 
-def prepare(qualification,tx):
+def prepare(qualification,tx,rx=None):
     qualification=qualification.resolve();tx=tx.resolve()
     if not all(p.is_relative_to(ROOT/'build/diagnostics') for p in [qualification,tx]):
         raise ValueError('Use isolated candidate artifacts under build/diagnostics')
-    full,full_info=assemble(qualification,tx)
-    fast,fast_info=assemble(qualification,tx,True)
+    if rx is not None:rx=rx.resolve()
+    full,full_info=assemble(qualification,tx,rx=rx)
+    fast,fast_info=assemble(qualification,tx,True,rx)
     identity=dict(qualification=str(qualification.relative_to(ROOT)),tx=str(tx.relative_to(ROOT)),
         qualification_manifest_sha256=digest(qualification/'manifest.json'),
         requirements_sha256=digest(ROOT/'requirements.json'),
         producer_sha256=digest(Path(__file__)),full=full_info,fast=fast_info,
         full_sha256=hashlib.sha256(full.encode()).hexdigest(),fast_sha256=hashlib.sha256(fast.encode()).hexdigest())
+    if rx is not None:
+        from rx_candidate_aperture import extra_code
+        identity.update(rx=str(rx.relative_to(ROOT)),rx_producer_code=extra_code())
     root=ROOT/'build/diagnostics/phy_candidate'/hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()[:16]
     root.mkdir(parents=True,exist_ok=True)
     # A staged library carries no electrical release or fast-RC certificate.
@@ -105,7 +126,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('qualification',type=Path)
     parser.add_argument('--tx',type=Path,default=ROOT/'build/diagnostics/tx_buffer4_physical')
-    a=parser.parse_args();prepare(a.qualification,a.tx)
+    parser.add_argument('--rx',type=Path,help='Audited isolated RX candidate; active RX remains the default')
+    a=parser.parse_args();prepare(a.qualification,a.tx,a.rx)
 
 
 if __name__=='__main__':main()

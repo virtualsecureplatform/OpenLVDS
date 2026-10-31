@@ -55,6 +55,12 @@ class CandidateEvidence(unittest.TestCase):
     def test_external_bundle_path_is_rejected(self):
         with self.assertRaisesRegex(ValueError,'outside'):phy_candidate.load(self.q)
 
+    def test_selected_rx_producer_drift_is_rejected(self):
+        self.identity.update(rx='build/diagnostics/rx_candidate',rx_producer_code={'checker.py':'original'})
+        self.write()
+        with patch('rx_candidate_aperture.extra_code',return_value={'checker.py':'changed'}):
+            with self.assertRaisesRegex(ValueError,'RX producer changed'):phy_candidate.load(self.bundle)
+
     def phase_fixture(self):
         library=b'.subckt openlvds_dll A B\nR0 A B 1\n.ends openlvds_dll\n'
         (self.bundle/'full.spice').write_bytes(library);(self.q/'full.spice').write_bytes(library)

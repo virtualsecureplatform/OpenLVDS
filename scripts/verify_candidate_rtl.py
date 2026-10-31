@@ -61,6 +61,18 @@ def captured_sources(bundle):
         if path.name.endswith('_blackboxes.v'):continue
         name='openlvds_tx_core.v' if re.search(r'\bmodule\s+openlvds_tx_core\b',path.read_text()) else path.name
         files['rtl/'+name]=path
+    if identity.get('rx'):
+        from rx_candidate_rc import captured_inputs as rx_inputs
+        selected=ROOT/identity['rx'];physical_rx=rx_inputs(selected)
+        rx_archive=ROOT/physical_rx['input_archive']
+        rx_config=json.loads((selected/'config.json').read_text())
+        rx_sources=[rx_archive/Path(p).name for p in rx_config['VERILOG_FILES']]
+        receiver=[p for p in rx_sources if re.search(r'\bmodule\s+openlvds_ddr_rx\b',p.read_text())]
+        if len(receiver)!=1:raise ValueError('Missing or ambiguous captured RX RTL')
+        reset=rx_archive/'openlvds_reset.v'
+        if reset.read_bytes()!=files['rtl/openlvds_reset.v'].read_bytes():raise ValueError('Selected TX/RX reset RTL differs')
+        files['rtl/openlvds_ddr_rx.v']=receiver[0]
+        files['models/sky130_rx_functional.v']=ROOT/'models/experiments/sky130_rx_functional.v'
     files['rtl/openlvds_dll_core.v']=core
     files['models/analog_functional.v']=ROOT/'models/analog_area_functional.v'
     # The alternate model is installed under the verifier's established name.
@@ -84,12 +96,13 @@ def stamp(bundle,files,tools=None):
         tools=tools)
 
 
-def source_fingerprint(root):
+def source_fingerprint(root,native_rx=False):
     sources=sorted((root/'rtl').glob('*.v'))+[root/'tb/tb_link.v']
     dll=[root/'rtl/openlvds_dll_control.v',root/'tb/tb_dll_control.v']
     phy=sorted((root/'rtl').glob('*.v'))+[root/'models/analog_functional.v',root/'tb/tb_phy.v']
+    rx=(root/'models/sky130_rx_functional.v').read_bytes() if native_rx else b''
     return hashlib.sha256(b''.join(p.read_bytes() for p in sources+dll+phy)+
-        (root/'models/sky130_tx_functional.v').read_bytes()+(root/'requirements.json').read_bytes()+
+        (root/'models/sky130_tx_functional.v').read_bytes()+rx+(root/'requirements.json').read_bytes()+
         (ROOT/'scripts/verify_rtl.py').read_bytes()).hexdigest()
 
 
@@ -102,13 +115,14 @@ def verify(bundle):
     for name,info in manifest['identity']['sources'].items():
         if digest(root/name)!=info['sha256']:raise ValueError('Captured candidate RTL changed')
     report=json.loads((root/'summary.json').read_text());result=report['result']
+    native_rx=bool(json.loads((bundle/'manifest.json').read_text())['identity'].get('rx'))
     req=json.loads((root/'requirements.json').read_text())
     expected={f'{i}_{m}m_d{d:.2f}_s{s:+d}' for i,m,d,s in itertools.product(
         ['rtl','sky130'],req['clock_test_mhz'],req['clock_duty'],req['channel_skew_ps'])}
     cases=result['cases']
     if (digest(root/'summary.json')!=pointer['summary_sha256'] or not report['passed'] or
         report['manifest_sha256']!=digest(root/'manifest.json') or not result['passed'] or result['smoke'] or
-        result['source_hash']!=source_fingerprint(root) or not result['dll_control_passed'] or
+        result.get('native_rx',False)!=native_rx or result['source_hash']!=source_fingerprint(root,native_rx) or not result['dll_control_passed'] or
         not result['functional_phy_passed'] or not result['native_functional_phy_passed'] or
         len(cases)!=len(expected) or {c['case'] for c in cases}!=expected or
         min(result['native_total_bits'],result['rtl_total_bits'])<req['minimum_behavioral_bits']):
@@ -141,7 +155,7 @@ def run(bundle):
     (root/'interfaces.log').write_text(compile.stdout+compile.stderr);compile.check_returncode()
     previous_root=verify_rtl.ROOT;previous_args=sys.argv
     try:
-        verify_rtl.ROOT=root;sys.argv=[str(ROOT/'scripts/verify_rtl.py')];status=verify_rtl.main()
+        verify_rtl.ROOT=root;sys.argv=[str(ROOT/'scripts/verify_rtl.py')]+(['--native-rx'] if json.loads((bundle/'manifest.json').read_text())['identity'].get('rx') else []);status=verify_rtl.main()
     finally:verify_rtl.ROOT=previous_root;sys.argv=previous_args
     if identity!=stamp(bundle,captured_sources(bundle)):raise ValueError('Candidate RTL inputs changed during regression')
     result=json.loads((root/'build/rtl/summary.json').read_text())

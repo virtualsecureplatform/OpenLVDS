@@ -33,6 +33,7 @@ def main():
     p.add_argument('--fast-rc',action='store_true');p.add_argument('--list',action='store_true')
     p.add_argument('--bundle',type=Path,help='Run against an isolated staged PHY')
     p.add_argument('--case',help='Run a single named case')
+    p.add_argument('--aperture-table',type=Path,help='Complete native RX aperture table for the selected circuit')
     a=p.parse_args();cases=matrix()
     if a.case:cases=[c for c in cases if c['name']==a.case]
     if not cases:p.error('Unknown case')
@@ -51,6 +52,7 @@ def main():
             else:cmd.extend([flag,str(v)])
         if a.fast_rc:cmd.append('--fast-rc')
         if a.bundle:cmd.extend(['--bundle',str(a.bundle)])
+        if a.aperture_table:cmd.extend(['--aperture-table',str(a.aperture_table)])
         r=subprocess.run(cmd,cwd=ROOT,capture_output=True,text=True)
         (out/(case['name']+'.log')).write_text(r.stdout+r.stderr)
         try:summary=json.loads(r.stdout)

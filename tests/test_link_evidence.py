@@ -92,3 +92,17 @@ class LinkEvidence(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class SelectedRXAperture(unittest.TestCase):
+    def test_bundle_checks_its_exact_rx_model_and_reanalyzes_the_complete_table(self):
+        config=dict(bundle='build/diagnostics/phy_candidate/selected',process='ss',temperature=40)
+        record=dict(model_sha256='selected-exact-rx',table='build/characterization/rx_aperture/selected/table.json')
+        models=dict(openlvds_ddr_rx=dict(netlist_sha256='selected-exact-rx'))
+        with patch('phy_candidate.load',return_value=(b'library',{},models)) as load,patch('rx_aperture_evidence.read_table',return_value=record) as read:
+            self.assertTrue(evidence.aperture_valid(record,config))
+            self.assertEqual(read.call_args.args[1:],('selected-exact-rx','ss',40))
+            self.assertEqual(load.call_args.args,(evidence.ROOT/config['bundle'],))
+            read.reset_mock()
+            self.assertFalse(evidence.aperture_valid(dict(record,model_sha256='preceding-rx'),config))
+            read.assert_not_called()

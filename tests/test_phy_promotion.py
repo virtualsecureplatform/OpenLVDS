@@ -87,3 +87,17 @@ class SealedPHYRelease(unittest.TestCase):
                 recheck.assert_called_once()
             self.assertEqual(pointer.read_bytes(),b'previous pointer')
             self.assertFalse((release/'packages').exists())
+
+
+class SelectedRXPackage(unittest.TestCase):
+    def test_selected_rx_uses_its_own_gds_run_and_extraction(self):
+        from promote_phy_candidate import digital_artifacts
+        identity=dict(tx='build/diagnostics/tx',rx='build/diagnostics/rx')
+        native=dict(pfd='build/diagnostics/pfd')
+        name,physical,extraction=digital_artifacts(identity,native)[2]
+        self.assertEqual(name,'openlvds_ddr_rx')
+        self.assertEqual(extraction,physical/'extraction.json')
+        self.assertTrue(str(physical).endswith('/build/diagnostics/rx'))
+        baseline=digital_artifacts(dict(tx=identity['tx']),native)[2]
+        self.assertTrue(str(baseline[1]).endswith('/build/physical/rx'))
+        self.assertTrue(str(baseline[2]).endswith('/build/extracted/digital.json'))

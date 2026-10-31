@@ -48,3 +48,14 @@ class OTAAdvancement(unittest.TestCase):
             (case/'manifest.json').write_text(json.dumps(dict(code={'old':'producer'})))
             with patch.object(advance,'verify_stability') as verify:
                 self.assertIsNone(advance.cached_model(root,{},()));verify.assert_not_called()
+
+
+class SelectedRXAperture(unittest.TestCase):
+    def test_selected_rx_exact_hash_is_used_for_complete_table_verification(self):
+        from unittest.mock import patch
+        from advance_ota_candidate import verify_aperture
+        models={'openlvds_ddr_rx':{'netlist_sha256':'selected-native-rx'}}
+        with patch('phy_candidate.load',return_value=(b'library',{},models)),patch('rx_aperture_evidence.read_table',return_value={'qualified':True}) as read:
+            result=verify_aperture(Path('/bundle'),Path('/table.json'))
+            self.assertTrue(result['qualified'])
+            read.assert_called_once_with(Path('/table.json'),'selected-native-rx','tt',25)

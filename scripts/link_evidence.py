@@ -14,6 +14,17 @@ ROOT=Path(__file__).resolve().parents[1]
 def digest(data):return hashlib.sha256(data).hexdigest()
 
 
+def aperture_valid(aperture,config):
+    if not config.get('bundle'):
+        return aperture_matches(aperture,config['process'],config['temperature'])
+    from phy_candidate import load
+    from rx_aperture_evidence import read_table
+    _,_,models=load(ROOT/config['bundle'])
+    model=models['openlvds_ddr_rx'];exact=model.get('exact_sha256',model['netlist_sha256'])
+    if aperture.get('model_sha256')!=exact:return False
+    return read_table(ROOT/aperture['table'],exact,config['process'],config['temperature'])==aperture
+
+
 def matches(summary,case,requirements,library):
     try:
         if not summary.get('passed') or summary.get('diagnostic',True):
@@ -21,7 +32,7 @@ def matches(summary,case,requirements,library):
         config=summary['config']
         aperture=summary.get('rx_aperture',{})
         if not (aperture.get('qualified') and config.get('rx_aperture')==aperture and
-                aperture_matches(aperture,config['process'],config['temperature'])):
+                aperture_valid(aperture,config)):
             return False,'Missing or stale full-RC receiver aperture qualification'
         if not summary.get('capture_aperture_slew_passed'):
             return False,'Capture input slew is outside the characterized aperture domain'

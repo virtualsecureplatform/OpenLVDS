@@ -52,6 +52,13 @@ def report_arguments(bundle,report):
     return args
 
 
+def digital_artifacts(identity,native):
+    selected=[('openlvds_tx_core',ROOT/identity['tx']),('lvds_pfd',ROOT/native['pfd']),
+              ('openlvds_ddr_rx',ROOT/identity.get('rx','build/physical/rx'))]
+    return [(name,physical,physical/'extraction.json' if name!='openlvds_ddr_rx' or identity.get('rx')
+             else ROOT/'build/extracted/digital.json') for name,physical in selected]
+
+
 def payload(bundle):
     manifest=json.loads((bundle/'manifest.json').read_text());identity=manifest['identity']
     qualification=ROOT/identity['qualification'];q=json.loads((qualification/'manifest.json').read_text())
@@ -96,12 +103,12 @@ def payload(bundle):
     for name in ['lvds_bias','openlvds_driver_core','openlvds_receiver_core','openlvds_delay_line','openlvds_dll_analog']:
         info=analog_extract[name];gds=ROOT/analog[name]['gds']
         macro(name,gds,gds.with_suffix('.lef'),info['ports'],info['gds_sha256'])
-    for name,physical in [('openlvds_tx_core',ROOT/identity['tx']),('lvds_pfd',ROOT/native['pfd']),
-                          ('openlvds_ddr_rx',ROOT/'build/physical/rx')]:
+    for name,physical,extraction in digital_artifacts(identity,native):
         summary=json.loads((physical/'summary.json').read_text());run=ROOT/summary['run']
-        extraction=(physical/'extraction.json' if name!='openlvds_ddr_rx' else ROOT/'build/extracted/digital.json')
         info=json.loads(extraction.read_text())
-        if name=='openlvds_ddr_rx':info=info['designs'][name]
+        if name=='openlvds_ddr_rx' and not identity.get('rx'):info=info['designs'][name]
+        if info['gds_sha256']!=identity['full']['digital_models'][name]['gds_sha256']:
+            raise ValueError('Packaged macro differs from the staged digital model: '+name)
         macro(name,run/'final/gds'/(name+'.gds'),run/'final/lef'/(name+'.lef'),info['ports'],info['gds_sha256'])
         if 'input_archive' in summary:
             for path in sorted((ROOT/summary['input_archive']).iterdir()):

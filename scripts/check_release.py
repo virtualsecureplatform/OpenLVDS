@@ -85,6 +85,7 @@ def main():
     for kind in ['tx','rx','pfd']:
         candidate=None
         if bundle and kind=='tx':candidate=ROOT/staged.get('tx','build/physical/missing')
+        if bundle and kind=='rx' and staged.get('rx'):candidate=ROOT/staged['rx']
         if bundle and kind=='pfd':
             qualification=read(ROOT/staged.get('qualification','build/physical/missing')/'manifest.json')
             candidate=ROOT/qualification.get('identity',{}).get('full_models',{}).get('pfd','build/physical/missing')
@@ -100,10 +101,16 @@ def main():
         if kind=='tx':
             from physical_policy import tx_buffered_paths_retained
             check('TX native serializer cells and connections',tx_buffered_paths_retained(text,4) if bundle else tx_cells_retained(text))
+        if kind=='rx' and candidate:
+            from rx_buffered_policy import retained
+            check('RX retained data drivers and sampler clocks',evidence.get('rx_policy')=='public-data-buf4' and retained(text))
         if candidate:
             try:
                 from digital_candidate_rc import captured_inputs
-                current=captured_inputs(candidate,evidence)==name
+                if kind=='rx':
+                    from rx_candidate_rc import captured_inputs as rx_inputs
+                    current=rx_inputs(candidate)==evidence
+                else:current=captured_inputs(candidate,evidence)==name
             except (OSError,ValueError,KeyError,TypeError):current=False
             check(kind+' archived physical source fingerprint',current)
             continue

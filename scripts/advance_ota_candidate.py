@@ -40,7 +40,20 @@ def cached_model(root,inputs,corners):
     return None
 
 
-def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD):
+def verify_aperture(bundle,path):
+    from phy_candidate import load
+    from rx_aperture_evidence import read_table
+    _,_,models=load(bundle)
+    rx=models['openlvds_ddr_rx'];exact=rx.get('exact_sha256',rx['netlist_sha256'])
+    return read_table(path,exact,'tt',25)
+
+
+def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD,rx=None,aperture_table=None):
+    if rx is not None:
+        if not rx.is_relative_to(ROOT/'build/diagnostics'):raise ValueError('Use an isolated RX candidate')
+        if aperture_table is None:raise ValueError('Select the RX candidate aperture table explicitly')
+    if aperture_table is not None and not aperture_table.is_relative_to(ROOT/'build/characterization/rx_aperture'):
+        raise ValueError('Use a captured RX aperture table')
     if not LAYOUT.is_relative_to(ROOT/'build/diagnostics/dll_layout'):
         raise ValueError('Use an isolated DLL layout')
     if not pfd.is_relative_to(ROOT/'build/diagnostics'):
@@ -126,7 +139,7 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD):
     (LAYOUT/'native_readiness.log').write_text(result.stdout+result.stderr);result.check_returncode()
     readiness=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not json.loads(readiness.read_text())['passed']:raise ValueError('Native readiness replay failed')
-    result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/stage_phy_candidate.py',str(relative)],
+    result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/stage_phy_candidate.py',str(relative)]+(['--rx',str(rx.relative_to(ROOT))] if rx is not None else []),
         cwd=ROOT,capture_output=True,text=True)
     (LAYOUT/'bundle_prepare.log').write_text(result.stdout+result.stderr);result.check_returncode()
     bundle=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
@@ -158,15 +171,16 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD):
         ['--bundle',relative_bundle,'--fast-rc','--diagnostic','--settled-start','--dll-phase',
          '--bits','32','--process','ss','--temperature','0','--mhz','410','--duty','0.55','--skew-ps','100'],
         'bundle_link_diagnostic.log')
-    capture=ROOT/'build/characterization/rx_aperture/e9ca7d2f2ae6d61b'
+    capture=aperture_table.parent if aperture_table is not None else ROOT/'build/characterization/rx_aperture/e9ca7d2f2ae6d61b'
     while not (capture/'table.json').exists():
         state=json.loads((capture/'state.json').read_text())
         atomic(workflow,dict(status='waiting_for_rx_aperture_table',bundle=relative_bundle,observed=state['status'],qualified_phy=False))
-        if state['status'] in ['complete','completed_with_failures']:
+        if state['status'] in ['complete','completed_with_failures'] or state.get('passed') is False:
             raise RuntimeError('RX characterization ended without a complete table')
         time.sleep(10)
+    verify_aperture(bundle,capture/'table.json')
     bundle_job('running_full_link_matrix','regression.py',
-        ['--bundle',relative_bundle,'--fast-rc','--jobs','6'],'bundle_regression.log')
+        ['--bundle',relative_bundle,'--fast-rc','--jobs','6','--aperture-table',str((capture/'table.json').relative_to(ROOT))],'bundle_regression.log')
     bundle_job('verifying_staged_release','check_release.py',
         ['--bundle',relative_bundle,'--stability',str(report.relative_to(ROOT)),
          '--recovery',str(recovery.relative_to(ROOT)),'--readiness',str(readiness.relative_to(ROOT)),
@@ -188,8 +202,10 @@ def main():
     parser.add_argument('--layout',type=Path,default=DEFAULT_LAYOUT,help='Alternate layouts must already have a passing RC audit')
     parser.add_argument('--screen',type=Path,default=DEFAULT_SCREEN,help='Architecture screen of the exact candidate source bytes')
     parser.add_argument('--pfd',type=Path,default=DEFAULT_PFD,help='Audited physical PFD matching the architecture screen')
+    parser.add_argument('--rx',type=Path,help='Audited isolated RX candidate')
+    parser.add_argument('--aperture-table',type=Path,help='Complete or in-progress native table of the selected RX')
     args=parser.parse_args();layout=args.layout.resolve()
-    try:return advance(layout,args.screen.resolve(),args.pfd.resolve())
+    try:return advance(layout,args.screen.resolve(),args.pfd.resolve(),args.rx.resolve() if args.rx else None,args.aperture_table.resolve() if args.aperture_table else None)
     except Exception as error:
         workflow=layout/'workflow.json'
         if workflow.exists():

@@ -689,3 +689,27 @@ by the larger DLL queue. Full matrix workers return to the shared pool. Frozen
 original aperture code is reused unchanged and never called without a wrapper
 lease. Partial endpoints and physical/functional passes cannot qualify the
 aperture table, staged PHY or release.
+
+
+## Stage a selected native RX with matching RTL and physical package
+
+```sh
+scripts/env.sh --ngspice python3 scripts/stage_phy_candidate.py build/diagnostics/dll_qualification/1d201e9ed2f89f56 --rx build/diagnostics/rx_buffer4_physical_v1
+scripts/env.sh --ngspice python3 scripts/verify_candidate_rtl.py build/diagnostics/phy_candidate/712bb74a908d85f4
+```
+
+RX selection overlays the audited exact/approximate RX closures while protecting
+the DLL, TX, analog receiver/driver and delay line. PFD model metadata is also
+bound to the actual selected native PFD. Staged RTL uses archived RX source and
+requires consistent shared reset RTL. The native functional branch exercises
+both retained SKY130 TX and RX cells; its source fingerprint includes RX models.
+Packaging selects the corresponding RX GDS, LEF and extraction and rejects any
+digital macro whose GDS differs from its staged model. These operations stage
+and verify artifacts only; they cannot qualify or promote them electrically.
+
+Advancement accepts explicit `--rx` and `--aperture-table` selections. It requires
+a complete rechecked table matching the bundle's exact RX before forwarding that
+table to the complete link regression. Link evidence checks the selected bundle's
+RX rather than an unrelated canonical RX pointer. All original DLL, analog,
+readiness/recovery, six-fixture RC certificate and 45-case link gates remain
+mandatory. No advancement or promotion has been launched for the failing RX.

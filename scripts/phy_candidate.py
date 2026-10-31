@@ -20,6 +20,9 @@ def load(bundle,fast=False):
     if (identity['producer_sha256']!=digest(ROOT/'scripts/stage_phy_candidate.py') or
         identity['requirements_sha256']!=digest(ROOT/'requirements.json')):
         raise ValueError('PHY bundle producer or requirements changed')
+    if identity.get('rx'):
+        from rx_candidate_aperture import extra_code
+        if identity.get('rx_producer_code')!=extra_code():raise ValueError('PHY RX producer changed')
     qualification=(ROOT/identity['qualification']).resolve()
     if not qualification.is_relative_to(ROOT/'build/diagnostics/dll_qualification'):
         raise ValueError('Invalid DLL qualification path')

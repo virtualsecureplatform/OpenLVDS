@@ -902,3 +902,22 @@ A separate six-case SS/0, SS/40 and SF/40 slow-clock diagnostic is queued under
 `openlvds-rx-buffer4-limiting` to expose limiting publication behavior early.
 Both services use the existing six real SPICE leases without signalling any
 active simulator. Full aperture, full DLL and PHY qualification remain pending.
+
+
+Staged integration supports an explicitly selected audited RX in both circuit
+views, archived-source RTL verification, matching physical package selection
+and exact-model aperture/link checks. Diagnostic bundle `712bb74a908d85f4`
+passes all 54 functional cases (2,373,588 bits), including native TX+RX and PHY
+assembly/control. All three digital GDS identities and exact/approximate model
+hashes match their staged inputs (`digital_model_binding.json`). Canonical RTL
+also passes after the verifier update. Unit checks: 234 total, 229 passed and
+5 skipped. A staged release negative control remains failing with 565 checks;
+missing native DLL, all-PVT model/proofs, analog/current-analysis, aperture,
+RC certificate and full link evidence are not bypassed. No release is produced.
+
+The early limiting RX test fails SS/0 °C rising-data setup at 200 ps clock slew
+under the original 20 fF load: Q0/Q1 minima are 1.40981/1.29742 V. Thus passing
+the 20 ps clock-slew SS endpoints and TT endpoints does not qualify `buf_4`.
+The original limits remain fixed. Remaining broad RX work is being held at an
+idle coordinator boundary, preserving native traces, before a stronger native
+publication/output path is evaluated. The DLL source/static jobs continue.
