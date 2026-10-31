@@ -30,7 +30,8 @@ Current bring-up evidence on 2026-10-31:
   window: CTRL variation 2.576 mV, feedback error 10.045 ps and quarter
   delay 634.257–634.482 ps. TT/25 °C also passes: CTRL variation
   3.014 mV, feedback error 7.853 ps and quarter delay 633.198–633.558 ps.
-  FF/0 °C remains running.
+  FF/0 °C passes: CTRL variation 3.163 mV, feedback error 6.493 ps and
+  quarter delay 632.701–633.013 ps. All three source gates are complete.
 - Routing-capacitance inspection (`dll_stage_loading/c26dc74a57838968`) finds
   monotonically increasing internal loads across the four native delay sections:
   N = 48.174/56.614/65.053/73.493 fF and S =
@@ -51,8 +52,10 @@ Current bring-up evidence on 2026-10-31:
   (`queue_preset_native_screen.py`, receipt
   `dll_layout/schur_513f603fc5e6c3aa/native_handoff.json`) waits for the same source
   screens before running native screening. Native qualification
-  `dll_qualification/15cac0ba813a9333` has all 336 fixtures prepared and native
-  observation terminals validated; no new native loop result is claimed. The
+  `dll_qualification/15cac0ba813a9333` now runs its 24-case screen (21 selected
+  static offsets and three native loops); remaining 312 fixtures are held for
+  the measured model. Observation terminals are validated; no new native loop
+  result is claimed. The
   handoff holds on failed gates, ended producers or changed inputs. Native
   acquisition and omitted-pulse timing remain unproven.
 - The early-publication RX (`rx_early_physical_v1`) passes physical DRC/LVS,
@@ -62,7 +65,8 @@ Current bring-up evidence on 2026-10-31:
   (`rx_aperture/20b04dcf527af283`) is running. All 32 SS/40 °C conditions pass,
   across both clock/data slew endpoints, both edge/data polarities and setup/hold.
   Its largest guarded setup/hold bounds are 270/110 ps; the 200 ps clock/data
-  subset remains 210/50 ps. Other PVT coverage remains active. The preceding three
+  subset remains 210/50 ps. All 32 SS/0 °C conditions also pass, with global
+  guarded bounds 280/120 ps. SS/25 °C and remaining PVT coverage are active. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
   generic/native functional cases (2,373,588 bits). Its complete six-fixture RC
@@ -208,11 +212,13 @@ Current bring-up evidence on 2026-10-31:
   requires exactly one output edge per input period, rejecting extra pulses as
   well as missing ones. Baseline component proofs
   and canonical pointers are retained.
-- Stronger schematic clamp `receiver_clamp/86e622030245e729` is running with
+- Stronger schematic clamp `receiver_clamp/86e622030245e729` completes with
   P32/N16 reference widths and four parallel poly units (about 500 Ω). Other
-  devices and restoration stages remain unchanged. It uses the same three
-  source controls and native digital load. No improved native behavior is
-  claimed before actual source and physical comparisons.
+  devices and restoration stages remain unchanged. All three original controls
+  pass with exactly one output edge in each of 47 checked periods. CO_TRACK
+  spans 0.647–0.962 V in the captured case, less movement than the first clamp;
+  its diagnostic latency is 313–516 ps. Physical/native comparison is still
+  required and no native improvement is claimed.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains

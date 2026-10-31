@@ -1132,6 +1132,13 @@ from the 90 passing baseline component proofs, with no canonical model-pointer
 change. These cases do not replace native headroom, DLL, aperture, RC or full-link
 qualification.
 
+
+The three completed first-clamp schematic controls each have 47 checked input
+periods with exactly one corresponding output edge. The integration/component
+gate now explicitly rejects repeated edges as well as missing ones. Previously
+prepared component/link manifests are retained; the current paths above bind
+this stricter producer generation.
+
 ## Stronger tracking-reference comparison
 
 The first native clamp's complete captured replay still loses nine rising and
@@ -1154,9 +1161,12 @@ scripts/env.sh --ngspice python3 scripts/receiver_strong_clamp_experiment.py run
 The frozen schematic-replay implementation is reused with the new source
 factory explicitly attested. It retains the same three controls, pins, bias,
 native digital load, observations and scoring. The new source is isolated from
-all preceding experiments. Source results, physical/native behavior and full
-qualification remain pending; the first clamp's layout gate cannot accept a
-screen for this different source.
+all preceding experiments. All three source cases now pass, each with exactly one output edge in every
+checked input period (47 per case). The captured case gives CO =
+0.1661–1.3931 V, CO_TRACK = 0.6468–0.9618 V and latency
+313.148–515.246 ps. The reference moves less, but latency has not improved
+relative to the unclamped control. Physical/native behavior and full qualification
+remain pending; the first clamp's layout gate cannot accept this different source.
 
 ## Xyce compatibility check
 
@@ -1184,8 +1194,8 @@ commit and content hash are recorded under `xyce_compatibility/upstream/`.
 A newer build therefore has no demonstrated device-model or performance benefit
 for these fixtures yet. Current numerical campaigns retain their original runtime.
 
-The three completed first-clamp schematic controls each have 47 checked input
-periods with exactly one corresponding output edge. The integration/component
-gate now explicitly rejects repeated edges as well as missing ones. Previously
-prepared component/link manifests are retained; the current paths above bind
-this stricter producer generation.
+The preset/local-delay source campaign also completes all three original corners.
+FF/0 °C passes at CTRL variation 3.163 mV, feedback error 6.493 ps and quarter
+delay 632.701–633.013 ps. The exact-profile handoff starts native screen
+`dll_qualification/15cac0ba813a9333`; all 312 non-screen cases remain held for
+the measured native model. No native acquisition pass is claimed.
