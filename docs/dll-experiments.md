@@ -1443,3 +1443,32 @@ strong clamp's 11 each but equals the original baseline loss; clock recovery
 still fails. Its sharp native control is queued under the same six-slot budget.
 Prepared wider-input components and full-link diagnostics remain held by the
 loaded recovery gate. The original-decision source experiment continues.
+
+The original-decision captured source case completes with one missing falling
+edge and the following rising edge, at input crossings 58.919554 and 59.434356 ns.
+The negative pulse is 514.802 ps wide with 83.068 mV peak magnitude. Over
+58.7–60.7 ns, CO reaches 0.948352 V but the restored clock remains above
+1.702166 V. CO's 0.9 V crossings are 59.153025 and 59.423702 ns; 0.9 V here is
+an observation threshold, not a measured first-inverter switching threshold.
+The sharp source control is queued. The failed captured case prevents layout
+admission even if that control later passes.
+
+Next comparison `receiver_light_clamp_experiment.py` removes exactly XCLAMP2
+and XCLAMP3 from the original-decision strong-clamp source. Two parallel resistor
+units remain (about 1 kΩ), with the same P32/N16 replica, original decision
+sizes, doubled input tails and three restoration inverters. No other device,
+connection, control, bias/load, timing window or recovery criterion changes.
+The hypothesis is that lower shunt loading lets this smaller decision stage
+produce sufficient pulse amplitude/duration; no improvement is established.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/receiver_light_clamp_experiment.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171
+scripts/env.sh --ngspice python3 scripts/receiver_light_clamp_experiment.py run \
+  build/diagnostics/receiver_clamp/7002b1f71a4ff337
+```
+
+Service `openlvds-light-clamp-source-screen` queues these three original source
+controls. Two targeted tests verify that only the two resistor instances are
+removed and the unclamped control is byte-identical. No physical candidate is
+selected from this source experiment.

@@ -306,6 +306,18 @@ Current bring-up evidence on 2026-10-31:
   source owner and runs those stages in sequence. It reuses the corrected
   transient-unit handling and stops on any failed gate. Seven source/physical
   structural tests pass; no physical/native result is claimed.
+  Its captured source case now completes with one missing rising edge and one
+  missing falling edge around the 58.920 ns negative pulse (514.802 ps,
+  83.068 mV peak). CO peaks at 0.948352 V over 58.7–60.7 ns, but the restored
+  clock remains above 1.702 V. The source gate therefore cannot admit layout;
+  its sharp control remains queued and is allowed to finish.
+- Source comparison `receiver_clamp/7002b1f71a4ff337` removes only XCLAMP2/3,
+  reducing parallel clamp units from four to two while retaining the original
+  decision sizes, doubled input tails, strong replica reference and restoration.
+  This tests reduced output loading after the smaller-decision source failure.
+  Two structural tests pass. Service `openlvds-light-clamp-source-screen` is live
+  and queued under the same six-slot limit. No electrical or physical
+  improvement is claimed; all original controls and scoring requirements remain.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
