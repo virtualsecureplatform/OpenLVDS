@@ -61,6 +61,8 @@ def gates(bundle,stability,recovery,readiness,operating,check):
             if reconstructed.encode()!=expected or info!=identity['fast' if mode else 'full']:
                 raise ValueError('PHY bundle differs from audited physical reconstruction')
     attempt('staged exact physical reconstruction and OTA topology',physical)
+    from verify_candidate_rtl import verify as verify_rtl
+    attempt('candidate RTL interfaces and complete functional regression',lambda:verify_rtl(bundle))
     attempt('complete native DLL waveform reanalysis',lambda:verify_native(qualification))
     def model():
         if stability.parent.parent.parent!=qualification:raise ValueError('Stability belongs to another candidate')

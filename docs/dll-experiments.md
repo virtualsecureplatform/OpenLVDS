@@ -375,3 +375,27 @@ RC audits, the complete six-fixture certificate and every case in the 45-case
 link matrix. The candidate PFD-area and buf_4 physical policies use their archived
 inputs; inactive CP/copy and raw-clock-qualifier checks do not substitute for
 candidate-specific native evidence. A checker pass does not itself promote files.
+
+
+## Candidate RTL assembly
+
+The staged 15-terminal analog macro and 8-terminal PFD use
+`rtl/experiments/openlvds_dll_core_area.v`; the canonical development wrapper
+still has the preceding qualifier connections. `verify_candidate_rtl.py` builds
+an isolated source snapshot with this wrapper, the captured buf_4 TX sources,
+matching functional models and the current controller/top-level ports:
+
+```sh
+scripts/env.sh --tools --ngspice /usr/bin/python3 scripts/verify_candidate_rtl.py BUNDLE
+```
+
+Named instance connections are checked against the characterized SPICE core.
+Interface elaboration uses the actual archived PFD declaration and 15-port
+analog blackbox. The full 54-case generic/native regression, DLL controller and
+PHY assembly must pass. The staged release checker verifies the source snapshots,
+tool hashes, case logs and bit counts separately from the native electrical gates.
+
+Staging retains the same exact shared bias in both electrical views. The fast
+baseline is normalized before driver/RX closure protection, avoiding a silent
+replacement of a separately approximated bias during the DLL overlay. The
+complete six-fixture comparison still qualifies the resulting fast view.

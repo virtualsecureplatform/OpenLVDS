@@ -8,7 +8,7 @@ from pathlib import Path
 import re
 
 from digital_candidate_rc import captured_inputs
-from dll_campaign import atomic, closure
+from dll_campaign import atomic, closure, text_block
 from dll_candidate_library import audited, approximate
 from physical_policy import tx_buffered_paths_retained, delay_cells_absent
 from qualify_dll_candidate import validate
@@ -54,6 +54,14 @@ def assemble(qualification,tx,fast=False):
     exact_tx=extracted['netlist_sha256']
     if fast:extracted=approximate(tx,extracted)
     base,inputs,models=library(extracted=True,digital=True,fast=fast)
+    # Native DLL characterization uses the exact shared bias in both views.
+    # Normalize the fast baseline before protecting driver/RX closures, so an
+    # approximate bias is not silently replaced during the DLL overlay.
+    bias,bias_inputs,_=library(extracted=True,designs={'lvds_bias'})
+    if closure_hash(bias,'lvds_bias')!=closure_hash((qualification/'full.spice').read_bytes(),'lvds_bias'):
+        raise ValueError('Candidate changes the current exact shared bias')
+    base=replace(base.decode(),'lvds_bias',text_block(bias.decode(),'lvds_bias')).encode()
+    inputs['lvds_bias']=bias_inputs['lvds_bias']
     if set(extracted['ports'])!=set(models['openlvds_tx_core']['ports']):
         raise ValueError('TX candidate changes the public terminal set')
     dll=(qualification/('fast.spice' if fast else 'full.spice')).read_text()

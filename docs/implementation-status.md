@@ -475,3 +475,13 @@ container. A missing-bundle negative control fails with a saved isolated report;
 there is no positive production release result. Advancement runs this gate after
 the matrix. Exact-byte promotion remains unimplemented and blocked by electrical
 qualification, not merely by release-tool availability.
+
+
+Candidate RTL assembly now uses the matching 15-port analog macro and 8-port
+PFD while preserving the external DLL/TX/RX interfaces and 615-cycle controller.
+Bundle `65f795152adf2bfb` passes its isolated full 54-case regression with
+2,373,588 checked bits, controller, generic/native PHY tests and physical-interface
+elaboration. Its source/probe wiring agrees with the characterized SPICE core.
+The canonical development wrapper remains unchanged. Staging now keeps the
+exact shared bias in both views before applying the protected-circuit checks.
+The six-fixture certificate and electrical qualification remain pending.
