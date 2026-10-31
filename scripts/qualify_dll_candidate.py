@@ -25,13 +25,14 @@ from dll_qualification_measurements import marker_latency, compare
 from run_ngspice import read_raw
 from spice_engine import command, engine, provenance
 from spice_probes import ProbeNetwork
+from spice_slots import slot
 from verify_phase_detector import response_cases
 
 ROOT = Path(__file__).resolve().parents[1]
 CODE = ['qualify_dll_candidate.py', 'dll_candidate_library.py', 'dll_qualification_measurements.py',
         'dll_measurements.py', 'dll_campaign.py', 'digital_candidate_rc.py', 'dll_design.py',
         'layout.py', 'physical_policy.py', 'spice_library.py', 'spice_scope.py', 'rc_fast.py',
-        'reduce_rc.py', 'run_ngspice.py', 'spice_engine.py', 'verify_phase_detector.py', 'lvs_utils.py', 'spice_probes.py']
+        'reduce_rc.py', 'run_ngspice.py', 'spice_engine.py', 'verify_phase_detector.py', 'lvs_utils.py', 'spice_probes.py', 'spice_slots.py']
 
 
 def sha(data):
@@ -74,7 +75,8 @@ def loop_fixture(spec, observations=None):
     clock, marker = clock_wave(stop, spec['mhz'], spec['duty'],
                               marker_ns=marker_target,
                               step_mhz=step, interruption=recovery)
-    enable = '0 0 85.2n 0 85.22n 1.8'
+    pd_start=5+32*1000/spec['mhz']+.2
+    enable = f'0 0 {pd_start:.12g}n 0 {pd_start+.02:.12g}n 1.8'
     if recovery:
         enable += ' 1010n 1.8 1010.02n 0 1180.2n 0 1180.22n 1.8'
     body = (clock + 'VRST RST 0 PWL(0 0 2n 0 2.02n 1.8)\n'
@@ -175,11 +177,21 @@ def prepare(layout, pfd, screen, variant):
         basic.append(add(f'phase_tt_25_{offset}ps', dict(kind='phase', process='tt', temperature=25,
                          offset_ps=offset, mhz=400, reference_slew_ps=100, feedback_slew_ps=100)))
     full_faults = list(basic)
-    nominal = add('loop_tt_25', dict(kind='loop', process='tt', temperature=25, mhz=400, duty=.5, architecture=architecture), basic)
+    # Qualify the historically limiting slow corner before expanding the matrix.
+    early = {}
+    ss_basic=[]
+    for offset in [0,150,-150,50,-50,300,-300]:
+        ss_basic.append(add(f'phase_ss_0_{offset}ps',dict(kind='phase',process='ss',temperature=0,
+            offset_ps=offset,mhz=400,reference_slew_ps=100,feedback_slew_ps=100)))
+    early['ss']=add('loop_ss_0',dict(kind='loop',process='ss',temperature=0,mhz=400,duty=.5,architecture=architecture),ss_basic)
+    nominal = add('loop_tt_25', dict(kind='loop', process='tt', temperature=25, mhz=400, duty=.5, architecture=architecture), basic+[early['ss']])
+    early['ff']=add('loop_ff_0',dict(kind='loop',process='ff',temperature=0,mhz=400,duty=.5,architecture=architecture),
+        [nominal]+[f'phase_ff_0_{o}ps' for o in [0,50,-50,150,-150,300,-300]])
+    full_faults+=ss_basic
     add('fast_loop_tt_25', dict(kind='loop', process='tt', temperature=25, mhz=400, duty=.5, architecture=architecture), [nominal], True)
     for process, temp, offset, sr, sf in response_cases(corners=True):
         name = f'phase_{process}_{temp}_{offset}ps'
-        if name in basic:
+        if name in basic+ss_basic:
             continue
         full_faults.append(add(name, dict(kind='phase', process=process, temperature=temp, offset_ps=offset,
                                mhz=400, reference_slew_ps=sr, feedback_slew_ps=sf), basic))
@@ -199,7 +211,7 @@ def prepare(layout, pfd, screen, variant):
                        mhz=400, reference_slew_ps=100, feedback_slew_ps=100), [full_name], True)
         comparisons.append(dict(full=full_name, fast=fast_name))
     for process, temp in itertools.product(requirements['process_corners'], requirements['temperatures_c']):
-        if (process, temp) != ('tt', 25):
+        if (process, temp) not in [('tt',25),('ss',0),('ff',0)]:
             add(f'loop_{process}_{temp}', dict(kind='loop', process=process, temperature=temp, mhz=400,
                 duty=.5, architecture=architecture), [nominal]+full_faults)
     for mhz, duty in itertools.product(requirements['clock_test_mhz'], requirements['clock_duty']):
@@ -211,6 +223,12 @@ def prepare(layout, pfd, screen, variant):
             duty=.5, step_mhz=mhz, architecture=architecture), [nominal]+full_faults)
     add('clock_loss_rearm', dict(kind='loop', process='tt', temperature=25, mhz=400, duty=.5,
         interruption=True, architecture=architecture), [nominal]+full_faults)
+    def dispatch_priority(task):
+        name=task['id']
+        for index,prefix in enumerate(['phase_ss_0_', 'loop_ss_0', 'phase_tt_25_', 'loop_tt_25', 'phase_ff_0_', 'loop_ff_0']):
+            if name.startswith(prefix):return index
+        return 6
+    tasks.sort(key=dispatch_priority)
     atomic(root/'manifest.json', dict(identity=identity, tasks=tasks, comparisons=comparisons,
                                       diagnostic=True, qualified=False, complete_phy_suite=False))
     atomic(root/'state.json', dict(status='prepared', tasks={t['id']:dict(status='pending') for t in tasks}))
@@ -313,7 +331,10 @@ def execute(root, manifest, task):
             raise ValueError('DLL qualification analysis changed')
         return result
     started = time.time()
-    run = subprocess.run(command(out/(engine()+'.log'), out/'bench.cir'), cwd=out, capture_output=True, text=True)
+    atomic(out/'execution.json',dict(status='waiting_for_slot'))
+    with slot():
+        atomic(out/'execution.json',dict(status='running',started_unix=time.time()))
+        run = subprocess.run(command(out/(engine()+'.log'), out/'bench.cir'), cwd=out, capture_output=True, text=True)
     (out/'console.log').write_text(run.stdout+run.stderr)
     result = dict(passed=False, task=task['id'], deck_sha256=task['deck_sha256'], returncode=run.returncode,
                   diagnostic=True, qualified=False, wall_seconds=time.time()-started)
@@ -336,8 +357,18 @@ def execute(root, manifest, task):
     return result
 
 
-def run(root, jobs):
+def screen_task(task):
+    return task['id'] in ['loop_ss_0','loop_tt_25','loop_ff_0'] or any(task['id'].startswith(p) for p in ['phase_ss_0_','phase_tt_25_','phase_ff_0_'])
+
+
+def run(root, jobs, stage='screen', stability=None):
     manifest = json.loads((root/'manifest.json').read_text())
+    if stage=='full':
+        if stability is None:raise ValueError('Full expansion requires a measured stability report')
+        report=json.loads(stability.read_text())
+        if not (report.get('passed') and report.get('full_inputs')==manifest['identity']['full_models']['inputs'] and
+                report.get('phase_margin_min_deg',0)>=60 and report.get('gain_margin_min_db',0)>=6):
+            raise ValueError('Stability evidence is missing, failed, or belongs to another candidate')
     atomic(root/'state.json', dict(status='waiting_for_architecture_screen', tasks={t['id']:dict(status='pending') for t in manifest['tasks']}))
     while True:
         status = screen_status(manifest)
@@ -347,11 +378,13 @@ def run(root, jobs):
     if status != 'passed':
         atomic(root/'state.json', dict(status='rejected_by_architecture_screen', passed=False, qualified=False))
         return 1
-    lease = ROOT/'build/diagnostics/dll_architecture/.supervisor.lock'
+    # Per-worker slots coexist with the frozen legacy RX campaign. The old
+    # whole-campaign lease remains untouched for that producer.
+    lease = root/'.execution.lock'
     with lease.open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         validate(root, manifest)
-        state = {t['id']:dict(status='pending') for t in manifest['tasks']}
+        state = {t['id']:dict(status='pending' if stage=='full' or screen_task(t) else 'held_for_stability') for t in manifest['tasks']}
         active = {}
         tasks = {t['id']:t for t in manifest['tasks']}
         results = {}
@@ -359,6 +392,8 @@ def run(root, jobs):
             while True:
                 for key, future in list(active.items()):
                     if not future.done():
+                        execution=root/key/'execution.json'
+                        if execution.exists():state[key].update(json.loads(execution.read_text()))
                         continue
                     try:
                         result = future.result()
@@ -382,6 +417,12 @@ def run(root, jobs):
                 if not active and not any(r['status'] == 'pending' for r in state.values()):
                     break
                 time.sleep(2)
+        if stage=='screen':
+            passed=all(v['status']=='passed' for k,v in state.items() if screen_task(tasks[k]))
+            atomic(root/'screen_summary.json',dict(passed=passed,qualified=False,tasks=state,
+                full_inputs=manifest['identity']['full_models']['inputs']))
+            atomic(root/'state.json',dict(status='screen_passed' if passed else 'completed_with_failures',tasks=state))
+            return 0 if passed else 1
         comparisons = []
         for pair in manifest['comparisons']:
             names = [pair['full'], pair['fast']]
@@ -413,7 +454,9 @@ def main():
     p.add_argument('--pfd', type=Path)
     p.add_argument('--screen', type=Path)
     p.add_argument('--variant')
-    p.add_argument('--jobs', type=int, choices=range(1,5), default=4)
+    p.add_argument('--jobs', type=int, choices=range(1,7), default=6)
+    p.add_argument('--stage', choices=['screen','full'],default='screen')
+    p.add_argument('--stability',type=Path)
     a = p.parse_args()
     if a.action == 'prepare':
         if not all([a.layout, a.pfd, a.screen, a.variant]):
@@ -429,7 +472,7 @@ def main():
     if a.action == 'run':
         with (root/'.run.lock').open('a') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            return run(root, a.jobs)
+            return run(root, a.jobs,a.stage,a.stability)
     return 0
 
 

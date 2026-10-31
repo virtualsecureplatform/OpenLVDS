@@ -81,9 +81,21 @@ def main():
             records[label] = record
         children = {}
         while True:
+            config_path=logs/'config.json'
+            config=json.loads(config_path.read_text()) if config_path.exists() else {}
+            if config.get('ota_qualification'):
+                artifact=Path(config['ota_qualification'])
+                if artifact.is_absolute() or '..' in artifact.parts:
+                    raise ValueError('OTA artifact must be relative to OpenLVDS')
+                jobs['qualify_ota']=(ROOT/artifact/'state.json', ['scripts/env.sh','--ngspice','python3',
+                    'scripts/qualify_dll_candidate.py','run',str(artifact),'--jobs','6'])
+                records.setdefault('qualify_ota',{})
             for label, (statefile, command) in jobs.items():
                 state = json.loads(statefile.read_text()) if statefile.exists() else {}
                 record = records[label]
+                if label in config.get('disabled',[]):
+                    record['state']='deferred_by_configuration'
+                    continue
                 proc = children.get(label)
                 if proc is not None:
                     proc.poll()  # Reap exits so a zombie cannot appear live.
@@ -97,7 +109,7 @@ def main():
                        ['completed', 'completed_with_failures', 'complete', 'rejected_by_architecture_screen'] for key in predecessors):
                     record['state'] = 'waiting_for_previous_campaign'
                     continue
-                if state.get('status') in ['completed', 'completed_with_failures', 'complete', 'rejected_by_architecture_screen']:
+                if state.get('status') in ['completed', 'completed_with_failures', 'complete', 'rejected_by_architecture_screen','screen_passed']:
                     record['state'] = state['status']
                     continue
                 if label != 'architecture' and group_alive(record.get('pgid')):
