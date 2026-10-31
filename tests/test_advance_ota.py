@@ -22,6 +22,14 @@ class OTAAdvancement(unittest.TestCase):
         old=dict(ota_qualification='same',ota_stage='full',ota_stability='same/report')
         self.assertEqual(advance.qualification_config(old,'same')['ota_stability'],'same/report')
 
+    def test_new_candidate_retires_old_hold_but_same_candidate_keeps_it(self):
+        old=dict(ota_qualification='failed',disabled=['qualify_ota','rx_aperture'],ota_hold_reason='native monitor failure')
+        same=advance.qualification_config(old,'failed')
+        self.assertIn('qualify_ota',same['disabled']);self.assertIn('ota_hold_reason',same)
+        new=advance.qualification_config(old,'repair')
+        self.assertNotIn('qualify_ota',new['disabled']);self.assertNotIn('ota_hold_reason',new)
+        self.assertIn('rx_aperture',new['disabled']);self.assertIn('qualify_cp',new['disabled'])
+
     def test_restart_reuses_verified_model_and_rejects_damaged_current_evidence(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);case=root/'generation';case.mkdir()

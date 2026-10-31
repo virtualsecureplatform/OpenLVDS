@@ -13,12 +13,15 @@ from stability_evidence import PRODUCERS,verified as verify_stability
 
 ROOT=Path(__file__).resolve().parents[1]
 DEFAULT_LAYOUT=ROOT/'build/diagnostics/dll_layout/c465a14562c2ff4f'
+DEFAULT_SCREEN=ROOT/'build/diagnostics/dll_architecture/6d99d42cf3eb5d31'
 
 
 def qualification_config(old,relative):
     result=dict(old)
     if result.get('ota_qualification')!=relative:
         result.pop('ota_stage',None);result.pop('ota_stability',None)
+        result.pop('ota_hold_reason',None)
+        result['disabled']=[name for name in result.get('disabled',[]) if name!='qualify_ota']
     result.update(disabled=sorted(set(result.get('disabled',[]))|{'qualify_cp'}),ota_qualification=relative)
     return result
 
@@ -36,7 +39,7 @@ def cached_model(root,inputs,corners):
     return None
 
 
-def advance(LAYOUT):
+def advance(LAYOUT, screen=DEFAULT_SCREEN):
     if not LAYOUT.is_relative_to(ROOT/'build/diagnostics/dll_layout'):
         raise ValueError('Use an isolated DLL layout')
     if LAYOUT!=DEFAULT_LAYOUT and not (LAYOUT/'rc_audit.json').exists():
@@ -51,7 +54,7 @@ def advance(LAYOUT):
         raise RuntimeError('W8/C4 RC connectivity audit failed')
     command=['scripts/env.sh','--ngspice','python3','scripts/qualify_dll_candidate.py','prepare',
         '--layout',str(LAYOUT.relative_to(ROOT)),'--pfd','build/diagnostics/pfd_area_physical',
-        '--screen','build/diagnostics/dll_architecture/6d99d42cf3eb5d31','--variant','ota_w8_c4']
+        '--screen',str(screen.relative_to(ROOT)),'--variant','ota_w8_c4']
     result=subprocess.run(command,cwd=ROOT,capture_output=True,text=True)
     (LAYOUT/'qualification_prepare.log').write_text(result.stdout+result.stderr)
     result.check_returncode()
@@ -61,6 +64,8 @@ def advance(LAYOUT):
     config=ROOT/'build/diagnostics/resident_jobs/config.json'
     old=json.loads(config.read_text()) if config.exists() else {}
     old=qualification_config(old,str(relative))
+    if 'qualify_ota' in old['disabled']:
+        raise ValueError('This candidate remains held: '+old.get('ota_hold_reason','inspect resident configuration'))
     atomic(config,old)
     print('Registered OTA extracted screen:',relative,flush=True)
     workflow=LAYOUT/'workflow.json'
@@ -160,8 +165,9 @@ def advance(LAYOUT):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--layout',type=Path,default=DEFAULT_LAYOUT,help='Alternate layouts must already have a passing RC audit')
+    parser.add_argument('--screen',type=Path,default=DEFAULT_SCREEN,help='Architecture screen of the exact candidate source bytes')
     args=parser.parse_args();layout=args.layout.resolve()
-    try:return advance(layout)
+    try:return advance(layout,args.screen.resolve())
     except Exception as error:
         workflow=layout/'workflow.json'
         if workflow.exists():
