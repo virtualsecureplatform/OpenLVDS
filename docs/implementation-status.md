@@ -1122,3 +1122,14 @@ not a replacement for aperture or link qualification. Six original RX admissions
 have now passed. New diagnostic and corruption/fixture tests are committed as
 `03fcd7a`; unit suite: 243 tests, 238 passed, 5 skipped. All active producers and
 original coverage/limits remain unchanged.
+
+All four native continuous-data burst cases now pass and their service exits 0:
+128 checked words at SS/40 °C and 410 MHz, both 45/55% duties and both ±100 ps
+skews, independent ±50 ps edge jitter, 200 ps clock/data slew and 20 fF loads.
+Across every word's original public window, minimum high is 1.79999126 V and
+maximum low 96.1872 µV. Artifact `rx_burst/0a6a8b72e9d5e53d` has four actual
+source-bound reports; no missing case is counted as coverage. This completes the
+supplementary half-cycle diagnostic, while the full aperture and link gates
+remain mandatory. Eleven original admissions have passed and the final FF/0
+falling-data case is live. DLL, driver refresh and six-fixture RC comparison
+continue without source changes or simulation restart.
