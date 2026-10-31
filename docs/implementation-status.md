@@ -15,9 +15,10 @@ Current bring-up evidence on 2026-10-31:
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
   cases pass (128 words). Its original 480-condition aperture campaign
-  (`rx_aperture/20b04dcf527af283`) is running; three SS/40 °C
-  rising-clock conditions pass: guarded setup bounds of 120/210 ps for rising/
-  falling data, and a conservative zero hold bound for falling data. The preceding three
+  (`rx_aperture/20b04dcf527af283`) is running; six SS/40 °C
+  conditions pass. Rising-clock setup bounds are 120/210 ps for rising/falling
+  data; both rising-clock hold bounds are zero. Falling-clock setup bounds are
+  0/90 ps for rising/falling data; falling-clock hold searches remain active. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
   generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
@@ -1196,3 +1197,12 @@ The native SS/0 °C driver completes and passes, with settled differential level
 polarity. Its delayed transition stream also passes original polarity/cadence
 checks (propagation 1.34898–1.38597 ns). The independent current receipt verifies
 82/90 component proofs. Eight native driver PVT cases remain outstanding.
+
+
+Both SS/40 °C falling-clock setup conditions now pass with 200 ps clock/data
+slew. Rising data brackets -28.125 ps failing and -25 ps passing; the unchanged
+guard/rounding policy produces a conservative zero requirement and the actual
+zero-offset witness passes. Falling data brackets 59.375 ps failing and 62.5 ps
+passing, with a verified guarded 90 ps bound. Together with both rising-clock
+setup and hold results, six of 480 full-aperture conditions pass. The remaining
+falling-clock hold searches are active; no complete PVT aperture table is claimed.
