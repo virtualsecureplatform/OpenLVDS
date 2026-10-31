@@ -3,11 +3,12 @@
 """Qualify a source-bound buffered RX using unchanged native aperture fixtures."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import fcntl
 import hashlib
 import itertools
 import json
+from threading import Event
 from pathlib import Path
 
 import characterize_rx_aperture as capture
@@ -47,8 +48,16 @@ def audited_model(physical):
 
 
 def seed_conditions():
-    return [dict(process=p,temperature=0,edge='rising',polarity=polarity,clock_slew_ps=clock,
-        data_slew_ps=20,kind='setup') for p,clock in [('ss',20),('tt',200),('ff',200)] for polarity in ['rise','fall']]
+    # Start with the publication cases that rejected the preceding driver.
+    points=[('ss',40,200),('ss',0,200),('sf',40,200),('ss',0,20),('tt',0,200),('ff',0,200)]
+    return [dict(process=p,temperature=t,edge='rising',polarity=polarity,clock_slew_ps=clock,
+        data_slew_ps=20,kind='setup') for p,t,clock in points for polarity in ['rise','fall']]
+
+
+def ordered_conditions(conditions):
+    processes=['ss','sf','tt','fs','ff'];temperatures=[40,0,25]
+    return sorted(conditions,key=lambda s:(processes.index(s['process']),temperatures.index(s['temperature']),
+        -s['clock_slew_ps'],-s['data_slew_ps'],s['edge']!='rising',s['kind']!='setup',s['polarity']!='fall'))
 
 
 def validate(root,manifest):
@@ -133,21 +142,34 @@ def run(root,jobs,stage,wait_slot=None):
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         if stage=='full':check_seeds(root,manifest)
         capture.atomic(root/'state.json',dict(status='running_'+stage,max_jobs=jobs,qualified_phy=False))
-        conditions=seed_conditions() if stage=='endpoints' else manifest['conditions']
+        conditions=seed_conditions() if stage=='endpoints' else ordered_conditions(manifest['conditions'])
+        failed=Event()
+        retained_endpoint_slot=wait_slot is not None and stage=='endpoints'
         def worker(spec):
+            if failed.is_set():return dict(spec=spec,passed=False,held=True)
             validate(root,manifest)
             # Own one real global slot for each endpoint or complete boundary
             # search. The frozen legacy search itself does not acquire slots.
-            with lease(wait_slot):
-                if stage=='endpoints':result=capture.point(root,manifest,spec,800.)
+            with (nullcontext() if retained_endpoint_slot else lease(wait_slot)):
+                if failed.is_set():return dict(spec=spec,passed=False,held=True)
+                if stage=='endpoints':result=dict(spec=spec,passed=capture.point(root,manifest,spec,800.))
                 else:result=capture.search(root,manifest,spec)
+                if not result['passed']:failed.set()
             validate(root,manifest);return result
-        with ThreadPoolExecutor(max_workers=jobs) as pool:results=list(pool.map(worker,conditions))
+        with (lease(wait_slot) if retained_endpoint_slot else nullcontext()):
+            with ThreadPoolExecutor(max_workers=jobs) as pool:results=list(pool.map(worker,conditions))
         validate(root,manifest)
         if stage=='endpoints':
-            passed=all(results)
+            passed=all(r['passed'] for r in results)
             capture.atomic(root/'seed_summary.json',dict(passed=passed,qualified_phy=False,manifest_sha256=sha(root/'manifest.json'),
-                cases={capture.condition_id(s):sha(root/capture.condition_id(s)/'point_800p000000/summary.json') for s in conditions}))
+                cases={capture.condition_id(r['spec']):sha(root/capture.condition_id(r['spec'])/'point_800p000000/summary.json') for r in results if not r.get('held')},
+                held_cases=[capture.condition_id(r['spec']) for r in results if r.get('held')]))
+        elif any(r.get('held') for r in results):
+            capture.atomic(root/'incomplete_summary.json',dict(passed=False,qualified_phy=False,manifest_sha256=sha(root/'manifest.json'),
+                required_conditions=len(conditions),completed_conditions=sum(not r.get('held',False) for r in results),
+                completed_results=[r for r in results if not r.get('held')],held_cases=[capture.condition_id(r['spec']) for r in results if r.get('held')]))
+            capture.atomic(root/'state.json',dict(status='held_by_native_failure',passed=False,qualified_phy=False))
+            return 1
         else:
             result=table(manifest,results,json.loads((root/'requirements.json').read_text()),sha(root/'manifest.json'))
             passed=result['passed'];capture.atomic(root/'table.json',result)

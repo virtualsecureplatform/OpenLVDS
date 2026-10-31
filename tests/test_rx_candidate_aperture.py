@@ -36,7 +36,7 @@ class CandidateApertureCoverage(unittest.TestCase):
                 (root/'seed_summary.json').write_text(json.dumps(dict(passed=passed,cases=cases,manifest_sha256=candidate.sha(root/'manifest.json'))))
                 with self.assertRaises(ValueError):candidate.check_seeds(root,{})
 
-    def test_all_six_loaded_seeds_are_rechecked_against_waveforms(self):
+    def test_all_twelve_loaded_seeds_are_rechecked_against_waveforms(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);(root/'manifest.json').write_text('{}');cases={}
             for spec in candidate.seed_conditions():
@@ -45,7 +45,7 @@ class CandidateApertureCoverage(unittest.TestCase):
             (root/'seed_summary.json').write_text(json.dumps(dict(passed=True,cases=cases,manifest_sha256=candidate.sha(root/'manifest.json'))))
             with patch.object(candidate,'verify_witness') as verify:
                 candidate.check_seeds(root,{})
-                self.assertEqual(verify.call_count,6)
+                self.assertEqual(verify.call_count,12)
                 self.assertTrue(all(c.args[-2:]==(800.,True) for c in verify.call_args_list))
                 path=next(root.glob('*/point_800p000000/summary.json'));path.write_text('changed')
                 with self.assertRaisesRegex(ValueError,'seed evidence changed'):candidate.check_seeds(root,{})
@@ -76,3 +76,66 @@ class ConditionalExpansion(unittest.TestCase):
         with patch.object(candidate,'run',return_value=0) as run:
             self.assertEqual(candidate.dispatch(Path('/candidate'),3,'all',1),0)
             self.assertEqual([c.args for c in run.call_args_list],[(Path('/candidate'),1,'endpoints',1),(Path('/candidate'),3,'full')])
+
+
+class FailureStopsDispatch(unittest.TestCase):
+    def test_priority_preserves_every_required_case(self):
+        req=json.loads((candidate.ROOT/'requirements.json').read_text());original=candidate.capture.conditions(req)
+        ordered=candidate.ordered_conditions(original)
+        self.assertEqual(len(ordered),480)
+        self.assertEqual({candidate.capture.condition_id(s) for s in ordered},{candidate.capture.condition_id(s) for s in original})
+        self.assertEqual((ordered[0]['process'],ordered[0]['temperature'],ordered[0]['clock_slew_ps']),('ss',40,200))
+        seeds=candidate.seed_conditions();self.assertEqual(len(seeds),12)
+        self.assertTrue(any(s['process']=='ss' and s['temperature']==40 and s['polarity']=='fall' and s['clock_slew_ps']==200 for s in seeds))
+
+    def test_failed_seed_holds_remaining_requests_without_running_spice(self):
+        from contextlib import nullcontext
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);(root/'manifest.json').write_text('{}')
+            def point(root,manifest,spec,distance):
+                folder=root/candidate.capture.condition_id(spec)/'point_800p000000';folder.mkdir(parents=True)
+                (folder/'summary.json').write_text('{"passed":false}')
+                return False
+            with patch.object(candidate,'validate'),patch.object(candidate,'lease',return_value=nullcontext()),patch.object(candidate.capture,'point',side_effect=point) as run:
+                self.assertEqual(candidate.run(root,1,'endpoints'),1)
+                self.assertEqual(run.call_count,1)
+            report=json.loads((root/'seed_summary.json').read_text());self.assertFalse(report['passed'])
+            self.assertEqual(len(report['cases']),1);self.assertEqual(len(report['held_cases']),11)
+            self.assertFalse((root/'table.json').exists())
+
+
+    def test_failed_boundary_never_writes_a_complete_table_for_held_cases(self):
+        from contextlib import nullcontext
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);specs=candidate.seed_conditions()[:2]
+            (root/'manifest.json').write_text(json.dumps(dict(conditions=specs)))
+            def search(root,manifest,spec):return dict(spec=spec,passed=False,error='Aperture boundary is not bracketed')
+            with patch.object(candidate,'validate'),patch.object(candidate,'check_seeds'),patch.object(candidate,'lease',return_value=nullcontext()),patch.object(candidate.capture,'search',side_effect=search) as search,patch.object(candidate,'table') as table:
+                self.assertEqual(candidate.run(root,1,'full'),1)
+                self.assertEqual(search.call_count,1);table.assert_not_called()
+            report=json.loads((root/'incomplete_summary.json').read_text())
+            self.assertEqual(report['completed_conditions'],1);self.assertEqual(len(report['held_cases']),1)
+            self.assertFalse(report['qualified_phy']);self.assertFalse((root/'table.json').exists())
+            self.assertEqual(json.loads((root/'state.json').read_text())['status'],'held_by_native_failure')
+
+
+class EndpointBatchLease(unittest.TestCase):
+    def test_selected_single_slot_covers_the_entire_endpoint_batch(self):
+        from contextlib import contextmanager
+        active=[]
+        @contextmanager
+        def lease(index):
+            active.append(index)
+            try:yield
+            finally:active.pop()
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);(root/'manifest.json').write_text('{}')
+            def point(root,manifest,spec,distance):
+                self.assertEqual(active,[2])
+                folder=root/candidate.capture.condition_id(spec)/'point_800p000000';folder.mkdir(parents=True)
+                (folder/'summary.json').write_text('{"passed":true}')
+                return True
+            with patch.object(candidate,'validate'),patch.object(candidate,'lease',side_effect=lease) as slot,patch.object(candidate.capture,'point',side_effect=point) as run:
+                self.assertEqual(candidate.run(root,1,'endpoints',2),0)
+                self.assertEqual(slot.call_count,1);self.assertEqual(run.call_count,12)
+            self.assertEqual(active,[])
