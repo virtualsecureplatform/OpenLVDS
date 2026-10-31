@@ -1489,3 +1489,11 @@ the lost clock edges. No physical artifact is generated for that source, and
 neither extraction nor native replay starts. The reduced-clamp experiment's
 unchanged source control also completes with zero missing edges; its modified
 captured case is queued. No circuit improvement is claimed from a control alone.
+
+Early RX aperture campaign `20b04dcf527af283` now completes all 96 SS conditions:
+32 each at 0, 25 and 40 °C. All pass. Each group's exact coverage is checked
+against both clock edges, both data polarities, 20/200 ps clock and data slew
+endpoints and setup/hold. Maximum guarded setup/hold bounds are 280/120 ps at
+0 °C and 270/110 ps at 25 and 40 °C. Other process corners remain outstanding;
+the full 480-condition aperture table is not yet qualified. The reduced-clamp
+modified captured source case is now running under the shared six-slot budget.

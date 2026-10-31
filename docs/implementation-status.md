@@ -66,7 +66,10 @@ Current bring-up evidence on 2026-10-31:
   across both clock/data slew endpoints, both edge/data polarities and setup/hold.
   Its largest guarded setup/hold bounds are 270/110 ps; the 200 ps clock/data
   subset remains 210/50 ps. All 32 SS/0 °C conditions also pass, with global
-  guarded bounds 280/120 ps. SS/25 °C and remaining PVT coverage are active. The preceding three
+  guarded bounds 280/120 ps. All 32 SS/25 °C conditions now also pass, with
+  guarded bounds 270/110 ps. Exact 32-condition coverage is verified separately
+  at each SS temperature: 96 of 480 conditions pass; other process corners
+  remain outstanding and the full table is unqualified. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
   generic/native functional cases (2,373,588 bits). Its complete six-fixture RC
