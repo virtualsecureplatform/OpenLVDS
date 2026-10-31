@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Replay saved pins through the audited original-decision receiver with reduced clamp conductance candidate."""
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import fcntl
 import hashlib
 import json
@@ -66,7 +67,7 @@ def prepare(parent,layout):
     paths=[layout/n for n in ['summary.json','extraction.json','rc_audit.json','candidate.spice']]+[gds,ROOT/info['netlist']]
     paths += [ROOT/name for name in source_proofs]
     paths += [parent/'manifest.json',parent/'library.spice']+[parent/t['id']/'bench.cir' for t in previous['tasks']]
-    identity=dict(parent=str(parent.relative_to(ROOT)),layout=str(layout.relative_to(ROOT)),decision_clamped=True,clamp_variant='light_decision_1k_clamp',parallel_clamp_units=2,input_tail_scale=scale,decision_scale=physical['identity']['decision_scale'],restoration=physical['identity']['restoration'],
+    identity=dict(parent=str(parent.relative_to(ROOT)),layout=str(layout.relative_to(ROOT)),decision_clamped=True,clamp_variant='light_decision_1k_clamp',parallel_clamp_units=2,replay_parallel_jobs=2,input_tail_scale=scale,decision_scale=physical['identity']['decision_scale'],restoration=physical['identity']['restoration'],
         inputs={str(p.relative_to(ROOT)):digest(p) for p in paths},code={n:digest(ROOT/'scripts'/n) for n in set(CODE)|set(physical['identity']['code'])},
         simulator_provenance=provenance(),observation_nodes=aliases)
     root=ROOT/'build/diagnostics/receiver_replay'/hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()[:16]
@@ -90,14 +91,17 @@ def prepare(parent,layout):
 def run(root):
     if not root.is_relative_to(ROOT/'build/diagnostics/receiver_replay'):raise ValueError('Use a captured candidate replay')
     manifest=json.loads((root/'manifest.json').read_text());identity=manifest['identity']
+    if identity.get('replay_parallel_jobs')!=2:raise ValueError('Expected two independent native receiver controls')
+    if len(manifest['tasks'])!=2 or {t['id'] for t in manifest['tasks']}!={'captured','sharp_control'}:
+        raise ValueError('Expected both original native receiver fixtures exactly once')
     def unchanged():
         if provenance()!=identity['simulator_provenance'] or any(digest(ROOT/'scripts'/n)!=h for n,h in identity['code'].items()):
             raise ValueError('Receiver replay producer changed')
         if any(digest(ROOT/p)!=h for p,h in identity['inputs'].items()):raise ValueError('Receiver replay input changed')
         if digest(root/'library.spice')!=manifest['library_sha256']:raise ValueError('Receiver replay library changed')
     with (root/'.execution.lock').open('a') as lock:
-        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);unchanged();results=[]
-        for task in manifest['tasks']:
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);unchanged()
+        def execute(task):
             folder=root/task['id'];deck=folder/'bench.cir';path=folder/'summary.json';cached=None
             if digest(deck)!=task['deck_sha256']:raise ValueError('Receiver replay fixture changed')
             if path.exists():
@@ -119,7 +123,14 @@ def run(root):
                 manifest_sha256=digest(root/'manifest.json'),deck_sha256=task['deck_sha256'],waveform_sha256=digest(folder/'bench.cir.prn'))
             unchanged()
             if cached is not None and cached!=result:raise ValueError('Receiver replay saved analysis differs from its waveform')
-            atomic(path,result);results.append(result)
+            atomic(path,result)
+            atomic(folder/'execution.json',dict(status='completed',qualified_phy=False,missing_output_edges=transport['missing_output_edges']))
+            return result
+        # Both fixtures are independent. Each holds its own shared SPICE lease;
+        # executor shutdown waits for both even if one fixture raises an error.
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            results=list(pool.map(execute,manifest['tasks']))
+        unchanged()
         atomic(root/'summary.json',dict(diagnostic_complete=True,qualified_phy=False,qualification_verdict=None,
             scope='Native tracked decision-clamp and staged-restoration experiment with original pin stimuli and RX load; no PVT, stress, aperture or link qualification',
             manifest_sha256=digest(root/'manifest.json'),results=results))
