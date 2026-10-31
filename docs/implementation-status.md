@@ -97,9 +97,10 @@ Current bring-up evidence on 2026-10-31:
   only XNT/XPT widths from 12 to 24 µm in the source, retaining complementary
   inputs, signal mirrors, decision stage and all nine ports. Source invariants,
   DRC/LVS and the independent RC audit pass (native network SHA256 starts
-  `45fbff442fad8e43`). Both original receiver-replay stimuli are queued against
+  `45fbff442fad8e43`). Both original receiver-replay stimuli are retained for
   this actual network at `receiver_replay/f55b204c5e5256b7`, including native
-  digital loading and new PP/PN/CO observations. Bandwidth, node headroom,
+  digital loading and new PP/PN/CO observations. The captured-input fixture is
+  now running; the sharper-edge control follows it. Bandwidth, node headroom,
   full input-range/PVT behavior and complete-link timing remain unproven.
 - Matched `buf_8` TX experiment (`tx_buffer8_physical`) passes the full 54-case
   RTL/native functional regression (2,373,588 bits;
@@ -110,6 +111,14 @@ Current bring-up evidence on 2026-10-31:
   analog/RX/DLL circuit and scoring window. Its native simulation is running;
   the current staged
   candidate assembly continues to require buf_4 and no release is published.
+- Snapshot `tx_training_compare/18e4e22fc301ba34` compares the original buf_4
+  and running buf_8 designs over the same 20–35 ns training interval. Maximum
+  digital clock slew improves from 357.342 to 194.375 ps. The shortest negative
+  receiver-pin clock pulse narrows from 556.159 to 460.960 ps, and the weakest
+  negative peak decreases from 121.521 to 78.663 mV. Both designs miss six
+  restored edges under the same per-input-period diagnostic. The complete TX
+  payload run is preserved and continues; these training observations issue no
+  payload or qualification verdict.
 - Unit suite: 288 tests, 283 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
