@@ -31,6 +31,7 @@ def check_lef_interface(name,text,ports):
 
 
 def report_arguments(bundle,report):
+    from pfd_candidate_policy import policy_provenance
     if (not report.get('passed') or not report.get('checks') or
         any(c.get('passed') is not True for c in report['checks']) or
         report.get('bundle')!=str(bundle.relative_to(ROOT)) or
@@ -39,6 +40,7 @@ def report_arguments(bundle,report):
         report.get('staged_gate_sha256')!=digest((ROOT/'scripts/staged_release.py').read_bytes()) or
         report.get('native_gate_sha256')!=digest((ROOT/'scripts/dll_native_evidence.py').read_bytes()) or
         report.get('candidate_rtl_gate_sha256')!=digest((ROOT/'scripts/verify_candidate_rtl.py').read_bytes()) or
+        report.get('pfd_policy_code')!=policy_provenance(ROOT) or
         set(report.get('proofs',{}))!=set(PROOFS)):
         raise ValueError('A complete, current, passing staged release report is required')
     args=['--bundle',str(bundle.relative_to(ROOT))]

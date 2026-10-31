@@ -765,3 +765,15 @@ while holding no SPICE lease and having no active SPICE descendants. Their
 receipts. The old source's current TT loop continues unchanged; a watcher will
 retire only its remaining queued FF case after TT completes. Current-source
 loop tests and the frozen RX campaign continue.
+
+
+Staged release topology checking now selects the explicitly declared PFD policy.
+The preceding buffered-reset and single-AOI designs retain distinct strict
+checks; missing, unknown or internal-Q-only policy labels cannot qualify. Both
+actual post-route netlists pass their corresponding structural checks. Saved
+release reports bind the policy selector, fast-reset checker and base physical
+checker hashes, and promotion/current-release inspection reject changed helpers.
+A missing-candidate negative control still fails and writes its isolated report
+(561 checks); no release package or passing production report is produced.
+Native qualification assembly support will be integrated after the remaining
+old-source simulation drains, preserving its producer snapshot.

@@ -95,8 +95,8 @@ def main():
         text=netlist.read_text() if netlist.is_file() else ''
         check(kind+' no clock-delay buffers',bool(text) and delay_cells_absent(text))
         if kind=='pfd':
-            from physical_policy import pfd_area_paths_retained
-            check('PFD direct clocks and matched drivers',pfd_area_paths_retained(text) if bundle else pfd_paths_retained(text))
+            from pfd_candidate_policy import pfd_candidate_paths_retained
+            check('PFD direct clocks and matched drivers',pfd_candidate_paths_retained(text,evidence.get('pfd_policy')) if bundle else pfd_paths_retained(text))
         if kind=='tx':
             from physical_policy import tx_buffered_paths_retained
             check('TX native serializer cells and connections',tx_buffered_paths_retained(text,4) if bundle else tx_cells_retained(text))
@@ -199,10 +199,13 @@ def main():
         except (OSError,ValueError,KeyError,TypeError) as error:check('staged six-fixture RC certificate',False,str(error))
     out=release_out;out.mkdir(parents=True,exist_ok=True)
     result=dict(passed=all(c['passed'] for c in checks),checks=checks)
-    if bundle:result.update(staged_context,checker_sha256=digest(Path(__file__)),
+    if bundle:
+        from pfd_candidate_policy import policy_provenance
+        result.update(staged_context,checker_sha256=digest(Path(__file__)),
         staged_gate_sha256=digest(ROOT/'scripts/staged_release.py'),
         native_gate_sha256=digest(ROOT/'scripts/dll_native_evidence.py'),
-        candidate_rtl_gate_sha256=digest(ROOT/'scripts/verify_candidate_rtl.py'))
+        candidate_rtl_gate_sha256=digest(ROOT/'scripts/verify_candidate_rtl.py'),
+        pfd_policy_code=policy_provenance(ROOT))
     (out/'status.json').write_text(json.dumps(result,indent=2)+'\n')
     failed=[c['name'] for c in checks if not c['passed']]
     print(json.dumps(dict(passed=result['passed'],checks=len(checks),failed=failed),indent=2))

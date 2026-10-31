@@ -9,6 +9,29 @@ import promote_phy_candidate as promotion
 
 
 class SealedPHYRelease(unittest.TestCase):
+    def test_changed_pfd_policy_invalidates_a_saved_passing_report(self):
+        from pfd_candidate_policy import policy_provenance
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);bundle=root/'bundle';bundle.mkdir();(bundle/'manifest.json').write_text('{}')
+            scripts=root/'scripts';scripts.mkdir()
+            names=['check_release.py','staged_release.py','dll_native_evidence.py','verify_candidate_rtl.py',
+                   'pfd_candidate_policy.py','pfd_fast_reset_policy.py','physical_policy.py']
+            for name in names:(scripts/name).write_text('unit fixture '+name)
+            report=dict(passed=True,checks=[dict(passed=True)],bundle='bundle',
+                        bundle_manifest_sha256=promotion.digest((bundle/'manifest.json').read_bytes()),
+                        pfd_policy_code=policy_provenance(root),proofs={})
+            for field,name in [('checker_sha256','check_release.py'),('staged_gate_sha256','staged_release.py'),
+                               ('native_gate_sha256','dll_native_evidence.py'),('candidate_rtl_gate_sha256','verify_candidate_rtl.py')]:
+                report[field]=promotion.digest((scripts/name).read_bytes())
+            for name in promotion.PROOFS:
+                path=root/(name+'.json');path.write_text('{}')
+                report['proofs'][name]=dict(path=path.name,sha256=promotion.digest(path.read_bytes()))
+            with patch.object(promotion,'ROOT',root):
+                self.assertIn('--bundle',promotion.report_arguments(bundle,report))
+                (scripts/'pfd_fast_reset_policy.py').write_text('changed topology validator')
+                with self.assertRaisesRegex(ValueError,'current, passing staged release'):
+                    promotion.report_arguments(bundle,report)
+
     def test_extra_missing_or_duplicate_lef_pins_are_rejected(self):
         text='MACRO dll\n  PIN CLK\n  PIN VSS\nEND dll\n'
         promotion.check_lef_interface('dll',text,['CLK','VSS'])
