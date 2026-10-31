@@ -514,3 +514,21 @@ comparison. It checks pulse-area direction over 60–80 ns, not closed-loop lock
 monitor fault timing or full-PHY readiness. Near-zero activity, full static
 monitor windows, PVT, acquisition and all release gates must still pass before
 this PFD can replace the previous implementation.
+
+
+The internal-Q-only physical change failed the −850 ps control. The subsequent
+single-AOI experiment has its own source, structural policy and physical build:
+
+```sh
+scripts/env.sh --tools --ngspice python3 scripts/harden_fast_reset_pfd.py --artifact-dir build/diagnostics/pfd_fast_reset_physical_v2
+scripts/env.sh --tools --ngspice python3 scripts/digital_candidate_rc.py build/diagnostics/pfd_fast_reset_physical_v2
+scripts/env.sh --ngspice python3 scripts/probe_pfd_fast_reset.py build/diagnostics/pfd_fast_reset_physical_v2 --reference build/diagnostics/pfd_capture/b65a8cceadd819c0
+```
+
+Here a22oi_4 with one input tied high implements
+`clear_b = !(raw_up & raw_dn | !(RESET_N & PD_ENABLE))`. Only the Q-to-reset
+path crosses the single AOI gate; the disable NAND lies outside that critical
+path. The wrapper retains the preceding policy rejection and labels the actual
+new topology `pulse-area-fast-reset`. Native probes reuse the source-bound port
+adapter and preserve the matched analog loading, supplies and stimulus. Physical
+checks pass, but native capture and acquisition have not yet been established.

@@ -3,6 +3,20 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+
+Current bring-up evidence on 2026-10-31:
+
+- Local comparator routing passes native SS/0 °C 0 and ±150 ps monitor tests
+  under the original scoring windows (`c47b7dc98d92327b`). Other PVT/offsets
+  and integrated acquisition remain unqualified.
+- The preceding PFD and an internal-Q-reset physical variant both give the
+  wrong correction sign at −850 ps. The schematic controls do not reproduce it.
+- A single-AOI reset variant passes DRC/LVS, extraction and the independent RC
+  audit. Its native capture probes are queued (`6562211b6d43fb89`).
+- Full DLL/PVT/model/recovery/readiness/operating-point evidence, the completed
+  RX aperture table, six-fixture certificate and full link matrix remain required.
+
+
 The pulse-area comparison milestone on 2026-10-29 is described at the end of
 this document and in [the experiment workflow](dll-experiments.md). Its circuits
 remain separate from the active PHY. Current bring-up evidence is recorded below.
@@ -685,3 +699,20 @@ policy checks this exact wiring, high ties, direct clocks and buffered outputs.
 Its first build stopped at lint on a reserved instance name and is preserved;
 corrected `pfd_fast_reset_physical_v2` is undergoing physical implementation.
 No native success or acquisition result is claimed for it.
+
+
+The local-port −150 ps native follow-up passes, with BAD reasserting at
+59.249457 ns and remaining high throughout 120–160 ns. Its waveform SHA-256 is
+`dd8757242626a9339c04be5d757b7b69106ec870d27d30bc2ec801710ff3d0ab`.
+All three initial SS/0 °C static probes (0, +150, −150 ps) pass; this is not
+full static/PVT or closed-loop qualification.
+
+The single-AOI reset physical build passes zero-error Magic/KLayout DRC, zero
+LVS device/net/property errors and its explicit structural policy. RC extraction
+and the independent connectivity audit also pass. GDS SHA-256 is
+`5051c9d97f0f8330f60a36dd07a69aaa3a0e3b0eec115e6b2edb09cfd78e22b5`
+and extracted netlist SHA-256 is
+`0806d75fcec1e4648580d6bec6370362efe1815a592585287b1cab785b8b2fc5`.
+Matched native capture root `pfd_physical_capture/6562211b6d43fb89` is prepared
+and its coordinator is waiting for a slot. Selection still requires actual
+capture, quiet/activity, near-zero phase response and acquisition evidence.
