@@ -98,13 +98,16 @@ def write_parent(out,top,ports,core_info,quiet_info,shared):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('source',type=Path);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('source',type=Path)
+    p.add_argument('--local-comparators',action='store_true',help='Route each quiet comparator in its own local island')
+    a=p.parse_args()
     path=a.source.resolve()
     if not path.is_relative_to(ROOT):p.error('Source must reside in OpenLVDS')
     source=path.read_bytes();defs=circuits(source.decode());top='openlvds_dll_analog';ports,devices=flatten(defs,top)
     core,quiet,cp,qp,shared=partition(devices,ports)
     code=[Path(__file__),ROOT/'scripts/layout.py',ROOT/'scripts/lvs_utils.py']
-    identity=source+b''.join(f.read_bytes() for f in code)+(ROOT/'requirements.json').read_bytes()
+    if a.local_comparators:code.append(ROOT/'scripts/layout_local_monitor.py')
+    identity=source+b''.join(f.read_bytes() for f in code)+(ROOT/'requirements.json').read_bytes()+str(a.local_comparators).encode()
     fingerprint=hashlib.sha256(identity).hexdigest();out=ROOT/'build/diagnostics/dll_layout'/fingerprint[:16]
     out.mkdir(parents=True,exist_ok=True);(out/'candidate.spice').write_bytes(source)
     keys=sorted({primitive_key(d) for d in devices});body=[];names={}
@@ -118,12 +121,15 @@ def main():
     cells={key:(name,pcell_info(out/(name+'.mag'))) for key,name in names.items()}
     core_info=draw_macro(out,top,cp,core,cells)
     (out/(top+'.mag')).replace(out/'dll_control_island.mag')
-    quiet_info=draw_macro(out,'dll_monitor_island',qp,quiet,cells)
+    if a.local_comparators:
+        from layout_local_monitor import draw
+        quiet_info=draw(out,'dll_monitor_island',qp,quiet,cells)
+    else:quiet_info=draw_macro(out,'dll_monitor_island',qp,quiet,cells)
     # Core was drawn with the local clock routing policy; its name is private.
     info=write_parent(out,top,ports,core_info,quiet_info,shared)
     (out/(top+'.sch.spice')).write_text(schematic_text(top,ports,devices))
     info.update(qualify(out,top));info.update(devices=len(devices),control_devices=len(core),monitor_devices=len(quiet))
-    summary=dict(diagnostic=True,source_sha256=hashlib.sha256(source).hexdigest(),fingerprint=fingerprint,
+    summary=dict(diagnostic=True,local_comparators=a.local_comparators,source_sha256=hashlib.sha256(source).hexdigest(),fingerprint=fingerprint,
         passed=info['passed'],designs={top:info},source=str(path.relative_to(ROOT)))
     (out/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
     print(json.dumps(dict(passed=summary['passed'],output=str(out),drc_count=info['drc_count'],lvs_passed=info['lvs_passed'])),flush=True)

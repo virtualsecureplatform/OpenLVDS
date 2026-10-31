@@ -157,3 +157,19 @@ means without replacing any extracted device or R/C. A high DC BAD with a
 failed transient would support a settling problem; a low DC BAD requires
 examining comparator input difference, gain, bias and readout headroom first.
 Neither result changes the original phase test or releases the candidate.
+
+
+The clamped native DC diagnostic `monitor_native/0fcf74f7d7868e78/dc` completes
+with BAD = 1.800000 V and POS = 1.799995 V. PA/PB are 0.381484/0.372850 V
+(8.634 mV difference), comparator O = 1.456808 V, L = 0.711481 V, and
+T = 1.562139 V. The local positive-tail VDDD terminals span
+1.799555–1.800000 V and PC = 0.612602 V. This shows that the native comparator
+can detect the measured positive fault at equilibrium. It supports a dynamic
+settling explanation; it does not prove which capacitance or resistance dominates,
+or establish the response with pulsed inputs. The waveform and native library
+hashes are retained in that diagnostic's manifest and summary.
+
+A source-identical local comparator layout passes DRC/LVS. Keeping O/OB/L/T
+inside small comparator islands avoids their long drops through the passive
+bank. Its extracted capacitance and native response must improve before this
+physical change is selected. The failed 160 ns trace remains unchanged.

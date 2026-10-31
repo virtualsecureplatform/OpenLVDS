@@ -555,7 +555,17 @@ to the passing loaded proxy's 85.863 mV. CTRL averages 0.752208 V. These
 measurements do not establish whether the remaining failure is settling time or
 DC gain/headroom. `diagnose_native_monitor.py` prepares source-bound internal-node
 transients and a separate DC diagnostic using the same native devices and R/C,
-with UF, DF and CTRL clamped to this trace's measured means. The DC task is
-queued on the existing slot pool. Neither diagnostic can qualify the PHY, and
+with UF, DF and CTRL clamped to this trace's measured means. The DC task completes with BAD at 1.80 V and comparator O at 1.457 V,
+supporting a settling problem at this measured fault operating point. An
+internal-node transient is queued on the existing slot pool. Neither diagnostic can qualify the PHY, and
 extended traces retain the original 120–160 ns phase result. Full dispatch and
 promotion of this failed candidate remain held.
+
+
+A circuit-preserving local comparator layout, `dll_layout/0a4253d72e392de9`,
+now passes zero-error DRC and strict LVS with 518 devices and 15 public ports.
+`layout_dll_candidate.py --local-comparators` puts the passive network, each
+of the four comparators and the output logic in separate child islands.
+Comparator O/OB/L/T nodes remain local. The candidate schematic and control
+island bytes match layout `88342cdbe6c80ac2`; extracted capacitance, the RC
+audit and native electrical response remain to be checked.
