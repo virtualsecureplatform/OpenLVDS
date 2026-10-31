@@ -472,7 +472,7 @@ and actual differential input, offset and thin-device terminal checks. It keeps
 corner/condition correlations instead of combining unrelated extremes. This
 production gate has not run and requires passing native/model evidence first.
 
-The current host test run completes 203 tests: 198 pass and five skip for the
+The current host test run completes 206 tests: 201 pass and five skip for the
 container/analysis backends checked separately in earlier runs. Native W8/C4
 qualification, the complete RX aperture table, operating-point characterization,
 readiness replay, limiting-corner recovery, six-fixture RC certification and the
@@ -716,3 +716,26 @@ and extracted netlist SHA-256 is
 Matched native capture root `pfd_physical_capture/6562211b6d43fb89` is prepared
 and its coordinator is waiting for a slot. Selection still requires actual
 capture, quiet/activity, near-zero phase response and acquisition evidence.
+
+
+The single-AOI physical PFD passes its −850 ps native capture-direction check:
+UP/DN average 0.380123/1.016338 V, giving −636.215 mV instead of the preceding
+PFD's incorrect +261.069 mV. UF/DF average 0.341069/0.861005 V. Its waveform
+SHA-256 is `1303e4bda86a02e4731b0017b622f1a16149771601a370b73629f67ac3db8a97`.
+The +850 and 0 ps controls remain pending; this is not a closed-loop result.
+
+`screen_fast_reset_dll.py` prepares source-matched SS/0 °C, TT/25 °C and
+FF/0 °C loops using the actual single-AOI PFD extraction, the same native-finger
+schematic analog/delay devices and exact bias. Proposed source changes only
+the PFD definition; all other circuit definitions remain unchanged. It reuses
+the captured architecture stimuli, startup and loads, with the original
+1200–1500 ns scoring window and 1500 ns stop. Input, source, extraction and
+producer archives are validated. Native capture reports are checked against
+their waveforms before admission, and missing or wrong-sign large-offset
+controls hold dispatch. The 0 ps area-balance diagnostic is retained; integrated
+quiet behavior remains subject to the unchanged loop/phase gates.
+
+Prepared screen `dll_architecture/0ca8225b328ecaa1` validates its actual inputs
+and is held for the remaining capture controls. Its conditional coordinator is
+active and will run all three loops only after admission succeeds. No new
+architecture-screen result or native/full-PHY qualification is claimed.

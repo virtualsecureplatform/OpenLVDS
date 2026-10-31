@@ -295,3 +295,12 @@ path crosses one cell instead of the coincidence AND and following clear gate.
 The enable/reset truth table and separate buf_8 output paths remain required
 by `pfd_fast_reset_policy.py`. This is a timing hypothesis; new physical capture,
 quiet/activity and closed-loop tests are still needed.
+
+
+The actual single-AOI PFD now corrects the tested −850 ps sign error: native
+UP−DN = −636.215 mV, versus +260.742 mV for the internal-Q-only variant and
++261.069 mV for the preceding buffered-reset variant. This supports shortening
+the reset logic as a working capture repair at this condition. Complementary
+polarity, quiet behavior, capture range, PVT and acquisition remain unproven.
+The matching source-specific loop screen is prepared and gated on the remaining
+native controls; no scoring window or phase limit has changed.

@@ -532,3 +532,23 @@ path. The wrapper retains the preceding policy rejection and labels the actual
 new topology `pulse-area-fast-reset`. Native probes reuse the source-bound port
 adapter and preserve the matched analog loading, supplies and stimulus. Physical
 checks pass, but native capture and acquisition have not yet been established.
+
+
+After the physical capture controls complete, prepare and run the matching
+three-corner loop screen:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/screen_fast_reset_dll.py prepare build/diagnostics/pfd_physical_capture/6562211b6d43fb89
+scripts/env.sh --ngspice python3 scripts/screen_fast_reset_dll.py run NEW_SCREEN --jobs 3
+```
+
+The source archive updates the PFD's SPICE definition to the single-AOI circuit
+and checks that every analog device, bias and wrapper connection is unchanged.
+The library retains the actual PFD GDS extraction and captured bias, while
+analog/delay devices remain native-finger schematics. The three original
+architecture fixtures retain their supplies, 32-cycle preset, loads and
+1200–1500 ns scoring. Preparation and cached preparation print the artifact
+path. Execution reanalyzes the capture waveforms and waits for complete controls
+with correct large-offset polarity. A missing control or changed source, fixture,
+producer or archive cannot dispatch the long loop cases. The screen remains
+diagnostic; fresh integrated GDS/native DLL and all release gates are required.
