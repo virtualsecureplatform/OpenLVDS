@@ -231,3 +231,26 @@ native-finger schematic analog loading and extracted bias. Measurements use
 raw UP/DN area during 60–80 ns; the filters need not have reached equilibrium.
 These controls diagnose capture sign and reset feedback, not monitor fault
 timing or PHY qualification. The Q-reset view has no new physical implementation.
+
+
+## First passing native physical monitor repair
+
+The source-identical local-port layout passes the native SS/0 °C +150 ps test
+in qualification `c47b7dc98d92327b`. BAD reasserts at 54.618696 ns after its
+26.274737 ns startup fall and remains at 1.8 V in the unchanged scoring window.
+Filtered difference is 85.641 mV versus 85.287 mV for the failed preceding
+physical layout. Combined with normal native input/bias voltages, a high DC
+output and much lower O capacitance, this establishes a working physical
+settling repair at this condition. Quiet behavior, the opposite polarity, other
+PVT and acquisition remain unqualified.
+
+The −850 ps native-RC PFD control also completes and reproduces the wrong
+correction sign without feedback: UP−DN = +261.069 mV. Each input contributes
+eight rising edges in 60–80 ns, compared with five UP and six DN rising edges.
+UP high time reaches 2.858485 ns, longer than the 2.5 ns clock period. Missed
+input cycles during the reset sequence are therefore a supported explanation
+for the pulse-area sign error. The source-bound `cycle_diagnosis.json` under
+`pfd_capture/b65a8cceadd819c0/native_rc_output_reset_-850ps` records crossings,
+complete pulse widths and waveform/report hashes. These results justify the
+matched reset-tap comparison; they do not yet prove an internal-Q reset fixes
+physical capture, near-zero activity indication or closed-loop acquisition.

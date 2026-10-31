@@ -621,3 +621,22 @@ is now running. Detector capture controls `pfd_capture/b65a8cceadd819c0` are
 prepared and waiting for a slot: exact-RC native output-reset PFD, matched PDK
 schematic output-reset PFD and schematic internal-Q-reset PFD at −850/+850/0 ps.
 No physical PFD change or passing acquisition result is claimed.
+
+
+The local-port layout's native SS/0 °C +150 ps probe passes under the original
+120–160 ns scoring window. BAD falls after startup at 26.275 ns and reasserts
+at 54.619 ns, remaining at about 1.8 V throughout scoring. UF−DF averages
+85.641 mV, close to the failed preceding layout's 85.287 mV. Native waveform
+`da0b12b5e298762284281cc41440625e6a77638fbff604a0e4f5eb421ff7e285`
+and its unchanged fixture are retained under `c47b7dc98d92327b/phase_ss_0_150ps`.
+Conditional native quiet 0 ps and −150 ps follow-ups are queued and stop on
+failure. Full qualification remains held by acquisition and remaining gates.
+
+The separate exact-RC PFD −850 ps input control reproduces the wrong pulse-area
+sign: UP/DN average 0.894585/0.633516 V in 60–80 ns, giving +261.069 mV.
+Both input clocks have eight rising edges in that interval, while UP has five
+and DN six; the longest complete UP high spans 2.858485 ns, exceeding the
+2.5 ns reference period. The native schematic analog load and PFD/bias library
+is identical to the failing source-specific loop library. This isolates a
+wide-range PFD capture problem from feedback acquisition dynamics. The matched
+schematic output-reset and internal-Q-reset controls remain in progress.
