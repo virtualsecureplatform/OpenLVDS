@@ -57,7 +57,12 @@ Current bring-up evidence on 2026-10-31:
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
   generic/native functional cases (2,373,588 bits). Its six-fixture RC comparison
   is running. The driver fixture passes with 0.396 ps maximum edge difference
-  and 0.541 mV maximum plateau difference; a complete certificate is still pending.
+  and 0.541 mV maximum plateau difference. The completed DLL fixture also passes:
+  each of four outputs has 232 matching edges, with at most 0.785 ps crossing
+  difference and 0.123 mV plateau difference (`dll_rc_diagnostic.json` beside
+  the bundle manifest). These proofs cover this bundle's original networks;
+  new DLL/analog/TX networks require their own comparison evidence. A complete
+  certificate is still pending.
 - Current component evidence verifies 88/90 distinct proofs: all 45 schematic
   driver/receiver cases, all 30 native analog receiver cases and thirteen native
   drivers. Remaining native driver refresh continues. Historical numerical
