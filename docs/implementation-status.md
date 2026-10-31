@@ -167,13 +167,18 @@ Current bring-up evidence on 2026-10-31:
   both completed, zero-missing-edge replays. The previous decision-current
   placement's live trace still misses the first short negative pulse; its
   complete replay is preserved.
-- Schematic tracked-clamp comparison `receiver_clamp/e888b13239fc158e` is queued
+- Schematic tracked-clamp comparison `receiver_clamp/e888b13239fc158e` is running
   under the shared simulator budget. It adds a diode-connected replica inverter
   with the first restoration stage's P/N ratio and two parallel precision-poly
   units from CO to the replica trip point. Three fixtures compare unclamped and
   clamped circuits on captured pins, then clamped sharper inputs. Analog cores
   use schematic fingers; the shared bias and native early RX load are retained.
   No physical or electrical improvement is claimed before these results.
+- Xyce 7.10.0 parses the actual native receiver replay successfully in a
+  parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
+  4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
+  that fallback. No speed or numerical-equivalence result is claimed, and no
+  running qualification campaign changes runtime.
 - Unit suite: 307 tests, 306 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,

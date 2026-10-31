@@ -1043,3 +1043,29 @@ actual layout, independent extraction, native replay and fresh component/PVT
 and full-link checks before selection. The first preparation containing optional
 current probes was retired before any simulation; the frozen exporter supports
 voltage probes only. Its no-run receipt remains in `receiver_clamp/877040209e65a9d0`.
+
+## Xyce compatibility check
+
+The image already contains Xyce 7.10.0 built from release commit
+`a592a42ae7472151d1c8e3bca0ca62d27476f2f3`. A parser-only check of the actual
+native receiver replay succeeds:
+
+```sh
+scripts/env.sh --xyce python3 scripts/probe_xyce_compatibility.py \
+  build/diagnostics/receiver_replay/cb6fffffb0809887/captured/bench.cir
+```
+
+Receipt `xyce_compatibility/ba10c72ce84ed18a` binds the fixture, library, binary,
+image receipt, version, parser producer and output log. This uses `-syntax`;
+no transient or speed comparison is performed and no simulator slot is consumed.
+The parser warns that the requested BSIM4 version 4.5 is replaced with its oldest
+supported version, 4.6.1. Parsing success alone is insufficient evidence to
+substitute this runtime into the captured ngspice qualification campaigns.
+
+The inspected upstream master commit is
+`e5b7b9bb5b221630c66654c059fc2d33524f5b21`. Its
+[BSIM4 source](https://github.com/Xyce/Xyce/blob/e5b7b9bb5b221630c66654c059fc2d33524f5b21/src/DeviceModelPKG/OpenModels/N_DEV_MOSFET_B4.C#L9266)
+still contains the same minimum-version fallback. The downloaded source's URL,
+commit and content hash are recorded under `xyce_compatibility/upstream/`.
+A newer build therefore has no demonstrated device-model or performance benefit
+for these fixtures yet. Current numerical campaigns retain their original runtime.
