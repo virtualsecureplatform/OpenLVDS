@@ -472,7 +472,7 @@ and actual differential input, offset and thin-device terminal checks. It keeps
 corner/condition correlations instead of combining unrelated extremes. This
 production gate has not run and requires passing native/model evidence first.
 
-The current host test run completes 206 tests: 201 pass and five skip for the
+The current host test run completes 214 tests: 209 pass and five skip for the
 container/analysis backends checked separately in earlier runs. Native W8/C4
 qualification, the complete RX aperture table, operating-point characterization,
 readiness replay, limiting-corner recovery, six-fixture RC certification and the
@@ -739,3 +739,29 @@ Prepared screen `dll_architecture/0ca8225b328ecaa1` validates its actual inputs
 and is held for the remaining capture controls. Its conditional coordinator is
 active and will run all three loops only after admission succeeds. No new
 architecture-screen result or native/full-PHY qualification is claimed.
+
+
+All three single-AOI physical PFD capture controls now pass: raw UP−DN is
+−636.215 mV at −850 ps, +640.506 mV at +850 ps and +1.800 mV at 0 ps.
+The +850/0 ps waveform hashes are
+`7c0d35c2bde4ec93cc70ebd6d234b3b9e66d5fb7422d00da693177f526bbc386`
+and `64d1b57258e825b73a05a7986958525e8200206f5c26817b547b334e210b9294`.
+The three-corner source screen passes admission and is running; FF/0 °C is
+active while SS/TT wait for slots. No settled-loop result is available yet.
+
+Audited analog source binding `dll_layout/pfd_bind_1583499260541bb4` associates
+proposed source `fc18ef4ca882d3bc38e8216a9b9b2ef16055ee74b9f73691a0af6fc49599334c`
+with the existing analog GDS. The tool proves that only the unrelated PFD
+definition changed; the flattened analog scope remains
+`371e858737298457a8a17215ca8b2e8e279918ad7c240193b21dd4b7cae8eb91`.
+GDS `d5fb7db80c22210b8521fd5442fe40d77e401eb56d429baab4b9f6acd189e23d`
+and exact network `1113fdcdc6f8a5af7037155c9e2fbb42a7ca267b640145d5fcd3b8521f2a2573`
+are unchanged, and a fresh strict RC audit passes. No electrical qualification
+is inherited by this source binding.
+
+The obsolete monitor-proxy and original capture-control coordinators were retired
+while holding no SPICE lease and having no active SPICE descendants. Their
+18/5 completed per-case summaries and all traces are preserved with retirement
+receipts. The old source's current TT loop continues unchanged; a watcher will
+retire only its remaining queued FF case after TT completes. Current-source
+loop tests and the frozen RX campaign continue.

@@ -552,3 +552,24 @@ path. Execution reanalyzes the capture waveforms and waits for complete controls
 with correct large-offset polarity. A missing control or changed source, fixture,
 producer or archive cannot dispatch the long loop cases. The screen remains
 diagnostic; fresh integrated GDS/native DLL and all release gates are required.
+
+
+## Preserve an unchanged analog macro when updating only the PFD source
+
+The proposed source now contains the single-AOI PFD definition. The existing
+analog GDS can be rebound only after proving the update is confined to that
+unrelated definition:
+
+```sh
+scripts/env.sh --tools --ngspice python3 scripts/rebind_dll_pfd_source.py build/diagnostics/dll_layout/schur_6ce2c5e21bf17f36 build/diagnostics/dll_architecture/0ca8225b328ecaa1/inputs/ota_w8_c4.spice
+```
+
+The tool rejects any other source/global change, altered PFD interface, duplicate
+definition or changed flattened analog schematic. It verifies the parent's
+source, GDS, extracted network, ports and RC audit, then reruns strict RC
+connectivity LVS for the unchanged macro under the new source binding. A new
+directory retains the prior source, proposed source, flattened scope, producer
+archive and binding receipt. GDS and extracted network hashes must remain
+identical. Electrical results and qualification are never transferred; the
+combined DLL with the new PFD requires fresh native evidence. Changes to analog
+devices or wiring require new layout and extraction.
