@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 from layout import (ROOT,GRID,Geometry,circuits,flatten,primitive_key,pcell_info,
                     invoke_magic,draw_macro,schematic_text,qualify)
@@ -15,7 +16,9 @@ def partition(devices,ports):
     quiet=[];core=[]
     for d in devices:
         name=d['name'];monitor='__XAREA__' in name
-        if monitor and name.rsplit('__',1)[-1] not in averages:quiet.append(d)
+        leaf=name.rsplit('__',1)[-1]
+        average=leaf in averages or re.fullmatch(r'XC[UD]_\d+',leaf)
+        if monitor and not average:quiet.append(d)
         else:core.append(d)
     cn={n for d in core for n in d['nodes']};qn={n for d in quiet for n in d['nodes']}
     shared=sorted(cn&qn)
