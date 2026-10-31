@@ -231,17 +231,21 @@ Current bring-up evidence on 2026-10-31:
   records `held_for_diagnosis` for failed clock recovery and starts no component
   or link simulations. The stronger clamp is not selected for qualification.
   Matching link fixture `receiver_candidate_link/37d95b09d5fb0059` and 60-case
-  component campaign `receiver_components/90fff4b7107aa5ae` are prepared behind
-  its loaded native gate. The component preflight verifies original fixtures
-  and starts no simulation while replay evidence is incomplete. Stronger and
+  component campaign `receiver_components/90fff4b7107aa5ae` remain held behind
+  its failed loaded native gate. The component preflight verified original fixtures;
+  neither downstream campaign started a simulation. Stronger and
   first-clamp verifiers are selected explicitly; no native improvement is claimed.
-- Host continuation `continue_receiver_candidate.py` waits on that actual native
-  owner and gates the prepared component/link jobs on complete, one-to-one
+- Host continuation `continue_receiver_candidate.py` waited on that actual native
+  owner and held the prepared component/link jobs for failed one-to-one
   clock recovery. It binds all manifests/producers, repeats scientific checks
   in the children and preserves both running jobs on failure. No release is
   promoted by diagnostics. Its receipt is under the native replay's `followup/`.
-  The stronger clamp's live first-pulse observation still has CO peak 0.822 V
+  The stronger clamp's completed first-pulse observation has CO peak 0.822 V
   with RESTORE0 above 1.726 V; the output clock does not fall in that interval.
+  Routing inspection of the first→stronger clamp finds PP 115.776→122.001 fF,
+  PN 122.274→128.498 fF and CO 58.027→73.967 fF; other observed wire sums
+  are unchanged. These incident capacitances do not isolate the electrical
+  effect of strengthening the reference or establish a causal timing result.
 - Wider input-pair source comparison `receiver_clamp/4e55a995d239fb38` is active.
   It changes only the four complementary input devices from 20 to 40 µm,
   retaining tail-device bias, stronger clamp and restoration. Its original
@@ -249,7 +253,7 @@ Current bring-up evidence on 2026-10-31:
   source case completes with exactly one output edge in all 47 checked periods,
   no missing/repeated edges and diagnostic latency 324.978–448.846 ps. Its
   unchanged unclamped control also passes. The sharp-input source control is
-  queued, so the source gate is incomplete; physical/native improvement remains
+  running, so the source gate is incomplete; physical/native improvement remains
   unproven.
   Dedicated layout/replay producers now bind the exact 40 µm input source and
   its three complete, one-to-one source controls. They reject earlier clamp

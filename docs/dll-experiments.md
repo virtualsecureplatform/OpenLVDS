@@ -1341,5 +1341,17 @@ The wider-input captured source case completes: all 47 checked input periods
 have exactly one output edge, with zero missing edges. Diagnostic latency is
 324.978–448.846 ps; CO spans 0.153–1.420 V and CO_TRACK spans 0.643–0.968 V
 in the original scoring window. The unchanged unclamped control also passes.
-The sharp-input source control remains queued, so layout is still held by the
+The sharp-input source control is running, so layout is still held by the
 three-case source gate. These source results do not establish native improvement.
+
+Independent incident-routing-capacitance inspection of the completed first and
+stronger clamp layouts produces `receiver_loading/590861f9b5121ad3` and
+`receiver_loading/564e28b05497f1bf`, respectively. PP rises from 115.776 to
+122.001 fF, PN from 122.274 to 128.498 fF and CO from 58.027 to 73.967 fF.
+CL, CT and both restoration-net wire sums are unchanged. Thus the stronger
+reference comes with increased routing load on the decision output and frontend
+signal nets. This comparison does not isolate those loads from the electrical
+effect of the stronger clamp, and does not prove the cause of pulse loss. These
+are full incident coupling sums, excluding device/MIM capacitance, rather than
+effective AC loads. The wider-input extracted network still needs its own
+inspection and loaded native replay before any physical improvement is claimed.
