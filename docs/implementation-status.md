@@ -252,21 +252,34 @@ Current bring-up evidence on 2026-10-31:
   three controls and native shared bias/digital load remain intact. The captured
   source case completes with exactly one output edge in all 47 checked periods,
   no missing/repeated edges and diagnostic latency 324.978–448.846 ps. Its
-  unchanged unclamped control also passes. The sharp-input source control is
-  running, so the source gate is incomplete; physical/native improvement remains
-  unproven.
+  unchanged unclamped control also passes. The sharp-input source control now
+  completes; all three cases recover exactly one edge in every checked period.
+  Physical/native improvement remains unproven.
   Dedicated layout/replay producers now bind the exact 40 µm input source and
   its three complete, one-to-one source controls. They reject earlier clamp
   evidence and preserve native shared bias, digital load, nine-port order and
-  replay timing. No wider-input physical build or native simulation is claimed.
-  Host service `openlvds-wide-input-native-continuation` now waits on the actual
-  source owner, then runs those physical/RC/native gates in sequence. It freezes
+  replay timing. Layout `receiver_layout/4cea0a2ca0f9868e` passes DRC/LVS
+  (95 devices, nine ports) and the independent RC connectivity audit. Native
+  network SHA256 starts `7f2680cc72bcaf63`; replay `5adb1f717c66c41e` is queued
+  under the six-slot limit. Incident PP/PN wire sums are 124.217/131.377 fF;
+  CO remains 73.967 fF (`receiver_loading/c66f016bc3569690`).
+  Host service `openlvds-wide-input-native-continuation-v2` runs those
+  physical/RC/native gates in sequence. It freezes
   source and parent manifests plus downstream producers; failed gates hold the
   pipeline. It stops before component/link qualification and release selection.
+  Its first invocation stopped after systemd unloaded the successful transient
+  source unit. The corrected predicate requires complete reports and repeats
+  the exact waveform gate; the original failure receipt is archived under
+  `native_continuation_history_516799b`. No scientific simulation was restarted.
   After the previous native owner/follow-up terminated, the downstream dispatcher
   gained explicit `strong_wide_input` source and native-verifier selection.
   Future component/link fixtures retain original stimuli and scoring; their
   native replay gate still requires complete, one-to-one clock recovery.
+  Component root `receiver_components/f82998633770e370` prepares all 60 original
+  fixtures, and link root `receiver_candidate_link/a1fe429613422650` retains the
+  original loaded link diagnostic. Host service `openlvds-wide-input-receiver-followup`
+  waits on the native continuation and starts them only after both native cases
+  recover every edge exactly once. No component/link simulation has started.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains

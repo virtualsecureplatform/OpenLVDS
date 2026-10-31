@@ -1313,7 +1313,7 @@ does not select a release. Full component, RC comparison, aperture and link
 checks remain required if this native candidate recovers every clock edge.
 
 Host continuation `continue_receiver_wide_input.py` is active as
-`openlvds-wide-input-native-continuation`. It waits on the actual source owner,
+`openlvds-wide-input-native-continuation-v2`. It waits on the actual source owner,
 requires successful terminal service status and all three reports, then invokes
 the gated layout producer, independent RC audit and original two native replays.
 It binds the source/parent manifests and downstream producer hashes. Observation
@@ -1341,8 +1341,9 @@ The wider-input captured source case completes: all 47 checked input periods
 have exactly one output edge, with zero missing edges. Diagnostic latency is
 324.978–448.846 ps; CO spans 0.153–1.420 V and CO_TRACK spans 0.643–0.968 V
 in the original scoring window. The unchanged unclamped control also passes.
-The sharp-input source control is running, so layout is still held by the
-three-case source gate. These source results do not establish native improvement.
+The sharp-input source control also completes with exactly one edge in each of
+47 checked periods. All three source cases now pass. These source results do
+not establish native improvement.
 
 Independent incident-routing-capacitance inspection of the completed first and
 stronger clamp layouts produces `receiver_loading/590861f9b5121ad3` and
@@ -1355,3 +1356,28 @@ effect of the stronger clamp, and does not prove the cause of pulse loss. These
 are full incident coupling sums, excluding device/MIM capacitance, rather than
 effective AC loads. The wider-input extracted network still needs its own
 inspection and loaded native replay before any physical improvement is claimed.
+
+The first wide-input continuation held after systemd unloaded the successfully
+completed transient source unit (`LoadState=not-found`, inactive, success, status
+0). The corrected predicate permits this terminal state only with all complete
+reports; the layout producer still independently remeasures every waveform and
+source proof. The failed continuation receipt/producer is preserved in
+`native_continuation_history_516799b`. Only the host continuation was restarted.
+
+Wider-input physical root `receiver_layout/4cea0a2ca0f9868e` passes DRC/LVS
+and independent extracted connectivity audit (95 devices, nine original ports).
+Its native network is `7f2680cc72bcaf633f07e7764bd1c850ee6f1d49fd275a117af4f235505b8e02`.
+Receiver-loading receipt `c66f016bc3569690` measures incident PP/PN/CO wire sums
+124.217/131.377/73.967 fF. Native replay `receiver_replay/5adb1f717c66c41e`
+retains both original 80 ns pin stimuli, shared bias and digital receiver load,
+and is queued under the shared six-slot limit. No native improvement is claimed.
+
+Fresh wider-input downstream fixtures are prepared at
+`receiver_components/f82998633770e370` (all 60 original schematic/native static
+and rate conditions) and `receiver_candidate_link/a1fe429613422650` (the original
+full-RC SS/40 °C/410 MHz loaded diagnostic). Host service
+`openlvds-wide-input-receiver-followup` waits on the actual native continuation.
+Both original native cases must complete with every input period producing
+exactly one output edge before it can run either campaign. The scientific
+children repeat the native waveform/input/producer checks. No downstream
+simulation or release result is claimed at preparation.
