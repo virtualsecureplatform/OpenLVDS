@@ -18,6 +18,11 @@ class WideInputContinuation(unittest.TestCase):
         self.assertTrue(source_finished(observation,True))
         with self.assertRaisesRegex(ValueError,'all source reports'):source_finished(observation,False)
 
+    def test_unloaded_successful_transient_requires_complete_reports(self):
+        observation=dict(ActiveState='inactive',LoadState='not-found',Result='success',ExecMainStatus='0')
+        self.assertTrue(source_finished(observation,True))
+        with self.assertRaisesRegex(ValueError,'all source reports'):source_finished(observation,False)
+
     def test_missing_or_failed_owner_cannot_advance_even_with_reports(self):
         for observation in [dict(LoadState='not-found',ActiveState='inactive'),
                             dict(LoadState='loaded',ActiveState='failed',Result='exit-code',ExecMainStatus='1'),

@@ -30,7 +30,10 @@ def artifact(value,kind,root=ROOT):
 
 def source_finished(observation,complete):
     if observation.get('ActiveState') in ['active','activating','deactivating']:return False
-    if observation.get('LoadState')!='loaded' or observation.get('Result')!='success' or observation.get('ExecMainStatus')!='0':
+    # Successful transient units can be unloaded before the next observation.
+    # Complete reports are necessary here; the layout stage independently
+    # remeasures their waveforms and checks every captured producer/input hash.
+    if observation.get('LoadState') not in ['loaded','not-found'] or observation.get('Result')!='success' or observation.get('ExecMainStatus')!='0':
         raise ValueError('Source owner did not finish successfully')
     if not complete:raise ValueError('Source owner ended without all source reports')
     return True
