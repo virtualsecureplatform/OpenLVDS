@@ -163,7 +163,8 @@ Current bring-up evidence on 2026-10-31:
   PN 115.726→62.576 fF and CO 45.447→42.437 fF; CT rises 138.108→165.735 fF.
   These exclude device/MIM capacitance and count full coupling values. Native
   replay `receiver_replay/17c5587a5df91855` completes its captured case and loses
-  nine rising and nine falling edges; the sharper control remains pending. Both
+  nine rising and nine falling edges. Its complete sharper control also loses
+  seven rising and seven falling edges; the diagnostic is terminal. Both
   original stimuli and loads are retained. No recovery improvement is established. Matching isolated link
   fixture `receiver_candidate_link/98985df18860704a` is prepared and held behind
   both completed, zero-missing-edge replays. Both decision-current placements
@@ -195,13 +196,27 @@ Current bring-up evidence on 2026-10-31:
   SHA256 starts `ad5ac6a6d26b0b33`). Its actual native replay
   `receiver_replay/7b46eef599fb6e55` is running. Matching full-link fixture
   `receiver_candidate_link/14504581ae296019` is prepared behind native replay
-  gates. No native clamp or full-link result is claimed yet.
+  gates. Its live trace still misses the first short negative pulse: CO reaches
+  only 0.789 V while CO_TRACK moves 0.508–0.823 V in that interval. The complete
+  native clamp and full-link results remain pending.
+- Selected receiver component campaign `receiver_components/cc802e533e019b32`
+  has all 60 original schematic/native static/rate PVT fixtures prepared.
+  Baseline references verify, and the real run preflight reconstructs all
+  fixtures before holding at incomplete loaded-native replay evidence. No new
+  component simulation starts. Complete/unique coverage, unchanged stimuli/load/
+  scoring and fresh waveform reanalysis are enforced; baseline component proofs
+  and canonical pointers are retained.
+- Stronger schematic clamp `receiver_clamp/86e622030245e729` is running with
+  P32/N16 reference widths and four parallel poly units (about 500 Ω). Other
+  devices and restoration stages remain unchanged. It uses the same three
+  source controls and native digital load. No improved native behavior is
+  claimed before actual source and physical comparisons.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Unit suite: 313 tests, 312 passed and one skipped in the pinned ngspice
+- Unit suite: 321 tests, 320 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.

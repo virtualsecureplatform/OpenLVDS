@@ -1102,6 +1102,61 @@ is prepared and held behind both completed, zero-missing-edge native replays.
 Physical checks pass, while native clock recovery, all-PVT component behavior
 and full-link qualification remain unproven.
 
+## Selected receiver component qualification
+
+`qualify_receiver_components.py` prepares 60 fresh conditions for the selected
+receiver: schematic/native models, static sensitivity and maximum-rate tests,
+five process corners and 0/25/40 °C. It clones the currently verified original
+fixtures, changes only the receiver model/library binding and native observation
+names, and protects the original shared bias, driver and delay-line closures.
+Original fixed supplies, 100 fF output load, ±100 mV static decisions across the
+six legal common modes, 820 Mb/s rate stimulus, timing windows and logic limits
+are retained. The original rate analyzer is reused without changes.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/qualify_receiver_components.py prepare \
+  build/diagnostics/receiver_layout/f576c6a98d893590 \
+  build/diagnostics/receiver_replay/7b46eef599fb6e55
+scripts/env.sh --ngspice python3 scripts/qualify_receiver_components.py run \
+  build/diagnostics/receiver_components/cc802e533e019b32 --jobs 3
+```
+
+Only preparation has completed. A real run preflight reconstructs and checks
+all 60 original fixtures, then holds at the incomplete native replay gate,
+creating no component simulation. Both loaded native replay cases must complete
+with zero missing edges before this campaign can allocate simulator slots.
+Missing, duplicate or mislabeled conditions and changed fixture/model bytes are
+rejected. Every cached candidate waveform is remeasured. This remains separate
+from the 90 passing baseline component proofs, with no canonical model-pointer
+change. These cases do not replace native headroom, DLL, aperture, RC or full-link
+qualification.
+
+## Stronger tracking-reference comparison
+
+The first native clamp's early trace still misses the first short negative
+pulse. CO reaches about 0.789 V and CO_TRACK moves 0.508–0.823 V over that pulse's
+24.5–26.5 ns interval; the output clock does not fall. The full native replay
+continues. This motivates a separate schematic comparison with P32/N16 µm
+reference devices, four times the original replica widths, and four parallel
+poly units instead of two (nominal clamp resistance about 500 Ω). Existing
+input/decision devices, three restoration stages and all other source blocks
+remain unchanged. In particular the stronger replica has its own helper; the
+middle restoration inverter retains its original P8/N4 dimensions.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/receiver_strong_clamp_experiment.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171
+scripts/env.sh --ngspice python3 scripts/receiver_strong_clamp_experiment.py run \
+  build/diagnostics/receiver_clamp/86e622030245e729
+```
+
+The frozen schematic-replay implementation is reused with the new source
+factory explicitly attested. It retains the same three controls, pins, bias,
+native digital load, observations and scoring. The new source is isolated from
+all preceding experiments. Source results, physical/native behavior and full
+qualification remain pending; the first clamp's layout gate cannot accept a
+screen for this different source.
+
 ## Xyce compatibility check
 
 The image already contains Xyce 7.10.0 built from release commit
