@@ -573,3 +573,22 @@ archive and binding receipt. GDS and extracted network hashes must remain
 identical. Electrical results and qualification are never transferred; the
 combined DLL with the new PFD requires fresh native evidence. Changes to analog
 devices or wiring require new layout and extraction.
+
+
+## Combined physical PFD and analog monitor probes
+
+Prepare the combined source-bound native candidate with explicit physical PFD
+selection. Assembly validates the declared topology and both physical audits:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/qualify_dll_candidate.py prepare --layout build/diagnostics/dll_layout/pfd_bind_1583499260541bb4 --pfd build/diagnostics/pfd_fast_reset_physical_v2 --screen build/diagnostics/dll_architecture/0ca8225b328ecaa1 --variant ota_w8_c4
+scripts/env.sh --ngspice python3 scripts/probe_native_dll.py build/diagnostics/dll_qualification/1d201e9ed2f89f56 phase_ss_0_150ps phase_ss_0_0ps phase_ss_0_-150ps --jobs 3
+```
+
+Static probes retain the native full-RC fixtures and original scoring windows.
+Up to three workers share the global six-slot budget and one exclusive native
+campaign lease. Duplicate requests, approximate RC and loop fixtures are rejected
+before dispatch. Each case records its producer, manifest and result hashes;
+these diagnostic requests cannot mark the complete campaign or PHY qualified.
+The three architecture loops run independently. Full campaign expansion still
+requires their success and the measured stability gate.
