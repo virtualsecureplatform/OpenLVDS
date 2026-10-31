@@ -6,6 +6,7 @@ import fcntl
 import hashlib
 import json
 import os
+import shlex
 from pathlib import Path
 import subprocess
 import time
@@ -16,6 +17,17 @@ ROOT=Path(__file__).resolve().parents[1]
 DEFAULT_LAYOUT=ROOT/'build/diagnostics/dll_layout/c465a14562c2ff4f'
 DEFAULT_SCREEN=ROOT/'build/diagnostics/dll_architecture/6d99d42cf3eb5d31'
 DEFAULT_PFD=ROOT/'build/diagnostics/pfd_area_physical'
+
+
+
+def tool_command(script,args=(),use_tools=False):
+    command=['/usr/bin/python3','scripts/'+script,*map(str,args)]
+    if ROOT==Path('/work/OpenLVDS'):
+        # env.sh already established this container and its PDK/runtime.
+        # Tool jobs need only the existing Nix shell, never nested Apptainer.
+        if use_tools:return ['nix-shell','/opt/librelane/shell.nix','--run',shlex.join(command)]
+        return command
+    return ['scripts/env.sh']+(['--tools'] if use_tools else [])+['--ngspice']+command
 
 
 def qualification_config(old,relative):
@@ -69,9 +81,9 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD,rx=None,aperture_tabl
         time.sleep(10)
     if not json.loads((LAYOUT/'rc_audit.json').read_text())['passed']:
         raise RuntimeError('W8/C4 RC connectivity audit failed')
-    command=['scripts/env.sh','--ngspice','python3','scripts/qualify_dll_candidate.py','prepare',
+    command=tool_command('qualify_dll_candidate.py',['prepare',
         '--layout',str(LAYOUT.relative_to(ROOT)),'--pfd',str(pfd.relative_to(ROOT)),
-        '--screen',str(screen.relative_to(ROOT)),'--variant','ota_w8_c4']
+        '--screen',str(screen.relative_to(ROOT)),'--variant','ota_w8_c4'])
     result=subprocess.run(command,cwd=ROOT,capture_output=True,text=True)
     (LAYOUT/'qualification_prepare.log').write_text(result.stdout+result.stderr)
     result.check_returncode()
@@ -105,8 +117,7 @@ def advance(LAYOUT, screen=DEFAULT_SCREEN, pfd=DEFAULT_PFD,rx=None,aperture_tabl
             req=json.loads((artifact/'requirements.json').read_text());corners=tuple(f'{p}_{t}' for p in req['process_corners'] for t in req['temperatures_c'])
         cached=cached_model(artifact/('stability_all_pvt' if all_pvt else 'stability_screen'),inputs,corners)
         if cached:return cached
-        args=['scripts/env.sh','--ngspice','python3','scripts/measure_dll_stability.py',str(relative)]
-        if all_pvt:args+=['--all-pvt']
+        args=tool_command('measure_dll_stability.py',[str(relative)]+(['--all-pvt'] if all_pvt else []))
         result=subprocess.run(args,cwd=ROOT,capture_output=True,text=True)
         (LAYOUT/('stability_all.log' if all_pvt else 'stability_screen.log')).write_text(result.stdout+result.stderr)
         result.check_returncode()
@@ -161,33 +172,32 @@ def finalize(qualification,stability,rx=None,aperture_table=None,workroot=None):
 def signoff(artifact,report,workroot,rx,aperture_table):
     relative=artifact.relative_to(ROOT);workflow=workroot/'workflow.json'
     atomic(workflow,dict(status='characterizing_observed_ota_points',qualification=str(relative),qualified_phy=False))
-    result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/ota_operating_points.py',str(relative),
-        '--stability',str(report.relative_to(ROOT)),'--jobs','6'],cwd=ROOT,capture_output=True,text=True)
+    result=subprocess.run(tool_command('ota_operating_points.py',[str(relative),
+        '--stability',str(report.relative_to(ROOT)),'--jobs','6']),cwd=ROOT,capture_output=True,text=True)
     (workroot/'ota_operating_points.log').write_text(result.stdout+result.stderr);result.check_returncode()
     operating=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not json.loads(operating.read_text())['passed']:raise ValueError('Observed OTA operating range failed')
     atomic(workflow,dict(status='qualifying_limiting_corner_recovery',qualification=str(relative),qualified_phy=False))
-    result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/qualify_dll_recovery.py',str(relative),
-        '--stability',str(report.relative_to(ROOT)),'--jobs','6'],cwd=ROOT,capture_output=True,text=True)
+    result=subprocess.run(tool_command('qualify_dll_recovery.py',[str(relative),
+        '--stability',str(report.relative_to(ROOT)),'--jobs','6']),cwd=ROOT,capture_output=True,text=True)
     (workroot/'limiting_recovery.log').write_text(result.stdout+result.stderr);result.check_returncode()
     recovery=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not json.loads(recovery.read_text())['passed']:raise ValueError('Limiting-corner native recovery failed')
     atomic(workflow,dict(status='qualifying_native_readiness',qualification=str(relative),qualified_phy=False))
-    result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/qualify_dll_readiness.py',str(relative),
-        '--stability',str(report.relative_to(ROOT)),'--recovery',str(recovery.relative_to(ROOT)),'--jobs','6'],
+    result=subprocess.run(tool_command('qualify_dll_readiness.py',[str(relative),
+        '--stability',str(report.relative_to(ROOT)),'--recovery',str(recovery.relative_to(ROOT)),'--jobs','6']),
         cwd=ROOT,capture_output=True,text=True)
     (workroot/'native_readiness.log').write_text(result.stdout+result.stderr);result.check_returncode()
     readiness=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not json.loads(readiness.read_text())['passed']:raise ValueError('Native readiness replay failed')
-    result=subprocess.run(['scripts/env.sh','--ngspice','python3','scripts/stage_phy_candidate.py',str(relative)]+(['--rx',str(rx.relative_to(ROOT))] if rx is not None else []),
+    result=subprocess.run(tool_command('stage_phy_candidate.py',[str(relative)]+(['--rx',str(rx.relative_to(ROOT))] if rx is not None else [])),
         cwd=ROOT,capture_output=True,text=True)
     (workroot/'bundle_prepare.log').write_text(result.stdout+result.stderr);result.check_returncode()
     bundle=ROOT/Path(result.stdout.strip().splitlines()[-1]).relative_to('/work/OpenLVDS')
     if not (bundle/'manifest.json').is_file():raise ValueError('Staged PHY manifest missing')
     def bundle_job(status,script,args,log,use_tools=False):
         atomic(workflow,dict(status=status,qualification=str(relative),bundle=str(bundle.relative_to(ROOT)),qualified_phy=False))
-        result=subprocess.run(['scripts/env.sh']+(['--tools'] if use_tools else [])+
-            ['--ngspice','/usr/bin/python3','scripts/'+script]+args,
+        result=subprocess.run(tool_command(script,args,use_tools),
             cwd=ROOT,capture_output=True,text=True)
         (workroot/log).write_text(result.stdout+result.stderr)
         if result.returncode:

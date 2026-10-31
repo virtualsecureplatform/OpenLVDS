@@ -125,3 +125,23 @@ class CompletedNativeResume(unittest.TestCase):
             with patch.object(advance,'ROOT',root),patch.object(advance,'signoff') as run:
                 with self.assertRaisesRegex(ValueError,'Expected an OTA'):advance.finalize(artifact,model)
                 run.assert_not_called()
+
+
+class AdvancementExecutionContext(unittest.TestCase):
+    def test_container_jobs_execute_directly_without_nested_apptainer(self):
+        with patch.object(advance,'ROOT',Path('/work/OpenLVDS')):
+            command=advance.tool_command('ota_operating_points.py',['candidate','--jobs','6'])
+        self.assertEqual(command,['/usr/bin/python3','scripts/ota_operating_points.py','candidate','--jobs','6'])
+
+    def test_container_tool_shell_preserves_literal_arguments(self):
+        import shlex
+        args=['path with spaces/$(literal)','--flag']
+        with patch.object(advance,'ROOT',Path('/work/OpenLVDS')):
+            command=advance.tool_command('verify_candidate_rtl.py',args,True)
+        self.assertEqual(command[:3],['nix-shell','/opt/librelane/shell.nix','--run'])
+        self.assertEqual(shlex.split(command[3]),['/usr/bin/python3','scripts/verify_candidate_rtl.py',*args])
+
+    def test_host_jobs_keep_the_pinned_environment_wrapper(self):
+        with patch.object(advance,'ROOT',Path('/host/OpenLVDS')):
+            command=advance.tool_command('verify_candidate_rtl.py',['bundle'],True)
+        self.assertEqual(command,['scripts/env.sh','--tools','--ngspice','/usr/bin/python3','scripts/verify_candidate_rtl.py','bundle'])

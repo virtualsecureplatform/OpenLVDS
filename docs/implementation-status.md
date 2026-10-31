@@ -27,7 +27,7 @@ Current bring-up evidence on 2026-10-31:
   driver/receiver cases, all 30 native analog receiver cases and eight native
   drivers. Remaining native driver refresh continues. Historical numerical
   failures remain archived separately from the current-proof receipt.
-- Unit suite: 261 tests, 256 passed and five skipped. The shared native budget
+- Unit suite: 264 tests, 259 passed and five skipped. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
 - Full DLL/PVT/model/recovery/readiness/operating-point evidence, all 480 RX
@@ -1285,3 +1285,16 @@ exclusive advancement ownership. An actual attempt against the currently
 incomplete native campaign stops at the native gate, creates no advancement
 directory and starts no downstream job. Unit suite: 261 tests, 256 passed, five
 skipped. Active qualification producers and fixtures remain unchanged.
+
+Runtime inspection found that the base image contains no Apptainer executable,
+while the downstream orchestrator previously called `env.sh` for every child.
+Its child-command builder now executes base jobs directly inside the established
+container and enters the existing Nix shell for tool jobs. Host-side command
+construction retains the environment wrapper. Literal arguments are preserved
+with proper shell quoting for the Nix command string.
+
+Actual smoke checks pass for both paths: a base child validates the selected
+TX/PFD/RX netlist handoff, and a Nix-shell child exposes the advancement CLI.
+The waiting downstream watcher was stopped for this correction; no native
+simulation was stopped or restarted. Unit suite: 264 tests, 259 passed, five
+skipped. The resume path retains complete native/all-PVT and downstream gates.

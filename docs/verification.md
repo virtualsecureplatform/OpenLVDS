@@ -178,3 +178,9 @@ The input setup/hold subtraction, extra 200 ps margin, analog sensitivity,
 clock eye, pin limits, payload size and full link coverage are unchanged.
 Reports include the public window and the first payload publication time; their
 runner fingerprint rejects cached evidence from the preceding analyzer.
+
+Downstream orchestration runs inside the pinned `/work/OpenLVDS` environment.
+Ordinary child jobs execute the base image's `/usr/bin/python3` directly; jobs
+requiring implementation tools enter the existing Nix shell with shell-quoted
+arguments. They do not attempt to launch another Apptainer container from the
+base image. Host-side command construction retains the pinned `env.sh` wrapper.
