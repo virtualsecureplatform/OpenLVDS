@@ -821,3 +821,25 @@ positive-edge publication label is rejected. The original loaded output window,
 stay unchanged. Native admission failure holds matrix expansion. Passing native
 coverage must additionally be followed by full link testing, including duty and
 jitter stress; RTL and nominal STA alone do not prove the half-cycle path at PVT.
+
+The supplementary early-RX burst diagnostic tests a different failure mode from
+a single-transition aperture search: continuous words traversing the rising to
+falling holding path at SS/40 °C, 410 MHz, 45/55% duty, independent bounded ±50 ps
+clock-edge jitter, ±100 ps serial skew, 200 ps clock/data slew and 20 fF loads.
+Four deterministic cases each check 32 consecutive pairs after eight warmup
+cycles, including all symbols and alternating bits. Every word must meet the
+original +0.80–1.05 ns public window and 0.36/1.44 V logic thresholds; VALID is
+checked throughout that window. It does not replace the 480 aperture cases,
+full link matrix or DLL qualification.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/probe_rx_burst.py prepare build/diagnostics/rx_early_physical_v1
+scripts/env.sh --ngspice python3 scripts/probe_rx_burst.py run build/diagnostics/rx_burst/0a6a8b72e9d5e53d
+```
+
+The diagnostic binds the physical audit, exact network, producer snapshots and
+simulator provenance. Cached traces are remeasured; changed evidence is rejected.
+It acquires the same shared native slot as other simulations and stops on the
+first failed case. Tests independently derive sampled words from serial events
+at actual jittered clock edges and reject corrupted, invalid or incomplete
+waveforms.
