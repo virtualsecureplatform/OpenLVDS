@@ -1411,3 +1411,28 @@ the original gain-doubled source; the clamped architecture and historical strong
 source comparison provide separate context. Three tests verify exact coherent
 decision sizes, all other devices/ports, unchanged control and rejection of
 unexpected topology. This source experiment does not select a physical receiver.
+
+The original-decision candidate has dedicated physical/native producers and
+identity `strong_light_decision`, `decision_scale=1`. Its physical gate remeasures
+all three source traces, requires exactly one edge per checked input period and
+checks the exact source; doubled-decision source evidence cannot supply this
+proof. Native preparation retains the original terminal order, bias circuit,
+digital load, 80 ns stimuli and scoring window, and requires DRC/LVS plus an
+independent RC audit. Seven targeted source/physical tests pass.
+
+Host service `openlvds-light-decision-native-continuation` is waiting on the actual
+source owner. It freezes source/parent manifests and downstream producers and
+uses the corrected transient-unit observation helper. After source success it
+runs the gated layout, RC audit and both native controls. Any failed gate holds
+the pipeline; no component/link or release is started by this continuation.
+
+```sh
+/usr/bin/python3 scripts/continue_receiver_light_decision.py \
+  build/diagnostics/receiver_clamp/af769bd4767fe6c2 \
+  build/diagnostics/clock_restore/50565a94b3b04171 \
+  --source-unit openlvds-light-decision-source-screen.service
+```
+
+Its receipt is under `receiver_clamp/af769bd4767fe6c2/native_continuation/`.
+The source owner remains live and the controls are queued; no original-decision
+physical/native result is claimed.

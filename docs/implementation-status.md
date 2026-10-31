@@ -293,12 +293,21 @@ Current bring-up evidence on 2026-10-31:
   demonstrated improvement. Three structural tests pass. The original source
   controls are queued under the same six-slot budget; no physical result or
   release selection is claimed.
+  Dedicated `layout_receiver_light_decision_candidate.py` and
+  `probe_receiver_light_decision_candidate.py` bind `decision_scale=1` and the
+  exact original-decision source. Physical preparation requires all three source
+  cases complete with exactly one edge per input period; native preparation
+  requires DRC/LVS, independent RC audit, matching source and all captured proofs.
+  Host service `openlvds-light-decision-native-continuation` waits on its actual
+  source owner and runs those stages in sequence. It reuses the corrected
+  transient-unit handling and stops on any failed gate. Seven source/physical
+  structural tests pass; no physical/native result is claimed.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 342 tests, 341 passed and one skipped in the pinned ngspice
+- Last full unit suite: 350 tests, 349 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
