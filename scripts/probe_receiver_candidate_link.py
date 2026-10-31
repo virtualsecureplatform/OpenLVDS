@@ -15,13 +15,13 @@ from dll_measurements import read_wave
 from simulate_link import analyze,edge_times,word_stream,REQ
 from spice_engine import command,engine,provenance
 from spice_library import checked_netlist
-from probe_receiver_gain_candidate import run as recheck_replay
 from layout_receiver_gain_candidate import source_variant
 from spice_slots import slot
 from stage_phy_candidate import overlay
 
 ROOT=Path(__file__).resolve().parents[1]
 CODE=['probe_receiver_candidate_link.py','probe_receiver_gain_candidate.py','layout_receiver_gain_candidate.py',
+      'probe_receiver_clamp_candidate.py','layout_receiver_clamp_candidate.py','receiver_clamp_experiment.py',
       'layout_receiver_variant.py','layout_receiver_tail_candidate.py','receiver_candidate_rc.py',
       'probe_link_clock_restore.py','diagnose_link_clock.py','spice_scope.py','spice_probes.py','dll_candidate_library.py',
       'dll_campaign.py','dll_measurements.py','physical_policy.py','simulate_link.py',
@@ -29,6 +29,15 @@ CODE=['probe_receiver_candidate_link.py','probe_receiver_gain_candidate.py','lay
 
 
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def recheck_replay(root):
+    identity=json.loads((root/'manifest.json').read_text())['identity']
+    if identity.get('decision_clamped'):
+        from probe_receiver_clamp_candidate import run
+    else:
+        from probe_receiver_gain_candidate import run
+    return run(root)
 
 
 def rebind(deck,old,new):
@@ -75,7 +84,12 @@ def prepare(link,replay):
         raise ValueError('Use an isolated receiver layout')
     physical=json.loads((layout/'summary.json').read_text())
     if not physical['passed'] or (layout/'rejected_candidate.json').exists():raise ValueError('Physical receiver did not pass')
-    if (layout/'candidate.spice').read_text()!=source_variant((ROOT/'analog/openlvds.spice').read_text()):
+    clamped=capture['identity'].get('decision_clamped',False)
+    if clamped!=physical['identity'].get('decision_clamped',False):raise ValueError('Receiver replay architecture differs from layout')
+    if clamped:
+        from receiver_clamp_experiment import source_variant as selected_source
+    else:selected_source=source_variant
+    if (layout/'candidate.spice').read_text()!=selected_source((ROOT/'analog/openlvds.spice').read_text()):
         raise ValueError('Unexpected receiver source variant')
     for name,h in physical['identity']['code'].items():
         if digest(ROOT/'scripts'/name)!=h:raise ValueError('Receiver physical producer changed')

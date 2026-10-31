@@ -12,6 +12,13 @@ from spice_scope import closure_hash
 
 
 class ReceiverLinkDiagnostic(unittest.TestCase):
+    def test_clamped_replay_uses_its_own_exact_waveform_verifier(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);(root/'manifest.json').write_text('{"identity":{"decision_clamped":true}}')
+            with patch('probe_receiver_clamp_candidate.run') as clamp,patch('probe_receiver_gain_candidate.run') as gain:
+                diagnostic.recheck_replay(root)
+            clamp.assert_called_once_with(root);gain.assert_not_called()
+
     def test_receiver_swap_preserves_all_other_macros_and_terminal_order(self):
         ports=['P','N','Q','NB','PB','VDDIO','VDDD','VSS','ENABLE']
         receiver='.subckt openlvds_receiver_core '+' '.join(ports)+'\nR1 Q VSS 10k\n.ends openlvds_receiver_core\n'
