@@ -1133,3 +1133,13 @@ supplementary half-cycle diagnostic, while the full aperture and link gates
 remain mandatory. Eleven original admissions have passed and the final FF/0
 falling-data case is live. DLL, driver refresh and six-fixture RC comparison
 continue without source changes or simulation restart.
+
+The early RX clears all 12 original loaded native admission points with zero
+held cases. `rx_aperture/20b04dcf527af283/seed_summary.json` binds each actual
+waveform witness to manifest
+`bd12c38ce8362bd289826175a9ee3b650f3a49fafd0116ab9d3092aa231e16bc`.
+The same coordinator has rechecked those admissions and entered `running_full`
+with three boundary workers for the original 480-condition matrix. Actual
+simulator dispatch remains limited by the six shared leases. This clears the
+publication admission failure that held the preceding three RX variants; it
+does not yet prove complete aperture bounds or full PHY qualification.
