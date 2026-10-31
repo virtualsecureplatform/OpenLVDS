@@ -1278,9 +1278,15 @@ delay 632.701–633.013 ps. The exact-profile handoff starts native screen
 the measured native model. No native acquisition pass is claimed.
 
 The stronger-clamp native captured case completes with 11 missing rising and
-11 missing falling edges, worse than the baseline's nine of each. Its sharp
-control is still running. The loaded recovery gate therefore prevents the
-prepared component/link continuation from advancing this candidate.
+11 missing falling edges, worse than the baseline's nine of each.
+The sharp native control completes with nine missing rising and
+nine missing falling edges. The native owner is terminal with both diagnostic
+reports; its continuation correctly records `held_for_diagnosis` for lost clock
+edges. Neither prepared component root `90fff4b7107aa5ae` nor prepared link root
+`37d95b09d5fb0059` has an execution receipt or raw simulation file. After those
+owners terminated, downstream dispatch gained explicit `strong_wide_input`
+factory/verifier selection. Fresh component/link preparation is required for
+any future selected receiver; those historical prepared contexts are not reused.
 
 The wider-input candidate has separate physical and native producers. Run these
 only after its three source comparisons finish; the layout producer remeasures

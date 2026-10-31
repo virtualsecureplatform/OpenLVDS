@@ -225,8 +225,11 @@ Current bring-up evidence on 2026-10-31:
   existing receiver devices and connections are retained. Actual native replay
   `receiver_replay/13ab38f8a7b8e217` runs under the unchanged six-slot budget.
   Its completed captured-input case misses 11 rising and 11 falling edges,
-  worse than the original receiver's nine of each. The sharp control is running;
-  the stronger clamp is not selected for component or link qualification.
+  worse than the original receiver's nine of each. The sharp control also
+  completes and misses nine rising and nine falling edges. The native owner
+  exits successfully after producing both diagnostic reports; the follow-up
+  records `held_for_diagnosis` for failed clock recovery and starts no component
+  or link simulations. The stronger clamp is not selected for qualification.
   Matching link fixture `receiver_candidate_link/37d95b09d5fb0059` and 60-case
   component campaign `receiver_components/90fff4b7107aa5ae` are prepared behind
   its loaded native gate. The component preflight verifies original fixtures
@@ -256,12 +259,16 @@ Current bring-up evidence on 2026-10-31:
   source owner, then runs those physical/RC/native gates in sequence. It freezes
   source and parent manifests plus downstream producers; failed gates hold the
   pipeline. It stops before component/link qualification and release selection.
+  After the previous native owner/follow-up terminated, the downstream dispatcher
+  gained explicit `strong_wide_input` source and native-verifier selection.
+  Future component/link fixtures retain original stimuli and scoring; their
+  native replay gate still requires complete, one-to-one clock recovery.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Unit suite: 341 tests, 340 passed and one skipped in the pinned ngspice
+- Unit suite: 342 tests, 341 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
