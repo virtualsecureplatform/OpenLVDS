@@ -76,3 +76,30 @@ Raw input and recomputed interval measurements are retained in
 `build/diagnostics/dll_failure_analysis/results.json`, with waveform hashes.
 The analysis producer is `build/diagnostics/dll_failure_analysis/analyze.py`.
 No circuit, simulator, pass threshold or queued producer was changed.
+
+
+## Native W8/C4 monitor timing, 2026-10-31
+
+The exact physical candidate `0f0c41cbc75c` passes SS/0 °C 0/+50 ps but misses
+both ±150 ps faults through 160 ns. The ±300 ps cases eventually assert BAD,
+but fail the unchanged requirement for valid fault coverage across the
+120–160 ns window. Reanalysis of their completed waveforms finds:
+
+| Offset | BAD falls after startup | BAD next rises | Filtered UF−DF mean, 120–160 ns |
+| --- | --- | --- | --- |
+| +150 ps | 80.552 ns | none through 160 ns | +89.34 mV |
+| −150 ps | 80.190 ns | none through 160 ns | −91.80 mV |
+| +300 ps | 79.421 ns | 147.595 ns | +160.83 mV |
+| −300 ps | 79.019 ns | 137.510 ns | −158.93 mV |
+
+TT/25 °C +150 ps also stays quiet after 89.361 ns despite a 90.71 mV filtered
+difference. The startup high is not evidence of sustained fault detection.
+`monitor_fault_timing_diagnosis.json` under qualification `d4d687cf4e0b5e1e`
+binds these crossing measurements to the completed waveform and report hashes.
+
+These failures justify measuring the divider and comparator nodes rather than
+changing the fault window. A loaded/unloaded schematic control and a stronger
+monitor are being compared with captured coupling capacitances. The repair's
+new GDS passes DRC/LVS/extraction/audit, but its electrical response has not yet
+been established. The old coordinator is draining submitted work without new
+dispatch; the RX characterization remains intact.

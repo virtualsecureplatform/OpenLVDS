@@ -344,7 +344,7 @@ SS/0 °C, TT/25 °C and FF/0 °C pass the schematic loop screen. Its new layout
 passes DRC, strict LVS, exact RC extraction and the independent RC topology audit.
 The exact network is `0f0c41cbc75c`; its 15 analog ports are verified. Native
 qualification `d4d687cf4e0b5e1e` passes the initial SS/0 °C 0/+50 ps monitor
-cases but fails SS/0 °C ±150/+300 ps and TT/25 °C +150 ps. The old coordinator
+cases but fails SS/0 °C ±150/±300 ps and TT/25 °C +150 ps. The old coordinator
 is draining already submitted cases; new dispatch has been retired.
 Its 336-case manifest holds the full matrix until the 24-case native screen and
 measured stability gates pass. The active release remains unchanged.
@@ -409,7 +409,8 @@ The profile is eligible for fresh native qualification. These two quiet-offset
 comparisons do not qualify the electrical matrix or correct monitor failures.
 
 The native SS/0 °C +150 ps BAD output remains low through 160 ns. At +300 ps,
-BAD returns high only at 147.6 ns, too late for the unchanged 120–160 ns fault
+BAD returns high only at 147.6 ns (+300 ps) and 137.5 ns (−300 ps),
+too late for the unchanged 120–160 ns fault
 window. The filtered UP−DN difference remains approximately 89/161 mV,
 respectively. SS/0 °C −150 ps and TT/25 °C +150 ps also miss the fault.
 Exact-name extracted capacitance sums incident on PA/PB are 530/561 fF;
@@ -418,8 +419,9 @@ including coupling. Slow readout under these loads is a hypothesis, not yet a
 confirmed cause; distributed resistance, device junctions and bias remain
 possible contributors.
 
-Monitor diagnostic `monitor_repair/9a9a9300e6682a18` is queued on two shared
-slots. Its repaired source divides monitor resistor lengths by four, replicates
+Monitor diagnostic `monitor_repair/9a9a9300e6682a18` uses two shared
+slots; its loaded-baseline SS/0 °C +150 ps control is running, with the first
+repair case waiting. Its repaired source divides monitor resistor lengths by four, replicates
 the two averaging capacitors four times and increases comparator branch widths
 fourfold. Nominal divider ratios and averaging R×C are preserved. Explicit
 unloaded/loaded baseline controls test the capacitive-loading hypothesis, then
