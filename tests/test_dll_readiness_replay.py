@@ -9,11 +9,12 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from dll_readiness_replay import input_events,clocked_health,replay
 
 
-def trace(stop=2100,fault=False,unsafe=False):
+def trace(stop=2100,fault=False,unsafe=False,late_loss=False):
     t=np.arange(0,stop+0.005,0.005)*1e-9
     def clock(delay):
         points=[(0,0)]
         for at in np.arange(5+delay,stop+3,2.5):
+            if late_loss and 2200<=at-delay<2300:continue
             points.extend([(at-.05,0),(at+.05,1.8),(at+1.2,1.8),(at+1.3,0)])
         return np.interp(t,np.array(points)[:,0]*1e-9,np.array(points)[:,1])
     bad=np.zeros(len(t))
@@ -65,3 +66,12 @@ class NativeReadiness(unittest.TestCase):
             self.assertTrue(result['passed'],result)
             self.assertEqual(len(result['assertions']),2)
             self.assertGreater(result['assertions'][1]['at_ns'],3300)
+
+    @unittest.skipUnless(shutil.which('iverilog') and shutil.which('vvp'),'Icarus is in scripts/env.sh')
+    def test_late_clock_loss_clears_and_rearms_after_prior_lock(self):
+        with tempfile.TemporaryDirectory() as folder:
+            result=replay(*trace(stop=4700,late_loss=True),Path(folder),recovery=True)
+            self.assertTrue(result['passed'],result)
+            self.assertTrue(result['clock_loss_requalified'])
+            self.assertLess(result['assertions'][0]['at_ns'],2200)
+            self.assertGreater(result['assertions'][1]['at_ns'],3900)

@@ -97,7 +97,11 @@ endmodule
     (out/'compile.log').write_text(compile.stdout+compile.stderr);compile.check_returncode()
     run=subprocess.run(['vvp',str(out/'replay.vvp')],cwd=out,capture_output=True,text=True)
     (out/'replay.log').write_text(run.stdout+run.stderr);run.check_returncode()
-    rows=[line.split()[1:] for line in run.stdout.splitlines() if line.startswith('ROW ')]
+    return analyze(wave,header,run.stdout,recovery)
+
+
+def analyze(wave,header,log,recovery=False):
+    rows=[line.split()[1:] for line in log.splitlines() if line.startswith('ROW ')]
     if not rows or any(any(bit not in ['0','1'] for bit in row[1:]) for row in rows):
         raise ValueError('Undefined RTL output during native readiness replay')
     data=np.array([[float(row[0])*1e-15,*map(int,row[1:])] for row in rows])
@@ -117,8 +121,9 @@ endmodule
         qualification.append(dict(at_ns=at*1e9,passed=bool(measured['passed'] and storage),metrics=measured,all_storage_plates_passed=storage))
     health=clocked_health(wave,header,data[locked,0])
     reset_clear=bool(np.all(data[(data[:,2]==0)|(data[:,3]==0),5]==0))
-    enabled=data[(data[:,4]==1)&valid,0]
-    enable_error=float(abs(enabled[0]-85e-9)*1e12) if len(enabled) else None
+    enabled=data[(data[:,4]==1)&np.r_[True,data[:-1,4]==0],0]
+    expected=np.array([85e-9,2380e-9] if recovery else [85e-9])
+    enable_error=float(np.max(abs(enabled-expected))*1e12) if len(enabled)==len(expected) else None
     recovered=True
     if recovery:
         recovered=bool(any(q['at_ns']<2200 for q in qualification) and any(q['at_ns']>2300 for q in qualification) and

@@ -223,5 +223,37 @@ the DLL's response to individual captured jitter edges.
 The advancement service runs these steps only after W8/C4 native electrical
 and all-PVT stability qualification. The non-diagnostic matrix waits for the
 complete 480-boundary capture table. A passing matrix still requires the
-remaining analog operating-range, readiness replay, worst-model-corner recovery
-and release checks before promotion.
+remaining analog operating-range and release checks before promotion; native
+readiness and limiting-corner recovery now precede staged validation as below.
+
+## Native recovery and readiness
+
+`qualify_dll_recovery.py QUALIFICATION --stability ALL_PVT_REPORT` selects the
+lowest measured phase margin, lowest gain margin and longest predicted settling
+time. The union of those corners and SS/0 °C, TT/25 °C and FF/0 °C must pass
+native 400→390/410 MHz steps and clock-loss/rearm. Matching completed cases from
+the original native matrix are reanalyzed; missing limiting-corner cases run
+with the same full-RC library, loads and measurement limits. The report lives
+under `QUALIFICATION/recovery` and binds its source model and native traces.
+
+`qualify_dll_readiness.py QUALIFICATION --stability ALL_PVT_REPORT --recovery RECOVERY_REPORT`
+replays every native all-PVT frequency-step clock and BAD waveform through the
+actual `openlvds_dll_control` RTL. It retains BAD transitions between reference
+edges. At each lock assertion, the preceding 100 ns must pass phase, cadence,
+quiet-BAD and every-storage-plate checks. Every locked reference sample also
+checks feedback and quarter-phase error, clock activity and the BAD level.
+
+Additional native loss cases at the fixed and limiting corners run to 4700 ns.
+Their clock interruption is 2200–2300 ns, after initial lock can occur. The
+clock-ready contract deasserts at 2210 ns and returns at 2300.1 ns. The replay
+checks lock before loss, clearing during loss, a new acquisition guard, and
+lock after recovery. Native detector-enable commands retain the fixture's
+200 ps propagation partition after the controller's 32-cycle precharge; the
+replayed controller must issue its corresponding edges at 85 and 2380 ns.
+This is RTL replay across an explicit analog command partition, not a
+metastability or assembled controller-GDS qualification.
+
+The advancement workflow runs both gates before staged PHY validation. Their
+production W8/C4 results remain pending. The replay backend passes actual RTL
+tests for startup, short/asynchronous BAD events, later BAD faults, late clock
+loss/rearm and rejection of unsafe phase even when BAD is optimistic.

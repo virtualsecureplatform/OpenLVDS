@@ -382,7 +382,25 @@ simulator slots. It covers all 15 PVT points, input common modes 0.32–0.75 V
 supplies and bias. It is a schematic diagnostic; it does not replace extracted
 loop qualification or general device-stress verification.
 
-All 129 unit tests pass. Native W8/C4 qualification, the complete RX aperture
+Native limiting-corner recovery and readiness replay runners are implemented
+and connected before staged PHY validation. Recovery includes the lowest phase
+margin, lowest gain margin and slowest modeled settling corners. Readiness uses
+the actual controller RTL and native all-PVT step waveforms; added 4700 ns loss
+fixtures allow lock both before and after a 2200–2300 ns clock interruption.
+The backend passes actual RTL tests for settled lock, BAD-fault requalification,
+late clock-loss/rearm and rejection of unsafe native phase with a quiet BAD flag.
+Production W8/C4 recovery/readiness evidence remains pending.
+
+A diagnostic count experiment on the exact W8/C4 resistor network finds that
+degree-8 algebraic elimination reduces 95,814 resistor-graph nodes and 280,285
+resistors to 10,484 nodes and 36,372 resistors. Protected nodes include every
+capacitor/device terminal and public port. Higher-degree elimination passes
+independent complex terminal-admittance tests. No replacement network has been
+published or substituted into a running simulation; a captured network,
+independent topology audit and native equivalence checks are still needed.
+
+All 141 tests pass across the host and container checks, including actual RTL
+replay. Native W8/C4 qualification, the complete RX aperture
 table, analog characterization at the actual loop operating points, readiness
 replay, worst-model-corner recovery, the six-fixture RC certificate and the full
 45-case link regression remain outstanding. No candidate or approximation is

@@ -23,6 +23,8 @@ def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def inputs(qualification,stability):
+    if stability.parent.parent.parent!=qualification:
+        raise ValueError('Stability model belongs to another qualification artifact')
     manifest=json.loads((qualification/'manifest.json').read_text());validate(qualification,manifest)
     complete=json.loads((qualification/'summary.json').read_text())
     if not (complete['passed'] and complete['manifest_sha256']==digest(qualification/'manifest.json') and
