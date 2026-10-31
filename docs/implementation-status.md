@@ -284,6 +284,10 @@ Current bring-up evidence on 2026-10-31:
   CO peaks at 0.810757 V, RESTORE0 remains above 1.744 V and the output clock
   has no falling crossing in 24–27 ns. Both original 80 ns controls continue
   to completion; these partial observations are not a qualification verdict.
+  The captured native case now completes with nine missing rising and nine
+  missing falling edges. This improves on the preceding strong-clamp count of
+  11 each, but matches baseline pulse loss and does not pass the native recovery
+  gate. The sharp control is queued; component/link simulations remain held.
 - New source comparison `receiver_clamp/af769bd4767fe6c2` restores the five
   decision-stage devices to original widths (tail 64 µm, differential pair
   and mirror devices 8 µm). It retains doubled input tails, original 20 µm
@@ -291,7 +295,7 @@ Current bring-up evidence on 2026-10-31:
   traces show a larger first-pulse PP−PN excursion before the decision-stage
   doubling; reducing its input/device/routing load is a hypothesis, not a
   demonstrated improvement. Three structural tests pass. The original source
-  controls are queued under the same six-slot budget; no physical result or
+  campaign is active under the same six-slot budget; no physical result or
   release selection is claimed.
   Dedicated `layout_receiver_light_decision_candidate.py` and
   `probe_receiver_light_decision_candidate.py` bind `decision_scale=1` and the

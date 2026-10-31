@@ -1434,5 +1434,12 @@ the pipeline; no component/link or release is started by this continuation.
 ```
 
 Its receipt is under `receiver_clamp/af769bd4767fe6c2/native_continuation/`.
-The source owner remains live and the controls are queued; no original-decision
+The source owner remains live; no original-decision
 physical/native result is claimed.
+
+The wider-input captured native case subsequently completes with nine missing
+rising and nine missing falling edges. The count improves on the preceding
+strong clamp's 11 each but equals the original baseline loss; clock recovery
+still fails. Its sharp native control is queued under the same six-slot budget.
+Prepared wider-input components and full-link diagnostics remain held by the
+loaded recovery gate. The original-decision source experiment continues.
