@@ -452,3 +452,36 @@ physical candidate before native registration and at final release. They verify
 source-specific screen producers and their archived copies alongside the shared
 campaign dependencies; a changed helper or candidate source cannot inherit the
 previous screen's success.
+
+
+## Native monitor diagnosis and local routing
+
+For a completed native phase fixture, inspect comparator terminals at the
+measured fault operating point without replacing extracted devices or R/C:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/diagnose_native_monitor.py QUALIFICATION phase_ss_0_150ps --stage dc
+scripts/env.sh --ngspice python3 scripts/diagnose_native_monitor.py QUALIFICATION phase_ss_0_150ps --stage transient
+```
+
+The DC diagnostic adds test ports to clamp UF, DF and CTRL to their measured
+120–160 ns means and removes the pulsed PFD stimulus. It diagnoses equilibrium;
+it cannot establish fault timing. The transient retains the original native
+fixture and adds actual extracted terminal probes. Optional `--stop-ns 320` or
+`600` creates a separate diagnostic while retaining the original 120–160 ns
+phase measurement. Both stages bind the native manifest, trace, report, library
+and producer hashes. Their reports explicitly exclude PHY qualification.
+
+A layout-only alternative keeps each comparator's O/OB/L/T wiring inside its
+own child island, separate from the passive network and output logic:
+
+```sh
+scripts/env.sh --tools --ngspice python3 scripts/layout_dll_candidate.py CANDIDATE_SOURCE --local-comparators
+scripts/env.sh --tools --ngspice python3 scripts/dll_candidate_rc.py NEW_LAYOUT
+```
+
+The generator creates a new source-hashed layout directory and runs DRC and
+strict LVS. Extraction/audit and new immutable native fixtures follow separately.
+Source equality allows reuse of a matching schematic screen only; previous
+native electrical results never qualify the new physical network. Select the
+layout only after its native fault, quiet and loop checks pass.
