@@ -427,3 +427,21 @@ the OpenLVDS workspace. This is a local macro release, not an independently
 exported evidence archive or an assembled PHY GDS. The canonical development
 flows remain available for subsequent experiments. No package is published while
 any required electrical or link gate is missing or failed.
+
+
+## Early native static monitor probes
+
+After physical audit, an immutable static monitor fixture can diagnose the real
+layout while source-specific loop screens are still running:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/probe_native_dll.py QUALIFICATION phase_ss_0_150ps
+```
+
+The helper accepts full-RC phase/activity cases only, holds the native campaign
+lease, and delegates to the unchanged qualified-fixture executor and shared SPICE
+slots. It records a diagnostic request without changing campaign state or claiming
+architecture, model or PHY qualification. A completed unchanged case can be
+rechecked and reused by the later campaign. Loop and approximate fixtures are
+rejected by this early-probe entry point. This is particularly useful when actual
+new-layout capacitance differs from the older loading used in a schematic proxy.

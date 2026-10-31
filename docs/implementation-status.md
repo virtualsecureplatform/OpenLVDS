@@ -508,3 +508,13 @@ DLL definitions are checked against physical reference qualification
 `e4b01eb8a59d0c93`. Native equivalence and runtime comparisons remain required
 before selecting this profile; the active and prepared qualification selections
 have not changed.
+
+
+The repaired physical monitor has larger incident external capacitance sums than
+its proxy baseline: PA/PB are 664.7/699.2 fF (previously 530.2/560.7 fF), and
+positive-comparator O is 396.3 fF (previously 222.7 fF). These sums include
+coupling and are not independent grounded loads. An early native SS/0 °C
++150 ps static monitor probe is queued under qualification `0cc06862af2fae63`.
+It uses the unchanged full-RC fixture and the same six-slot lease, with no claim
+of campaign or PHY qualification. The source-specific SS loop remains running;
+all architecture/model/full-matrix requirements still apply.
