@@ -774,3 +774,21 @@ report, verifies the original endpoint waveform and retains fixed scoring.
 Additional probes include native external-clock gate terminals and D/S terminals
 of clock-controlled MOS devices, alongside the existing output-stage gates,
 outputs and local supplies. It does not reinterpret a failed seed as qualified.
+
+
+The controlled publication-cell comparison is explicit and independently scoped:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/verify_rx_buffered_rtl.py --source rtl/experiments/openlvds_ddr_rx_buffer8_publish1.v --rx-model models/experiments/sky130_rx_buffer8_functional.v
+scripts/env.sh --tools --ngspice python3 scripts/harden_rx_buffer4.py build/diagnostics/rx_buffer8_publish1_physical_v1 --strength 8 --publication1
+scripts/env.sh --tools --ngspice python3 scripts/rx_candidate_rc.py build/diagnostics/rx_buffer8_publish1_physical_v1
+scripts/env.sh --ngspice python3 scripts/rx_candidate_aperture.py prepare build/diagnostics/rx_buffer8_publish1_physical_v1
+scripts/env.sh --ngspice python3 scripts/rx_candidate_aperture.py run build/characterization/rx_aperture/4032d9b01f924bfd --stage all --jobs 3
+```
+
+Only one declared publication option is accepted. The strength-1/strength-4
+publication policies remain separate; both retain the same two `buf_8` data
+outputs, original sampler/clock edges, pipeline and VALID driver. The shared
+slot pool allows this short admission batch alongside native DLL acquisition
+and component characterization. Physical/functional passes do not substitute
+for its original loaded native timing and full aperture requirements.

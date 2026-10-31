@@ -30,3 +30,12 @@ class StrongPublicationPolicy(unittest.TestCase):
         self.assertFalse(retained(source.replace('.CLK(clk),.D(publish_input[0])','.CLK(clk_n),.D(publish_input[0])'),**params))
         self.assertFalse(retained(source.replace('.Q(published_data[0])','.Q(other)'),**params))
         with self.assertRaises(ValueError):policy_parameters('unknown')
+
+
+class PublicationCellComparison(unittest.TestCase):
+    def test_unit_publication_is_separately_declared_and_cannot_inherit_strength4(self):
+        from rx_buffered_policy import policy_parameters
+        source=(Path(__file__).resolve().parents[1]/'rtl/experiments/openlvds_ddr_rx_buffer8_publish1.v').read_text()
+        self.assertTrue(retained(source,**policy_parameters('public-data-buf8-publish1')))
+        self.assertFalse(retained(source,**policy_parameters('public-data-buf8-publish4')))
+        self.assertFalse(retained(source.replace('__dfrtp_1 data0_publish','__dfrtp_4 data0_publish'),**policy_parameters('public-data-buf8-publish1')))

@@ -23,12 +23,13 @@ def atomic(path,value):
     temporary.write_text(json.dumps(value,indent=2)+'\n');temporary.replace(path)
 
 
-def run(out,strength=4,publication4=False):
-    if (strength,publication4) not in [(4,False),(8,True)]:raise ValueError('Use buf4 or buf8 with publication4')
-    policy='public-data-buf8-publish4' if publication4 else 'public-data-buf4'
+def run(out,strength=4,publication4=False,publication1=False):
+    choices={(4,False,False):('public-data-buf4','openlvds_ddr_rx_buffer4.v','rx_buffer4_blackboxes.v'),
+             (8,True,False):('public-data-buf8-publish4','openlvds_ddr_rx_buffer8_publish4.v','rx_buffer8_publish4_blackboxes.v'),
+             (8,False,True):('public-data-buf8-publish1','openlvds_ddr_rx_buffer8_publish1.v','rx_buffer8_publish1_blackboxes.v')}
+    if (strength,publication4,publication1) not in choices:raise ValueError('Select one declared RX topology')
+    policy,source_name,blackboxes=choices[strength,publication4,publication1]
     parameters=policy_parameters(policy)
-    source_name='openlvds_ddr_rx_buffer8_publish4.v' if publication4 else 'openlvds_ddr_rx_buffer4.v'
-    blackboxes='rx_buffer8_publish4_blackboxes.v' if publication4 else 'rx_buffer4_blackboxes.v' 
     out=out.resolve()
     if not out.is_relative_to(ROOT/'build/diagnostics'):raise ValueError('Use an isolated RX artifact')
     out.mkdir(parents=True,exist_ok=True)
@@ -68,4 +69,4 @@ def run(out,strength=4,publication4=False):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('artifact',type=Path);p.add_argument('--strength',type=int,choices=[4,8],default=4);p.add_argument('--publication4',action='store_true');a=p.parse_args();raise SystemExit(run(a.artifact,a.strength,a.publication4))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('artifact',type=Path);p.add_argument('--strength',type=int,choices=[4,8],default=4);p.add_argument('--publication4',action='store_true');p.add_argument('--publication1',action='store_true');a=p.parse_args();raise SystemExit(run(a.artifact,a.strength,a.publication4,a.publication1))

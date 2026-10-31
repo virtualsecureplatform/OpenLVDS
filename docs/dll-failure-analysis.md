@@ -419,3 +419,26 @@ this new source. Its hardening, extraction/audit and loaded limiting tests are
 next, after active users of shared RX flow helpers finish. A watcher requests
 retirement of the failed candidate coordinator only when it owns no SPICE lease
 and has no SPICE descendants; all current native traces are preserved.
+
+
+## Strong-publication internal timing and controlled comparison
+
+The strong publication/output diagnostic exactly reproduces the failed SS/40
+200 ps clock-slew loaded endpoint. Native clock input gates cross 0.9 V within
+0.343–0.711 ps of the external publication edge. The data-publication flop Qs
+reach 1.44 V at 664–672 ps; the final output-buffer gates fall below 0.36 V
+at 724–732 ps. Public Q0/Q1 reach 1.44 V only at 817.28/824.52 ps, after the
+unchanged 800 ps observation-window start. Removing only the external 20 fF
+loads advances public crossings to 764.88/772.17 ps while publication-Q timing
+is essentially unchanged. The unloaded case passes with minima
+1.75699/1.72905 V. Thus the clock reaches the local gates on time; the
+publication-plus-buffer path leaves insufficient time to charge the required
+load. This does not establish which publication cell will be fastest.
+
+Hashes and native per-terminal transition times are retained in
+`rx_publication/3efd83d2a44327ab/transition_timing.json`, produced by
+`build/diagnostics/resident_jobs/analyze_strong_rx_timing.py`. A controlled
+`buf_8`/publication-1 variant now holds the output driver and pipeline logic
+fixed and changes only the declared publication cell strength, testing whether
+the stronger cell's internal delay outweighed its drive benefit. All original
+voltage/timing limits and required full coverage remain unchanged.

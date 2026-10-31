@@ -1008,3 +1008,42 @@ external data loading. The diagnostic accepts a source-bound failed seed report
 without requiring a complete aperture table. Service
 `openlvds-rx-strong-publication-probe` is queued under the six-slot budget.
 Another width change is held until those native internal traces identify delay.
+
+
+All three source-matched fast-reset DLL architecture loops now pass their
+original window. SS/0 °C maximum feedback error is 10.0304 ps (CTRL mean
+0.815841 V, variation 2.5738 mV); TT/25 °C error is 7.8211 ps (0.759505 V,
+2.9996 mV); FF/0 °C error is 6.5465 ps (0.731602 V, 3.1627 mV).
+All 21 selected full-RC static offsets at SS/0, TT/25 and FF/0 also pass.
+Service `openlvds-fast-reset-native-screen` now runs the three native-RC
+acquisition cases using those unchanged captured libraries/fixtures, reusing
+intact completed static evidence without simulation restart.
+`openlvds-native-dll-gated-progression` waits for actual native screen success,
+then runs measured three-corner stability/step validation; only passing model
+reports admit full 336-case native qualification, followed by all-PVT model
+measurement. Failed gates hold expansion. The resident automatic OTA/CP entries
+remain disabled, avoiding duplicate native dispatch. Full PHY remains unqualified.
+
+The controlled `buf_8`/publication-1 RX passes its 54-case generic/native
+functional regression (1,186,794 bits each), zero-error physical DRC/LVS and
+strict native topology, actual GDS extraction and independent RC connectivity
+LVS. Source identity:
+`e842ec085bc658245c8dde9fefb33ef799ac173fb9d9a77f964519b7887d6918`;
+GDS `8732722a02671ed4377dc4948c50139c0a2e91c201c3544a09325d35742bac4f`;
+exact network `83e0a24d2f74c0885c4b512688b54833a33473e88b4a2b631b20b190cc479315`.
+All 1,352 extracted capacitors are retained; exact algebraic reduction reduces
+21,951 resistors to 4,515. The distinct `public-data-buf8-publish1` policy checks
+its actual publication cells and driver wiring; it cannot inherit publication-4
+success. Native artifact `rx_aperture/4032d9b01f924bfd` runs the same 12 admission
+points and conditionally the full matrix under
+`openlvds-rx-buffer8-publish1-aperture`. No native timing result is claimed yet.
+Unit checks: 240 total, 235 passed, 5 skipped.
+
+All 45 distinct schematic driver/static-receiver/rate-receiver PVT cases now
+have current passing reports. The SF/0 driver initially hit a timestep collapse
+at 2470.05 ns in a thick-oxide level-shifter source-body node. Repeating that
+same case with a tighter 20 ps maximum integration step completes normally and
+passes the original DC and transition criteria. Its original failed data is
+preserved in case history; the batch's original failure returncode is retained.
+Repair receipt: `component_refresh/sf0_driver_repair.json`. Three native driver
+PVT cases have passed so far; the remaining exact-RC component refresh continues.
