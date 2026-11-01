@@ -4803,3 +4803,34 @@ Passive receiver common-mode full DC matrix launched on 2026-11-01:
   This campaign provides source DC/current/observed-device evidence only.
   Source-clock, layout/extraction, native receiver and coupled-link validation
   remain required before selecting either correction for the usable PHY.
+
+
+Passive receiver source-clock handoff prepared on 2026-11-01:
+
+- Both corrections and their matched control pass SS/40, TT/25 and FS/40 DC
+  pilots in `receiver_common_mode_matrix/225f22209016b597/pilot_summary.json`.
+  The remaining twelve process/temperature cases have been released.
+- `receiver_common_mode_clock.py` admits each correction separately after all
+  fifteen DC/current/observed-device stress cases pass. Aggregate reports with
+  missing child reports cannot trigger simulation during cache verification.
+  The admission consumer waits for the DC producer execution lock to release
+  before cached scientific remeasurement, avoiding its final-report race.
+- Clock preparation derives all three original full 80 ns fixtures from the
+  completed LVT source-clock context `receiver_clamp/7b715872da5a4460`.
+  It remeasures that reference, preserves its reduced-tail comparison control,
+  pin waveforms, 1 ps maximum step, native shared bias and digital receiver,
+  and changes only the selected receiver closure. Modified candidate bytes
+  must exactly match the full DC candidate. Missing, duplicated or repeated
+  edges still fail the original three 47-period source-clock gates.
+- Resource-only `225f22209016b597/clock_followup/run.py` is verified active as
+  `openlvds-receiver-common-mode-clock-followup.service`. It binds its own
+  bytes, scientific adapter, original clock manifest, matrix manifest and
+  exact live matrix owner PID/invocation. It waits for completed DC evidence,
+  then starts independent producer processes only for admitted variants.
+  Those simulations each own a shared slot; no outer lease or extra slot is
+  introduced. Failed clocks are retained for diagnosis, not auto-promoted.
+- Three new tests cover exact declared candidate/reference source, restoration
+  of adapter bindings after failure, and refusal of an aggregate DC report
+  missing actual child reports without calling the DC runner. All 662 full
+  regression tests pass; the three adapter tests also pass after the handoff
+  lock adjustment. No new source-clock, native or PHY result is claimed yet.

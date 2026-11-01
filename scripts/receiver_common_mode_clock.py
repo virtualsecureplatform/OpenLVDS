@@ -43,6 +43,10 @@ def static_gate(screen, variant):
     # No missing child can be launched by this cached remeasurement path.
     with (screen/'.clock_admission.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
+        # The producer writes its final report just before releasing this
+        # lock. Wait for that release before requesting cached remeasurement.
+        with (screen/'.execution.lock').open('a+') as producer:
+            fcntl.flock(producer, fcntl.LOCK_EX)
         report = matrix.run(screen)
     gate = report['variants'][variant]
     if gate != dict(required=15, completed=15, passed_cases=15, source_dc_passed=True):
