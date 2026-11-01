@@ -4,6 +4,27 @@ The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
 
+Latest receiver decision on 2026-11-01:
+
+- Active experiment: uniform fourfold scaling of the DC-passing reduced-tail
+  decision stage, retaining the input-pair/mirror/tail width ratios. TT/25
+  `receiver_scaled_decision_static/de8b99d5cb7a5d5e` now passes all twelve
+  original DC samples. SF/40 and FS/40 remain queued. Full static matrix
+  `receiver_scaled_decision_matrix/a3a34b4ac8e5f600` remains gated on all
+  three passing pilots; no source-clock or physical result is admitted.
+- The PMOS-only W32 alternative is rejected: FS/40 fails two original
+  low-common-mode points despite TT/25 and SF/40 passing. Its remaining
+  twelve DC cases and all clock cases were correctly held. Monitor relocation
+  alone also fails: the completed captured native replay still misses the
+  same eighteen edges. Neither alternative is a qualified replacement.
+- The completed uniform-scaling TT control comparison is bound in
+  `de8b99d5cb7a5d5e/control_comparison.json`. Output decisions agree at every
+  original sample, while CO shifts by up to 80.807 mV, CL by 45.084 mV and
+  CT by 25.231 mV. Width ratios are preserved; exact operating voltages are
+  not assumed invariant. The PP/PN static shifts are at most 34.856/17.900 µV.
+  Current, capacitance, dynamic and skewed-corner behavior remain unproved.
+
+
 Current bring-up evidence on 2026-11-01:
 
 - All three source-matched SS/TT/FF fast-reset architecture loops pass
