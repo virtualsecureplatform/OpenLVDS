@@ -518,8 +518,8 @@ Current bring-up evidence on 2026-10-31:
   `receiver_layout/cc8468627923265c` passes zero-error DRC, LVS and independent
   RC audit, with 76 devices and the original nine ports. Native network SHA256
   is `5479cc708d5f7c06815b5286b5a632e386d981bfda62057c8bdd4cd08b28352d`.
-  Both original controls are prepared in `receiver_replay/7be8ec522902db81`
-  and waiting for shared slots. Loading root `receiver_loading/11bbf00548f00ecc`
+  Both original controls are running in `receiver_replay/7be8ec522902db81`
+  under separate shared leases. Loading root `receiver_loading/11bbf00548f00ecc`
   reports incident CO wire sum 35.917 fF versus 44.360 fF with the clamp;
   these sums exclude device capacitance and do not prove effective AC load
   or timing. No extracted recovery verdict is available yet.
@@ -531,6 +531,11 @@ Current bring-up evidence on 2026-10-31:
   1.799942–1.799946 V. This establishes timestep collapse, without identifying
   its internal cause or a qualification verdict. No solver tolerance, stop
   time or scoring gate is changed, and the live simulation is not interrupted.
+  This case subsequently recovers and completes successfully after 2678.057 s,
+  with original valid-high/low dwell minima 825.637/1504.218 ps. All 15 source
+  rate cases now pass; all 15 source static cases fail. The remaining native
+  component campaign continues. The numerical slowdown was finite and did not
+  require a solver change or restart.
 - Matched DC matrix `receiver_static_matrix/1ac68453f143818d` now prepares the
   clamp-removal intervention at all 15 required source PVT points. Every
   original static case is complete; preparation verifies each waveform,
@@ -568,12 +573,26 @@ Current bring-up evidence on 2026-10-31:
   narrow separations can explain corruption after edge recovery, but without
   a decoded preamble the official aligned payload margins remain undefined.
   The original publication window and 200 ps margin gate remain.
+- `qualify_unclamped_receiver.py` selects the exact unclamped source/verifier
+  in the existing component and loaded-link checks without editing captured
+  producers. Its identity requires no clamps, the unloaded monitor and exact
+  restoration/input/decision sizing; both scientific identities capture the
+  new selector code. Component root `receiver_components/599036f3ae6f5004`
+  prepares all 60 original fixtures. Actual preflight reconstructs all 60 and
+  holds at incomplete native replay, with no execution receipt or raw trace;
+  `gate_preflight.json` captures this check. Link root
+  `receiver_candidate_link/83066baeca7824fe` retains the original loaded inputs,
+  payload, publication window and margin gate. Service
+  `openlvds-unclamped-restore-receiver-followup` waits on both complete passing
+  native controls, then lets each child independently remeasure that evidence
+  before simulation. No component/link pass is claimed. Two targeted selector
+  tests verify exact dispatch, captured code and restoration after a failure.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 397 tests, 396 passed and one skipped in the pinned ngspice
+- Last full unit suite: 399 tests, 398 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.

@@ -1968,3 +1968,39 @@ CO was 44.360 fF in the preceding clamped layout. These include full coupling
 values but exclude device/MIM capacitance, and cannot establish effective
 AC load or dynamic improvement. The fresh corrected DC matrix completes
 TT/0 successfully and continues with TT/25; its aggregate remains incomplete.
+
+The VREF-clamped `schematic_receiver_rate_ss_40` case eventually recovers from
+its tiny-timestep interval and completes successfully after 2678.057 s. Its
+original valid-high/low dwell minima are 825.637/1504.218 ps; waveform SHA256
+is `be46e3173926d247e27bc3e6e15eb4903974d7d5a29f7b43f655308158c331e4`.
+No process was interrupted and no solver setting or gate changed. All 15
+source rate cases pass, while all 15 source static cases fail. Native component
+cases continue; this clamped candidate is still disqualified by DC and link.
+
+Both unclamped native controls in `receiver_replay/7be8ec522902db81` now run
+under separate shared simulator leases. The corrected matched DC matrix
+completes TT/0, TT/25, TT/40 and FF/0 with all static samples passing. Remaining
+DC corners and both complete native recovery reports are still required.
+
+The unclamped candidate now has a separate scientific entry point,
+`qualify_unclamped_receiver.py`, selecting its exact source factory and native
+waveform verifier in the existing component/link checks. This leaves every
+captured producer file unchanged. It requires identity
+`unclamped_fast_restore`, zero clamps/reference, unloaded monitor, unchanged
+input/decision sizes and exact restoration widths. Component and link code
+identities capture the selector and native producer files. Two targeted tests
+verify exact selection, rejection of clamped/wrong-stage metadata and restoration
+of process-local selections after an exception.
+
+Actual contained preparation creates all 60 original component fixtures in
+`receiver_components/599036f3ae6f5004` and the original loaded-link diagnostic
+in `receiver_candidate_link/83066baeca7824fe`. Component preflight reconstructs
+every fixture, then holds at incomplete native recovery with no execution
+receipt or raw trace; `gate_preflight.json` binds its manifest, selector and
+runtime. Host service `openlvds-unclamped-restore-receiver-followup` waits for
+the actual native owner and both complete one-to-one recovery reports. Each
+scientific child independently remeasures native waveforms/provenance before
+simulation. The original supplies, source/native PVT coverage, loaded payload,
+publication window and 200 ps margin remain unchanged. These are prepared
+diagnostics, not component/link passes or PHY qualification. Full regression:
+399 tests, 398 passing and one skipped in the pinned ngspice environment.
