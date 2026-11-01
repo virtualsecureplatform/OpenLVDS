@@ -1765,3 +1765,11 @@ scientific child, then retired; its receipt is preserved under
 `component_link_continuation_history_6438c51`. Service
 `openlvds-fast-restore-component-link-queue-v2` uses the corrected producer.
 No active SPICE process or captured scientific producer changed.
+
+Further boundary review changes container preparation arguments to repository-
+relative paths, matching `env.sh --containall` and its sole repository mount.
+The queue's end-to-end handoff test now checks incoming arguments as well as
+outgoing container-style paths. All six targeted tests pass. The second waiting
+queue was verified childless, retired and preserved under
+`component_link_continuation_history_bafce31`. Replacement service
+`openlvds-fast-restore-component-link-queue-v3` retains the original native gate.

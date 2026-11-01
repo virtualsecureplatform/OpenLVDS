@@ -111,9 +111,11 @@ def run(screen, link, unit):
                 time.sleep(10)
             env = [str(ROOT / 'scripts/env.sh'), '--ngspice', 'python3']
             components = artifact(execute('prepare_components', env + [
-                'scripts/qualify_receiver_components.py', 'prepare', str(layout), str(replay)]), 'receiver_components')
+                'scripts/qualify_receiver_components.py', 'prepare', str(layout.relative_to(ROOT)),
+                str(replay.relative_to(ROOT))]), 'receiver_components')
             candidate_link = artifact(execute('prepare_link', env + [
-                'scripts/probe_receiver_candidate_link.py', 'prepare', str(link), str(replay)]), 'receiver_candidate_link')
+                'scripts/probe_receiver_candidate_link.py', 'prepare', str(link.relative_to(ROOT)),
+                str(replay.relative_to(ROOT))]), 'receiver_candidate_link')
             execute('run_followup', ['/usr/bin/python3', 'scripts/continue_receiver_candidate.py',
                     str(replay), str(components), str(candidate_link), '--producer-unit', unit])
             reports = {}

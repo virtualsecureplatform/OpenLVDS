@@ -95,6 +95,10 @@ class ReceiverFollowupQueue(unittest.TestCase):
                             stdout='active\n' if len(calls) == 1 else 'inactive\n')
                     self.assertGreaterEqual(len(calls), 3)
                     if 'prepare' in command:
+                        self.assertTrue(all(not Path(value).is_absolute() for value in command[-2:]))
+                        self.assertEqual(command[-1], str(replay.relative_to(root)))
+                        self.assertEqual(command[-2], str((layout if
+                            'scripts/qualify_receiver_components.py' in command else link).relative_to(root)))
                         path = components if 'scripts/qualify_receiver_components.py' in command else candidate_link
                         path.mkdir(parents=True)
                         (path / 'manifest.json').write_text('{}')

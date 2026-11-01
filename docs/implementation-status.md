@@ -459,7 +459,11 @@ Current bring-up evidence on 2026-10-31:
   before validating their artifact kind and confinement. The waiting queue was
   retired before this producer fix, with its original receipt preserved in
   `component_link_continuation_history_6438c51`; it had no scientific child.
-  Replacement service `openlvds-fast-restore-component-link-queue-v2` retains
+  Container inputs use repository-relative paths because `--containall` exposes
+  this repository only at `/work/OpenLVDS`. The handoff test checks both path
+  directions. The second waiting receipt is retained in
+  `component_link_continuation_history_bafce31`, also without a scientific child.
+  Replacement service `openlvds-fast-restore-component-link-queue-v3` retains
   the same native gate, stimuli, component coverage and simulator budget.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
