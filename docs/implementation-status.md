@@ -3,6 +3,55 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Compact PMOS physical implementation and guarded clock followup:
+
+- All three PMOS p8/t4 DC pilots (TT25, SF40, FS40) passed the twelve
+  original sensitivity/common-mode points and the observed thin-device screen.
+  The remaining fifteen-case matrix continues under its original owner.
+  This admitted a diagnostic compact layout using the same four frontend
+  columns and packed decision/restoration row as the LVT comparison.
+- `receiver_layout/53336113b4769ab3` implements the actual PMOS pair,
+  thick-oxide mirror/tail/downshifter and thin restoration chain. It contains
+  69 flattened devices, retains all nine ports, and measures 295.4 x 357.2 um.
+  DRC, LVS, extraction and independent RC audit pass. Exact native netlist
+  SHA256 is `d4a9c24baa1a526f1d2048fbdd25c500aa516ede66ed8df2fe60a38035d5d2e6`;
+  its file is under `build/extracted/8e145b23224749fc/`.
+- An input/producer-bound wire observation compares resistor-connected
+  extracted nets with the retained compact LVT layout. PMOS aggregate
+  external coupling sums are CO 27.703 fF, CL 22.226 fF, CT 23.973 fF,
+  PP 94.122 fF and PN 106.052 fF; LVT CO is 29.116 fF. This is a wire
+  coupling screen, not intrinsic MOS capacitance or a timing prediction.
+  The observer and report are in the PMOS root's
+  `completed_wire_observations/` directory.
+- `receiver_pmos_clock.py` requires all fifteen original PMOS DC/current/
+  stress cases, then uses the unchanged three source controls at 1 ps maximum
+  timestep, 5 ps output interval and full 80 ns duration. The first control
+  deliberately retains the preceding reduced-tail reference. Only the two
+  historically `clamped_`-labelled controls instantiate PMOS p8/t4; these
+  labels do not imply that decision clamps were restored. In particular,
+  the completed 47/47 `unclamped_captured` case in LVT context
+  `receiver_clamp/7b715872da5a4460` proves the retained baseline reference,
+  not the modified LVT or PMOS receiver.
+- `probe_receiver_pmos_compact.py` reuses the strict captured/sharp native
+  replay machinery with a distinct PMOS physical/source profile. It requires
+  complete, remeasured DC and source-clock admission before preparation;
+  checks the exact audited native model, protected bias/digital closures,
+  all original 47 periods and full finite waveforms; and preserves the
+  declared 1 ps integration limit. Results remain diagnostic, with no
+  automatic analog promotion or full-PHY qualification.
+- `openlvds-pmos-p8t4-source-native-clocks` is live as a resource-only
+  handoff in the PMOS physical root's `qualification_followup/`. It waits
+  for the actual matrix owner to finish successfully and all fifteen cases
+  to pass. It then prepares/runs source clocks with one shared lease per
+  child, followed only on source-clock success by the two independently
+  leased native controls. There is no outer lease and the global budget
+  remains six. A failed upstream result is held for diagnosis.
+- Validation: all 617 regression tests pass in the captured NumPy/SciPy
+  environment. New checks cover incomplete-pilot/rate rejection, retained
+  reference versus PMOS source selection, incomplete DC admission, profile
+  restoration on exceptions, and preservation of a negative native verdict
+  while adapting descriptive scope text.
+
 PMOS dynamic evidence, driver correction and current experiment owners:
 
 - Both matched TT25 isolated analog rate tests completed at 410 MHz with

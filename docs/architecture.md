@@ -10,6 +10,17 @@ development DLL retains the preceding charge-pump implementation. The OTA
 candidate under qualification uses the separate assembly described below; no
 electrical release has been published.
 
+The receiver alternatives under qualification retain the complementary input
+frontend and change the following decision stage. The compact LVT candidate
+uses a low-threshold NMOS pair. The compact PMOS p8/t4 alternative uses a
+3.3 V PMOS pair and tail source with an NMOS mirror. Its first inverter uses
+thick-oxide devices powered at 1.8 V, followed by two thin-oxide restoration
+stages. This allows the decision node to swing above 1.8 V while keeping that
+voltage off thin-oxide gates. The PMOS candidate has passed nominal source
+rate testing and physical topology checks; full PVT, extracted timing and
+link qualification remain open. Neither alternative is promoted into the
+canonical analog source automatically.
+
 ```mermaid
 flowchart LR
   PLL[OpenPLL 400 MHz] --> DLL[Quarter-cycle DLL]
