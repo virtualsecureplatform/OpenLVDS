@@ -1805,3 +1805,32 @@ candidate also differ in tail sizing and restoration, so this comparison
 does not isolate the clamp as the sole cause. A controlled DC comparison is
 needed before selecting a repair. No component gates are relaxed; remaining
 component cases and the loaded-link diagnostic continue.
+
+Matched static diagnosis `receiver_static_diagnosis/a6dc85becd2ad09c` confirms
+the clamp's causal contribution at TT/25. It clones the completed failing
+source fixture and removes only XCLAMP0/XCLAMP1, retaining all transistor
+sizes/connections, unused replica monitor, 100 fF load, supplies, common modes,
+144 ns transient and original sample times. Parent code/input/runtime proofs
+are verified and its actual waveform reproduces the saved failing analysis
+before preparation. Both structural tests pass; the actual diagnostic uses a
+shared simulator lease and reconstructs the exact intervention before running.
+
+All 12 clamp-removed static samples pass. At common modes 0.05/0.2/0.6 V,
+expected-high CO values fall from 1.140763/1.137516/1.127988 V to
+0.560407/0.538582/0.490294 V, with Q at 1.8 V. Higher common modes also pass.
+This proves the DC repair at this one source corner; it does not establish
+clock recovery or other corners. The original qualification reports remain
+unchanged and its full component/link campaign continues.
+
+`receiver_unclamped_restore_experiment.py` now selects exactly this unclamped
+core for the original clock source screen. Only the two clamp rows are removed
+from the preceding stronger-restoration circuit. All helpers, port bindings,
+input and decision sizes, unloaded monitor and 8/4 → 16/8 → 16/8 restoration
+remain. One structural test proves full source identity with the passing
+matched DC intervention, including the unchanged control path. Source root
+`receiver_clamp/2c86c40885f97e87`, service
+`openlvds-unclamped-restore-source-screen`, queues the same three original
+80 ns controls under the six-slot limit. The shared runner's legacy
+`clamped_captured`/`clamped_sharp_control` labels refer to modified cases only;
+the selected source has no CO clamps. New source-clock and physical/native
+evidence are required before this candidate can replace the VREF-clamped one.

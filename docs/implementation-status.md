@@ -483,12 +483,29 @@ Current bring-up evidence on 2026-10-31:
   0.492830/0.480999/0.451381 V. This identifies a DC decision/clamp interaction
   to isolate; the comparison also changes input-tail sizing and cannot assign
   causality to the clamp alone. The campaign continues without changing gates.
+- Matched diagnosis `receiver_static_diagnosis/a6dc85becd2ad09c` now isolates
+  that DC cause: it removes only XCLAMP0/XCLAMP1 from the completed TT/25
+  source fixture and leaves every transistor, helper, supply, load, input and
+  sampling time unchanged. All 12 static samples pass, versus three failed
+  expected-high samples in the original. At common modes 0.05/0.2/0.6 V,
+  CO falls to 0.560407/0.538582/0.490294 V and Q reaches 1.8 V. The new runner
+  remeasures the original control, captures parent/current proofs, reconstructs
+  the exact intervention and uses a shared simulator lease. This is TT/25
+  source DC evidence only, without native timing or full PVT qualification.
+- Source root `receiver_clamp/2c86c40885f97e87` tests that same unclamped core
+  with the stronger 8/4 → 16/8 → 16/8 restoration chain. Service
+  `openlvds-unclamped-restore-source-screen` queues the original three 80 ns
+  source controls with unchanged scoring. Legacy `clamped_*` task names here
+  denote the modified cases; the new factory removes both actual CO clamps.
+  The unloaded replica monitor remains untouched. One structural test proves
+  the modified core equals the passing matched DC intervention and preserves
+  the existing control. No clock or physical/native improvement is claimed.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 382 tests, 381 passed and one skipped in the pinned ngspice
+- Last full unit suite: 386 tests, 385 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
