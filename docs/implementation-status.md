@@ -2389,3 +2389,26 @@ Automatic smaller-tail follow-up on 2026-11-01:
 - Tests cover baseline/tail dispatch, producer capture, an active owner,
   native failure, a mismatched receiver profile and both child reports. Full
   regression: 462 tests, 461 passed and one skipped.
+
+
+Reduced-tail source clock admission completes on 2026-11-01:
+
+- All three 1 ps controls in `receiver_clamp/dee37af388e0ca28` complete
+  their original 80 ns. Each has exactly one output edge in all 47 original
+  checked periods and no missing/repeated edge. Modified captured latency
+  is 343.165203–404.410922 ps; modified sharp-control latency is
+  288.299607–329.646269 ps. The original source owner exits successfully,
+  and the native continuation advances to layout with source/DC remeasurement.
+- `matched_source_transport_comparison.json` and its local
+  `compare_source_transport.py` bind both completed captured-control reports
+  and waveforms. All 47 corresponding input crossings match exactly. Rising
+  median latency changes from 299.946 to 360.412 ps; falling median latency
+  changes from 337.269 to 355.776 ps. Thus the smaller tail adds latency but
+  reduces polarity imbalance. Adjacent unique output crossings imply a
+  shortest output low pulse of 473.286 ps versus the unchanged control's
+  402.375 ps. These are matched source diagnostics, not native or aperture
+  qualification; no threshold or scoring window changes.
+- Source/DC admission alone does not qualify the receiver. Physical
+  DRC/LVS, independent extraction/connectivity audit, both complete native
+  controls, all 60 source/native component checks and the loaded-link result
+  are still required before the remaining full-PHY release gates.
