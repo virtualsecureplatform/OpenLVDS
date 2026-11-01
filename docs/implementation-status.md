@@ -20,11 +20,13 @@ Current bring-up state (2026-11-01):
   previously completed reference; active libraries agree apart from comments
   and blank lines, and decks agree apart from include paths. Both modified
   captured-clock cases now complete the full 80 ns with 47 edge-matching
-  checks and no missing/repeated edges. Their sharp controls are running;
-  full source-clock admission is still pending.
+  checks and no missing/repeated edges. Both sharp controls also pass all
+  47 checks, and both exact source-clock admissions are now true.
 - Workflows for new geometry/extraction/native tests, all sixty receiver
   component conditions and a corrected 110:1-driver/native-receiver coupled
-  diagnostic are implemented and waiting behind exact source/native gates. Continuations independently lease from the
+  diagnostic are implemented behind exact source/native gates. The two-unit
+  layout/extraction/RC audit now pass, and its native replay is running.
+  Continuations independently lease from the
   six existing SPICE slots. They do not select a PHY or publish a release.
 - **The 16 pF DLL passes its first SS/0 source-acquisition case.** The full
   original 1500 ns trace gives 10.039 ps maximum feedback error,
@@ -5320,3 +5322,43 @@ Manifest-bound completed native-driver remeasurement on 2026-11-01:
   their exact sharp-control SPICE processes and source-clock owner are still
   verified live. Existing source/native/physical continuations remain gated
   on complete reports. Canonical code is unchanged since all 700 tests passed.
+
+
+Full weaker source-clock admission and physical recovery on 2026-11-01:
+
+- Both `receiver_clamp/efcc143161073193` and `1ea95c4cfc1e34f4` complete
+  all three original full 80 ns controls. Each original/captured/sharp case
+  has 47 edge-matching checks and no missing/repeated crossings. Their
+  exact `source_clock_admission.json` records are true. This admits physical
+  work only; native receiver/PHY qualification remains separate.
+- The initial physical handoff failed before geometry: the Nix tools shell
+  selected a Python without NumPy. Failed context
+  `receiver_physical_followup/948f4f24130c3d2f` and its logs/manifests are
+  preserved, including its dependent followers' terminal records. It produced
+  no new scientific layout/native result and invalidates no source-clock pass.
+- `resume_receiver_physical_tools.py` admits only that specific pre-geometry
+  import failure with unchanged old inputs and both complete source-clock
+  admissions. New context `receiver_physical_followup/aa7ff15e63569672`
+  records the recovery scope and explicit container `/usr/bin/python3`.
+  The adapter changes only the Python executable in tools-shell commands;
+  scientific scripts, models, fixtures, solvers and original failed producer
+  remain byte-preserved. Actual tools-shell import confirms NumPy 1.26.4.
+- `openlvds-receiver-soft-common-mode-physical-tools.service` is verified
+  live. Two-unit geometry `receiver_layout/9d740d19bee2c0d0` passes DRC/LVS,
+  extraction and independent RC audit: 74 devices, nine ports, dimensions
+  670.26 by 147.8 micrometres. Native model SHA is
+  `8a329f739f158b3aa0014b182bf891edce519b684596ece44a2e0970ef7fe0c2`.
+  Both original native fixtures at `receiver_replay/c130e79d2f47a246` are
+  running; no native transport verdict exists yet. Three-unit physical work
+  remains in the source-admitted continuation after these diagnostics.
+- Fresh `component_followup/` and `coupled_link_followup/` under the recovered
+  context bind its exact live owner and unchanged scientific producers.
+  `openlvds-receiver-soft-common-mode-component-tools` and
+  `openlvds-corrected-driver-soft-receiver-coupled-tools` are verified live,
+  waiting for exact passing native receipts before component/link dispatch.
+  Old followers are not restarted or relabelled.
+- Three new tests verify tools-only interpreter replacement with all science
+  arguments unchanged, restoration after failure, and refusal to recover an
+  unrelated failure without mutating prior state. All 703 regression tests
+  pass, no skips. No extra actual SPICE slot, partial retry, model promotion
+  or qualification waiver was introduced.

@@ -36,8 +36,9 @@ with equivalent load resistances of 0.4R or 3R/7 instead of R/2. Every original
 input, decision, restoration and bias device remains. Both alternatives pass
 all fifteen source DC/current/twelve-observed-device stress cases. All added
 resistor segments stay in the local frontend row when layout is admitted.
-Both pass the complete captured source-clock test; sharp controls are running.
-New DRC/LVS/extraction, native transport,
+Both pass all three complete source-clock controls. The two-unit candidate
+also passes new DRC/LVS, extraction and independent RC audit, and its native
+clock replays are running. The three-unit physical build, native transport,
 components and coupled-link timing remain gated and unproven. The earlier
 1.2 V corrections are rejected because they lose high-common-mode sensitivity
 in SF corners. No receiver alternative is promoted into the canonical source.
