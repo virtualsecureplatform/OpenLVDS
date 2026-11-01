@@ -5,6 +5,8 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from concurrent.futures import ThreadPoolExecutor
+from threading import Event, Lock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import qualify_unclamped_receiver as selected
@@ -58,7 +60,52 @@ class UnclampedFollowupSelection(unittest.TestCase):
                         clamp_reference=None, replica_monitor_unloaded=True, input_tail_scale=2, decision_scale=1,
                         restoration_widths_um=[[8, 4], [16, 8], [16, 8]])
         (replay / 'manifest.json').write_text(json.dumps(dict(identity=identity)))
+        (replay / 'summary.json').write_text('{}')
+        for name in ['captured', 'sharp_control']:
+            (replay / name).mkdir()
+            (replay / name / 'summary.json').write_text('{}')
         return replay, identity
+
+    def test_parallel_cached_verification_serializes_and_releases_after_failure(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);replay,_=self.fixture(root)
+            entered=Event();release=Event();second_started=Event();mutex=Lock()
+            calls=[];active=[];peak=[]
+            def verify(path):
+                with mutex:
+                    index=len(calls);calls.append(path);active.append(1);peak.append(len(active))
+                try:
+                    if index==0:
+                        entered.set()
+                        if not release.wait(5):raise RuntimeError('test release timeout')
+                        raise ValueError('cached waveform failed')
+                    return 'verified'
+                finally:
+                    with mutex:active.pop()
+            def second():
+                second_started.set()
+                return selected.recheck(replay)
+            with patch.object(selected,'ROOT',root),patch.object(selected.native,'run',side_effect=verify):
+                with ThreadPoolExecutor(max_workers=2) as pool:
+                    first=pool.submit(selected.recheck,replay)
+                    try:
+                        self.assertTrue(entered.wait(5))
+                        following=pool.submit(second)
+                        self.assertTrue(second_started.wait(5))
+                        self.assertFalse(following.done())
+                        self.assertEqual(len(calls),1)
+                    finally:release.set()
+                    with self.assertRaisesRegex(ValueError,'cached waveform failed'):first.result(timeout=5)
+                    self.assertEqual(following.result(timeout=5),'verified')
+            self.assertEqual(max(peak),1);self.assertEqual(active,[]);self.assertEqual(calls,[replay,replay])
+
+    def test_missing_cached_case_cannot_launch_its_native_producer(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);replay,_=self.fixture(root)
+            (replay/'captured/summary.json').unlink()
+            with patch.object(selected,'ROOT',root),patch.object(selected.native,'run') as verify:
+                with self.assertRaisesRegex(ValueError,'must complete'):selected.recheck(replay)
+                verify.assert_not_called()
 
     def test_exact_native_selector_and_source_are_captured_and_restored_after_failure(self):
         with tempfile.TemporaryDirectory() as temp:

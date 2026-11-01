@@ -3,6 +3,7 @@
 """Select the unclamped receiver in unchanged component and loaded-link checks."""
 import argparse
 from contextlib import contextmanager
+import fcntl
 import json
 from pathlib import Path
 
@@ -45,8 +46,18 @@ def selected_replay(replay):
 
 
 def recheck(replay):
-    identity = selected_replay(replay)
-    return PROFILES[identity['clamp_variant']][1].run(replay)
+    # Component and loaded-link jobs independently remeasure the same cached
+    # replay before taking simulator slots. Its producer uses a nonblocking
+    # execution lock, so serialize only these cached verifications rather than
+    # letting one healthy follow-up fail while the other reads its waveforms.
+    selected_replay(replay)
+    with (replay / '.cached_verification.lock').open('a+') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if any(not (replay / name).is_file() for name in [
+                'summary.json', 'captured/summary.json', 'sharp_control/summary.json']):
+            raise ValueError('Both receiver replay cases must complete first')
+        identity = selected_replay(replay)
+        return PROFILES[identity['clamp_variant']][1].run(replay)
 
 
 @contextmanager
