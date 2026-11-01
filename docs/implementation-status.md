@@ -5080,3 +5080,41 @@ Full regression after the weaker clock/physical continuation: all 688 tests pass
   The full matrix is live with seven completed PVT cases; candidate-specific
   fifteen-case DC and downstream clock/native/PHY admission remain pending.
   Canonical scientific code is unchanged since the passing 688-test regression.
+
+
+Corrected DLL measured-stability adapter prepared on 2026-11-01:
+
+- `measure_dll_storage_stability.py` admits only the exact 16 pF native
+  qualification and its hash-bound complete source-admission proofs. Every
+  required native operating-point and PFD report must already exist and pass
+  cached scientific remeasurement; this admission path cannot launch a missing
+  native qualification case. Default coverage is SS/0, TT/25 and FF/0;
+  `--all-pvt` requires all fifteen corresponding native operating points.
+- The original `measure_dll_stability.py` still produces all forced-control
+  delay, two-clock-state G/Y, averaged return-gain and both original
+  390/410 MHz step measurements. Its numerical fixtures and strict original
+  stability attestation remain unchanged. The new adapter temporarily enables
+  the corrected qualification profile and independently fair-leases AC and
+  transient simulations through the same global six slots, with no outer lease.
+- The adapter derives the exact original scientific context before dispatch.
+  An existing incomplete measurement context is retained without retry;
+  a complete passing context must pass the original full stability verifier
+  before reuse. A separate resource policy binds the adapter/dispatcher and
+  native inputs without substituting for scientific evidence. Passing
+  stability alone grants neither full native DLL nor PHY qualification.
+- Four tests cover old-variant refusal without execution, refusal of missing
+  native operating points without dispatch, restoration of both AC/transient
+  resource bindings on failure, and preservation of partial measurement data.
+  Actual `368259f7b02c5fdc/native_followup/stability_preflight.json` proves
+  the rejected 4 pF native qualification cannot be used by the corrected
+  stability adapter and creates zero measurement contexts. All 692 full
+  regression tests pass, no skips.
+- Resource-only `native_followup/stability_followup/run.py` is verified live
+  as `openlvds-dll-storage-stability-followup.service`. It binds the exact
+  current corrected-native-screen owner PID/invocation, handoff manifest and
+  scientific/resource producers, then waits for native-screen admission before
+  invoking fresh corrected stability measurements. No old 4 pF stability or
+  compensation estimate is promoted into a corrected measured result.
+- The weaker receiver full DC matrix remains live with eleven completed
+  PVT cases. Its own source-clock and physical/native continuations remain
+  gated on exact candidate-specific fifteen-case and clock evidence.
