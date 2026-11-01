@@ -4934,3 +4934,63 @@ Corrected native-driver/source-receiver link numerically retired on 2026-11-01:
   cases. The physical continuation remains active waiting for admitted source
   clocks; it does not restart either stalled old link or promote a partial
   waveform into native/component/link/PHY evidence.
+
+
+Full passive-bias rejection and weaker-pullup experiment on 2026-11-01:
+
+- `receiver_common_mode_matrix/225f22209016b597` completed all fifteen
+  original DC/current/stress cases for all three variants. Control passes
+  15/15, VREF return 12/15 and one-unit rail pullup 13/15. VREF return fails
+  the original 130 ns high-common-mode negative-polarity sensitivity point
+  in SF/0, SF/25 and SF/40. Rail pullup fails that same point in SF/0 and
+  SF/25. All failing cases pass the twelve observed-device stress screen;
+  the rejection is electrical sensitivity, not numerical incompleteness.
+- At SF/0, rail-pullup PP/PN=1.31649/1.39082 V, CT=0.557599 V,
+  CL=0.609942 V and CO=0.662832 V. Restoration zero stays at 1.71003 V,
+  leaving Q high. VREF return gives CO=0.638150 V and CT=0.577434 V.
+  These matched terminal measurements support too much common-mode lift
+  compressing the decision branch drain headroom at the high input limit;
+  no BSIM VDSAT or operating-region assertion is inferred from voltage alone.
+- Source-clock followup terminated with neither candidate admitted. Physical
+  followup completed with zero admitted variants and no new geometry/native
+  simulations. Both original candidates remain rejected; their complete
+  evidence and previously prepared producers are preserved.
+- `receiver_soft_common_mode.py` instead adds two or three series original
+  precision-poly resistor units from each PP/PN node to fixed VDDD. No
+  original device, return connection, supply, stimulus or numerical setting
+  changes. The uninstrumented candidate adds four/six resistors. Solving the
+  actual unloaded network gives 1.08 V/1.028571 V centers and 0.4R/(3R/7)
+  equivalent resistance, versus baseline 0.9 V and R/2. These are analytical
+  unloaded values, not assumed loaded performance or qualification.
+- New immutable `receiver_soft_common_mode_matrix/d3271555fcb702b9` binds
+  all fifteen original DC PVT fixtures. SF/0 and SF/25 now join SS/40, TT/25
+  and FS/40 as the five pilots gating the remaining ten cases. The original
+  current and twelve-device stress observations remain. Two independent
+  workers are live in `openlvds-receiver-soft-common-mode-matrix.service`,
+  sharing the same six-slot dispatcher without an outer lease. New source
+  clocks and native/physical evidence will be required for either correction.
+- Three new tests solve the actual two series networks, prove that only the
+  declared unit resistors are added and repeated correction is rejected,
+  and verify formerly failing corners lead the pilots with independent
+  variant/full-coverage admission. Original failed-candidate code and
+  manifests were not edited to repurpose their evidence.
+
+16 pF DLL native admission adapter prepared on 2026-11-01:
+
+- `qualify_dll_storage.py` admits the exact corrected physical source to the
+  original native qualification engine only after all three complete matched
+  SS/0, TT/25 and FF/0 source-acquisition cases pass and are remeasured.
+  It captures immutable source proofs bound to the native manifest and its
+  producer, preserves independently leased native workers, and refuses
+  partial native traces instead of overwriting them for an in-place retry.
+- The original 24-case native screen and full 336-case requirements remain;
+  full expansion still requires a measured stability report bound to the
+  corrected model inputs. The adapter does not grant source, native,
+  stability or PHY admission on the strength of the old compensation model.
+  Four tests cover incomplete/failed source refusal without dispatch,
+  restoration of temporary bindings and preservation of partial native output.
+- The exact current SS/0 source-acquisition process is verified live and
+  reached 1368 ns of its original 1500 ns fixture; TT/25 and FF/0 remain
+  required. Native preparation/dispatch has not bypassed this source gate.
+
+Full regression after both additions: all 677 tests pass, no skips.
