@@ -64,7 +64,7 @@ Current bring-up evidence on 2026-10-31:
   659.955500–660.204682 ps. Cadence and omitted-pulse section checks pass;
   section delays are 660.037/649.233/639.480/640.926 ps and mean power is
   6.897270 mW. Its actual deck, waveform and raw hashes match the report.
-  This yields 23 passing screen cases; FF/0 is queued for a shared slot.
+  This yields 23 passing screen cases; FF/0 acquisition is now running.
   No measured-model or full-native qualification result is claimed. The
   handoff holds on failed gates, ended producers or changed inputs. Native
   acquisition/recovery at remaining required conditions remains unqualified.
@@ -623,12 +623,12 @@ Current bring-up evidence on 2026-10-31:
   TT/25 screen now completes all 12 static samples successfully. Source root
   `receiver_clamp/4ea0f56c1098842a`, service
   `openlvds-lvt-restore-source-screen`, queues the three original clock source
-  controls. No LVT clock or physical/native improvement is claimed yet.
+  controls. All three source controls now pass, each with exactly one output
+  transition in all 47 checked periods and no missing/extra edges.
   Its unchanged control and modified captured-clock case now complete with
   one output edge in all 47 checked periods and no missing/extra edges.
   Modified latency spans 292.325–377.720 ps; the weakest negative pulse has
-  377.720 ps latency. The sharp control remains pending, so physical/native
-  stages remain gated. This source result does not establish native recovery.
+  377.720 ps latency. The sharp control also passes. This source result does not establish native recovery.
   Dedicated LVT physical/native producers now require that exact passing
   TT/25 static screen plus all three complete passing clock source controls.
   The static gate remeasures actual cached waveforms and binds the exact
@@ -638,8 +638,23 @@ Current bring-up evidence on 2026-10-31:
   Nine targeted gate tests and parallel completion/error tests pass; the real
   completed TT/25 screen also passes this gate. Service
   `openlvds-lvt-restore-native-continuation` waits on the live source owner
-  before layout, DRC/LVS, independent RC audit and native replay. No LVT GDS
-  or native replay result is claimed while source comparisons are incomplete.
+  before layout, DRC/LVS, independent RC audit and native replay. Physical
+  root `receiver_layout/6642a01b473f6aa8` now passes DRC (zero violations), LVS
+  and independent RC connectivity audit: 76 devices, nine ports. The exact
+  reduced network hash starts `82caea7129b27b35`. Loading root
+  `receiver_loading/3872354b6c62bd80` measures PP/PN/CO incident wire loads
+  100.38129/107.54226/35.91650 fF, essentially unchanged from the standard-NFET
+  unclamped candidate. This excludes device/MIM loading and is not a timing proof.
+  Native replay `receiver_replay/eea365798223235d` runs both original 80 ns
+  controls. Its captured trace has already failed the first short-pulse window
+  (24.5–26.5 ns): CO peaks at 0.673319 V, RESTORE0 stays above 1.765710 V,
+  and Q has no falling 0.9 V crossing. This is a completed-window failure
+  observation, not a full-run edge count. Both runs continue to completion.
+  Exact LVT follow-up roots `receiver_components/101d54670c0ac820` (60 fixtures)
+  and `receiver_candidate_link/004b4f282fcea4fc` are prepared. Actual component
+  preflight stops at the incomplete-native gate with zero simulation executions
+  or raw traces. Service `openlvds-lvt-restore-receiver-followup` waits for the
+  original two complete passing native controls; no downstream result is claimed.
 - Completed clamped-link waveforms expose an upstream clock-eye limit as well
   as receiver sensitivity. In 60–120 ns, three of 49 RX clock pulse centers
   fall below the original 100 mV threshold; minimum is 85.216 mV at
@@ -1969,3 +1984,44 @@ complete native and all-PVT verification before signoff. Current state is
 `waiting_for_native_and_all_pvt_model`; no native or model completion is claimed.
 The prior waiting watcher's source and receipt are preserved in resident job
 history. No scientific simulator was stopped for the workflow corrections.
+
+
+Bring-up update on 2026-11-01 (input-bias investigation):
+
+- Corrected matched DC matrix `receiver_static_matrix/1ac68453f143818d` is
+  complete; an independent cached run remeasures all 15 waveform pairs. Twelve
+  modified cases pass. SF/0, SF/25 and SF/40 fail only the original 130 ns
+  sample (2.35 V common mode, P=2.3 V, N=2.4 V). Q remains high; CO is
+  0.703679/0.726471/0.743371 V respectively. Thus clamp removal fixes the
+  low-common-mode loading problem but does not establish full DC coverage.
+- The LVT native initial operating point has CT=0.0467892 V and NBC=0.936557 V,
+  with PP=1.07999 V and PN=0.903624 V. The low tail drain voltage motivates
+  checking input common-mode/headroom; it does not by itself prove a device
+  operating region or establish the short-pulse cause.
+- New isolated `receiver_input_bias_experiment.py` retains standard-NFET
+  unclamped 8/4 → 16/8 → 16/8 restoration and doubles only the four existing
+  PP/PN ground-branch resistor lengths, 1.25 → 2.5 µm. Nominal Thevenin bias
+  rises from 0.9 to 1.028571 V, with resistance 1 to 1.142857 kΩ. This changes
+  gain/RC as well as common mode; no improvement is assumed. Clock controls
+  use the exact unchanged standard-NFET unclamped receiver. Three structural
+  tests prove the four resistor-only changes, unchanged ports/devices/helpers,
+  rejection of changed topology/reapplication, and identical static/clock cores.
+  `receiver_input_bias_static.py` first queues the unchanged original 12-sample
+  TT/25 fixture (`38a7bc88524f7fab`) and failing SF/40 fixture
+  (`7c4866221b0fca57`), preserving supplies, common modes, load, thresholds and
+  sample times. Their recorded parent control is the clamped fast receiver;
+  the matched unclamped DC matrix above supplies the separate standard-NFET
+  reference. No one-factor claim is made against that clamped parent. Both
+  static screens must pass before clock/physical/native advancement.
+- Unchanged native driver observation `driver_internal/c9c5ccd60b8fbe69`
+  completes the full 188.049 ns transient and passes cached waveform reanalysis.
+  The five original external signals match exactly on its declared comparison
+  grid. In 60–120 ns AD/AB and L/R each have 25 rising/falling crossings at
+  their declared observation levels. DP has 24/25 crossings at 1.65 V; DN
+  has only 16/15, with complete high intervals 369.055–714.148 ps. These levels
+  are diagnostic thresholds, not transistor switching points or a PHY gate.
+  This localizes substantial pulse compression to the level-converter output
+  path, without yet separating its CML and restoration contributions. The
+  controlled P64/N24 source comparison remains in progress; its candidate
+  currently advances extremely slowly near 15.366 ns, so no comparative
+  improvement or full-run verdict is available. No live simulator was stopped.
