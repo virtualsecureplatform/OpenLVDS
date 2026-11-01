@@ -1731,3 +1731,26 @@ holds both. Queue receipts freeze producer code, requirements, upstream
 manifest and the saved link inputs; all states explicitly remain unqualified.
 Five targeted tests pass, including the wait/prepare/run handoff and failure
 path without any downstream launch.
+
+The sharp stronger-restoration source control also completes with exactly one
+output edge in every one of 47 periods. All three actual source traces pass
+remeasurement before layout. Captured-source latency spans 237.406–494.897 ps,
+compared with 260.642–508.359 ps for the earlier VREF chain. The weakest
+negative pulse's latency falls from 276.441 to 249.913 ps. Extracted improvement
+is not inferred from these source measurements.
+
+Physical root `receiver_layout/64ae7a93d207703b` passes DRC (zero errors), LVS
+and independent RC connectivity audit, with 78 devices and nine original
+ports. Native network SHA256 is
+`b6e0bec697e9ef60f8677d77e1817d9c0e70cd26ab45445ee57ead09a36a4d69`.
+Both original controls now run concurrently in
+`receiver_replay/93c5ecd2ff603292`, each with a separate shared lease. Original
+80 ns stimuli, bias, digital RX load and 15–75 ns scoring are retained.
+No native recovery verdict, component/link pass or release is claimed yet.
+
+Loading receipt `receiver_loading/820ed53b4961c8bb` reports incident wire sums
+PP/PN/CO 103.856/111.014/44.360 fF and RESTORE0/RESTORE1 47.681/58.947 fF.
+The earlier VREF layout's corresponding restoration sums were 33.082/44.245 fF;
+stronger stages also increase physical routing load. These sums include full
+coupling values but exclude device/MIM capacitance, so they do not establish
+effective AC load or dynamic improvement. Native replay remains decisive.

@@ -422,10 +422,11 @@ Current bring-up evidence on 2026-10-31:
   existing inverter definitions: P/N widths become 8/4 → 16/8 → 16/8 µm.
   Final output drive and overall polarity are retained. Two structural tests
   verify only those instance bindings change and the control remains identical.
-  The unchanged control and modified captured source case now complete: each
-  recovers all 47 checked periods with no missing or repeated edges. The sharp
-  control is still running under the unchanged six-slot limit. Extracted
-  improvement remains unproven.
+  All three original source controls now complete: each recovers all 47 checked
+  periods with no missing or repeated edges. Captured-source latency is
+  237.406–494.897 ps, versus 260.642–508.359 ps before stage strengthening;
+  the weakest negative pulse improves from 276.441 to 249.913 ps. These source
+  results do not prove extracted improvement.
   Dedicated physical/native producers bind identity `vref_fast_restore` and
   widths [[8,4],[16,8],[16,8]], rejecting the previous restoration topology or
   source evidence. They retain VREF bias, unloaded monitor, all nine ports,
@@ -434,8 +435,15 @@ Current bring-up evidence on 2026-10-31:
   selection and parallel completion/error behavior are tested. Service
   `openlvds-fast-restore-native-continuation` waits on the actual source owner,
   then requires all three source controls, physical DRC/LVS and independent RC
-  audit before native replay. Eight targeted source/physical tests pass; no
-  physical/native result is claimed yet.
+  audit before native replay. Physical root `receiver_layout/64ae7a93d207703b`
+  passes DRC (zero errors), LVS and independent RC audit, with 78 devices and
+  the original nine ports. Native network SHA256 is
+  `b6e0bec697e9ef60f8677d77e1817d9c0e70cd26ab45445ee57ead09a36a4d69`.
+  Both original native controls are running concurrently in
+  `receiver_replay/93c5ecd2ff603292`; no native verdict is available yet.
+  Loading receipt `receiver_loading/820ed53b4961c8bb` reports incident CO,
+  RESTORE0 and RESTORE1 wire sums 44.360, 47.681 and 58.947 fF. These exclude
+  device capacitance and do not establish effective AC load or timing.
 - `queue_receiver_followup.py` now waits for that complete native continuation,
   requires both original replay controls to recover every checked edge, then
   prepares the 60 schematic/native component cases and the saved loaded-link
