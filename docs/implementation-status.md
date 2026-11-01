@@ -3,6 +3,28 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+LVT continuation resource correction:
+
+- The seven-case-complete DC campaign was waiting on shared slot 4 behind
+  the long SS/0 DLL frequency-step simulation. Its DC coordinator and the
+  source-clock/native dependents were frozen and verified to contain no
+  simulator. All processes/start records and 161 files were archived under
+  `resident_jobs/lvt_chain_slot1_rescheduling`, including all prepared DC
+  children, completed results and both resource followups. No unfinished
+  simulation output existed for the waiting FF/40 child.
+- Those three queued controllers were retired after the archive. MainPID=0,
+  disappearance of every old process and unchanged hashes for every archived
+  file were verified before replacement. Scientific producer bytes, the
+  matrix identity, seven completed DC cases and physical candidate remain
+  unchanged. Useful running DLL, link and aperture simulations were retained.
+- `openlvds-lvt-pair-dc-slot1.service` resumes that same DC matrix with a
+  blocking slot-1 wait. Resource-only `clock_followup_slot1/run.py` and
+  `native_followup_slot1/run.py` follow the replacement owners and preserve
+  all scientific admission gates. Their units are
+  `openlvds-lvt-pair-clock-slot1.service` and
+  `openlvds-lvt-compact-native-slot1.service`; all three are verified live.
+  This corrects queued resource policy without increasing the six-slot budget.
+
 PMOS architecture sanity and measurement instrumentation:
 
 - The nominal TT/25 `pmos_p8_t4` source sanity check completed as
