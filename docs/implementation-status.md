@@ -6,7 +6,12 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Latest receiver decision on 2026-11-01:
 
-- Active experiment: uniform fourfold scaling of the DC-passing reduced-tail
+- Active circuit experiment: change only the W8 decision input pair to the
+  pinned SKY130 LVT NFET model on the smaller reduced-tail receiver. Three
+  original source-DC pilots are queued; no passing result is claimed yet.
+  The preceding uniform-scaling native replay is still running, but its
+  archived first weak-pulse interval already contains missing output edges.
+- Uniform fourfold scaling of the DC-passing reduced-tail
   decision stage, retaining the input-pair/mirror/tail width ratios. TT/25
   `receiver_scaled_decision_static/de8b99d5cb7a5d5e` now passes all twelve
   original DC samples. SF/40 and FS/40 also pass all twelve points, including
@@ -21,7 +26,10 @@ Latest receiver decision on 2026-11-01:
   periods. The completed hash-bound `source_clock_admission.json` passes.
   New layout `receiver_layout/8a063d6919387667` passes DRC, LVS, extraction
   and its independent RC audit. Native replay `receiver_replay/90c2618d3cbb6f83`
-  is prepared; both original controls are queued on shared slots 1 and 3.
+  is prepared; the captured control is running and the sharp control is queued.
+  An immutable prefix ending at 33.4901 ns contains six missing edges among
+  thirteen fully observed input periods. This is a diagnosed failure in the
+  observed interval; the original full 80 ns producer remains running.
 - The PMOS-only W32 alternative is rejected: FS/40 fails two original
   low-common-mode points despite TT/25 and SF/40 passing. Its remaining
   twelve DC cases and all clock cases were correctly held. Monitor relocation
@@ -136,6 +144,41 @@ Latest receiver decision on 2026-11-01:
   a completed negative reference diagnostic, rather than process exit alone.
   Both matched workers retain the existing shared six-slot scheduler.
   Full regression: 543 tests, 542 passed and one skipped.
+- Uniform scaling's first complete native weak-pulse period is archived in
+  `receiver_replay/90c2618d3cbb6f83/prefix_observations/394802a9d7ba4636`.
+  It retains the exact live binary prefix, vector/header metadata, completed-
+  period transport measurements, source/runtime/fixture hashes and producer.
+  The 24.777050 ns falling input has a 108.848 mV peak and 526.689 ps width.
+  Neither it nor the following rising input produces an output crossing in
+  its complete matching period. Over 24.777050--27.190836 ns, CO peaks at
+  0.611366 V versus 0.753394 V in the completed monitor-after W16-tail replay.
+  The preceding measured 3x CO routing-capacitance increase and input loading
+  did not yield weak-pulse recovery. No live simulation was signalled, source
+  changed, partial trace overwritten or full-waveform verdict fabricated.
+- `receiver_lvt_pair_experiment.py` starts a separate controlled alternative
+  from the independently DC-passing W16-tail receiver. Only XC0/XC1 change
+  from `nfet_01v8` to `nfet_01v8_lvt`, retaining W8/L0.15, all connectivity,
+  W8 PMOS loads, W16 tail, unloaded monitor, three restoration inverters and
+  input-stage/bias circuits. The first restoration inverter keeps its standard
+  NFET model; this differs from the previously rejected LVT-restorer change.
+  The hypothesis is improved decision-pair headroom without uniform width/
+  routing-load growth. Actual tail current, threshold changes, DC and dynamic
+  behavior are to be measured rather than assumed.
+- Original twelve-point, 144 ns, fixed-supply pilots are prepared at TT/25
+  `receiver_lvt_pair_static/c9d35e9a59a88b47`, SF/40 `241f2a0de9bdb87c`, and
+  FS/40 `0b4222c77cd81fe7`. The pinned PDK's TT corner includes the LVT model.
+  Their source producer inherits immutable source/fixture/runtime checks,
+  full finite monotonic waveform checks, exact intervention reconstruction,
+  partial-trace preservation and shared simulator leases. Pilot campaign
+  `receiver_lvt_pair_pilots/7710a87b8c66129f` is active as
+  `openlvds-receiver-lvt-pair-pilots.service`, at most two workers within the
+  six-slot budget. It launches only these three pilots and records negative
+  electrical results separately from incomplete or numerical failures.
+  No remaining twelve DC cases, new clock/physical/native context or PHY
+  admission is created for this alternative. Three new tests prove the exact
+  two-model change, retention of every other source device, rejection of
+  modified controls and refusal of a missing completed control. Full
+  regression: 546 tests, 545 passed and one skipped.
 
 
 Latest DLL model observation on 2026-11-01:
