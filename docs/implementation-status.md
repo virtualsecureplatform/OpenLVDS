@@ -40,6 +40,8 @@ Current bring-up state (2026-11-01):
   to physical/native or PHY qualification yet. Control and both LVT widths
   pass all fifteen cases with independent admissions. Fresh source-clock and
   physical/component/coupled continuations bind this recovery matrix. New
+  actual modified captured-source traces each complete all 47 original checks
+  without missing/repeated edges; their sharp controls remain pending. The
   physical context `receiver_physical_followup/5896ecbb92009d53` lets both
   variants advance independently after their own complete source-clock gates;
   actual simulators still lease from the same six global slots.
@@ -94,13 +96,23 @@ Two-unit native transport failure and controlled restoration experiment:
   catalog or six-case certificate is written. All 746 regression tests pass.
 - The new LVT-restorer source-clock contexts are `receiver_clamp/9b41a25364c5819f`
   (N4) and `receiver_clamp/7cf3e0668ce610ec` (N8). Their unchanged references
-  each complete 47 periods without missing/repeated edges; the actual modified
-  captured and sharp cases remain required. Historical task labels must be
+  and actual modified captured cases each complete 47 periods without
+  missing/repeated edges; the sharp cases remain required. Historical task labels must be
   interpreted through manifest `clamped`: `unclamped_captured` is the
   unmodified reference, while `clamped_captured` is the modified candidate
   despite its historical name. The LVT circuits themselves are unclamped.
   A reference pass is not candidate admission; the scientific gate requires
   all three original controls and the exact declared source factory.
+- Read-only receipt
+  `0f010f4a46bd1d37/completed_captured_observations/386507c894fe06f4/` independently
+  verifies both completed references and both actual modified captured traces.
+  It checks all upstream inputs and producer hashes, the declared source factory
+  and exact fifteen-case candidate hashes, full finite monotonic 80 ns waveforms,
+  and exact original 15–75 ns transport and internal-node range remeasurement.
+  All four reproduce their cached producer results with 47 checks and zero
+  missing/repeated edges. Each record names its actual reference/candidate role.
+  Missing sharp controls are never dispatched by this observer; complete source-
+  clock admission and every physical/native/component/link/PHY gate remain open.
 
 - Three-unit replay `receiver_replay/ef823b6778f2d9a5` now completes both full
   original 80 ns native fixtures. Captured transport misses nine rising and
