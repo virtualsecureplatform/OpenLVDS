@@ -3,6 +3,43 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Matched corrected-driver/current-LVT link diagnostic implemented:
+
+- The completed native-driver comparison `65d922eb5c270776` retains the
+  **older native VREF fast-restoration receiver** from physical context
+  `receiver_layout/64ae7a93d207703b`, through saved native-link parent
+  `receiver_candidate_link/0dee72b71f4525df`. Its failed payload is not
+  a test of the current schematic LVT circuit or frontend-local layout.
+  The observed amplitude improvement remains useful, but these results
+  must not be used to select or reject the newer receiver architecture.
+- `compare_current_lvt_link.py` now prepares a paired, full-channel
+  diagnostic with the admitted **same schematic LVT receiver** and the
+  100:1/110:1 native P64/N24 drivers. Both children retain the original
+  188.049 ns SS/40, 410 MHz, 45% duty, +100 ps skew, 100 ps peak-to-peak
+  jitter fixture, 32 payload bits and 60 ns training. Maximum timestep is
+  tightened identically to 20 ps. Fourteen extra probes expose both
+  receivers' PP/PN/CO/CL/CT/RESTORE0/RESTORE1 voltages. The original
+  decoder and an additional clock-transport measurement are retained.
+- Preparation remeasures all fifteen LVT DC cases, all three source-clock
+  controls and both completed driver comparisons. A different source
+  circuit cannot borrow this admission. Children run sequentially with
+  independent fair leases; no outer slot is held. Existing frozen
+  scientific producers and live fixtures are unchanged.
+- Pair `current_lvt_link/494d9c90761d8f76` is dispatched under
+  `openlvds-current-lvt-matched-link`, initially waiting for a shared
+  slot. Its actual `matched_fixture_audit.json` proves identical normalized
+  decks and identical RX core, shared bias, DLL, delay line, digital TX
+  and digital RX closures. The two native driver closures differ as
+  intended; each retains its own extracted RC, so geometry parasitics
+  can also differ with the declared driver intervention. Neither child
+  nor the pair qualifies startup, native analog RX, final sampling margin
+  or the complete PHY. There is no automatic model promotion.
+- The digital-only recorded-pin replay has acquired a slot and its
+  observed accepted time reached 57.871 ns; frontend-local captured and
+  sharp tests reached 30.695/31.864 ns. These are live progress
+  observations, not complete electrical results. All **636 regression
+  tests pass**, with no skips, in the SciPy-enabled Apptainer environment.
+
 Native digital isolation implemented; previous compact controls and corrected-driver comparison complete:
 
 - `replay_native_rx_pins.py` isolates the unchanged native digital RX from
