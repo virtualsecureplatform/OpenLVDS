@@ -2035,3 +2035,36 @@ it is not labeled a single-factor comparison against the clamped control.
 No source clock run is launched before this first DC screen. No static,
 clock or native improvement is claimed yet. Full regression: 402 tests,
 401 passing and one skipped in the pinned ngspice environment.
+
+The LVT TT/25 static screen completes successfully: all 12 original static
+samples pass. Source root `receiver_clamp/4ea0f56c1098842a`, service
+`openlvds-lvt-restore-source-screen`, now queues the same three original 80 ns
+clock controls. No LVT physical/native or clock improvement is inferred from
+this one static corner. The standard-NFET clamp-removal matrix separately
+passes all six TT/FF temperature cases; other corners remain outstanding.
+
+Read-only analysis of the completed clamped link also demonstrates a driver
+clock-eye issue independent of receiver threshold recovery. Among 49 clock
+centers in 60–120 ns, three are below the original RX threshold of 100 mV;
+minimum RX magnitude is 85.215528 mV at 104.178171 ns. On the TX side,
+four of 50 centers in 58.8–118.8 ns are below 100 mV, with minimum 76.416519 mV.
+The original buf_4 reference has corresponding minima 82.592226/73.696449 mV.
+These interval diagnostics show the weak clock already exists before the
+channel. The TX counts use the RX threshold descriptively; they are not a new
+driver qualification limit. Receiver recovery alone cannot close the retained
+RX eye gate, so driver timing must also be investigated.
+
+`probe_driver_internal.py` creates `driver_internal/c9c5ccd60b8fbe69` from the
+completed clamped link. Its native library, devices, interconnect, waveform
+sources, supplies, load, payload and full 188.049 ns transient remain exact.
+Only the library path and unloaded voltage observations change. Twelve
+additional probes observe the clock/data drivers' AD/AB, L/R and DP/DN named
+buses. Hierarchical scope validation passes before simulation. The runner
+reconstructs the exact instrumentation, checks parent/code/runtime proofs,
+uses a shared lease and requires a complete finite monotonic trace. Results
+will retain measured node ranges/crossings, center amplitudes and comparison
+against the original external traces; no qualification verdict is supplied.
+Two targeted tests pass. Service
+`openlvds-native-driver-internal-observation` is queued; no stage timing cause
+is claimed yet. Full regression: 404 tests, 403 passing and one skipped in
+the pinned ngspice environment.

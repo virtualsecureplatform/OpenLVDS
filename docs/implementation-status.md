@@ -604,15 +604,31 @@ Current bring-up evidence on 2026-10-31:
   `openlvds-receiver-lvt-static-screen`, queues the original TT/25 static
   fixture with unchanged supplies, common modes, 100 fF load and thresholds.
   The original clamped fixture is its recorded control; the unclamped standard
-  NFET result is available separately in the matched DC matrix. No LVT clock
-  run, physical/native result or static improvement is claimed before this
-  screen completes.
+  NFET result is available separately in the matched DC matrix. This LVT
+  TT/25 screen now completes all 12 static samples successfully. Source root
+  `receiver_clamp/4ea0f56c1098842a`, service
+  `openlvds-lvt-restore-source-screen`, queues the three original clock source
+  controls. No LVT clock or physical/native improvement is claimed yet.
+- Completed clamped-link waveforms expose an upstream clock-eye limit as well
+  as receiver sensitivity. In 60–120 ns, three of 49 RX clock pulse centers
+  fall below the original 100 mV threshold; minimum is 85.216 mV at
+  104.178171 ns. The TX-side differential is already small before the channel:
+  four of 50 centers in 58.8–118.8 ns are below 100 mV, minimum 76.417 mV.
+  This is interval-specific eye evidence; TX center counts use the RX threshold
+  only as a diagnostic, not a replacement for driver qualification.
+  `probe_driver_internal.py` prepares root `driver_internal/c9c5ccd60b8fbe69`
+  with identical native library, circuit, stimulus and 188.049 ns run. Only
+  unloaded voltage probes are added at AD/AB, L/R and DP/DN named buses for
+  both driver instances. Scope validation passes; two targeted tests prove
+  exact deck instrumentation and reject missing/ambiguous nodes. Service
+  `openlvds-native-driver-internal-observation` is queued. No stage delay cause
+  or driver improvement is claimed before its measured trace is available.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 402 tests, 401 passed and one skipped in the pinned ngspice
+- Last full unit suite: 404 tests, 403 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
