@@ -1871,3 +1871,20 @@ output oscillation in that local interval. Internal nodes are not saved in
 this rate fixture, so it does not identify the internal cause. The process
 remains live, its fixture and tolerances unchanged, and no complete rate
 verdict is inferred from the prefix.
+
+The same matched resistor-removal DC experiment is now prepared across all
+five required process corners and 0/25/40°C, without a supply sweep. Matrix
+`receiver_static_matrix/dc93e971d02bb60c` selects all 15 completed original
+source static fixtures. Each child revalidates and remeasures its original
+case before cloning the exact two-resistor intervention. The matrix binds
+child manifests and their original PVT case selection, requirements and its
+own producer. Two targeted coverage tests reject missing, duplicate or
+mislabeled cases and substitution by rate/native tests.
+
+Service `openlvds-receiver-unclamped-static-matrix` runs these children
+sequentially, each acquiring a normal shared lease only for its simulation.
+Cached children remeasure actual original/modified waveforms. Its eventual
+`dc_all_passed` verdict applies solely to the original source static thresholds
+and common-mode samples; it cannot qualify timing, rate, extracted operation,
+aperture or the complete PHY. No aggregate DC pass is claimed before all
+15 reports complete.

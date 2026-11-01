@@ -522,12 +522,24 @@ Current bring-up evidence on 2026-10-31:
   1.799942–1.799946 V. This establishes timestep collapse, without identifying
   its internal cause or a qualification verdict. No solver tolerance, stop
   time or scoring gate is changed, and the live simulation is not interrupted.
+- Matched DC matrix `receiver_static_matrix/dc93e971d02bb60c` now prepares the
+  clamp-removal intervention at all 15 required source PVT points. Every
+  original static case is complete; preparation verifies each waveform,
+  producer, runtime and fixture before removing only the two resistors.
+  `receiver_static_matrix.py` enforces exact process/temperature coverage and
+  child-to-parent identity, captures every child manifest and remeasures cached
+  traces. Service `openlvds-receiver-unclamped-static-matrix` runs cases
+  sequentially, with each new simulation acquiring its own shared lease.
+  Two targeted tests reject missing/duplicate/mislabeled cases and native/rate
+  substitutions. This is source DC diagnosis only; it cannot establish rate,
+  extracted, aperture or PHY qualification. No aggregate electrical result is
+  claimed while the matrix is incomplete.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 392 tests, 391 passed and one skipped in the pinned ngspice
+- Last full unit suite: 394 tests, 393 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
