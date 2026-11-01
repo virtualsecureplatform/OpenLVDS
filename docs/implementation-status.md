@@ -39,10 +39,12 @@ Current bring-up state (2026-11-01):
   original full-duration source-clock controls. Neither candidate is admitted
   to physical/native or PHY qualification yet. Control and both LVT widths
   pass all six pilot corners, and the remaining PVT cases have started.
-  SF/40 LVT-N4 advances extremely slowly near the 71.9 ns common-mode
-  transition; an isolated matched 1 ps retry is running while its original
-  50 ps fixture and live trace are preserved. No completed electrical failure
-  or replacement source admission follows from this numerical slowdown.
+  The matched SF/40 1 ps retry now completes all three variants and passes
+  original DC/current/stress checks. Its superseded 50 ps LVT-N4 run was
+  archived and retired near 71.9 ns; all 71 archived files and six shared-slot
+  inodes remain unchanged. Resource recovery is finishing untouched corners
+  before fresh explicit fifteen-case admission. The original partial matrix
+  remains incomplete; no electrical failure is inferred from its slowdown.
 - **The 16 pF DLL passes SS/0 and TT/25 source acquisition.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
   10.690 ps quarter-phase error and 0.745 mV control ripple, versus
@@ -63,7 +65,7 @@ Current bring-up state (2026-11-01):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 732 tests**, with no skips. Electrical
+- The last full regression passes **all 736 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -73,6 +75,31 @@ candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
 
 Two-unit native transport failure and controlled restoration experiment:
+
+- Matched numerical retry `receiver_restore_threshold/d2ad4a830399a9b2`
+  completes the full original 144 ns SF/40 fixtures for control, LVT-N4 and
+  LVT-N8, with all three DC/current/twelve-device stress screens passing.
+  The original 50 ps N4 run remains near the first common-mode ramp at
+  71.9 ns while the stricter 1 ps run completes; changing maximum step is
+  sufficient to avoid this observed numerical slowdown in the matched retry.
+  No transistor, supply, input, method, tolerance or scoring limit changes.
+- The superseded original simulator PID 1332833 was individually frozen,
+  archived and retired after the complete retry passed. Receipt
+  `resident_jobs/restore_sf40_step50/after_stop.json` verifies all 71 archived
+  original file hashes, the target's absence and all six shared-slot inodes.
+  Other simulators and original source workers continue. The partial trace
+  remains electrically inconclusive; original matrix reports are not fabricated.
+- Commit `b2b4b42` adds `admit_receiver_restore_retry.py`: fresh coverage
+  combines all fourteen completed original PVT cases with the complete matched
+  SF/40 retry. It checks exact candidate/observed-source bytes and the sole
+  maximum-step/include edits, requires all three reports in every selected
+  case before calling any runner, and reuses the unchanged full fifteen-case
+  per-variant DC/current/stress admission. Its manifest explicitly records
+  SF/40 at 1 ps and the other fourteen cases at 50 ps. A resource-only
+  `de4b3249ef99482e/numerical_recovery_followup/` waits for the original workers
+  to drain, finishes untouched cases under actual fair leases, then prepares
+  and remeasures this admission. Source-clock and physical/native continuations
+  must bind its fresh context. All 736 regression tests pass without skips.
 
 - Corrected-driver campaign `driver_components/a1d220a703a6ac2b` completes
   with required=30, passed_cases=30 and passed=true; the exact producer exits
