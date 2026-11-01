@@ -2068,3 +2068,38 @@ Two targeted tests pass. Service
 `openlvds-native-driver-internal-observation` is queued; no stage timing cause
 is claimed yet. Full regression: 404 tests, 403 passing and one skipped in
 the pinned ngspice environment.
+
+Both standard-NFET unclamped native controls in `receiver_replay/7be8ec522902db81`
+now complete. Captured input misses nine rising and nine falling edges; sharp
+input misses none. Reanalysis of both cached complete waveforms reproduces the
+reports with unchanged provenance. Captured waveform SHA256 is
+`076e6b1981ac34673ae54e8373cfc9c560ad0200e4e795e023ae57ee25729e54`;
+sharp SHA256 is `bcd59f60982da67cd23ad4c4f219e6a0dc608892a346aa27f56e33f439359292`.
+Native continuation and follow-up hold for failed captured recovery. Neither
+component root `599036f3ae6f5004` nor link root `83066baeca7824fe` has execution
+receipts or raw traces; neither is admitted to scientific follow-up.
+
+The LVT variant now has dedicated physical/native producers. Its gate requires
+all three complete passing original clock source controls plus the completed
+passing TT/25 LVT static screen. The static waveform is remeasured, all 12
+original DC samples must pass and the exact receiver closure must equal the
+declared LVT source. Static source/deck/waveform/manifest/report proofs are
+bound alongside the clock source proofs. Identity `unclamped_lvt_restore`
+records `first_restoration_nfet_model=sky130_fd_pr__nfet_01v8_lvt`, zero CO
+clamps, unloaded monitor and original restoration/input/decision sizes.
+Native preparation independently repeats these gates and requires DRC/LVS,
+independent RC audit, nine-port order and unchanged native bias/digital load.
+Both original 80 ns native controls use independent shared leases.
+
+Nine targeted source/static/physical tests pass, including rejection of
+standard-NFET evidence, missing/failed static reports, repeated source edges,
+wrong stage sizes and nonzero clamp metadata. Parallel tests cover both
+controls and one simulator failure without interrupting the other, with exact
+LVT result metadata. The actual completed TT/25 screen also passes the new
+closure/provenance gate. Service `openlvds-lvt-restore-native-continuation`
+waits on the actual source owner before attempting layout, extraction/audit
+and native replay. No LVT GDS or native result is claimed while the source
+screen remains incomplete.
+
+Full regression after these gates: 413 tests, 412 passing and one skipped in
+the pinned ngspice environment.

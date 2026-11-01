@@ -522,7 +522,10 @@ Current bring-up evidence on 2026-10-31:
   under separate shared leases. Loading root `receiver_loading/11bbf00548f00ecc`
   reports incident CO wire sum 35.917 fF versus 44.360 fF with the clamp;
   these sums exclude device capacitance and do not prove effective AC load
-  or timing. No extracted recovery verdict is available yet.
+  or timing. Both native controls now complete: captured input loses nine
+  rising and nine falling edges; the sharp control loses none. Cached trace
+  reanalysis reproduces both reports. Native continuation and follow-up hold
+  for failed recovery. No component/link simulation starts for this variant.
   A captured native prefix reaches 27.380 ns and misses the first short pulse:
   over 24.5–26.5 ns CO peaks at 0.676372 V, RESTORE0 stays above 1.783624 V,
   RESTORE1 stays below 0.000316 V and Q stays above 1.799909 V. No output
@@ -609,6 +612,17 @@ Current bring-up evidence on 2026-10-31:
   `receiver_clamp/4ea0f56c1098842a`, service
   `openlvds-lvt-restore-source-screen`, queues the three original clock source
   controls. No LVT clock or physical/native improvement is claimed yet.
+  Dedicated LVT physical/native producers now require that exact passing
+  TT/25 static screen plus all three complete passing clock source controls.
+  The static gate remeasures actual cached waveforms and binds the exact
+  receiver closure, preserving every original DC sample. Identity records
+  `unclamped_lvt_restore` and the explicit first NFET model, rejecting standard
+  NFET evidence, any CO clamp, wrong sizes and missing/failed static samples.
+  Nine targeted gate tests and parallel completion/error tests pass; the real
+  completed TT/25 screen also passes this gate. Service
+  `openlvds-lvt-restore-native-continuation` waits on the live source owner
+  before layout, DRC/LVS, independent RC audit and native replay. No LVT GDS
+  or native replay result is claimed while source comparisons are incomplete.
 - Completed clamped-link waveforms expose an upstream clock-eye limit as well
   as receiver sensitivity. In 60–120 ns, three of 49 RX clock pulse centers
   fall below the original 100 mV threshold; minimum is 85.216 mV at
@@ -628,7 +642,7 @@ Current bring-up evidence on 2026-10-31:
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 404 tests, 403 passed and one skipped in the pinned ngspice
+- Last full unit suite: 413 tests, 412 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
