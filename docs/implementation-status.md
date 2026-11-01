@@ -5118,3 +5118,36 @@ Corrected DLL measured-stability adapter prepared on 2026-11-01:
 - The weaker receiver full DC matrix remains live with eleven completed
   PVT cases. Its own source-clock and physical/native continuations remain
   gated on exact candidate-specific fifteen-case and clock evidence.
+
+
+Weaker receiver bias complete DC admission on 2026-11-01:
+
+- `receiver_soft_common_mode_matrix/d3271555fcb702b9/summary.json` now
+  completes all fifteen original fixed-supply process/temperature cases.
+  Control, two-unit pullup and three-unit pullup each pass 15/15 full
+  144 ns/twelve-point DC/current/observed-device stress cases. Separate
+  `source_dc_admission/rail_pullup_2r.json` and `rail_pullup_3r.json` bind
+  each exact candidate circuit and full matrix report. No old strong-bias
+  failure is overwritten or relabelled as a weaker-candidate result.
+- Read-only `completed_pilot_headroom/read.py` scientifically remeasures all
+  five original completed pilot traces, verifies every input hash and stores
+  actual twelve-point tail drain voltage/current and decision input VDS in
+  its immutable summary. At SS/40 the minimum sampled tail VDS is
+  34.012 mV for control, 139.007 mV for two-unit pullup and 100.992 mV
+  for three-unit pullup. Measured settled tail-current ranges are
+  73.882–344.727, 238.987–356.129 and 189.816–353.431 microampere.
+  These terminal/current observations do not assert BSIM saturation regions.
+- Both weaker corrections retain passing SF/0 and SF/25 high-common-mode
+  sensitivity, unlike the rejected stronger corrections. The complete
+  fifteen-case source DC screen supports moving both candidates to original
+  source-clock tests, not selecting a final native receiver or PHY.
+- The exact live source-clock followup automatically advanced to
+  `running_source_clocks` with both admitted variants. Three-unit context
+  `receiver_clamp/1ea95c4cfc1e34f4` has been prepared through cached source
+  remeasurement and exact candidate/fixture reconstruction. Two-unit
+  preparation is also in the live handoff. Actual dynamic clock results,
+  new geometry/extraction/native transport and full component/link timing
+  remain required; the physical followup still waits for passing clocks.
+- Scientific code is unchanged from the passing 692-test regression. The
+  new pilot observation and live state checks are read-only/resource work;
+  no extra SPICE slot or in-place partial retry was introduced.
