@@ -25,9 +25,20 @@ Current bring-up state (2026-11-01):
 - Workflows for new geometry/extraction/native tests, all sixty receiver
   component conditions and a corrected 110:1-driver/native-receiver coupled
   diagnostic are implemented behind exact source/native gates. The two-unit
-  layout/extraction/RC audit now pass, and its native replay is running.
+  and three-unit layouts/extractions/RC audits now pass. The complete two-unit
+  native replay fails with eighteen captured-clock edges missing and zero
+  sharp-control edges missing. The three-unit native replay is running.
   Continuations independently lease from the
   six existing SPICE slots. They do not select a PHY or publish a release.
+- **First-restorer threshold experiments are running.** New source matrix
+  `receiver_restore_threshold_matrix/de4b3249ef99482e` compares the exact
+  two-unit control with LVT first-stage NFETs at W4 and W8, preserving its
+  P8 PMOS, decision/frontend/bias and later restorers. Six pilot corners
+  gate bulk work; each intervention needs its own fifteen-case pass. A
+  resource-only continuation waits for complete DC evidence before preparing
+  original full-duration source-clock controls. Neither candidate is admitted
+  to physical/native or PHY qualification yet. The first complete SS/40
+  comparison passes for control and both LVT widths; other pilots are pending.
 - **The 16 pF DLL passes its first SS/0 source-acquisition case.** The full
   original 1500 ns trace gives 10.039 ps maximum feedback error,
   10.690 ps quarter-phase error and 0.745 mV control ripple, versus
@@ -42,7 +53,7 @@ Current bring-up state (2026-11-01):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 700 tests**, with no skips. Electrical
+- The last full regression passes **all 719 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -50,6 +61,59 @@ Current bring-up state (2026-11-01):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+Two-unit native transport failure and controlled restoration experiment:
+
+- `receiver_replay/c130e79d2f47a246` completes both original full 80 ns,
+  1 ps maximum-step fixtures. Captured transport misses nine rising and nine
+  falling edges; sharp control misses none. Its explicit native admission is
+  false, so the component and corrected-driver coupled-link continuations
+  skip this candidate. The three-unit physical candidate
+  `receiver_layout/6a56f7a2cf64a7b4` independently passes physical checks;
+  its native captured/sharp replay is `receiver_replay/ef823b6778f2d9a5`.
+- Immutable `c130e79d2f47a246/partial_transport_observation/` records the
+  matched old/new 15–30 ns prefix comparison. Both lose the same three
+  transitions despite the frontend common mode moving to 1.113–1.186 V
+  and the observed CT bus to 0.170–0.378 V. CT is an extracted wire bus,
+  not a MOS VDSAT measurement. Weak negative pulses drive CO to roughly
+  0.77–0.79 V while RESTORE0 remains above 1.73 V, motivating a lower
+  first-restorer trip point. Full completed transport, rather than the prefix,
+  establishes the rejection above.
+- `receiver_restore_threshold.py` and its matrix runner preserve the full
+  original 144 ns/twelve-point stimuli, fixed supplies, current meters and
+  twelve-device project stress screen. SS40/SF0/FS0/TT25/SF25/FS40 pilots
+  include the previously limiting high-common-mode SF cases and a fast-NFET
+  FS check. Bulk is held unless control and at least one intervention pass
+  all six pilots. Each variant receives a separate fifteen-case admission;
+  all runs acquire actual shared SPICE leases individually, at priority zero.
+- `receiver_restore_threshold_clock.py` remeasures complete DC evidence
+  before preparing the unchanged three full 80 ns/47-period source-clock
+  fixtures. The reduced-tail reference, native shared bias and digital RX
+  closures remain bound to their original producer. Missing reports cannot
+  silently start DC simulations during admission checks. The new LVT model
+  and W8 sizing are experimental; the older LVT-restorer-only failure remains
+  rejected and contributes no passing admission to these combined candidates.
+- Gated physical continuation
+  `receiver_physical_followup/eb3d0b22853c2cb7` waits on the exact new
+  clock-followup owner. It retains the frontend-local placement including all
+  pull-up segments, builds isolated candidate geometry, requires DRC/LVS,
+  extraction and independent RC audit, then runs the original two full native
+  clock fixtures. Scientific producers bind the exact variant/source bytes
+  and preserve the bias and digital RX closures. Tools use the container's
+  NumPy-enabled `/usr/bin/python3`. No physical build starts from partial DC
+  or source-clock evidence, and a native diagnostic cannot publish a PHY.
+  Implementation commits are `6e10ef8` (source experiments) and `a23744f`
+  (physical/native continuation). All 719 regression tests pass without skips.
+- Independent wire-load observation in
+  `receiver_layout/9d740d19bee2c0d0/compared_frontend_loads/` finds that the
+  two-unit correction leaves critical mirror/tail/CO/CL/CT wire capacitances
+  close to the original layout; PP/PN wire couplings grow by approximately
+  23/18 fF. This excludes intrinsic device capacitance and is not an AC
+  bandwidth measurement. Separate `exact_reduction_observation/` reduces
+  13,309 resistors to 3,588 while retaining every non-resistor and fifteen
+  explicit observation buses. Four independent boundary-current witnesses
+  pass, maximum discrepancy 3.78e-15 A. Transient equivalence remains pending;
+  no live model, catalog, fixture or qualification profile is replaced.
 
 Rejected baseline DLL work retired; corrected-driver source matrix passes:
 

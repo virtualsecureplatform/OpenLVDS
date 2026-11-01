@@ -36,12 +36,25 @@ with equivalent load resistances of 0.4R or 3R/7 instead of R/2. Every original
 input, decision, restoration and bias device remains. Both alternatives pass
 all fifteen source DC/current/twelve-observed-device stress cases. All added
 resistor segments stay in the local frontend row when layout is admitted.
-Both pass all three complete source-clock controls. The two-unit candidate
-also passes new DRC/LVS, extraction and independent RC audit, and its native
-clock replays are running. The three-unit physical build, native transport,
-components and coupled-link timing remain gated and unproven. The earlier
+Both pass all three complete source-clock controls and new DRC/LVS,
+extraction and independent RC audit. The two-unit native replay completes
+with eighteen missing captured-clock edges and zero missing sharp-control
+edges; it fails transport admission. The three-unit native replay is running.
+Components and coupled-link timing remain gated and unproven. The earlier
 1.2 V corrections are rejected because they lose high-common-mode sensitivity
 in SF corners. No receiver alternative is promoted into the canonical source.
+
+The next controlled receiver change combines the two-unit frontend correction
+with a lower-threshold first restoring inverter. Its PMOS remains W8; only
+the first NFET changes to the SKY130 LVT model, at W4 or W8. Later restoring
+stages and all frontend, decision and bias devices remain unchanged. In the
+two-unit native trace, weak captured pulses reach only about 0.77–0.79 V at
+CO and barely move the first inverter output despite improved frontend/tail
+voltages. This motivates the threshold experiment; it does not prove the
+change will meet timing. Each candidate must independently pass the original
+fifteen source DC/current/observed-stress cases and all three source-clock
+controls before new physical/native evaluation. The earlier LVT-restorer-only
+failure used a different frontend and is retained as separate evidence.
 
 The OTA DLL correction increases nominal CTRL storage from 4 pF to 16 pF by
 adding twelve MIM capacitors while preserving every original device. The
