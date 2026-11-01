@@ -3,6 +3,52 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Native digital isolation implemented; previous compact controls and corrected-driver comparison complete:
+
+- `replay_native_rx_pins.py` isolates the unchanged native digital RX from
+  completed mixed-view parent `analog_link_pilot/36b513f21de11d28`. Both
+  restored inputs, RXDATA/RXCLOCK, retain all **32,104 original PWL
+  vertices** with round-trip voltage/timestamp precision. The original
+  reset, SS/40 PVT, 1.8 V supply and 20 fF output loads are preserved.
+  The exact instantiated RX closure hash remains
+  `c062ce4789c8a3e771aea7f8e309b7336bf0674dff78f8f89d6ed750fe52abb4`;
+  no additional RC reduction or analog architecture substitution is made.
+- Diagnostic `native_rx_pin_replay/8281fd2383199c25` is dispatched under
+  `openlvds-native-rx-recorded-pins`, with one independent fair lease and
+  the unchanged six-slot shared budget. Its initial observed state is
+  waiting for a slot. It uses 5 ps maximum timestep and the original
+  Gear/error tolerances, with no enlarged Newton-iteration budget.
+  This is the next isolation after internal observations narrowed the
+  stalled analog replay to data restoration/native input interaction.
+  It does not rerun the stalled analog control.
+- Comparison covers 50–125 ns and reports each input/output's rising and
+  falling edge counts, timing disagreement and interpolated voltage error.
+  An unchanged wrong bit remains wrong. Completing this ideal-source test
+  cannot prove full-link agreement, analog feedback behavior, identify a
+  failing transistor/solver mechanism, or qualify the PHY. Partial output
+  is retained and cannot be overwritten by rerunning the same context.
+- The preceding compact LVT native context `911c0f415c65ece8` is now
+  complete: captured **39** and sharp **33 missing edges**. Its fair sharp
+  continuation unit exited successfully; `native_clock_passed=false`.
+  These completed failures remain the controls for the live frontend-local
+  correction `c1109a1560bd4e6e`; corrected results are still outstanding.
+- Corrected-current native-driver comparison `65d922eb5c270776` completed
+  both original fixtures. The 110:1 P64/N24 driver has no below-100 mV
+  midpoint samples in either reported clock view (TX minimum 121.505 mV,
+  received differential minimum 137.760 mV). The source control has four
+  and three respectively. This is a partial amplitude screen only.
+  **Both payload decoders fail**; the corrected-current case observes
+  all-zero words and only 30 restored rising-clock edges over the complete
+  trace, versus 70 in the source control. Improved driver amplitude does
+  not establish receiver or full-link functionality. The unchanged
+  30-case driver component campaign `a1d220a703a6ac2b` has started through
+  its existing guarded handoff; no model is automatically promoted.
+- All **633 regression tests pass**, with no skips, using the SciPy-enabled
+  Apptainer environment. New tests cover exact pin preservation including
+  overshoot, analog-instance removal with original native RX/load retention,
+  missing-edge/constant-output disagreement, incomplete-wave refusal and
+  preservation of partial output.
+
 Frontend routing regression identified and a circuit-preserving correction dispatched:
 
 - All three LVT source-clock controls completed successfully (47 periods
