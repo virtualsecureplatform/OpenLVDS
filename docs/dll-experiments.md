@@ -1855,3 +1855,19 @@ unclamped result metadata. Service
 owner, with receipts in `receiver_clamp/2c86c40885f97e87/native_continuation/`.
 It may attempt physical/native stages only after the complete source screen.
 No new physical/native result is claimed while that gate remains incomplete.
+
+The unclamped source screen's unchanged control completes all 47 checked
+periods with zero missing or repeated edges. The two modified unclamped cases
+remain pending; this control result does not qualify the modified circuit.
+
+Read-only inspection finds timestep collapse in the current VREF-clamped
+component case `schematic_receiver_rate_ss_40`. Its active ngspice process
+continues using CPU, but saved transient time advances only about 7 ps over
+several minutes near 25.84 ns. At the inspected prefix, the last 10,000 saved
+samples span 1.244135 ps; timestep range is 1.290824e−17–4.130638e−16 s.
+Pins are fixed at P=1.075 V/N=1.325 V, while Q remains within
+1.799942466–1.799946481 V. This demonstrates numerical slowdown with no large
+output oscillation in that local interval. Internal nodes are not saved in
+this rate fixture, so it does not identify the internal cause. The process
+remains live, its fixture and tolerances unchanged, and no complete rate
+verdict is inferred from the prefix.

@@ -511,6 +511,17 @@ Current bring-up evidence on 2026-10-31:
   `openlvds-unclamped-restore-native-continuation` waits on the actual source
   owner before attempting these stages. No new layout or native result exists
   while the source screen remains incomplete.
+  The source screen's unchanged control now completes all 47 checked periods
+  with no missing or repeated edge. The two modified unclamped controls remain
+  outstanding; the physical/native continuation still waits for all three.
+- The current VREF-clamped component campaign has a numerical slowdown in
+  `schematic_receiver_rate_ss_40`. Its simulator is confirmed active and using
+  CPU, but a saved prefix advances only about 7 ps over several minutes near
+  25.84 ns. Its last 10,000 saved samples span 1.244 ps, with timesteps
+  1.29e−17–4.13e−16 s, fixed input pins 1.075/1.325 V and Q within
+  1.799942–1.799946 V. This establishes timestep collapse, without identifying
+  its internal cause or a qualification verdict. No solver tolerance, stop
+  time or scoring gate is changed, and the live simulation is not interrupted.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
