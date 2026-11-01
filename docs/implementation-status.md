@@ -3,6 +3,48 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Compensated DLL extraction/audit complete; matched source acquisition dispatched:
+
+- The 16 pF storage candidate `dll_layout/35555c8719890933` now passes
+  distributed RC extraction, public-port verification and an independent
+  wire-collapsed connectivity audit, in addition to its DRC 0/LVS checks.
+  Extraction has 176,147 raw resistors and 5,682 capacitors; the standard
+  exact reduction retains 146,601 resistors. Its native model SHA256 is
+  `8a19960d3e85586cab3f1b14fd9819a8161bde7a6681526f54dc79330178e64d`.
+- Additional exact degree-8 resistor elimination, using the unchanged
+  `exact_rc_candidate.py`, produces
+  `dll_layout/schur_496dde348e4fe55b`: **43,919 resistors**, removing
+  another 40,137 algebraic nodes. Every device, capacitor, port and other
+  non-resistor statement remains invariant. Four independent sparse
+  terminal-admittance witnesses pass across 6,280 boundary nodes, maximum
+  absolute current discrepancy 2.843e-13 A; a fresh independent connectivity
+  audit also passes. Exact native SHA256 is
+  `060530738a077cdde80c4f26b109199b54c0a65bf26a72f1c68b5c9c92633f09`.
+  Native transient equivalence and electrical qualification remain pending;
+  these checks do not admit loop margins or acquisition.
+- `screen_dll_storage.py` prepares source acquisition context
+  `dll_architecture/368259f7b02c5fdc` with explicit variant `ota_w8_c16`.
+  It first remeasures all three completed baseline source controls, then
+  changes only the source macro to the captured capacitor correction.
+  The full source must equal the guarded transformation of the original
+  source. Native PFD and shared-bias closures remain unchanged; the source
+  fixture inlines its unchanged delay devices into the analog macro.
+- The actual `matched_fixture_audit.json` proves that each SS0/TT25/FF0
+  deck is byte-identical after normalizing only library artifact paths.
+  Original full-duration clock/reset/load/numerical policies and measurement
+  windows are retained. Removing exactly the twelve newly added capacitor
+  rows from each flattened analog macro restores its original bytes.
+  `inputs/ota_w8_c16.spice` is the exact physical candidate source, so a
+  future native qualification cannot borrow the old 4 pF source screen.
+- Unit `openlvds-dll-storage-source-acquisition` is live with one worker,
+  initially queued for the SS0 fixture. Each child takes its own fair lease
+  within the unchanged six-slot global budget; no outer lease is held.
+  Partial raw/log/table output cannot be overwritten. This screen does not
+  promote a model or replace the fifteen-condition native model, acquisition,
+  recovery/readiness/OTA and final PHY gates. All **641 regression tests
+  pass**, no skips, including source-library protection and partial-output
+  preservation tests.
+
 Native digital replay completes; measured DLL margins require a compensation correction:
 
 - Digital-only recorded-pin context `native_rx_pin_replay/8281fd2383199c25`
