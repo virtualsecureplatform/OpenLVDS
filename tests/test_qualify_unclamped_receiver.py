@@ -11,6 +11,25 @@ import qualify_unclamped_receiver as selected
 
 
 class UnclampedFollowupSelection(unittest.TestCase):
+    def test_tail_profile_requires_exact_width_and_dispatches_its_provenance(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);replay,identity=self.fixture(root)
+            identity.update(clamp_variant='unclamped_tail_headroom',decision_tail_width_um=16,
+                            decision_tail_scale=0.25,first_restoration_nfet_model='sky130_fd_pr__nfet_01v8')
+            (replay/'manifest.json').write_text(json.dumps(dict(identity=identity)))
+            with patch.object(selected,'ROOT',root),patch.object(selected.tail_native,'run') as verify:
+                with selected.selection(replay):
+                    self.assertIs(selected.link.source_variant,selected.tail_source)
+                    self.assertIn('probe_receiver_tail_headroom_candidate.py',selected.components.CODE)
+                    self.assertIn('receiver_tail_headroom_matrix.py',selected.link.CODE)
+                    selected.link.recheck_replay(replay)
+                    verify.assert_called_once_with(replay)
+            for changes in [dict(decision_tail_width_um=64),dict(decision_tail_scale=1),
+                            dict(clamp_variant='unclamped_fast_restore'),
+                            dict(first_restoration_nfet_model='sky130_fd_pr__nfet_01v8_lvt')]:
+                (replay/'manifest.json').write_text(json.dumps(dict(identity=dict(identity,**changes))))
+                with patch.object(selected,'ROOT',root),self.assertRaises(ValueError):selected.selected_replay(replay)
+
     def test_lvt_profile_requires_its_exact_model_and_native_verifier(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

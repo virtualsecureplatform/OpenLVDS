@@ -10,12 +10,15 @@ import qualify_receiver_components as components
 import probe_receiver_candidate_link as link
 import probe_receiver_unclamped_restore_candidate as native
 import probe_receiver_lvt_restore_candidate as lvt_native
+import probe_receiver_tail_headroom_candidate as tail_native
 from receiver_unclamped_restore_experiment import source_variant
 from receiver_lvt_restore_experiment import source_variant as lvt_source
+from receiver_tail_headroom_experiment import source_variant as tail_source
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES = {'unclamped_fast_restore': (source_variant, native, 'sky130_fd_pr__nfet_01v8'),
-            'unclamped_lvt_restore': (lvt_source, lvt_native, 'sky130_fd_pr__nfet_01v8_lvt')}
+            'unclamped_lvt_restore': (lvt_source, lvt_native, 'sky130_fd_pr__nfet_01v8_lvt'),
+            'unclamped_tail_headroom': (tail_source, tail_native, 'sky130_fd_pr__nfet_01v8')}
 
 
 def selected_replay(replay):
@@ -32,6 +35,12 @@ def selected_replay(replay):
     declared = identity.get('first_restoration_nfet_model', 'sky130_fd_pr__nfet_01v8')
     if declared != profile[2]:
         raise ValueError('Unclamped restoration NFET model differs from its selected profile')
+    if identity['clamp_variant']=='unclamped_tail_headroom':
+        if (identity.get('decision_tail_width_um')!=16 or identity.get('decision_tail_scale')!=0.25 or
+                identity.get('first_restoration_nfet_model')!='sky130_fd_pr__nfet_01v8'):
+            raise ValueError('Reduced decision-tail profile needs its exact width, scale and NFET model')
+    elif identity.get('decision_tail_width_um',64)!=64 or identity.get('decision_tail_scale',1)!=1:
+        raise ValueError('Decision-tail metadata differs from its selected profile')
     return identity
 
 
