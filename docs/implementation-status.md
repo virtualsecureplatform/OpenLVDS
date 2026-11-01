@@ -170,9 +170,10 @@ Latest receiver decision on 2026-11-01:
   Their source producer inherits immutable source/fixture/runtime checks,
   full finite monotonic waveform checks, exact intervention reconstruction,
   partial-trace preservation and shared simulator leases. Pilot campaign
-  `receiver_lvt_pair_pilots/7710a87b8c66129f` is active as
-  `openlvds-receiver-lvt-pair-pilots.service`, at most two workers within the
-  six-slot budget. It launches only these three pilots and records negative
+  `receiver_lvt_pair_pilots/7710a87b8c66129f` initially queued at most two
+  workers within the six-slot budget; its polling resource coordinator was
+  replaced before any pilot simulation started, as recorded below. The
+  campaign launches only these three pilots and records negative
   electrical results separately from incomplete or numerical failures.
   No remaining twelve DC simulations, new clock/physical/native context or PHY
   admission is allowed before the applicable gates. Three new tests prove the exact
@@ -191,12 +192,31 @@ Latest receiver decision on 2026-11-01:
 - Actual `ad5c6e2037ee5519/incomplete_pilot_preflight.json` records refusal
   of the incomplete pilots and zero simulation launches. Three matrix tests
   cover missing pilots, negative remeasured pilots and changed report binding.
-  `followup/run.py` is active as `openlvds-lvt-pair-dc-followup.service`,
-  waiting for the three-pilot owner and its actual bound results before
-  invoking the scientific matrix gate. No outer simulator lease is retained;
+  The initial `followup/run.py` coordinator was replaced while childless by
+  the current `followup_v3/run.py` scheduling context, waiting for the
+  three-pilot owner and its actual bound results before invoking the
+  scientific matrix gate. No outer simulator lease is retained;
   sequential full-matrix cases use the unchanged shared six-slot scheduler.
   Source clocks and all physical/native/component/link work remain gated.
   Full regression: 549 tests, 548 passed and one skipped.
+- LVT scheduling now uses blocking slot-4 waits. The kernel lock table showed
+  two long driver component runs occupying slots 2 and 3, with the current
+  aperture boundary search on slot 4. The original LVT workers were merely
+  polling for any free slot. They and their deferred DC coordinator were
+  quiesced, every relevant thread was verified stopped, and childless state,
+  absence of simulator descendants/pilot traces and unchanged fixture hashes
+  were proved before retiring only those queued resource processes. Receipts
+  are in `resident_jobs/lvt_pair_rescheduling/retirement.json` and
+  `blocking_queue.json`. No live SPICE process was stopped or signalled.
+- Replacement pilot resource context
+  `receiver_lvt_pair_pilots/82d839adb65472fe` is active as
+  `openlvds-receiver-lvt-pair-pilots-blocking.service`. Both initial workers
+  are verified kernel-blocked behind the actual aperture owner on the same
+  slot-4 inode. The unchanged scientific static contexts capture their new
+  CLI scheduling policy separately; source/model/deck manifests remain intact.
+  `openlvds-lvt-pair-dc-followup-v3.service` is also active and will use a
+  blocking slot-4 wait for each remaining DC case after all three pilots pass.
+  The global budget remains six and pilot concurrency remains at most two.
 
 
 Latest DLL model observation on 2026-11-01:
