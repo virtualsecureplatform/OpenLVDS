@@ -5151,3 +5151,41 @@ Weaker receiver bias complete DC admission on 2026-11-01:
 - Scientific code is unchanged from the passing 692-test regression. The
   new pilot observation and live state checks are read-only/resource work;
   no extra SPICE slot or in-place partial retry was introduced.
+
+
+Weaker receiver complete component selector prepared on 2026-11-01:
+
+- `qualify_receiver_soft_common_mode.py` accepts only the exact selected
+  weaker-bias native profile and current native producer. Before component
+  preparation, both complete captured/sharp native controls are scientifically
+  remeasured under a serialized cache lock; missing controls cannot dispatch
+  native or component jobs. Native admission must explicitly pass and bind
+  the exact replay manifest, retaining both original 47-period gates.
+- The existing component engine retains every original schematic/native DC
+  and rate fixture: 60 unique conditions across all five corners and three
+  temperatures. It reconstructs the original fixtures and selected physical
+  model, revalidates replay admission before execution, and requires all sixty
+  results to pass. Partial component traces cannot be overwritten for retry.
+- Each worker uses the existing fair priority-1 dispatcher through the frozen
+  component worker's local slot import. Temporary component-code, replay-gate
+  and resource bindings are restored after success or error. No outer lease
+  is held, and the global six-slot limit remains unchanged. Source-clock or
+  native success cannot substitute for this full component campaign.
+- Four tests verify missing and failed native-admission refusal without
+  dispatch, restoration of selector/resource bindings on failure, and exact
+  preservation of partial component data. All 696 regression tests pass.
+- Resource-only `receiver_physical_followup/948f4f24130c3d2f/component_followup/run.py`
+  is verified live as
+  `openlvds-receiver-soft-common-mode-component-followup.service`. Its
+  immutable manifest binds the exact physical/native owner PID/invocation,
+  physical handoff manifest, selector and scientific producers. It waits for
+  passing per-variant native receipts, then prepares/runs the full sixty-case
+  suite with two independent workers. Failed/unadmitted variants are held;
+  neither native diagnostics nor component passes promote a PHY selection.
+- Both weaker source-clock contexts are prepared and actively simulating:
+  `receiver_clamp/efcc143161073193` (two-unit) and
+  `receiver_clamp/1ea95c4cfc1e34f4` (three-unit). Actual original control
+  traces were observed at 14.0265 ns and 17.0515 ns of their full 80 ns
+  fixtures. No dynamic verdict is inferred from these partial times. New
+  native geometry/replays, all components, corrected-driver coupling, DLL,
+  sampling aperture and final release evidence remain required.
