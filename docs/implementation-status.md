@@ -5040,3 +5040,43 @@ Weaker receiver-bias clock/physical continuation prepared on 2026-11-01:
   these new candidates are still pending upstream electrical evidence.
 
 Full regression after the weaker clock/physical continuation: all 688 tests pass, no skips.
+
+
+16 pF DLL first completed source result and native handoff on 2026-11-01:
+
+- The exact original 1500 ns SS/0 source-acquisition fixture completed and
+  passed for `dll_architecture/368259f7b02c5fdc/ota_w8_c16_loop_ss_0`.
+  Its original cadence, 10.038821 ps maximum feedback error, 10.690115 ps
+  maximum quarter-phase error and 0.744964 mV control ripple all pass.
+  TT/25 is now running; FF/0 remains queued in the same unchanged source
+  controller. One completed corner does not admit the new native DLL.
+- Read-only `368259f7b02c5fdc/completed_source_observation/read.py` validates
+  both original and corrected scientific manifests, complete source traces,
+  input-file hashes, report hashes and the matched-fixture audit. Actual
+  full-wave remeasurement reproduces every loop metric exactly for both
+  SS/0 circuits. Its immutable summary binds the reader and every input.
+- The original 4 pF SS/0 source case gives 2.576440 mV control ripple,
+  10.045246 ps feedback error and 9.481937 ps quarter-phase error. The
+  corrected 16 pF case gives 0.744964 mV ripple, 10.038821 ps feedback
+  error and 10.690115 ps quarter-phase error. Both pass original acquisition
+  criteria. This source-only observation does not establish the new native
+  loop margins or predict the remaining process/temperature cases.
+- Resource-only `368259f7b02c5fdc/native_followup/run.py` is verified live
+  as `openlvds-dll-storage-native-followup.service`. Its manifest binds the
+  exact source owner PID/invocation, source manifest, source/native adapters,
+  corrected exact-resistor layout `dll_layout/schur_496dde348e4fe55b` and
+  fast-reset PFD physical/extraction/audit evidence. It waits for all three
+  original source reports before invoking `qualify_dll_storage.py`.
+- If source admission passes, the continuation prepares the exact corrected
+  native library and runs only the original native screen with three workers,
+  each owning an independent actual shared lease. No outer lease is held.
+  Fresh measured stability, full 336 native cases, all PVT, steps/recovery,
+  readiness, OTA operating points and the remaining PHY gates still apply.
+  Numerical pauses and source/physical failures do not silently restart or
+  promote a partial run. No source, fixture, model or existing producer was
+  modified by either new resource/observation helper.
+- Both weaker receiver corrections now pass all five pilot PVT cases in
+  `receiver_soft_common_mode_matrix/d3271555fcb702b9/pilot_summary.json`.
+  The full matrix is live with seven completed PVT cases; candidate-specific
+  fifteen-case DC and downstream clock/native/PHY admission remain pending.
+  Canonical scientific code is unchanged since the passing 688-test regression.
