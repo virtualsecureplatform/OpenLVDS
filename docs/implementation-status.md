@@ -2363,3 +2363,29 @@ Reduced decision-tail source gates on 2026-11-01:
   intervals. Its full 188.049 ns result and matched native control remain
   pending. This prefix establishes progress only. The six-slot budget and
   all scientific settings remain unchanged.
+
+
+Automatic smaller-tail follow-up on 2026-11-01:
+
+- `queue_receiver_followup.py --receiver-profile unclamped_tail_headroom`
+  waits for the exact native continuation owner to end successfully, verifies
+  both original native clock reports and the selected layout, and rejects a
+  replay with another receiver profile. It captures the selected verifier's
+  complete producer set plus the source/native continuation inputs. The
+  default baseline dispatch remains available.
+- After admission, the queue uses `qualify_unclamped_receiver.py` for both
+  preparation actions and `continue_receiver_unclamped_candidate.py` for
+  execution. Thus all 60 source/native component fixtures and the unchanged
+  saved loaded-link fixture use the exact smaller-tail source/native model.
+  Children independently remeasure native replay evidence before acquiring
+  simulator slots. Terminal failures hold downstream work; final child
+  reports must pass and match their captured manifests. These diagnostics
+  retain `qualified_phy=false` and do not replace release qualification.
+- Unit `openlvds-receiver-tail-headroom-component-link-followup` is active,
+  waiting on `openlvds-receiver-tail-headroom-native-kernel-wait-v2.service`.
+  Its captured state under `dee37af388e0ca28/component_link_continuation`
+  confirms waiting for native replay; no component/link simulation has yet
+  started. Original score windows, fixed supplies and six shared slots apply.
+- Tests cover baseline/tail dispatch, producer capture, an active owner,
+  native failure, a mismatched receiver profile and both child reports. Full
+  regression: 462 tests, 461 passed and one skipped.
