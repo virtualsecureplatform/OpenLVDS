@@ -451,10 +451,16 @@ Current bring-up evidence on 2026-10-31:
   before acquiring simulator slots. Service
   `openlvds-fast-restore-component-link-queue` is waiting; its frozen code,
   requirements, upstream manifest and original link receipts are under
-  `receiver_clamp/d2827cbf76f9eb80/component_link_continuation/`. Five targeted
+  `receiver_clamp/d2827cbf76f9eb80/component_link_continuation/`. Six targeted
   tests cover active/incomplete/failed owners, selection, edge loss/repetition,
   path confinement and the prepare/run handoff. These diagnostics cannot
   qualify the PHY.
+  Container `/work/OpenLVDS` output paths are translated to the host workspace
+  before validating their artifact kind and confinement. The waiting queue was
+  retired before this producer fix, with its original receipt preserved in
+  `component_link_continuation_history_6438c51`; it had no scientific child.
+  Replacement service `openlvds-fast-restore-component-link-queue-v2` retains
+  the same native gate, stimuli, component coverage and simulator budget.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains

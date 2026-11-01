@@ -15,7 +15,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def artifact(value, kind, root=ROOT):
-    path = (root / value).resolve()
+    path = Path(value)
+    if path.is_relative_to('/work/OpenLVDS'):
+        path = root / path.relative_to('/work/OpenLVDS')
+    path = (root / path).resolve()
     if not path.is_relative_to(root / 'build/diagnostics' / kind):
         raise ValueError('Unexpected receiver artifact: ' + str(value))
     return path
@@ -100,7 +103,7 @@ def run(screen, link, unit):
                     time.sleep(10)
                     continue
                 state = json.loads((upstream / 'state.json').read_text())
-                result = completed_native(state, owner in ['active', 'activating'], ROOT)
+                result = completed_native(state, owner in ['active', 'activating', 'deactivating'], ROOT)
                 if result is not None:
                     layout, replay = result
                     break

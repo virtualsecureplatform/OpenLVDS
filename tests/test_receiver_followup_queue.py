@@ -53,6 +53,18 @@ class ReceiverFollowupQueue(unittest.TestCase):
         self.assertTrue({'qualify_receiver_components.py', 'probe_receiver_fast_restore_candidate.py',
                          'run_ngspice.py', 'continue_receiver_candidate.py'} <= names)
 
+    def test_container_paths_map_to_host_with_kind_and_traversal_checks(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            relative = Path('build/diagnostics/receiver_components/selected')
+            for value in [relative, root / relative, Path('/work/OpenLVDS') / relative]:
+                self.assertEqual(queue_artifact(value, 'receiver_components', root), root / relative)
+            for value in ['/work/OpenLVDS/build/diagnostics/receiver_replay/other',
+                          '/work/OpenLVDS/build/diagnostics/receiver_components/../../outside',
+                          '/work/OpenLVDS-other/build/diagnostics/receiver_components/selected']:
+                with self.assertRaisesRegex(ValueError, 'Unexpected receiver artifact'):
+                    queue_artifact(value, 'receiver_components', root)
+
     def test_queue_waits_then_prepares_and_checks_both_child_reports(self):
         for native_passes in [False, True]:
             with self.subTest(native_passes=native_passes), tempfile.TemporaryDirectory() as temp:
@@ -86,7 +98,7 @@ class ReceiverFollowupQueue(unittest.TestCase):
                         path = components if 'scripts/qualify_receiver_components.py' in command else candidate_link
                         path.mkdir(parents=True)
                         (path / 'manifest.json').write_text('{}')
-                        kwargs['stdout'].write(str(path) + '\n')
+                        kwargs['stdout'].write(str(Path('/work/OpenLVDS') / path.relative_to(root)) + '\n')
                     else:
                         for path in [components, candidate_link]:
                             (path / 'summary.json').write_text(json.dumps(dict(

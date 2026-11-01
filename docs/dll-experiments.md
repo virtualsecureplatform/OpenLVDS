@@ -1754,3 +1754,14 @@ The earlier VREF layout's corresponding restoration sums were 33.082/44.245 fF;
 stronger stages also increase physical routing load. These sums include full
 coupling values but exclude device/MIM capacitance, so they do not establish
 effective AC load or dynamic improvement. Native replay remains decisive.
+
+Before any follow-up preparation, host review caught a container-path handoff
+bug in the new queue: scientific tools print `/work/OpenLVDS/...`, while the
+host must validate the corresponding workspace path. The queue now translates
+that exact mount prefix and still rejects wrong artifact kinds, escapes and
+lookalike prefixes. Its handoff test uses actual container-style output paths.
+Six queue tests pass. The waiting original queue was verified to have no
+scientific child, then retired; its receipt is preserved under
+`component_link_continuation_history_6438c51`. Service
+`openlvds-fast-restore-component-link-queue-v2` uses the corrected producer.
+No active SPICE process or captured scientific producer changed.
