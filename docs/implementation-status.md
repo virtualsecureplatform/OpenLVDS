@@ -30,6 +30,35 @@ Implementation of the usable-macro plan:
   simulator launch. Full regression: 555 tests, 554 passed and one skipped;
   targeted tests were repeated after strengthening ancestry/code bindings.
 
+
+Receiver architecture fallback implemented:
+
+- `receiver_architectures.py` defines nine bounded alternatives: the current
+  LVT pair, two lower-overdrive replica-bias variants, and six 3.3 V PMOS
+  decision-stage variants. Bias variants scale XNCB/XCT widths together by
+  two or four, retaining their ratio; actual current is not assumed invariant.
+- The architectural replacement uses a thick-oxide PMOS tail and input pair
+  powered from VDDIO, with thick-oxide NMOS mirror loads. A new thick-oxide
+  inverter powered from VDDD accepts the high-voltage decision signal and
+  drives the unchanged two following 1.8 V restoration inverters. Public ports,
+  complementary input frontend, resistor loads and shared bias remain intact.
+  The unused original NBC reference branch is retained for this controlled
+  experiment. Dynamic overshoot, power and terminal stress remain to be checked.
+- The six PMOS variants combine pair widths 8/16 um with tail widths 2/4/8 um.
+  Source generation rejects unknown variants and altered baseline devices.
+  `receiver_architecture_experiment.py` retains the original twelve fixed-supply
+  DC points, source reconstruction, manifest/runtime binding, complete-waveform
+  checks and partial-trace preservation in a distinct diagnostic namespace.
+- The nominal `pmos_p8_t4` sanity check is prepared as
+  `receiver_architecture_static/095f9e8483f806bf` and queued in
+  `openlvds-pmos-decision-dc-sanity.service`. It is a circuit implementation
+  sanity check, not selection of the fallback ahead of the current LVT flow.
+  No new clock, physical or release admission follows from this DC check.
+- Tests exercise every PMOS variant, thick-device isolation at the decision
+  interface, frontend/port preservation, both bias ratios and modified-source
+  rejection. Full regression: 558 tests, 557 passed and one skipped. Compact
+  layout and dynamic/extracted qualification remain outstanding.
+
 Latest receiver decision on 2026-11-01:
 
 - Active circuit experiment: change only the W8 decision input pair to the
