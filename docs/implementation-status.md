@@ -3,6 +3,66 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Dispatcher handover completed; bounded replay replaces a numerical stall:
+
+- The aperture handover waited until the old coordinator held no simulation
+  slot and its cgroup contained only the five known controller/runtime
+  processes. It stopped the coordinator, verified no simulator children or
+  uncommitted point outputs, and archived 2,892 files plus process/start records.
+  All 229 completed boundaries and their waveform references were preserved.
+  Old MainPID=0, disappearance of every old process and unchanged archived
+  files were confirmed before starting the replacement. Receipts and the
+  handover producer are under `resident_jobs/aperture_fair_handover/`.
+- `openlvds-rx-early-aperture-fair.service` is now live on the same captured
+  `20b04dcf527af283` campaign, with two workers and one shared lease per
+  uncached point. Resource policy `9995397d1801cd89` binds the dispatcher and
+  continuation bytes. No simulator was retired during this aperture handover.
+  The old aperture unit's deliberate termination status is not an electrical
+  failure. The six-slot limit and scientific manifest remain unchanged.
+- The initial selected-pin control `c89c0fa91344c0df` subsequently proved
+  numerically unproductive: two saved observations 137.7 seconds apart show
+  simulated time moving only from 14.568309770 ns to 14.568316782 ns, before
+  its payload and 188.049 ns stop. It was frozen and archived with its partial
+  raw trace, logs, complete fixture and producer bytes (79 files), then retired
+  with its queued architecture followup. All old processes are gone and all
+  archived files remained unchanged. This is a superseded numerical fixture,
+  not an electrical failure of the LVT receiver. Receipts are under
+  `resident_jobs/obsolete_exact_pin_replay/`.
+- `bounded_pin_replay.py` and `replay_selected_receiver_bounded.py` replace
+  that numerical experiment. Only the four physical RX pins drive transient
+  sources; unused TX observation vectors are restored from the parent during
+  analysis instead of forcing simulator breakpoints. Piecewise-linear voltage
+  error is checked at every original knot and bounded by 0.1 mV per pin.
+  Every original differential zero-crossing bracket is retained exactly;
+  crossing counts and times are independently checked. The receiver circuit,
+  native digital RX and complete trace/calibration requirements are unchanged.
+- Actual replacement `selected_receiver_replay/828b7249a2cfba8e` has a bound
+  source certificate: 13,569 retained vertices from 32,104 original timestamps,
+  each pin's maximum error below 0.1 mV and zero measured error for every
+  differential crossing. Its separate source/producer-bound control and
+  architecture followup run as `openlvds-selected-receiver-replay-bounded` and
+  `openlvds-selected-receiver-architecture-bounded`. The control has advanced
+  beyond the old stall to 62.103 ns; this is partial progress, not completed
+  calibration. Earlier unrun preparation revisions retain matching producers.
+- Both replica-bias nominal measurements completed and passed all twelve DC
+  points and the observed thin-device screen. Bias x2 measures tail current
+  138.486–371.407 uA with minimum tail VDS 46.818 mV. Bias x4 measures
+  150.652–353.382 uA with minimum VDS 41.931 mV, compared with baseline
+  119.866–345.187 uA and 54.961 mV. Width-ratio preservation does not preserve
+  actual current, and neither variant increases the minimum absolute tail
+  VDS. Dynamic comparison remains necessary; these measurements alone do
+  not select or reject a receiver architecture.
+- The LVT source DC matrix now completes all fifteen required cases with
+  `dc_all_passed=true` and a matching manifest hash. Its three source-clock
+  controls are admitted as `receiver_clamp/7b715872da5a4460`; their owner is
+  live. Native clock, component, full-link and release gates remain pending.
+- Five new tests cover bounded curves, preserved crossing brackets,
+  invalid/fine source vertices, physical-only simulator probes, postprocessed
+  recorded observations and restored factory bindings. Full regression:
+  598 tests, 597 passed and one skipped. The new source approximation and
+  fixed pin loading remain diagnostic; the unchanged 20 ps control calibration
+  and later complete native/channel qualification are still required.
+
 Point-level dispatcher and aperture continuation prepared:
 
 - `spice_dispatch.py` adds priority with FIFO ordering and 180-second aging,
