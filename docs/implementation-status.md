@@ -5233,3 +5233,34 @@ Completed unchanged clock-control reproducibility audit on 2026-11-01:
 - Architecture and top-level status prose now reflect the rejected stronger
   corrections, full weaker source admission and remaining dynamic/native gates.
   Canonical scientific code remains unchanged from the 700-test regression.
+
+
+Matched partial captured-clock observation on 2026-11-01:
+
+- Both weaker-bias captured-clock simulations are verified live, exact
+  ngspice PIDs 1325342/1325278. Read-only
+  `receiver_soft_common_mode_matrix/d3271555fcb702b9/partial_captured_clock_observation/read.py`
+  snapshots only complete accepted binary rows, verifies the specific process
+  start identity and unchanged source/deck/library bindings, and stores the
+  snapshots separately from the original producer outputs. Live headers and
+  metadata explicitly identify these as partial, unqualified observations.
+- The common fixed 15–40 ns interval contains eighteen complete input
+  periods. Both two-unit and three-unit pullups have zero missing edges
+  and exactly one same-polarity output crossing in every observed input
+  period. The original completed LVT reference also has eighteen such
+  periods with no missing edges in that same interval.
+- Two-unit source-clock latency ranges are 337.265–344.134 ps rising
+  and 325.926–362.624 ps falling. Three-unit ranges are
+  335.353–342.094 ps and 324.925–360.044 ps. The completed original
+  reference gives 334.520–342.101 ps and 325.680–357.928 ps. These
+  are diagnostic edge delays, not sampling-aperture or full-clock admission.
+- The actual accepted snapshots extend to 54.9335 ns (two-unit) and
+  59.2 ns (three-unit), but only complete periods in the declared common
+  15–40 ns interval are analyzed. CO ranges in that interval are
+  0.19444–1.79496 V and 0.15113–1.79784 V. Neither a future portion of a
+  trace nor an incomplete input period contributes to the observation.
+- Full 80 ns captured runs, sharp controls and all downstream physical,
+  native, component, corrected-driver coupling and PHY gates remain required.
+  No simulation was stopped, changed or restarted, no live waveform file
+  was modified, and no partial observation supplies qualification evidence.
+  Canonical science remains unchanged from the passing 700-test regression.
