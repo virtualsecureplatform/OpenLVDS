@@ -8,9 +8,9 @@ Latest receiver decision on 2026-11-01:
 
 - Active circuit experiment: change only the W8 decision input pair to the
   pinned SKY130 LVT NFET model on the smaller reduced-tail receiver. Three
-  original source-DC pilots are queued; no passing result is claimed yet.
-  The preceding uniform-scaling native replay is still running, but its
-  archived first weak-pulse interval already contains missing output edges.
+  original source-DC pilots are prepared: SF/40 passes all twelve points;
+  TT/25 and FS/40 remain queued. The preceding uniform-scaling captured native
+  replay has completed all 80 ns with eighteen missing output edges.
 - Uniform fourfold scaling of the DC-passing reduced-tail
   decision stage, retaining the input-pair/mirror/tail width ratios. TT/25
   `receiver_scaled_decision_static/de8b99d5cb7a5d5e` now passes all twelve
@@ -26,10 +26,11 @@ Latest receiver decision on 2026-11-01:
   periods. The completed hash-bound `source_clock_admission.json` passes.
   New layout `receiver_layout/8a063d6919387667` passes DRC, LVS, extraction
   and its independent RC audit. Native replay `receiver_replay/90c2618d3cbb6f83`
-  is prepared; the captured control is running and the sharp control is queued.
+  is prepared; the captured control is complete and the sharp control is queued.
   An immutable prefix ending at 33.4901 ns contains six missing edges among
   thirteen fully observed input periods. This is a diagnosed failure in the
-  observed interval; the original full 80 ns producer remains running.
+  observed interval. The complete captured trace now confirms eighteen missing
+  edges (nine rising/nine falling) over all 47 original scored periods.
 - The PMOS-only W32 alternative is rejected: FS/40 fails two original
   low-common-mode points despite TT/25 and SF/40 passing. Its remaining
   twelve DC cases and all clock cases were correctly held. Monitor relocation
@@ -217,6 +218,26 @@ Latest receiver decision on 2026-11-01:
   `openlvds-lvt-pair-dc-followup-v3.service` is also active and will use a
   blocking slot-4 wait for each remaining DC case after all three pilots pass.
   The global budget remains six and pilot concurrency remains at most two.
+- Complete uniform-scaling captured observation
+  `receiver_replay/90c2618d3cbb6f83/completed_captured/ec7e481cb41f32d6.json`
+  remeasures the full original 80 ns trace, verifies every finite/monotonic
+  row, original 15--75 ns transport interval, 47 periods, all saved internal
+  node ranges and source/deck/model/runtime/producer/report bindings. It
+  confirms eighteen missing edges, split nine rising/nine falling, and proves
+  the archived live-prefix payload matches the finalized raw file byte for
+  byte. Its retained `read.py` launches no simulator and does not assert
+  completion of the queued sharp control or the full pair. Captured input
+  failure prevents native admission regardless of the later sharp result.
+- The completed SF/40 LVT pilot
+  `receiver_lvt_pair_static/241f2a0de9bdb87c` passes all twelve original points
+  and has been cached-remeasured through its scientific producer. At the six
+  low-common-mode samples, tail CT voltage rises from 40.011--61.936 mV in
+  the matched reduced-tail control to 101.281--139.870 mV. PP/PN and NBC remain
+  nearly unchanged. At 10 ns CO changes from 1.384669 V to 1.072051 V;
+  headroom improves while output swing also changes. Tail VDSAT/current,
+  transient bandwidth and native weak-pulse recovery are not inferred from
+  these DC voltages. TT/25 and FS/40 pilot results and all subsequent gates
+  remain outstanding.
 
 
 Latest DLL model observation on 2026-11-01:
