@@ -24,9 +24,13 @@ but still loses edges, so these variants are held before native admission.
 The immediate LVT correction preserves its circuit and localizes the complete
 frontend mirror, tail and resistor-load network with the decision chain.
 This removes a routing-capacitance regression that was already losing
-transitions before the decision stage. Its DRC/LVS checks pass; native
-clock tests are running. Neither receiver alternative is promoted into the
-canonical analog source automatically.
+transitions before the decision stage. Its DRC/LVS checks pass. Native
+sharp-clock testing now passes with zero missing edges; the retained
+captured stimulus improves from 39 missing edges to 18 and still fails.
+A separate diagnostic tests the same receiver with completed corrected-driver
+pin waveforms; it retains the original failure and provides no automatic
+admission. Neither receiver alternative is promoted into the canonical
+analog source automatically.
 
 The OTA DLL also needs a compensation correction. Independently measured
 native loop models pass the 60° phase-margin gate at SS/0 °C but fail at

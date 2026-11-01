@@ -3,6 +3,53 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Frontend-local native controls complete; corrected-driver pin replay dispatched:
+
+- Context `receiver_replay/c1109a1560bd4e6e` completes both full 80 ns
+  controls and cached scientific remeasurement. The native sharp control
+  passes with **0 missing edges**, improving on the previous compact
+  layout's 33. The retained captured stimulus improves from **39 to 18
+  missing edges**. `native_clock_passed=false`; the layout correction
+  alone has not admitted this receiver.
+- Bound observer `c1109a1560bd4e6e/completed_clock_diagnosis/read.py` and
+  `summary.json` measure 50 PP-minus-PN crossings in 15–75 ns for each
+  new native case, versus 28 in the preceding captured native layout.
+  Minimum magnitude at its own frontend half-cycle centers is 17.165 mV
+  captured versus 205.482 mV sharp. CO has 34 versus 50 crossings at 0.9 V;
+  RESTORE0 has 32 versus 50. These counts support a substantial frontend
+  improvement and residual decision/restoration bandwidth loss, but do not
+  independently prove correspondence for every input edge. Observed CT
+  voltage spans 43.40–302.73 mV in the captured case; no saturation/VDSAT
+  claim is made from this range alone.
+- The 18 captured misses occur as nine lost short pulses and their paired
+  transitions. Short input widths are 514.80–590.33 ps. Only three of the
+  eighteen missing-edge records have below-100 mV input midpoint magnitude;
+  six of the nine short pulses still exceed 100 mV. The above-threshold
+  failures remain failures and cannot be excused by the weakest pulses.
+- Before resizing devices, `replay_receiver_current_pins.py` now tests the
+  **same native receiver library** with the actual completed corrected
+  P64/N24, 110:1 native-driver pin traces from comparison
+  `driver_native_restore/65d922eb5c270776`. This waveform has 137.760 mV
+  minimum received-clock midpoint magnitude and no midpoint violations,
+  versus 82.592 mV and three violations in the older captured fixture.
+  Its minimum zero-crossing half-period is still short (523.958 ps), so
+  this change is not presumed to solve the receiver's dynamic problem.
+- New context `receiver_current_pins/bb736100f334c145` preserves all
+  11,911 original pin-waveform knots in 50–120 ns, shifted by -45 ns into
+  the original 80 ns/1 ps receiver fixture. Only four recorded voltage
+  sources and the library artifact path change. Input pin ranges stay
+  within 0–2.4 V. Endpoint vertices within eight floating-point ulps are
+  reused, preventing artificial almost-duplicate source breakpoints; the
+  original interior knots and voltages are neither compressed nor resampled.
+- Unit `openlvds-frontend-current-driver-pins` is dispatched with one fair
+  lease inside the existing six-slot budget. It reports
+  `diagnostic_clock_passed` separately and provides **no source, native or
+  PHY admission**. Ideal pin sources omit TX/channel loading feedback;
+  the original failure, complete native link, components, margins and
+  PVT gates remain required. All **644 regression tests pass**, no skips,
+  including exact pin preservation, timestamp boundary handling, unchanged
+  numerical fixture and partial-output preservation.
+
 Compensated DLL extraction/audit complete; matched source acquisition dispatched:
 
 - The 16 pF storage candidate `dll_layout/35555c8719890933` now passes
