@@ -50,6 +50,18 @@ Latest receiver decision on 2026-11-01:
   without native/dynamic/all-PVT power qualification. The low point agrees
   with its transient sample within 1.2 pV; the high point differs by up to
   2.075 mV. Neither exact operating-point invariance nor current scaling is assumed.
+- `receiver_operating_point_matrix.py` extends that observation to all twelve
+  original input points at every original process/temperature condition.
+  Matrix `receiver_operating_point_matrix/584ff581fd63fca4` is prepared and
+  `openlvds-receiver-operating-matrix.service` is active, initially waiting
+  on shared slot 3. It preserves the six-slot budget and all fixed supplies.
+  Preparation first remeasures the complete source matrix; every OP child is
+  bound to its exact source case. Completed raw evidence is analyzed without
+  rerunning SPICE; partial evidence is retained and refused for in-place retry.
+  Only the known unit-vector parser hold can proceed to the separate strict
+  model-parameter analysis. Other simulation/provenance errors remain errors.
+  This is a static tail-current/headroom and rail/reference-power diagnostic,
+  without native/dynamic power, remaining-device stress or PHY admission.
 
 
 Current bring-up evidence on 2026-11-01:
