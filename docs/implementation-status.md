@@ -4881,3 +4881,56 @@ Passive receiver physical path and SF/40 failure diagnosis on 2026-11-01:
   Continue the remaining PVT cases; the clock handoff already excludes any
   correction without fifteen passing DC cases. Source-clock, native, loaded
   link, full component/stability/aperture and final PHY qualification remain.
+
+
+Passive correction physical continuation launched on 2026-11-01:
+
+- `continue_receiver_common_mode_physical.py` is a resource-only controller
+  for the existing scientific layout, extraction/audit and native replay
+  producers. Immutable context `receiver_physical_followup/0a0d014ea640cbda`
+  binds its producer and adapters, original frontend-local physical reference,
+  captured replay parent, passive matrix and exact source-clock owner identity.
+- `openlvds-receiver-common-mode-physical-followup.service` is verified live,
+  waiting for full DC and source-clock evidence. It accepts only variants
+  passing their own fifteen-case DC gate and exact source-clock admission.
+  The VREF-return SF/40 failure cannot borrow the rail-pullup result.
+- Each admitted variant then runs DRC/LVS geometry, native RC extraction and
+  independent wire-collapse LVS audit, followed by the two original captured
+  and sharp native controls. The native producer owns both individual fair
+  leases; the controller has no outer lease. No component or PHY selector is
+  changed, and even native diagnostic success keeps `qualified_phy=false`.
+- Four tests verify exact clock receipt/variant/matrix/report binding,
+  rejection of escaped paths and failed clock status, separate native-pass
+  and PHY qualification flags, and refusal to overwrite prior controller
+  state without launching any subprocess. A source-clock owner exit racing
+  its final receipt is resolved by checking that receipt again.
+  Full regression: all 670 tests pass, no skips.
+
+
+Corrected native-driver/source-receiver link numerically retired on 2026-11-01:
+
+- Specific corrected-link ngspice PID 1317195, start ticks 420907902, was
+  measured three times over 40.008 seconds. Accepted transient time moved
+  only 9.191e-15 seconds (0.009191 ps), from 80.28482108 ns to
+  80.28483027 ns, while CPU ticks increased. The smallest recent accepted
+  step was 4.335e-17 seconds. This independently verifies numerical stalling
+  of corrected child `analog_link_pilot/86dc1c67c50cb1a2`; its original
+  matched 100:1 control was already retired separately.
+- `resident_jobs/corrected_link_progress/` preserves the observer, progress
+  receipt, retirement script and frozen snapshot. The exact
+  `openlvds-corrected-current-lvt-link.service` process group was frozen,
+  98 files were archived and verified, then that one simulator and its
+  coordinator were stopped. Every original file hash and all six shared
+  slot-file inodes remain unchanged; all old PIDs are gone, MainPID is zero
+  and Restart=no. systemctl emitted its auxiliary-process signal warning,
+  but independent post-stop process/hash checks prove retirement completed.
+- The old control retirement receipt is preserved byte-for-byte. New sidecar
+  `current_lvt_link/494d9c90761d8f76/corrected_child_retirement.json` records
+  the corrected child as numerically inconclusive. Neither partial trace is
+  an electrical failure or completed comparison. No scientific source,
+  model, stimulus or solver tolerance was changed. One actual shared slot
+  is now available to the required receiver/driver/aperture campaigns.
+- The passive receiver-bias matrix remains active, with eleven complete PVT
+  cases. The physical continuation remains active waiting for admitted source
+  clocks; it does not restart either stalled old link or promote a partial
+  waveform into native/component/link/PHY evidence.
