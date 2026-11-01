@@ -9,10 +9,11 @@ Latest receiver decision on 2026-11-01:
 - Active experiment: uniform fourfold scaling of the DC-passing reduced-tail
   decision stage, retaining the input-pair/mirror/tail width ratios. TT/25
   `receiver_scaled_decision_static/de8b99d5cb7a5d5e` now passes all twelve
-  original DC samples. FS/40 also passes all twelve points, including the
-  two that rejected the PMOS-only variant; SF/40 remains queued. Full static matrix
-  `receiver_scaled_decision_matrix/a3a34b4ac8e5f600` remains gated on all
-  three passing pilots; no source-clock or physical result is admitted.
+  original DC samples. SF/40 and FS/40 also pass all twelve points, including
+  the conditions that rejected the PMOS-only variant. All three pilot
+  waveforms have been remeasured, and full static matrix
+  `receiver_scaled_decision_matrix/a3a34b4ac8e5f600` is now advancing through
+  its remaining cases. No full-DC, source-clock or physical admission is claimed.
 - The PMOS-only W32 alternative is rejected: FS/40 fails two original
   low-common-mode points despite TT/25 and SF/40 passing. Its remaining
   twelve DC cases and all clock cases were correctly held. Monitor relocation
@@ -23,7 +24,7 @@ Latest receiver decision on 2026-11-01:
   original sample, while CO shifts by up to 80.807 mV, CL by 45.084 mV and
   CT by 25.231 mV. Width ratios are preserved; exact operating voltages are
   not assumed invariant. The PP/PN static shifts are at most 34.856/17.900 µV.
-  Current, capacitance, dynamic and skewed-corner behavior remain unproved.
+  Remaining DC corners, current, capacitance and dynamic behavior remain unproved.
 
 
 Current bring-up evidence on 2026-11-01:
@@ -3228,3 +3229,22 @@ Uniform-decision physical gate prepared on 2026-11-01:
   tests, 511 passed and one skipped; all twelve uniform-decision tests pass.
   No geometry or source-clock case has yet run for this branch. SF/40 remains
   queued; TT/25 and FS/40 are the only completed uniform-scaling pilots.
+
+
+Uniform-decision pilot gate passed on 2026-11-01:
+
+- SF/40 `receiver_scaled_decision_static/aeb25b9ac3f5874e` completes and
+  passes all twelve original samples. All three pilots now pass. The actual
+  scientific matrix remeasures their waveforms and advances to the remaining
+  source DC corners; TT/0 also completes by this observation. All required
+  fifteen conditions remain; no partial matrix is admitted as complete.
+- `a3a34b4ac8e5f600/pilot_threshold_envelope.json` binds all thirty-six
+  completed pilot samples and their actual manifests/reports/waveforms.
+  Expected-output-high CO is at most 0.913786 V (FS/40 at 22 ns);
+  expected-output-low CO is at least 1.426299 V (FS/40 at 10 ns), leaving
+  a 0.512513 V ideal fixed-threshold separation for these pilots only.
+  This is not a measured inverter transfer curve or a full-PVT/native bound.
+- The full-DC owner remains live. Clock and physical continuations wait for
+  their exact upstream owners and actual passing full reports. No clock case
+  or new geometry is started from the pilot result alone. All shared slot
+  ownership, fixed supplies, original fixtures and failure criteria remain.
