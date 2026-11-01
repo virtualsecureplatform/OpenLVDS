@@ -3007,7 +3007,7 @@ First stronger-PMOS pilot result and DC continuation on 2026-11-01:
   delay_0 trace completed and delay_1 is live and advancing; the native
   monitor-after sharp control is also live. No stalled source run is stopped.
 - Resource-only `receiver_decision_load_matrix/6fd0fd7ce4169f32/followup/run.py`
-  is active as `openlvds-decision-load-dc-followup.service`. It captures
+  was first attempted as `openlvds-decision-load-dc-followup.service`. It captures
   current code/environment/matrix hashes and waits for all three exact pilot
   units to become inactive with successful status. Transient observation
   failures retry; unsuccessful terminal owners hold. The existing scientific
@@ -3016,3 +3016,13 @@ First stronger-PMOS pilot result and DC continuation on 2026-11-01:
   The follow-up uses slot 1 and the unchanged six-slot budget. It will
   report full DC success only from the actual fifteen-case passing report;
   source clock, physical and native admission remain separate requirements.
+
+- The first follow-up correctly held before launching any case because
+  systemd had garbage-collected the successful SF/40 transient unit. Its
+  original failed receipt is preserved. New resource context `followup_v2/`
+  (`openlvds-decision-load-dc-followup-v2.service`) accepts an inactive,
+  not-found owner only when its complete child report binds the expected
+  manifest; loaded unsuccessful owners still hold. This does not substitute
+  for waveform validation: the scientific matrix remeasures all pilots before
+  running any remaining case. The v2 service is verified active and waiting
+  for the still-live TT/25 and FS/40 owners.
