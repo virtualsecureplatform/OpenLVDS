@@ -3026,3 +3026,39 @@ First stronger-PMOS pilot result and DC continuation on 2026-11-01:
   for waveform validation: the scientific matrix remeasures all pilots before
   running any remaining case. The v2 service is verified active and waiting
   for the still-live TT/25 and FS/40 owners.
+
+
+Gated stronger-PMOS source clock implementation on 2026-11-01:
+
+- `receiver_decision_load_clock.py` first requires a completed, passing
+  fifteen-case DC matrix and remeasures every existing child through its
+  scientific runner. Missing reports are refused before preparing any clock
+  artifact, so cached admission cannot start missing DC simulations.
+- Clock preparation derives a fresh immutable context from the declared
+  stronger-PMOS factory. All original source/library bytes, pin stimuli,
+  print observations, full 80 ns duration, 5 ps output step and original
+  15–75 ns scoring window remain; only the maximum integration step becomes
+  1 ps for all three controls. The new identity directly captures every DC
+  proof, source-template file and numerical policy. Existing or executed
+  source contexts are never edited. Legacy task names `clamped_*` identify
+  the modified factory here; neither source variant contains CO clamps.
+- Source admission requires exactly the three original controls, 47 scored
+  periods per control, zero missing and zero repeated edges, with complete
+  finite monotonic waveforms. `source_clock_admission.json` is separate from
+  the diagnostic report and never establishes physical/native/PHY admission.
+  Partial failed traces are preserved and refused for in-place retry.
+- Actual `6fd0fd7ce4169f32/source_clock_preflight/receipt.json` proves
+  preparation refuses the incomplete DC matrix and creates zero new source
+  contexts. Five new tests cover byte-preserving fixture derivation,
+  immutable re-preparation, changed/incomplete fixtures, incomplete or failed
+  DC admission, missing controls and missing/repeated clock edges.
+- Resource-only `clock_followup/run.py` is verified active as
+  `openlvds-decision-load-clock-followup.service`. It waits for the exact
+  full-DC owner to finish and requires its full passing report; it then calls
+  the gated scientific prepare/run commands. Context/code/environment hashes
+  are captured. A collected systemd owner is accepted only with complete
+  manifest-bound passing evidence; missing evidence or failed owners hold.
+  Clock runs use actual shared slot 1 within the unchanged six-slot budget.
+- Full regression: 500 tests, 499 passed and one skipped; all thirteen
+  decision-load tests pass. No new clock case is running or claimed passing
+  at this observation. SF/40 remains the sole completed static pilot.
