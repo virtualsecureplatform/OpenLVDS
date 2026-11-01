@@ -1888,3 +1888,15 @@ Cached children remeasure actual original/modified waveforms. Its eventual
 and common-mode samples; it cannot qualify timing, rate, extracted operation,
 aperture or the complete PHY. No aggregate DC pass is claimed before all
 15 reports complete.
+
+The modified unclamped captured-clock source case in
+`receiver_clamp/2c86c40885f97e87/clamped_captured` now completes the original
+80 ns run. Every one of 47 checked periods contains exactly one output edge;
+no rising or falling edge is missing. Latency spans 291.167580–403.632674 ps.
+The weakest negative input pulse (58.919554 ns, 514.802 ps, 83.068 mV) is
+recovered with 403.632674 ps latency; the following rise has 291.167580 ps
+latency. Waveform SHA256 is
+`1d5f1223b80dace5d56dbd690d3fdb87fb47e2e604ec69221484f5728e86e507`.
+Together with the unchanged control this completes two of three source cases.
+The modified sharp control is still pending, so the physical/native gate
+remains closed. No extracted timing or PVT qualification is inferred.

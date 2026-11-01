@@ -511,9 +511,12 @@ Current bring-up evidence on 2026-10-31:
   `openlvds-unclamped-restore-native-continuation` waits on the actual source
   owner before attempting these stages. No new layout or native result exists
   while the source screen remains incomplete.
-  The source screen's unchanged control now completes all 47 checked periods
-  with no missing or repeated edge. The two modified unclamped controls remain
-  outstanding; the physical/native continuation still waits for all three.
+  The source screen's unchanged control and modified captured-clock case now
+  complete all 47 checked periods with no missing or repeated edge. Modified
+  captured latency spans 291.168–403.633 ps; the weakest 514.802 ps/83.068 mV
+  negative pulse is recovered with 403.633 ps latency. The modified sharp
+  control remains outstanding; the physical/native continuation still waits
+  for all three. Source recovery does not prove extracted timing.
 - The current VREF-clamped component campaign has a numerical slowdown in
   `schematic_receiver_rate_ss_40`. Its simulator is confirmed active and using
   CPU, but a saved prefix advances only about 7 ps over several minutes near
