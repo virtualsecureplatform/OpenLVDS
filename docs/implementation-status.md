@@ -596,6 +596,13 @@ Current bring-up evidence on 2026-10-31:
   native controls, then lets each child independently remeasure that evidence
   before simulation. No component/link pass is claimed. Two targeted selector
   tests verify exact dispatch, captured code and restoration after a failure.
+  This separate entry point now also supports `unclamped_lvt_restore`, selecting
+  its exact LVT factory and native verifier and requiring the declared first
+  NFET model. Mixed standard/LVT metadata is rejected. Three selector tests
+  pass. Before this extension, the failed standard-device follow-up was
+  verified terminal and all live manifests were checked not to capture this
+  entry point. No active experiment's producer changed, and no LVT component
+  or link campaign is prepared before its physical/native gates complete.
 - `receiver_lvt_restore_experiment.py` proposes a controlled first-stage
   threshold change: clone the existing P8/N4 helper and change only its NFET
   model to `sky130_fd_pr__nfet_01v8_lvt`. All sizes, nodes, other helper
@@ -665,7 +672,7 @@ Current bring-up evidence on 2026-10-31:
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 416 tests, 415 passed and one skipped in the pinned ngspice
+- Last full unit suite: 417 tests, 416 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.

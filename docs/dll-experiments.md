@@ -2148,3 +2148,15 @@ latency spans 292.324739–377.719831 ps; the weakest negative input pulse is
 recovered with 377.719831 ps latency. The sharp control remains pending, so
 the LVT physical/native gates stay closed. Full regression: 416 tests,
 415 passing and one skipped in the pinned ngspice environment.
+
+The separate unclamped follow-up entry point now registers both standard and
+LVT profiles. Each selects its exact source factory and native waveform
+verifier; the declared first NFET model must match that profile. Mixed
+standard/LVT metadata is rejected, and each scientific code identity captures
+the selected producer set and selector. Three selector tests pass, including
+LVT dispatch and model mismatch rejection. The earlier failed standard-device
+follow-up is terminal, and live manifests were checked not to capture this
+selector before editing it. Existing scientific producer files remain unchanged.
+This prepares the dispatch path only: no LVT component/link fixtures are
+created before audited physical/native evidence exists. Full regression:
+417 tests, 416 passing and one skipped in the pinned ngspice environment.
