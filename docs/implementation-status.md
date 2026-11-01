@@ -648,8 +648,9 @@ Current bring-up evidence on 2026-10-31:
   Native replay `receiver_replay/eea365798223235d` runs both original 80 ns
   controls. Its captured trace has already failed the first short-pulse window
   (24.5–26.5 ns): CO peaks at 0.673319 V, RESTORE0 stays above 1.765710 V,
-  and Q has no falling 0.9 V crossing. This is a completed-window failure
-  observation, not a full-run edge count. Both runs continue to completion.
+  and Q has no falling 0.9 V crossing. The captured run has since completed all 80 ns: nine rising and nine falling
+  input periods lack their output transition. Sharp control remains running.
+  Its completion cannot erase this captured failure.
   Exact LVT follow-up roots `receiver_components/101d54670c0ac820` (60 fixtures)
   and `receiver_candidate_link/004b4f282fcea4fc` are prepared. Actual component
   preflight stops at the incomplete-native gate with zero simulation executions
@@ -2012,7 +2013,11 @@ Bring-up update on 2026-11-01 (input-bias investigation):
   sample times. Their recorded parent control is the clamped fast receiver;
   the matched unclamped DC matrix above supplies the separate standard-NFET
   reference. No one-factor claim is made against that clamped parent. Both
-  static screens must pass before clock/physical/native advancement.
+  static screens must pass before clock/physical/native advancement. TT/25
+  now passes all 12 samples, but SF/40 fails the same 130 ns high-common-mode
+  sample: PP=1.197507 V, PN=1.313036 V, CO=0.443083 V and Q=1.8 V. Thus
+  this candidate is held before source-clock, physical or native work. No
+  live campaign or original criterion changed.
 - Unchanged native driver observation `driver_internal/c9c5ccd60b8fbe69`
   completes the full 188.049 ns transient and passes cached waveform reanalysis.
   The five original external signals match exactly on its declared comparison
@@ -2025,3 +2030,15 @@ Bring-up update on 2026-11-01 (input-bias investigation):
   controlled P64/N24 source comparison remains in progress; its candidate
   currently advances extremely slowly near 15.366 ns, so no comparative
   improvement or full-run verdict is available. No live simulator was stopped.
+
+- `receiver_decision_observation.py` now isolates the unchanged standard-NFET
+  unclamped receiver at SF/40, adding only unloaded CL/CT/NBC voltage columns
+  to the original static deck (`receiver_decision_observation/2da7f2f39d63c3af`).
+  All original 12 samples, stimuli, load and scoring remain. Its purpose is to
+  distinguish decision-pair/mirror headroom from a restoration threshold issue
+  at the failed high-common-mode point before choosing another circuit change.
+  Two tests prove exact source equality to the unclamped factory and that deck
+  changes are restricted to the include path and three print columns; absent
+  or ambiguous print rows are rejected. The probe is queued under the same
+  six-slot budget. Full regression before this observer: 420 tests, 419 passed
+  and one skipped; its two additional targeted tests pass.
