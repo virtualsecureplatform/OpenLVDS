@@ -3248,3 +3248,44 @@ Uniform-decision pilot gate passed on 2026-11-01:
   their exact upstream owners and actual passing full reports. No clock case
   or new geometry is started from the pilot result alone. All shared slot
   ownership, fixed supplies, original fixtures and failure criteria remain.
+
+
+Uniform-decision native replay prepared on 2026-11-01:
+
+- `probe_receiver_scaled_decision_candidate.py` implements a distinct native
+  profile for decision scale four, tail W64 and input/mirror W32. It rejects
+  the old reduced-tail and PMOS-only metadata, then requires the exact source
+  factory, current full source/DC proofs, DRC/LVS, GDS/source binding and an
+  independent native connectivity audit before preparing either replay case.
+- Assembly preserves the exact shared bias and digital RX closures. Both
+  original captured/sharp fixtures retain full 80 ns, 5 ps output, original
+  pin stimuli/load and 15–75 ns scoring; maximum integration is explicitly
+  1 ps in both. Prepared library/deck/manifest caches cannot be rewritten.
+  Both case IDs must be present exactly once. No new native context exists
+  at this observation because the required audited geometry is not built.
+- Each actual simulator takes its own shared lease, with zero, one or two
+  selected wait slots allowed only inside the existing six-slot budget.
+  Resource receipts are separate from the immutable scientific manifest.
+  Complete finite monotonic waveforms and current hashes are required;
+  cached reports are remeasured and partial failed traces retained rather
+  than rerun in place. Failed case execution is recorded explicitly, while
+  the independent other control is allowed to finish.
+- The native aggregate distinguishes a completed diagnostic from passing
+  clock transport: both original 47-period cases must have exactly one output
+  edge per period. `native_clock_passed` does not imply full PVT, component,
+  stress, power, aperture, loaded-link or PHY qualification. Existing legacy
+  selectors do not silently admit this new profile.
+- Actual `a3a34b4ac8e5f600/native_preflight.json` proves missing audited
+  geometry refuses preparation and creates zero native contexts.
+  `native_followup/run.py` is verified active as
+  `openlvds-scaled-decision-native-followup.service`, waiting for the exact
+  physical owner and its completed extraction/audit. It freezes code and
+  parent context, then calls the scientific prepare/run gates using selected
+  slots 1 and 3 independently. Failed native transport holds further admission.
+- Five new tests verify strict profile selection, original numerical fixture,
+  missing-geometry refusal, preservation of both partial traces without any
+  simulation launch, and actual cached waveform remeasurement/incomplete-
+  waveform refusal. Full regression: 517 tests, 516 passed and one skipped.
+  All seventeen uniform-decision tests pass. The actual full DC campaign has
+  eight passing cases; SS/0 is queued for its shared lease. Source clock,
+  physical and native continuations remain gated on completed evidence.
