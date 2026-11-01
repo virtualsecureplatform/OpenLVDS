@@ -36,12 +36,13 @@ Current bring-up state (2026-11-01):
   P8 PMOS, decision/frontend/bias and later restorers. Six pilot corners
   gate bulk work; each intervention needs its own fifteen-case pass. A
   resource-only continuation waits for complete DC evidence before preparing
-  original full-duration source-clock controls. Neither candidate is admitted
-  to physical/native or PHY qualification yet. Control and both LVT widths
+  original full-duration source-clock controls. Neither candidate has native
+  transport or PHY admission yet. Control and both LVT widths
   pass all fifteen cases with independent admissions. Fresh source-clock and
   physical/component/coupled continuations bind this recovery matrix. New
-  actual modified captured-source traces each complete all 47 original checks
-  without missing/repeated edges; their sharp controls remain pending. The
+  source-clock contexts each pass all three original 80 ns controls, with
+  47 checks each and zero missing/repeated edges. Both new layouts pass
+  DRC/LVS, extraction and independent RC audit. The
   physical context `receiver_physical_followup/5896ecbb92009d53` lets both
   variants advance independently after their own complete source-clock gates;
   actual simulators still lease from the same six global slots.
@@ -81,6 +82,36 @@ candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
 
 Two-unit native transport failure and controlled restoration experiment:
+
+- Both first-restorer source-clock contexts now complete all three original
+  controls and receive explicit positive admissions: N4 `receiver_clamp/9b41a25364c5819f`
+  and N8 `receiver_clamp/7cf3e0668ce610ec`. Every reference, modified captured
+  and modified sharp trace completes the full 80 ns and passes all 47
+  original edge-matching checks. Source admission report hashes are
+  `dbd073d8b83d226d575d01fe07dc319ad5928e6a729e55e310715540a5495428`
+  and `8f5b071a58175e64ab9c9541754561338dc2b5334abefc85655955ac03c8a682`.
+- N4 physical candidate `receiver_layout/67db40203d3777f4` and N8 candidate
+  `receiver_layout/98ba32c640c5e6b3` both pass DRC (zero errors), LVS,
+  extraction and independent RC audit. Each has 74 devices, nine ports and
+  a 670.26 by 147.8 um footprint. The exact source bytes match their own
+  fifteen-case admissions; physical and audit reports bind source, GDS and
+  native network hashes. Native models are respectively
+  `9a7558516f07a7b1862a6098362a6780dcaea9b26e9c15497943d29df744c6d4`
+  and `f232af3f9aa350f8ab77fdaaeecb4be0682a9bc6acb1b07bd2d96871451177e1`.
+- Native N4 replay `receiver_replay/973c68eea433361d` and N8 replay
+  `receiver_replay/3bb1e40442433109` are running both original full captured
+  and sharp controls. All four simulators hold their own fair leases within
+  the unchanged six-slot budget. Independent variant handoffs permit both
+  candidates to progress concurrently; no native, component, coupled-link or
+  PHY admission follows from the passing source/physical stages alone.
+- Driver RC full reference
+  `rc_validation/ngspice/driver/full_ffbc0373b1_2f56048094_cccfc614c6` completes
+  its original 2560 ns fixture and records current trace attestation for the
+  exact 110:1 driver and shared bias. All attested file hashes independently
+  verify. The corresponding fast reference
+  `fast_29d082652d_2f56048094_cccfc614c6` is running. No waveform agreement,
+  approximate-model qualification or complete six-case certificate is inferred
+  before it finishes and the unchanged original comparison passes.
 
 - Commit `601f26d` adds a fresh isolated driver-only RC comparison after
   remeasuring the complete passing thirty-case component campaign. Context

@@ -54,9 +54,11 @@ voltages. This motivates the threshold experiment; it does not prove the
 change will meet timing. Both widths now independently pass all fifteen
 source DC/current/observed-stress cases. Their fresh admission explicitly
 uses a completed matched 1 ps maximum-step SF/40 retry; the other fourteen
-fixtures retain 50 ps. All three source-clock controls remain required before
-new physical/native evaluation. Each admitted variant advances independently
-through physical/native evaluation under the six actual shared SPICE slots.
+fixtures retain 50 ps. Both also pass all three full source-clock controls,
+47 checks each, without missing/repeated edges. Both new layouts pass DRC/LVS,
+extraction and independent RC audit. Their captured and sharp native replays
+are running independently under the six actual shared SPICE slots; native
+transport, components and coupled timing remain unproven.
 The earlier LVT-restorer-only
 failure used a different frontend and is retained as separate evidence.
 
