@@ -2992,3 +2992,27 @@ Completed monitor-after captured replay on 2026-11-01:
   and larger first-pulse CO swing therefore do not resolve the captured
   clock failure. Continue the stronger-PMOS circuit's static pilots before
   another physical receiver build.
+
+
+First stronger-PMOS pilot result and DC continuation on 2026-11-01:
+
+- SF/40 pilot `receiver_decision_load_static/51e8be8847013846` completed
+  and passes all twelve original static samples. At the previously failing
+  130 ns high-common-mode sample, the unchanged standard-tail control gives
+  CO 0.743371 V and Q 1.799990 V (incorrect high). The stronger PMOS
+  candidate gives CO 1.186662 V, CL 0.674832 V, CT 0.206839 V and
+  Q approximately 0 V (correct low). This is source DC evidence at one
+  corner; no dynamic or native performance is inferred.
+- TT/25 and FS/40 pilots still wait on the original shared slot. The DLL
+  delay_0 trace completed and delay_1 is live and advancing; the native
+  monitor-after sharp control is also live. No stalled source run is stopped.
+- Resource-only `receiver_decision_load_matrix/6fd0fd7ce4169f32/followup/run.py`
+  is active as `openlvds-decision-load-dc-followup.service`. It captures
+  current code/environment/matrix hashes and waits for all three exact pilot
+  units to become inactive with successful status. Transient observation
+  failures retry; unsuccessful terminal owners hold. The existing scientific
+  matrix runner then remeasures the pilot waveforms before any remaining
+  simulation, so successful process exit alone cannot admit a failed pilot.
+  The follow-up uses slot 1 and the unchanged six-slot budget. It will
+  report full DC success only from the actual fifteen-case passing report;
+  source clock, physical and native admission remain separate requirements.
