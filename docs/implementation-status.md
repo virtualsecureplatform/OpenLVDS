@@ -3,6 +3,47 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Native capture failure narrowed using the completed mixed-view trace:
+
+- Bound observation `analog_link_pilot/36b513f21de11d28/ideal_capture_diagnosis/`
+  compares a zero-aperture continuous DDR sampler against the actual native
+  RX public outputs using the unchanged 0.80–1.05 ns publication window.
+  The ideal sampler recovers all sixteen expected payload words, with preamble
+  offset 3. The native outputs differ at two publications: 75.659258 ns
+  (ideal word 1, native word 0) and 85.754996 ns (ideal word 3, native word 2).
+  Both differences are in the rising-capture bit. This narrows the failure
+  to the native capture/publication path; it does not identify a particular
+  internal transistor or distinguish the input sampler from half-cycle transfer.
+- The preceding rising captures occur at 73.214310 ns and 82.966242 ns.
+  RXDATA is already high at those clock crossings, but its 50% setup spacing
+  is only 49.754 ps and 61.577 ps. The existing early RX topology uses a
+  rising sampler followed by a falling-edge held-rise/publication stage;
+  internal-node observation would be needed to separate those mechanisms.
+- Read-only `capture_aperture_diagnosis/` remeasures all three witnesses
+  (failing, passing and guarded passing) for every one of the 32 completed
+  SS/40 aperture conditions. The aperture model's exact native RX closure
+  matches the failed link. No simulator is launched and no aperture evidence
+  is rewritten. The producer and all input/witness hashes are retained.
+- Across the 32 intended payload capture edges, data slew measures
+  18.700–28.740 ps and clock slew 26.255–43.076 ps. The fastest data edge is
+  outside the current 20–200 ps characterized slew domain. The complete
+  480-case aperture table is also still unfinished; these completed corner
+  observations cannot be promoted to full aperture or link qualification.
+- For diagnosis, applying the corner's per-edge/polarity slew-endpoint
+  envelopes gives minimum additional setup/hold margins of -110.246/384.217 ps.
+  Requiring 200 ps additional margin would demand a common clock delay of
+  at least 310.246 ps and at most 184.217 ps under the same capture assignment.
+  That interval is empty, so those conservative endpoint envelopes do not
+  support a phase-only fix. The out-of-domain fast edge and unqualified
+  interpolation mean this is not a proof about an implemented phase change.
+  Receiver latency balance, capture aperture and waveform slew remain coupled
+  design issues for the bounded architecture experiments.
+- The selected-pin replay control is now confirmed running in ngspice, not
+  merely queued. Both bias-current variants remain queued on slot 0 and the
+  automatic architecture comparison remains gated on control calibration.
+  No tracked scientific producer changed in this observation step; the last
+  full regression remains 587 tests, 586 passed and one skipped.
+
 Calibrated selected-pin receiver architecture replay:
 
 - `replay_selected_receiver.py` reuses every recorded timestamp and voltage
