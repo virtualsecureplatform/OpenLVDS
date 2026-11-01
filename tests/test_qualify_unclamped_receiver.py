@@ -11,6 +11,27 @@ import qualify_unclamped_receiver as selected
 
 
 class UnclampedFollowupSelection(unittest.TestCase):
+    def test_lvt_profile_requires_its_exact_model_and_native_verifier(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            replay, identity = self.fixture(root)
+            identity.update(clamp_variant='unclamped_lvt_restore',
+                            first_restoration_nfet_model='sky130_fd_pr__nfet_01v8_lvt')
+            (replay / 'manifest.json').write_text(json.dumps(dict(identity=identity)))
+            with patch.object(selected, 'ROOT', root), patch.object(selected.lvt_native, 'run') as verify:
+                with selected.selection(replay):
+                    self.assertIs(selected.link.source_variant, selected.lvt_source)
+                    self.assertIn('probe_receiver_lvt_restore_candidate.py', selected.components.CODE)
+                    self.assertIn('layout_receiver_lvt_restore_candidate.py', selected.link.CODE)
+                    selected.link.recheck_replay(replay)
+                    verify.assert_called_once_with(replay)
+            for change in [dict(first_restoration_nfet_model='sky130_fd_pr__nfet_01v8'),
+                           dict(clamp_variant='unclamped_fast_restore')]:
+                modified = dict(identity, **change)
+                (replay / 'manifest.json').write_text(json.dumps(dict(identity=modified)))
+                with patch.object(selected, 'ROOT', root), self.assertRaisesRegex(ValueError, 'NFET model'):
+                    selected.selected_replay(replay)
+
     def fixture(self, root):
         replay = root / 'build/diagnostics/receiver_replay/selected'
         replay.mkdir(parents=True)

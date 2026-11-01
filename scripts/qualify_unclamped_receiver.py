@@ -9,35 +9,44 @@ from pathlib import Path
 import qualify_receiver_components as components
 import probe_receiver_candidate_link as link
 import probe_receiver_unclamped_restore_candidate as native
+import probe_receiver_lvt_restore_candidate as lvt_native
 from receiver_unclamped_restore_experiment import source_variant
+from receiver_lvt_restore_experiment import source_variant as lvt_source
 
 ROOT = Path(__file__).resolve().parents[1]
+PROFILES = {'unclamped_fast_restore': (source_variant, native, 'sky130_fd_pr__nfet_01v8'),
+            'unclamped_lvt_restore': (lvt_source, lvt_native, 'sky130_fd_pr__nfet_01v8_lvt')}
 
 
 def selected_replay(replay):
     if not replay.is_relative_to(ROOT / 'build/diagnostics/receiver_replay'):
         raise ValueError('Use an isolated unclamped receiver replay')
     identity = json.loads((replay / 'manifest.json').read_text())['identity']
-    if (identity.get('clamp_variant') != 'unclamped_fast_restore' or
+    profile = PROFILES.get(identity.get('clamp_variant'))
+    if (profile is None or
             identity.get('decision_clamped') is not False or identity.get('parallel_clamp_units') != 0 or
             identity.get('clamp_reference') is not None or identity.get('replica_monitor_unloaded') is not True or
             identity.get('input_tail_scale') != 2 or identity.get('decision_scale') != 1 or
             identity.get('restoration_widths_um') != [[8, 4], [16, 8], [16, 8]]):
         raise ValueError('Expected the exact unclamped stronger-restoration receiver')
+    declared = identity.get('first_restoration_nfet_model', 'sky130_fd_pr__nfet_01v8')
+    if declared != profile[2]:
+        raise ValueError('Unclamped restoration NFET model differs from its selected profile')
     return identity
 
 
 def recheck(replay):
-    selected_replay(replay)
-    return native.run(replay)
+    identity = selected_replay(replay)
+    return PROFILES[identity['clamp_variant']][1].run(replay)
 
 
 @contextmanager
 def selection(replay):
-    selected_replay(replay)
-    changes = [(components, 'CODE', sorted(set(components.CODE) | {Path(__file__).name} | set(native.CODE))),
-               (link, 'CODE', sorted(set(link.CODE) | {Path(__file__).name} | set(native.CODE))),
-               (link, 'source_variant', source_variant), (link, 'recheck_replay', recheck)]
+    identity = selected_replay(replay)
+    factory, verifier, _ = PROFILES[identity['clamp_variant']]
+    changes = [(components, 'CODE', sorted(set(components.CODE) | {Path(__file__).name} | set(verifier.CODE))),
+               (link, 'CODE', sorted(set(link.CODE) | {Path(__file__).name} | set(verifier.CODE))),
+               (link, 'source_variant', factory), (link, 'recheck_replay', recheck)]
     previous = [(module, name, getattr(module, name)) for module, name, _ in changes]
     try:
         for module, name, value in changes:
