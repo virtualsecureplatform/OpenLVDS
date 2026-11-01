@@ -1695,3 +1695,21 @@ failed captured recovery. Neither component root `a09b869f2ffff52b` nor link
 root `3635f229cd4efe04` has an execution receipt or raw simulation trace. The
 candidate is not selected for qualification. The stronger-restoration source
 experiment's unchanged control is now running within the same six-slot budget.
+
+The stronger-restoration candidate now has dedicated physical/native producers
+with identity `vref_fast_restore` and exact widths [[8,4],[16,8],[16,8]]. Source
+and metadata from the earlier 4/2 → 8/4 → 16/8 chain cannot qualify it. The
+physical producer retains device connections/order except placing the eight
+replica/resistor devices beside the first inverter. Native preparation requires
+the exact source, all three complete one-to-one source comparisons, DRC/LVS and
+an independent RC audit. It preserves VREF bias, unloaded monitor, nine-port
+order, original 80 ns stimuli, native shared bias/digital RX load and score window.
+Both native fixtures run concurrently with independent shared leases; simulator
+failure in one does not interrupt the other. Downstream dispatch selects this
+variant's exact source factory and waveform verifier. Eight targeted source/
+physical tests pass, with separate dispatcher and parallel-execution tests.
+
+Service `openlvds-fast-restore-native-continuation` is waiting on the actual
+source owner before attempting these stages. Its receipt is under
+`receiver_clamp/d2827cbf76f9eb80/native_continuation/`. No stronger-restoration
+physical/native result is claimed while source comparisons are incomplete.

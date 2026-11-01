@@ -424,12 +424,22 @@ Current bring-up evidence on 2026-10-31:
   verify only those instance bindings change and the control remains identical.
   Service `openlvds-fast-restore-source-screen` is live and running its control under the
   unchanged six-slot limit. No electrical, physical or native improvement is claimed.
+  Dedicated physical/native producers bind identity `vref_fast_restore` and
+  widths [[8,4],[16,8],[16,8]], rejecting the previous restoration topology or
+  source evidence. They retain VREF bias, unloaded monitor, all nine ports,
+  original stimuli/bias/native RX load and scoring windows. Both native controls
+  use separate shared simulator leases. Exact downstream source/verifier
+  selection and parallel completion/error behavior are tested. Service
+  `openlvds-fast-restore-native-continuation` waits on the actual source owner,
+  then requires all three source controls, physical DRC/LVS and independent RC
+  audit before native replay. Eight targeted source/physical tests pass; no
+  physical/native result is claimed yet.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 368 tests, 367 passed and one skipped in the pinned ngspice
+- Last full unit suite: 377 tests, 376 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
