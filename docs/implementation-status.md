@@ -2599,3 +2599,34 @@ Completed initial native DLL screen and driver steady window on 2026-11-01:
   These full-coupling wire values exclude device/MIM capacitance and are
   not effective AC loads. Native replay therefore includes both the intended
   smaller-tail electrical change and its new extracted routing.
+
+
+Isolated 1 ps source-driver integration experiment on 2026-11-01:
+
+- Both existing 20 ps source cases are live but very slow: the ratio
+  candidate near 13.447 ns and unchanged control near 14.998 ns. The
+  completed receiver precision experiment motivates a separately captured
+  driver retry; it does not establish that the same change will repair these
+  source-driver numerical intervals. No earlier simulator is stopped.
+- `driver_restore_precision_retry.py` uses the exact original source-driver
+  comparison with a 1 ps maximum integration step in both matched controls.
+  The original 20 ps output command, complete 188.049 ns duration, initial
+  time, circuits, supplies, waveform stimulus, observation nodes, scoring
+  windows and original sampling margin remain unchanged. Unexpected original
+  durations/output/start/maximum steps are refused. The original fixture/CODE
+  bindings are scoped to this process and restored even on exceptions.
+- Artifact `driver_restore/5a976ac3781d6832` captures the producer and a
+  `numerical_policy.json` binding the original manifest, parent and numerical
+  fields. Actual `fixture_recheck.py` / `precision_comparison.json` verify
+  both source libraries byte-identical to the original 100 ps experiment and
+  both decks identical after only include-path and maximum-step normalization.
+  Re-preparation preserves every captured manifest, policy, deck and library
+  byte. Tampered policies are rejected before the original runner can execute.
+- `openlvds-driver-restore-1ps-source-comparison.service` is active with both
+  cases waiting for the existing shared allocator. No additional slot or
+  reservation is introduced; no result or numerical repair is yet claimed.
+  Full native/component/RC/headroom/link gates remain unchanged.
+- Four tests cover exact integration-only changes, refusal of changed or
+  shortened fixtures, restoration after failure, policy binding, byte-stable
+  preparation and tamper refusal. Full regression: 474 tests, 473 passed and
+  one skipped. Implementation commit: `92f6abc`.
