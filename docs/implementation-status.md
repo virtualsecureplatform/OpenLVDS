@@ -138,7 +138,32 @@ Latest receiver decision on 2026-11-01:
   Full regression: 543 tests, 542 passed and one skipped.
 
 
-Current bring-up evidence on 2026-11-01:
+Latest DLL model observation on 2026-11-01:
+
+- The local-delay native DLL candidate remains
+  `dll_qualification/15cac0ba813a9333`, with measured-model work in
+  `stability_screen/1cdf451bf81d3ee8`. SS/0 now has all three original
+  forced-control delay traces and all four original native AC responses.
+  The read-only, hash-bound observation is
+  `model_observations/678afcfe509f5634.json`, with its exact `read.py` producer
+  retained alongside it. The observation validates the current qualification,
+  producer/runtime/source bindings, complete forced-control waves, remeasured
+  PFD gain cases and AC evidence. It launches no simulator.
+- Independently measured SS/0 delay sensitivity is -2.179142 ns/V and PFD
+  gain is 8.894446e8 V/s. Both clock-state models and averaged G over averaged Y
+  pass the existing model checks: unity gain 2.984056 MHz, minimum phase
+  margin 67.042345 degrees and minimum gain margin 18.706185 dB. These are
+  measured model observations, not the earlier trajectory-based gain estimate.
+  The SS/0 control operating point is 0.984710 V; TT/25 and FF/0 control
+  operating points in their prepared native fixtures are 0.861398/0.804140 V.
+  Control ripple figures elsewhere in this history are separate quantities.
+- Both original SS/0 390/410 MHz transient-step validations remain required;
+  neither has a completed validation report. TT/25, FF/0 and full-PVT models,
+  the complete native DLL suite, recovery and final PHY qualification remain
+  incomplete. The preliminary observation issues no DLL/PHY admission.
+
+
+Earlier bring-up evidence on 2026-11-01:
 
 - All three source-matched SS/TT/FF fast-reset architecture loops pass
   (`dll_architecture/0ca8225b328ecaa1`). All 21 selected native static offsets
