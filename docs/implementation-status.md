@@ -3,6 +3,81 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Completed mixed-view link and LVT current findings:
+
+- The early selected-driver/fingered-LVT-source diagnostic
+  `analog_link_pilot/36b513f21de11d28` completed its full waveform. The process
+  succeeded, but electrical decoding failed with no correctly ordered payload
+  preamble. It remains an SS/40, 410 MHz, 45% duty, +100 ps skew, short-training
+  ideal-phase diagnostic; it does not establish native receiver performance.
+- Bound read-only observation `completed_diagnosis/` in that context preserves
+  its producer and full waveform/report hashes. In the 62.348–101.433 ns
+  payload window, all 30 scored same-polarity clock periods have an output
+  edge. The wider 50–125 ns window also has no missing output clock edges.
+  The diagnostic minimum distance from the preceding RXDATA crossing to an
+  RXCLOCK crossing is 49.754 ps; minimum distance to the following RXDATA
+  crossing is 398.882 ps. These are raw logic-crossing distances, not qualified
+  aperture bounds or proof of a unique decoder-error cause. Relative data/clock
+  timing needs investigation even when clock transport succeeds.
+- Nominal TT/25 instrumented LVT context `0c8f8fae13878a21` also completed;
+  cached scientific remeasurement confirms all twelve DC points pass. Its
+  measured tail-current samples span 119.866–345.187 uA and tail VDS spans
+  54.961–403.565 mV. The six observed thin decision/bias devices remain under
+  the project screen, with a largest recorded terminal difference of 1.748690 V.
+  PMOS in the matched nominal fixture measured 60.321–65.687 uA and
+  0.765–1.154 V of absolute tail VDS. Neither static comparison qualifies
+  transient pulse recovery or establishes a saturation-region classification.
+- The two planned replica-bias measurements are now prepared and queued on
+  shared slot 1: `lvt_bias2` at `5ec4c368b3b54626` and `lvt_bias4` at
+  `a110b1a054d0c74d`, under `openlvds-lvt-bias2-current-sanity.service` and
+  `openlvds-lvt-bias4-current-sanity.service`. They retain the same nominal
+  fixture and measure actual current/headroom; no current invariance or
+  headroom improvement is assumed from device-width scaling.
+
+Selected-library link fixture and gated execution:
+
+- `simulate_selected_link.py` consumes the explicit eight-block selection
+  through its shared loader. Its channel, actual extracted digital endpoint
+  instances, payload generator and analyzer follow the existing link fixture.
+  The original live link producers remain byte-for-byte unchanged. This new
+  runner explicitly requires diagnostic mode and exact RC; release admission
+  and migration of final release consumers remain outstanding.
+- `selected_phy_phase.py` requires the selected DLL and shared-bias closures
+  to match its qualification library and selects exactly one completed native
+  phase case at the requested process, temperature, frequency and duty. The
+  actual waveform is remeasured, with deck/waveform/report binding checked.
+  Phase replay shifts only the quarter clock; clock events, deterministic
+  jitter, board parasitics and source timing remain inherited from the fixture.
+- The full measured phase range, scaled for the replay period, is deducted
+  from both raw setup and hold margins before the 200 ps margin check. This
+  accounts for observed phase variation; numerical-error convergence and
+  near-limit confirmation remain separate required work. No approximate-RC
+  error is hidden in this exact-view fixture.
+- Actual preparation
+  `selected_link/tt_25_400m_d0.5_s0_e0_ideal_32/65c3c5d14650` binds selection
+  `05aad8955a1b0cf7`. It uses solved fixed supplies, 640 ns/256-cycle training,
+  a 770 ns stop time, 20 ps output/integration steps and 32 payload bits.
+  Native DLL case `loop_tt_25` measures 659.955500–660.204682 ps quarter
+  phase; its full 0.249182 ps range is charged against sampling margin.
+  This is a prepared diagnostic, not a completed link simulation.
+- Captured fixture/model/runner files cannot be silently overwritten.
+  Incomplete traces are retained and refused for restart; cached complete
+  waveforms are hash-checked and reanalyzed. Full finite monotonic traces,
+  actual source/physical/code/runtime bindings and the shared six-slot budget
+  are enforced. Preparation and run scheduling choices do not change the
+  scientific fingerprint.
+- Resource-only `followup/run.py` is verified live as
+  `openlvds-selected-phy-link-after-native.service`. It waits for successful
+  completion of the exact compact-native receiver owner and its bound passing
+  report, then runs the prepared selected link with its own slot-1 lease.
+  It holds no outer lease while waiting or around the child. Failed upstream
+  transport holds execution instead of spending a long full-link simulation.
+- Four new tests cover phase replay and full-range margin accounting,
+  unchanged raw clock events, partial/cached waveform preservation, immutable
+  captured files, exact PVT selection and shared-bias/phase-evidence refusal.
+  Full regression passes: 582 tests, 581 passed and one skipped. Full bit
+  coverage, startup, aperture, PVT/timing/OpenPLL suite and release remain.
+
 Explicit selected-PHY assembly and PMOS current results:
 
 - `selected_phy.py` provides one versioned staging manifest and shared loader
