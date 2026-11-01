@@ -4,6 +4,32 @@ The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
 
+
+Implementation of the usable-macro plan:
+
+- User selected the existing block-library/top-RTL boundary and factorized
+  45-case release suite, and authorized archiving and retiring obsolete runs.
+  Both obsolete source-only driver units were archived, stopped and confirmed
+  to have MainPID=0. Receipts and byte-hashed snapshots are retained under
+  `resident_jobs/approved_obsolete_retirement`; useful qualification jobs remain.
+- All three LVT decision-pair static pilots now pass. The fifteen-case DC
+  continuation is running; no full-matrix or LVT clock pass is claimed.
+- `selected_analog_pilot.py` adds an early diagnostic combining the audited
+  selected native driver with the fingered schematic LVT receiver. It preserves
+  the saved stressed SS/40, 410 MHz, short-training ideal-phase fixture and all
+  unrelated circuit closures. Its immutable model/fixture/runtime/code context
+  is separate from release admission. Partial traces cannot be restarted in
+  place, and cached results are remeasured from complete finite waveforms.
+- Prepared context `analog_link_pilot/36b513f21de11d28` is queued as
+  `openlvds-selected-analog-early-pilot.service` within the shared six-slot limit.
+  This mixed-view short-training diagnostic cannot establish extracted receiver,
+  qualified startup, full component or release performance. It enables early
+  matched-circuit feedback while those final gates remain required.
+- Three tests cover selected-core overlays/protected circuits, refusal before
+  missing receiver evidence, and preservation of partial traces without a new
+  simulator launch. Full regression: 555 tests, 554 passed and one skipped;
+  targeted tests were repeated after strengthening ancestry/code bindings.
+
 Latest receiver decision on 2026-11-01:
 
 - Active circuit experiment: change only the W8 decision input pair to the
