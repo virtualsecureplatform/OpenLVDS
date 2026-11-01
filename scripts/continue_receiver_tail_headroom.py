@@ -12,13 +12,25 @@ import time
 ROOT=Path(__file__).resolve().parents[1]
 PRODUCERS=['continue_receiver_tail_headroom.py','layout_receiver_tail_headroom_candidate.py',
            'probe_receiver_tail_headroom_candidate.py','receiver_candidate_rc.py',
+           'run_spice_wait_slot.py','rx_candidate_aperture.py',
            'extract.py','audit_rc.py','physical_policy.py','continue_receiver_candidate.py','continue_receiver_wide_input.py']
 
 
 from continue_receiver_wide_input import digest,artifact,source_finished
 
 
-def run(screen,parent,unit,static_screen,dc_unit):
+def replay_command(replay,wait_slots):
+    if any(type(slot) is not int or slot not in range(6) for slot in wait_slots):
+        raise ValueError('Native wait slots must remain inside the six-slot budget')
+    if not wait_slots:
+        return ['--ngspice','python3','scripts/probe_receiver_tail_headroom_candidate.py','run',str(replay)]
+    return ['--ngspice','python3','scripts/run_spice_wait_slot.py','receiver-native',str(replay)]+[
+        item for slot in wait_slots for item in ['--wait-slot',str(slot)]]
+
+
+def run(screen,parent,unit,static_screen,dc_unit,native_wait_slots=None):
+    native_wait_slots=list(native_wait_slots or [])
+    replay_command(Path('unused'),native_wait_slots)  # Validate before capturing any owner.
     screen=artifact(str(screen),'receiver_clamp');parent=artifact(str(parent),'clock_restore')
     static_screen=artifact(str(static_screen),'receiver_tail_headroom_matrix')
     static_identity=json.loads((static_screen/'manifest.json').read_text())['identity']
@@ -34,7 +46,7 @@ def run(screen,parent,unit,static_screen,dc_unit):
     children=[ROOT/child['root'] for child in static_identity['children']]
     static_code={name for child in children for name in json.loads((child/'manifest.json').read_text())['identity']['code']}
     names=set(code)|set(source['code'])|static_code|set(PRODUCERS)
-    identity=dict(code={n:digest(ROOT/'scripts'/n) for n in names},source_unit=unit,dc_unit=dc_unit,
+    identity=dict(code={n:digest(ROOT/'scripts'/n) for n in names},source_unit=unit,dc_unit=dc_unit,native_wait_slots=native_wait_slots,
         manifests={str((p/'manifest.json').relative_to(ROOT)):digest(p/'manifest.json') for p in [screen,parent,static_screen]+children})
     folder=screen/'native_continuation';folder.mkdir(exist_ok=True)
     def save(status,**fields):
@@ -84,8 +96,7 @@ def run(screen,parent,unit,static_screen,dc_unit):
             execute('extract',['--tools','python3','scripts/receiver_candidate_rc.py',str(layout.relative_to(ROOT))])
             replay=artifact(execute('prepare_replay',['--ngspice','python3','scripts/probe_receiver_tail_headroom_candidate.py',
                 'prepare',str(parent.relative_to(ROOT)),str(layout.relative_to(ROOT))]),'receiver_replay')
-            execute('run_replay',['--ngspice','python3','scripts/probe_receiver_tail_headroom_candidate.py',
-                'run',str(replay.relative_to(ROOT))])
+            execute('run_replay',replay_command(replay.relative_to(ROOT),native_wait_slots))
             from continue_receiver_candidate import admitted
             admitted(json.loads((replay/'summary.json').read_text()))
             save('native_replay_passed',layout=str(layout.relative_to(ROOT)),replay=str(replay.relative_to(ROOT)),
@@ -97,4 +108,5 @@ def run(screen,parent,unit,static_screen,dc_unit):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('screen',type=Path);p.add_argument('parent',type=Path)
     p.add_argument('--dc-unit',required=True);p.add_argument('--source-unit',required=True);p.add_argument('--dc-matrix',type=Path,required=True)
-    a=p.parse_args();run(a.screen.resolve(),a.parent.resolve(),a.source_unit,a.dc_matrix.resolve(),a.dc_unit)
+    p.add_argument('--native-wait-slot',type=int,choices=range(6),action='append',default=[])
+    a=p.parse_args();run(a.screen.resolve(),a.parent.resolve(),a.source_unit,a.dc_matrix.resolve(),a.dc_unit,a.native_wait_slot)
