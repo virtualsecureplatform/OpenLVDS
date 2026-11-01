@@ -15,7 +15,7 @@ import probe_receiver_light_clamp_candidate as replay
 
 
 class ParallelReceiverReplay(unittest.TestCase):
-    def exercise(self,root,fail_captured=False):
+    def exercise(self,root,fail_captured=False,stop_seconds=80e-9):
         artifact=root/'build/diagnostics/receiver_replay/test';artifact.mkdir(parents=True)
         (artifact/'library.spice').write_text('* test model\n');tasks=[]
         for name in ['captured','sharp_control']:
@@ -23,6 +23,9 @@ class ParallelReceiverReplay(unittest.TestCase):
             tasks.append(dict(id=name,deck_sha256=replay.digest(folder/'bench.cir')))
         identity=dict(replay_parallel_jobs=2,simulator_provenance={},code={},inputs={},observation_nodes={},
                       input_tail_scale=2,decision_scale=1,restoration='test',restoration_widths_um=[[8,4],[16,8],[16,8]])
+        if replay.__name__=='probe_receiver_tail_headroom_candidate':
+            identity.update(clamp_variant='unclamped_tail_headroom',decision_tail_scale=0.25,
+                            decision_tail_width_um=16,first_restoration_nfet_model='sky130_fd_pr__nfet_01v8')
         manifest=dict(identity=identity,tasks=tasks,library_sha256=replay.digest(artifact/'library.spice'))
         (artifact/'manifest.json').write_text(json.dumps(manifest))
         barrier=threading.Barrier(2);sharp_done=threading.Event();started=[]
@@ -35,7 +38,7 @@ class ParallelReceiverReplay(unittest.TestCase):
             if fail_captured and folder.name=='captured':return subprocess.CompletedProcess(args,7,'','failed test simulation')
             (folder/'bench.cir.prn').write_text('test waveform '+folder.name)
             return subprocess.CompletedProcess(args,0,'','')
-        wave=np.array([[0,0,1,0,1.8],[1,15e-9,1,0,1.8],[2,75e-9,1,0,1.8],[3,80e-9,1,0,1.8]])
+        wave=np.array([[0,0,1,0,1.8],[1,15e-9,1,0,1.8],[2,75e-9,1,0,1.8],[3,stop_seconds,1,0,1.8]])
         header={'V(RCP)':2,'V(RCN)':3,'V(RXCLOCK)':4}
         transport=dict(missing_output_edges=0,pulses=[dict(output_edges_in_next_input_period=1)])
         with patch.object(replay,'ROOT',root),patch.object(replay,'provenance',return_value={}),\
@@ -66,21 +69,31 @@ class ParallelReceiverReplay(unittest.TestCase):
             self.assertFalse((artifact/'captured/summary.json').exists())
             self.assertFalse((artifact/'summary.json').exists())
 
+    def test_tail_replay_requires_the_full_original_80_ns(self):
+        import probe_receiver_tail_headroom_candidate as tail
+        with tempfile.TemporaryDirectory() as temp,patch.dict(globals(),replay=tail):
+            with self.assertRaisesRegex(ValueError,'Incomplete original 80 ns'):
+                self.exercise(Path(temp),stop_seconds=79e-9)
+
     def test_reference_variants_run_both_controls_and_preserve_the_other_on_failure(self):
         import probe_receiver_vref_clamp_candidate as vref
         import probe_receiver_fast_restore_candidate as fast
         import probe_receiver_unclamped_restore_candidate as unclamped
         import probe_receiver_lvt_restore_candidate as lvt
-        for selected in [vref,fast,unclamped,lvt]:
+        import probe_receiver_tail_headroom_candidate as tail
+        for selected in [vref,fast,unclamped,lvt,tail]:
             for fail in [False,True]:
                 with self.subTest(variant=selected.__name__,fail=fail),tempfile.TemporaryDirectory() as temp,patch.dict(globals(),replay=selected):
                     artifact=self.exercise(Path(temp),fail_captured=fail)
                     self.assertTrue((artifact/'sharp_control/summary.json').exists())
                     self.assertEqual((artifact/'summary.json').exists(),not fail)
-                    if selected in [unclamped,lvt]:
+                    if selected in [unclamped,lvt,tail]:
                         result=json.loads((artifact/'sharp_control/summary.json').read_text())
                         self.assertFalse(result['decision_clamped'])
                         self.assertEqual(result['parallel_clamp_units'],0)
                         self.assertIsNone(result['clamp_reference'])
                         if selected is lvt:
                             self.assertEqual(result['first_restoration_nfet_model'],'sky130_fd_pr__nfet_01v8_lvt')
+                        if selected is tail:
+                            self.assertEqual(result['decision_tail_width_um'],16)
+                            self.assertEqual(result['decision_tail_scale'],0.25)
