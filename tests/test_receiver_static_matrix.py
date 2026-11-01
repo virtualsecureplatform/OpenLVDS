@@ -3,12 +3,48 @@ import copy
 from pathlib import Path
 import sys
 import unittest
+import json
+import tempfile
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 from receiver_static_matrix import selected_cases
+import receiver_static_matrix as matrix
 
 
 class StaticMatrixCoverage(unittest.TestCase):
+    def test_child_failure_leaves_terminal_held_receipt(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            parent = root / 'build/diagnostics/receiver_components/parent'
+            child = root / 'build/diagnostics/receiver_static_diagnosis/child'
+            output = root / 'build/diagnostics/receiver_static_matrix/matrix'
+            for folder in [parent, child, output]:
+                folder.mkdir(parents=True)
+            case = 'schematic_receiver_tt_25'
+            requirements = root / 'requirements.json'
+            requirements.write_text(json.dumps(dict(process_corners=['tt'], temperatures_c=[25])))
+            (parent / 'manifest.json').write_text(json.dumps(dict(tasks=[dict(
+                id=case, view='schematic', test='receiver', process='tt', temperature=25)])))
+            (child / 'manifest.json').write_text(json.dumps(dict(identity=dict(
+                parent=str(parent.relative_to(root)), case=case))))
+            identity = dict(parent=str(parent.relative_to(root)),
+                producer_sha256=matrix.diagnosis.digest(Path(matrix.__file__)),
+                requirements_sha256=matrix.diagnosis.digest(requirements),
+                parent_manifest_sha256=matrix.diagnosis.digest(parent / 'manifest.json'),
+                children=[dict(case=case, process='tt', temperature=25, root=str(child.relative_to(root)),
+                               manifest_sha256=matrix.diagnosis.digest(child / 'manifest.json'))])
+            (output / 'manifest.json').write_text(json.dumps(dict(identity=identity)))
+            with patch.object(matrix, 'ROOT', root), patch.object(matrix.diagnosis, 'run',
+                    side_effect=ValueError('Fixture verification failed')):
+                with self.assertRaisesRegex(ValueError, 'Fixture verification failed'):
+                    matrix.run(output)
+            state = json.loads((output / 'state.json').read_text())
+            self.assertEqual(state['status'], 'held_for_diagnosis')
+            self.assertFalse(state['qualified_phy'])
+            self.assertEqual(state['completed'], 0)
+            self.assertFalse((output / 'summary.json').exists())
+
     def test_requires_each_process_temperature_once_with_its_original_name(self):
         requirements = dict(process_corners=['tt', 'ss'], temperatures_c=[0, 25, 40])
         tasks = [dict(id=f'schematic_receiver_{p}_{t}', view='schematic', test='receiver',

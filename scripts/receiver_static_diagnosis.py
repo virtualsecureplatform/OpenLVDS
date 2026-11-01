@@ -27,6 +27,18 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def capture_manifest(path, value):
+    # Re-preparation must preserve the exact bytes bound by cached reports.
+    # Compare canonical JSON so dictionary insertion order cannot rewrite an
+    # otherwise identical capture; retain JSON type distinctions as well.
+    if path.exists():
+        canonical = lambda item: json.dumps(item, sort_keys=True, allow_nan=False)
+        if canonical(json.loads(path.read_text())) != canonical(value):
+            raise ValueError('Static diagnosis manifest changed')
+    else:
+        atomic(path, value)
+
+
 def remove_clamps(source):
     block = text_block(source, TOP)
     for name in ['XCLAMP0', 'XCLAMP1']:
@@ -79,7 +91,7 @@ def prepare(parent, case):
     identity = dict(parent=str(parent.relative_to(ROOT)), case=case, operation='remove_only_XCLAMP0_XCLAMP1',
                     simulator_provenance=provenance(), qualified_phy=False,
                     inputs={str(p.relative_to(ROOT)): digest(p) for p in paths},
-                    code={n: digest(ROOT / 'scripts' / n) for n in set(CODE) | set(manifest['identity']['code'])})
+                    code={n: digest(ROOT / 'scripts' / n) for n in sorted(set(CODE) | set(manifest['identity']['code']))})
     root = ROOT / 'build/diagnostics/receiver_static_diagnosis' / hashlib.sha256(
         json.dumps(identity, sort_keys=True).encode()).hexdigest()[:16]
     root.mkdir(parents=True, exist_ok=True)
@@ -90,7 +102,7 @@ def prepare(parent, case):
         if target.exists() and target.read_text() != text:
             raise ValueError('Static diagnosis fixture changed')
         target.write_text(text)
-    atomic(root / 'manifest.json', dict(identity=identity, qualified_phy=False,
+    capture_manifest(root / 'manifest.json', dict(identity=identity, qualified_phy=False,
            files={n: digest(root / n) for n in ['source.spice', 'bench.cir']}))
     return root
 

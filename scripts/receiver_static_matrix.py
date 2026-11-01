@@ -43,7 +43,7 @@ def prepare(parent):
     root = ROOT / 'build/diagnostics/receiver_static_matrix' / hashlib.sha256(
         json.dumps(identity, sort_keys=True).encode()).hexdigest()[:16]
     root.mkdir(parents=True, exist_ok=True)
-    atomic(root / 'manifest.json', dict(identity=identity, qualified_phy=False))
+    diagnosis.capture_manifest(root / 'manifest.json', dict(identity=identity, qualified_phy=False))
     return root
 
 
@@ -75,30 +75,35 @@ def run(root):
 
     with (root / '.execution.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        unchanged()
         results = []
-        for child in identity['children']:
+        try:
             unchanged()
-            path = ROOT / child['root']
-            atomic(root / 'state.json', dict(status='running_matched_dc_cases', case=child['case'],
-                                             completed=len(results), qualified_phy=False))
-            # A child owns a shared lease only for its actual simulator run.
-            # Cached children remeasure their actual original/modified traces.
-            diagnosis.run(path)
-            report = json.loads((path / 'summary.json').read_text())
-            if report['manifest_sha256'] != child['manifest_sha256'] or not report['diagnostic_complete']:
-                raise ValueError('Matched DC child report is incomplete')
-            results.append(dict(case=child['case'], process=child['process'], temperature=child['temperature'],
-                original_passed=report['original']['metrics']['passed'],
-                clamp_removed_passed=report['clamp_removed']['metrics']['passed'],
-                report=str((path / 'summary.json').relative_to(ROOT)),
-                report_sha256=diagnosis.digest(path / 'summary.json')))
-        unchanged()
-        atomic(root / 'summary.json', dict(diagnostic_complete=True, qualified_phy=False,
-            manifest_sha256=diagnosis.digest(root / 'manifest.json'), required=len(identity['children']),
-            dc_all_passed=all(r['clamp_removed_passed'] for r in results), results=results,
-            scope='Matched source static DC PVT only; no native timing, rate, aperture or PHY qualification'))
-        atomic(root / 'state.json', dict(status='complete', qualified_phy=False, completed=len(results)))
+            for child in identity['children']:
+                unchanged()
+                path = ROOT / child['root']
+                atomic(root / 'state.json', dict(status='running_matched_dc_cases', case=child['case'],
+                                                 completed=len(results), qualified_phy=False))
+                # A child owns a shared lease only for its actual simulator run.
+                # Cached children remeasure their actual original/modified traces.
+                diagnosis.run(path)
+                report = json.loads((path / 'summary.json').read_text())
+                if report['manifest_sha256'] != child['manifest_sha256'] or not report['diagnostic_complete']:
+                    raise ValueError('Matched DC child report is incomplete')
+                results.append(dict(case=child['case'], process=child['process'], temperature=child['temperature'],
+                    original_passed=report['original']['metrics']['passed'],
+                    clamp_removed_passed=report['clamp_removed']['metrics']['passed'],
+                    report=str((path / 'summary.json').relative_to(ROOT)),
+                    report_sha256=diagnosis.digest(path / 'summary.json')))
+            unchanged()
+            atomic(root / 'summary.json', dict(diagnostic_complete=True, qualified_phy=False,
+                manifest_sha256=diagnosis.digest(root / 'manifest.json'), required=len(identity['children']),
+                dc_all_passed=all(r['clamp_removed_passed'] for r in results), results=results,
+                scope='Matched source static DC PVT only; no native timing, rate, aperture or PHY qualification'))
+            atomic(root / 'state.json', dict(status='complete', qualified_phy=False, completed=len(results)))
+        except Exception as error:
+            atomic(root / 'state.json', dict(status='held_for_diagnosis', completed=len(results),
+                                             error=str(error), qualified_phy=False))
+            raise
     print(root / 'summary.json', flush=True)
 
 
