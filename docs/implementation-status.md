@@ -649,8 +649,10 @@ Current bring-up evidence on 2026-10-31:
   controls. Its captured trace has already failed the first short-pulse window
   (24.5–26.5 ns): CO peaks at 0.673319 V, RESTORE0 stays above 1.765710 V,
   and Q has no falling 0.9 V crossing. The captured run has since completed all 80 ns: nine rising and nine falling
-  input periods lack their output transition. Sharp control remains running.
-  Its completion cannot erase this captured failure.
+  input periods lack their output transition. Sharp control also completes all 80 ns with no missing transition.
+  Cached reanalysis repeats both reports. The captured failure holds both
+  native continuation and the downstream component/link follower; all 60
+  prepared LVT component fixtures still have zero executions/raw traces.
   Exact LVT follow-up roots `receiver_components/101d54670c0ac820` (60 fixtures)
   and `receiver_candidate_link/004b4f282fcea4fc` are prepared. Actual component
   preflight stops at the incomplete-native gate with zero simulation executions
@@ -2028,8 +2030,12 @@ Bring-up update on 2026-11-01 (input-bias investigation):
   This localizes substantial pulse compression to the level-converter output
   path, without yet separating its CML and restoration contributions. The
   controlled P64/N24 source comparison remains in progress; its candidate
-  currently advances extremely slowly near 15.366 ns, so no comparative
-  improvement or full-run verdict is available. No live simulator was stopped.
+  has now aborted at 15.366 ns: timestep 1.25e−22 s, trouble at
+  `m.xct.xls.xb1.xn.msky130_fd_pr__nfet_g5v0d10v5#dbody`. The simulator PID
+  is gone; its actual log/raw/deck hashes are recorded in
+  `restore_64_24/failure_observation.json`. The unchanged source control
+  continues independently, so the comparison owner remains active while
+  this candidate is numerically failed. No comparative improvement is available. No live simulator was stopped.
 
 - `receiver_decision_observation.py` now isolates the unchanged standard-NFET
   unclamped receiver at SF/40, adding only unloaded CL/CT/NBC voltage columns
@@ -2039,6 +2045,59 @@ Bring-up update on 2026-11-01 (input-bias investigation):
   at the failed high-common-mode point before choosing another circuit change.
   Two tests prove exact source equality to the unclamped factory and that deck
   changes are restricted to the include path and three print columns; absent
-  or ambiguous print rows are rejected. The probe is queued under the same
-  six-slot budget. Full regression before this observer: 420 tests, 419 passed
+  or ambiguous print rows are rejected. The probe completes all 144 ns. Every original P/N/Q/PP/PN/CO sample
+  matches the completed unclamped SF/40 reference exactly;
+  `sample_comparison.json` binds both reports and the twelve-sample check. Full regression before this observer: 420 tests, 419 passed
   and one skipped; its two additional targeted tests pass.
+
+
+Decision-tail repair on 2026-11-01:
+
+- The completed SF/40 probe measures CL=0.341373 V, CT=0.170393 V and
+  PN=1.182045 V at the failed 130 ns sample. The diode-side input transistor
+  therefore has VDS=170.980 mV and VGS=1.011653 V. This supports branch
+  headroom loss under high common mode, rather than establishing the compact
+  model's operating region from voltage alone. At low common mode, CT is
+  only 14–24 mV; the original W64 decision tail has substantial compliance
+  variation across the required input range.
+- `receiver_tail_headroom_experiment.py` changes only XCT width 64 → 16 µm
+  in the standard-NFET unclamped receiver. Input tails, pairs, mirrors, loads,
+  all three restoration inverters, monitor, pins and fixed supplies remain.
+  The unchanged control uses that same unclamped core with XCT=64. Three
+  structural tests verify the one-parameter intervention, reject changed
+  topology/reapplication, and bind the exact static and clock source.
+- Original TT/25 static screen `receiver_tail_headroom_static/5d065800619f4692`
+  and SF/40 screen `c11fd7604ba0838a` both pass all twelve original samples.
+  At the previously failing SF/40 sample, PP/PN remain
+  1.078740/1.182046 V while CL=0.653296 V and CT=0.348148 V
+  (VDS=305.148 mV). CO now reaches 1.417706 V and Q correctly goes low.
+  This demonstrates the source DC repair at those two corners; no native
+  timing or full-PVT claim follows from it.
+- Full fifteen-corner matrix `receiver_tail_headroom_matrix/eaf3b93c66400e6c`
+  now runs all original source DC fixtures. Its first four completed cases
+  pass, including TT at 0/25/40 and FF/0; remaining cases are outstanding.
+  Source clock root `receiver_clamp/d9d7143b8bf2b7a7` runs the original three
+  80 ns controls, retaining the original saved pins, bias, early digital RX
+  and scoring window. No completed clock result is claimed yet.
+- Dedicated physical/native producers require all fifteen complete passing DC
+  cases with all twelve samples each, plus all three complete passing source
+  clock comparisons. Each gate remeasures the actual cached waves and checks
+  the exact receiver closure. Actual preflight holds both incomplete gates
+  (`physical_gate_preflight.json`), starting no layout or missing simulation.
+  Metadata explicitly binds tail scale 0.25 / width 16 µm and standard NFET
+  restoration; mixed old-tail or LVT identities are rejected. Native replay
+  retains both independent shared leases, all 80 ns, original pins/stimulus
+  and 15–75 ns scoring, and adds unloaded CL/CT/NBC probes. Tests also reject
+  a 79 ns prefix as incomplete and let the other control finish after a failure.
+- Service `openlvds-receiver-tail-headroom-native-continuation` captures all
+  source/matrix/child manifests and transitive producers. It waits on both
+  actual upstream owners, then repeats the gates before DRC/LVS, independent
+  RC audit and native replay. It is currently waiting for source/full DC.
+  No layout or native tail-repair result is claimed. Regression: 434 tests,
+  433 passed and one skipped.
+- A read-only comparison of complete standard-NFET source/native clock traces
+  in the first failed 24.5–26.5 ns window finds maximum PN−PP of
+  174.968 mV source versus 58.625 mV native. CO peaks at 1.602605 V versus
+  0.676372 V. The LVT pair gives essentially the same internal attenuation.
+  This supports a front-end bandwidth limitation in addition to the measured
+  DC headroom issue; tail-repair native timing must demonstrate improvement.
