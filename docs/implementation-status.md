@@ -3,6 +3,71 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+PMOS dynamic evidence, driver correction and current experiment owners:
+
+- Both matched TT25 isolated analog rate tests completed at 410 MHz with
+  the original 250 mV differential stimulus and 100 fF output load. LVT
+  `receiver_architecture_rate/5e2ac9d9f1770d32` passes with minimum valid
+  high/low windows 1148.91/1209.15 ps. PMOS p8/t4
+  `receiver_architecture_rate/f9e34b2faff66573` passes with 963.02/1391.33 ps.
+  These are analog rate windows, not qualified link sampling margins.
+- Full 60 ns observations cover six decision/bias MOS and the six MOS in
+  the downshift/restoration chain, including startup and all transitions.
+  PMOS tail current is 62.08–65.62 uA in magnitude, mean 64.34 uA;
+  minimum absolute tail VDS is 847.56 mV. LVT tail current is
+  123.23–388.67 uA, mean 255.17 uA, with minimum VDS 63.46 mV.
+  Both pass the 1.95 V project screen for the observed thin devices:
+  peaks 1.88191 V (PMOS) and 1.88818 V (LVT). The PMOS downshifter
+  sees a 2.35871 V terminal difference on a thick-oxide device. These
+  observations do not establish foundry ratings, saturation via VDSAT,
+  remaining frontend/bias stress, native timing or release qualification.
+  Producer/hash-bound reports are in each rate root's
+  `completed_observations/` directory.
+- This supports advancing PMOS p8/t4 to full source DC PVT screening,
+  without selecting it as the final receiver. Matrix
+  `receiver_architecture_matrix/66493e9dc77d72e6` prepares all fifteen
+  original cases and is dispatched as `openlvds-pmos-p8t4-dc-matrix`.
+  The first three pilots gate further advancement. Each scientific child
+  keeps its original circuit/fixture/identity and acquires one shared slot
+  through a separately captured resource policy; there is no outer lease.
+- The selected driver's complete thirty-case campaign
+  `driver_components/f3d1cd21d727bcc8` finished **29/30 passing**. Native
+  SF40 fails loaded eye amplitude at 247.5499 mV versus the required
+  250 mV minimum. Its DC, polarity and cadence checks pass. Native SF25
+  is also close to the limit (251.427 mV). This failure is retained; the
+  selected P64/N24 driver is not electrically qualified.
+- A single bounded correction adds one 20 um PMOS steering-current finger,
+  changing the ideal mirror ratio from 100:1 to 110:1 while retaining the
+  35 uA reference and P64/N24 restoration. Physical candidate
+  `driver_layout/086066e18f25d11a` passes DRC, LVS, extraction and the
+  independent RC audit; exact netlist SHA256 is
+  `e8713e6a95ceb213bd7a08570147d36c21078fb0a2e90f68d9b347fad89d9965`.
+  `driver_current/89250b060d3d9825`, owned by
+  `openlvds-driver-current-correction`, uses unchanged full 2540 ns component
+  fixtures for schematic/native SF40 and a native FF0 upper-swing guard.
+  Schematic SF40 completed and passed at 314.990 mV minimum loaded eye.
+  Extracted checks, all thirty final cases and new matched-link checks
+  remain necessary; the selected PHY library is not changed automatically.
+- Exact resistor reduction did not resolve the native replay stall:
+  `76df1c52c72e5db0` advanced only 0.338 ps in 104.1 seconds near
+  62.104 ns. It and its queued followup were archived (97 files) and
+  retired; disappearance of all processes and unchanged archived bytes
+  are verified in `resident_jobs/exact_rc_replay_stall/`. This remains
+  numerically inconclusive, not an electrical failure.
+- One bounded solver-effort retry, `selected_receiver_replay/e96fe5ad7e3669e1`,
+  adds only `.options itl4=100`. Circuit, error tolerances, 5 ps maximum
+  timestep, bounded pin stimulus and 20 ps control calibration remain
+  unchanged. Owners `openlvds-selected-receiver-replay-iterations` and
+  `openlvds-selected-receiver-architecture-iterations` dispatch the control
+  and calibration-gated bias x2/x4/PMOS followup under the six-slot budget.
+  If this also stalls, diagnose nonlinear/internal-node convergence rather
+  than launching an unbounded sequence of numerical fixture variations.
+- Validation: 608 regression tests pass in the captured NumPy/SciPy
+  environment; the two subsequently added matrix admission tests also
+  pass. The latter verify that a failed pilot or mismatched completion
+  manifest cannot advance the remaining cases and that resource bindings
+  restore on failure.
+
 Exact resistor-only digital RX replay control prepared and dispatched:
 
 - The bounded-pin control `828b7249a2cfba8e` also became numerically
@@ -29,10 +94,11 @@ Exact resistor-only digital RX replay control prepared and dispatched:
   numerical runtime binaries and the invariant non-resistor signature.
   These checks support algebraic preservation; full transient calibration
   remains pending and the candidate is explicitly unqualified.
-- `openlvds-selected-receiver-replay-exact` is dispatched with its own shared
-  simulation lease. `openlvds-selected-receiver-architecture-exact` waits for
-  a completed, calibrated control, then runs bias x2, bias x4 and PMOS p8/t4
-  in order, each with an independent lease and no enclosing lease. No
+- `openlvds-selected-receiver-replay-exact` was dispatched with its own shared
+  simulation lease and a calibration-gated architecture followup. Both were
+  subsequently archived and superseded by the iteration-budget retry above.
+  The intended comparison runs bias x2, bias x4 and PMOS p8/t4 in order,
+  each with an independent lease and no enclosing lease. No
   architecture is automatically promoted. All 601 regression tests pass
   using the captured NumPy/SciPy environment, including changed-capacitor
   rejection and scoped factory restoration tests.
