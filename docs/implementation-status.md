@@ -16,9 +16,12 @@ Latest receiver decision on 2026-11-01:
   process/temperature cases (180 original samples, fixed supplies).
   Source-clock comparison `receiver_clamp/b9f840b0494a787c` has completed
   both its reduced-tail control and uniformly scaled captured-input candidate
-  with zero missing edges. The sharp-clock fixture has started; its result
-  remains outstanding.
-  Physical admission remains gated on all three original source-clock fixtures.
+  with zero missing edges. The sharp-clock fixture also passes: all three
+  original 80 ns fixtures have exactly one output edge in each of 47 scored
+  periods. The completed hash-bound `source_clock_admission.json` passes.
+  New layout `receiver_layout/8a063d6919387667` passes DRC, LVS, extraction
+  and its independent RC audit. Native replay `receiver_replay/90c2618d3cbb6f83`
+  is prepared; both original controls are queued on shared slots 1 and 3.
 - The PMOS-only W32 alternative is rejected: FS/40 fails two original
   low-common-mode points despite TT/25 and SF/40 passing. Its remaining
   twelve DC cases and all clock cases were correctly held. Monitor relocation
@@ -85,6 +88,25 @@ Latest receiver decision on 2026-11-01:
   polarity reversed. DC logic passes despite substantial common-mode and
   polarity dependence of current. Dynamic/native bandwidth must be measured;
   width scaling is not treated as a fourfold increase in operating current.
+- The scaled receiver layout has 88 devices, nine ports, dimensions
+  787.240 x 100.045 um, zero DRC violations and matching LVS. GDS SHA256 is
+  `b83cd9b3c5d21f211274442698e38a42df0077015ab2ab814c3c5866aa0e49c1`;
+  audited native RC SHA256 is
+  `490276d995bbac6a227413ee0be363df2df1914535f40488133cfaf2f2198c66`
+  (`build/extracted/c2c5346dfcdcd43d`). The reduced network retains 88 devices,
+  16101 resistors and 1250 capacitors. All physical/source admission proofs
+  are frozen in the new native replay context; component/link admission still
+  requires both complete passing native waveforms.
+- Reading both audited extracted networks with the existing
+  `inspect_dll_stage_caps.routing_caps(..., with_components=True)` and proving
+  one resistor-connected component per observed net gives incident routing C
+  for monitor-after tail16 versus uniform scaling, in fF: CO 28.24057 to
+  83.62715; CL 25.00120 to 100.19234; CT 30.01471 to 120.56284;
+  PP 92.04186 to 126.15072; PN 99.08609 to 131.48089. NL/NR/PL/PR remain
+  unchanged. These include coupling at every resistor-connected segment,
+  without transistor/MIM capacitance or an effective AC-load interpretation.
+  The increased routing loads reinforce the need for actual native replay;
+  neither a drive-to-load improvement nor bandwidth gain is presumed.
 
 
 Current bring-up evidence on 2026-11-01:
