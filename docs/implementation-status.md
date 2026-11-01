@@ -2670,3 +2670,42 @@ Receiver cached-verification race corrected on 2026-11-01:
   previous watcher's `replacement.json` links the new owner/context proofs.
   Native sharp replay is progressing beyond 22 ns and the native driver
   candidate beyond 170 ns; complete native results are still required.
+
+
+Native driver candidate completes; retained receiver clock failure localized
+on 2026-11-01:
+
+- `driver_native_restore/0e89103385daf182/restore_64_24` completes the
+  original 188.049 ns, with 29904 raw rows and ngspice return code zero.
+  The per-case `completion_recheck.json` verifies current manifest, library,
+  deck, ordered waveform and completed report hashes. The full report
+  preserves the improved clock-center minima: TX 117.255151 mV and RX
+  133.034402 mV, with zero checked centers below 100 mV in 60–120 ns.
+- The original decoder nevertheless fails: no correctly ordered payload
+  preamble and all published words zero. Sampling-margin admission fails.
+  This is a complete negative loaded-link result, not electrical/PHY success.
+  Matched native control remains queued, so the sizing effect is not isolated.
+- `completed_link_localization/analyze.py` and `summary.json` independently
+  verify finite, strictly monotonic complete original/new traces through
+  188.049 ns, binding the waveform, manifest and report hashes. In 60–120 ns
+  the new driver's retained analog receiver clock output stays between
+  −7.239 and +5.945 mV, with zero 0.9 V crossings; Q0/Q1 stay near zero.
+  RXVALID is high. Thus the recovered-clock signal disappears before the
+  digital capture/publication stage, despite improved differential clock pins.
+- Data is still driven: TX data has 7 rises/8 falls at 0.9 V; differential
+  RX data has 9 rises/9 falls at zero and spans −327.882 to +328.143 mV.
+  The retained receiver's RXDATA has only 4 rises/4 falls. Its prior complete
+  native SS rate tests likewise held the output near zero. These observations
+  support replacing the clamped receiver rather than claiming that better
+  driver pin swing alone closes the link. No receiver internal nodes were
+  saved here, so a unique internal analog mechanism is not asserted.
+- The original completed diagnostic's RXCLOCK still has 24 rises/25 falls
+  in this same window and RXDATA has 9/10. Different driver GDS/numerical
+  settings mean this remains an unmatched localization comparison. Both
+  receiver and driver must still pass their selected native/component gates
+  before the combined analog link and full selected PHY are qualified.
+- After the candidate releases its lease, the queued 1 ps source-driver
+  control acquires slot 1 and starts (ngspice PID 1214447). Matched native
+  control remains kernel-waiting on that slot; no process is stopped. The
+  receiver native sharp control and DLL measured-model coordinator remain
+  active, with the native captured receiver and remaining source cases queued.
