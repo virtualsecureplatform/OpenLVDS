@@ -37,8 +37,12 @@ Current bring-up state (2026-11-01):
   gate bulk work; each intervention needs its own fifteen-case pass. A
   resource-only continuation waits for complete DC evidence before preparing
   original full-duration source-clock controls. Neither candidate is admitted
-  to physical/native or PHY qualification yet. The first complete SS/40
-  comparison passes for control and both LVT widths; other pilots are pending.
+  to physical/native or PHY qualification yet. Control and both LVT widths
+  pass all six pilot corners, and the remaining PVT cases have started.
+  SF/40 LVT-N4 advances extremely slowly near the 71.9 ns common-mode
+  transition; an isolated matched 1 ps retry is running while its original
+  50 ps fixture and live trace are preserved. No completed electrical failure
+  or replacement source admission follows from this numerical slowdown.
 - **The 16 pF DLL passes its first SS/0 source-acquisition case.** The full
   original 1500 ns trace gives 10.039 ps maximum feedback error,
   10.690 ps quarter-phase error and 0.745 mV control ripple, versus
@@ -53,7 +57,7 @@ Current bring-up state (2026-11-01):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 727 tests**, with no skips. Electrical
+- The last full regression passes **all 732 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -116,6 +120,36 @@ Two-unit native transport failure and controlled restoration experiment:
   startup, full PVT/aperture and long payloads are still required. All 727
   regression tests pass without skips. These followers own no outer SPICE
   lease and do not change any active circuit or qualification pointer.
+- Commit `a599b86` adds full completed-trace restoration observations. Receipt
+  `c130e79d2f47a246/restoration_observations/c98be57c815cdacc/` verifies every
+  input/producer/trace hash and remeasures the original 15–75 ns transport
+  exactly before examining complete falling-to-falling response windows.
+  All nine missing falling pulses lack a falling 0.9 V crossing at RESTORE0.
+  Six have input peaks at least 100 mV: widths 519–590 ps, CO peaks
+  0.754–0.959 V. The remaining three input peaks are below 100 mV. Across all
+  nine misses, RESTORE0 minima range from 1.219 to 1.787 V. This supports a
+  first-restorer swing/drive limitation across the full failure set; it does
+  not measure a static trip voltage or prove that a threshold-only change
+  suffices. Native admission still uses the unchanged original transport gate.
+- The three-unit live replay's immutable
+  `ef823b6778f2d9a5/partial_transport_observation/` snapshot compares the same
+  complete periods in 15–30 ns against the completed two-unit replay. Both
+  miss three of ten captured-period checks; both sharp controls miss none.
+  Observed CT bus spans 0.131–0.342 V for three-unit versus 0.170–0.378 V
+  for two-unit. The full three-unit native controls continue to 80 ns; this
+  partial diagnostic supplies no native admission or completed verdict.
+- Commit `b803eb5` isolates the SF/40 source numerical slowdown in
+  `receiver_restore_threshold/d2ad4a830399a9b2`. All three original candidate
+  and observed-source files remain byte-identical; only maximum integration
+  step changes from 50 ps to 1 ps plus the include path. Full 144 ns duration,
+  twelve input points, 10 ps output step, fixed supplies, Gear method,
+  tolerances and original DC/current/twelve-device scoring remain. Original
+  `81b4431a58df60c1/restore_lvt_n4` accepted steps shrink to roughly 0.02 fs
+  near 71.901 ns but still advance; the process is not declared dead or
+  electrically failed. The separate retry acquires actual fair leases and
+  cannot replace the original fifteen-case source matrix or any native gate.
+  The full regression after both new diagnostic helpers passes all 732 tests
+  without skips.
 - Independent wire-load observation in
   `receiver_layout/9d740d19bee2c0d0/compared_frontend_loads/` finds that the
   two-unit correction leaves critical mirror/tail/CO/CL/CT wire capacitances
