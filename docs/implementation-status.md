@@ -2412,3 +2412,34 @@ Reduced-tail source clock admission completes on 2026-11-01:
   DRC/LVS, independent extraction/connectivity audit, both complete native
   controls, all 60 source/native component checks and the loaded-link result
   are still required before the remaining full-PHY release gates.
+
+
+Reduced-tail physical result and downstream preflight on 2026-11-01:
+
+- `receiver_layout/30a2456cc94d73ea` passes zero-error DRC and strict LVS:
+  70 devices, nine ports, 657.160 × 100.045 µm. Reducing XCT from 64 to
+  16 µm removes six parallel device fingers; the declared source topology,
+  port order and other devices remain unchanged. GDS hash is
+  `fc8dd0bd8d34171f0a279e79ad5ed3a45153d9567e916c33ba1bb9b488cf0fd3`.
+- Independent extraction and wire-collapsed connectivity audit both pass.
+  Exact degree-four resistor reduction retains all 1015 capacitors and
+  reduces 15232 resistors to 12472. Reduced native network hash is
+  `1e5eff314a14e905135f523518e47b61fc3ac3c3aa761d974a03fb6a2461aeb5`
+  (`build/extracted/86f003b3def20c85/openlvds_receiver_core/`).
+  These physical checks do not establish electrical qualification.
+- Native replay `receiver_replay/54184829d6357e3c` captures the exact new
+  layout and unchanged original captured/sharp stimuli. Both cases retain
+  full 80 ns duration, original 5 ps output step and 15–75 ns scoring, with
+  declared 1 ps maximum integration inherited from their admitted source
+  policy. Each independently waits on slot 4 under the existing shared budget.
+- Prepared `receiver_components/d01c4ab5952b857c` contains all 60 original
+  source/native static/rate conditions. Prepared loaded-link diagnostic
+  `receiver_candidate_link/e5dfd3c8e0281ae5` selects the same physical model
+  and original full-RC ideal-phase 32-bit reference. Both are prepared early
+  to validate fixture construction; their execution is still native-gated.
+- Actual invocation of both run commands refuses execution with
+  “Both receiver replay cases must complete first.” Both manifests remain
+  byte-identical; neither artifact has execution receipts or waveform/raw
+  files. Native replay's `downstream_preflight/receipt.json` records the two
+  expected holds and zero simulations started. The automatic follow-up will
+  reuse these exact immutable fixtures only after successful native admission.
