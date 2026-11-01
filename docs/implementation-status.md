@@ -16,7 +16,8 @@ Latest receiver decision on 2026-11-01:
   process/temperature cases (180 original samples, fixed supplies).
   Source-clock comparison `receiver_clamp/b9f840b0494a787c` has completed
   both its reduced-tail control and uniformly scaled captured-input candidate
-  with zero missing edges. The sharp-clock fixture remains outstanding.
+  with zero missing edges. The sharp-clock fixture has started; its result
+  remains outstanding.
   Physical admission remains gated on all three original source-clock fixtures.
 - The PMOS-only W32 alternative is rejected: FS/40 fails two original
   low-common-mode points despite TT/25 and SF/40 passing. Its remaining
@@ -65,6 +66,16 @@ Latest receiver decision on 2026-11-01:
   Four additional tests verify completed-evidence reuse, partial-trace
   preservation, strict error handling and refusal of incomplete source
   coverage. Full regression: 536 tests, 535 passed and one skipped.
+- Re-reading both completed 80 ns captured-source waveforms and verifying
+  their saved SHA256 bindings confirms exactly one output edge in all 47
+  scored periods. Reduced-tail control latency is 343.165/359.340/404.411 ps
+  (minimum/median/maximum), versus 347.770/360.086/420.935 ps for uniform
+  scaling. Their weakest captured pulse is identical: 83.068 mV peak,
+  514.802 ps width at 58.919554 ns. The maximum latency occurs at this pulse.
+  Thus the scaled schematic receiver has not demonstrated a speed improvement;
+  the hypothesis still needs the actual extracted-RC replay. This source
+  diagnostic includes a captured pulse below the 100 mV specified sensitivity
+  and does not replace the component or aperture qualification fixtures.
 
 
 Current bring-up evidence on 2026-11-01:
