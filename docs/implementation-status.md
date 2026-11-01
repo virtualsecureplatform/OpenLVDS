@@ -238,6 +238,25 @@ Latest receiver decision on 2026-11-01:
   transient bandwidth and native weak-pulse recovery are not inferred from
   these DC voltages. TT/25 and FS/40 pilot results and all subsequent gates
   remain outstanding.
+- `receiver_lvt_pair_clock.py` prepares the next source-clock gate for this
+  alternative. It requires all fifteen original DC reports and a passing
+  matrix summary before any source-clock preparation, then remeasures the
+  complete matrix through its producer and binds every source fixture/report.
+  The selected factory is the exact two-model LVT pair change; temporary
+  factory/gate bindings are restored on success or exceptions. Existing
+  immutable clock machinery retains the three original 80 ns fixtures,
+  5 ps output, 1 ps maximum step, original 15--75 ns scoring interval and
+  exactly one output edge in each of 47 periods per fixture.
+- Actual `receiver_lvt_pair_matrix/ad5c6e2037ee5519/source_clock_preflight.json`
+  records rejection of the incomplete full DC matrix with zero clock contexts
+  created. Three new tests cover incomplete-DC refusal, correct selected
+  factory and restoration of factory/code/gate state after errors.
+  `clock_followup/run.py` is active as `openlvds-lvt-pair-clock-followup.service`,
+  waiting for the full-DC owner and its actual hash-bound fifteen-case pass.
+  It will use blocking slot-4 scheduling within the same global budget of six.
+  No source-clock simulation or physical/native admission exists for the
+  LVT alternative yet.
+  Full regression: 552 tests, 551 passed and one skipped.
 
 
 Latest DLL model observation on 2026-11-01:
