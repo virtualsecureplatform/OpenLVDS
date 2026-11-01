@@ -51,9 +51,11 @@ stages and all frontend, decision and bias devices remain unchanged. In the
 two-unit native trace, weak captured pulses reach only about 0.77–0.79 V at
 CO and barely move the first inverter output despite improved frontend/tail
 voltages. This motivates the threshold experiment; it does not prove the
-change will meet timing. Each candidate must independently pass the original
-fifteen source DC/current/observed-stress cases and all three source-clock
-controls before new physical/native evaluation. The earlier LVT-restorer-only
+change will meet timing. Both widths now independently pass all fifteen
+source DC/current/observed-stress cases. Their fresh admission explicitly
+uses a completed matched 1 ps maximum-step SF/40 retry; the other fourteen
+fixtures retain 50 ps. All three source-clock controls remain required before
+new physical/native evaluation. The earlier LVT-restorer-only
 failure used a different frontend and is retained as separate evidence.
 
 The OTA DLL correction increases nominal CTRL storage from 4 pF to 16 pF by

@@ -30,20 +30,21 @@ Current bring-up state (2026-11-01):
   sharp-control edges missing. The three-unit native replay is running.
   Continuations independently lease from the
   six existing SPICE slots. They do not select a PHY or publish a release.
-- **First-restorer threshold experiments are running.** New source matrix
-  `receiver_restore_threshold_matrix/de4b3249ef99482e` compares the exact
+- **Both first-restorer threshold candidates pass all fifteen source cases.**
+  Fresh matrix `receiver_restore_threshold_matrix/0f010f4a46bd1d37` compares the exact
   two-unit control with LVT first-stage NFETs at W4 and W8, preserving its
   P8 PMOS, decision/frontend/bias and later restorers. Six pilot corners
   gate bulk work; each intervention needs its own fifteen-case pass. A
   resource-only continuation waits for complete DC evidence before preparing
   original full-duration source-clock controls. Neither candidate is admitted
   to physical/native or PHY qualification yet. Control and both LVT widths
-  pass all six pilot corners, and the remaining PVT cases have started.
+  pass all fifteen cases with independent admissions. Fresh source-clock and
+  physical/component/coupled continuations bind this recovery matrix.
   The matched SF/40 1 ps retry now completes all three variants and passes
   original DC/current/stress checks. Its superseded 50 ps LVT-N4 run was
   archived and retired near 71.9 ns; all 71 archived files and six shared-slot
-  inodes remain unchanged. Resource recovery is finishing untouched corners
-  before fresh explicit fifteen-case admission. The original partial matrix
+  inodes remain unchanged. Resource recovery completed the untouched corners
+  and fresh explicit fifteen-case admission. The original partial matrix
   remains incomplete; no electrical failure is inferred from its slowdown.
 - **The 16 pF DLL passes SS/0 and TT/25 source acquisition.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
@@ -75,6 +76,27 @@ candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
 
 Two-unit native transport failure and controlled restoration experiment:
+
+- Fresh source matrix `receiver_restore_threshold_matrix/0f010f4a46bd1d37`
+  completes all fifteen PVT cases for control and both first-restorer LVT
+  widths, with every original DC/current/twelve-observed-device stress gate
+  passing. Separate LVT-N4 and LVT-N8 admissions each report 15/15 passing
+  cases and bind their own exact source bytes. All selected traces are
+  independently remeasured; SF/40 uses the completed matched 1 ps retry and
+  the other fourteen fixtures retain their original 50 ps maximum step.
+  The source report hash is
+  `1b68b65478adaac40618ec1bc59d22754e7d06c7ddd1510e25e7f0c30ce5d547`.
+- Resource pipeline
+  `de4b3249ef99482e/numerical_recovery_followup/pipeline/` binds that completed
+  recovery admission, archives all fourteen original terminal-resource files,
+  checks all six slot inodes and resets only the four exact failed dependency
+  invocations. Fresh source-clock continuation uses the new matrix;
+  physical continuation `receiver_physical_followup/2a4d9c17db429082` binds
+  its new live clock owner. Separate component and corrected-driver coupled
+  followers bind the new physical owner and wait for complete native admission.
+  The original scientific helpers and admission limits are unchanged. The
+  old partial matrix and failed resource contexts remain available; no passing
+  report is transplanted into them, and no active model or PHY pointer moves.
 
 - Matched numerical retry `receiver_restore_threshold/d2ad4a830399a9b2`
   completes the full original 144 ns SF/40 fixtures for control, LVT-N4 and
