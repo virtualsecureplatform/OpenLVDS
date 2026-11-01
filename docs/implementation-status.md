@@ -107,6 +107,35 @@ Latest receiver decision on 2026-11-01:
   without transistor/MIM capacitance or an effective AC-load interpretation.
   The increased routing loads reinforce the need for actual native replay;
   neither a drive-to-load improvement nor bandwidth gain is presumed.
+- `qualify_selected_analog_link.py` prepares the next matched full-RC link
+  comparison with both the selected receiver and P64/N24 driver. It first
+  requires every original 30 driver and 60 receiver component case to exist
+  and pass, then remeasures the cached suites and the completed receiver-only
+  reference through their scientific producers. Profile/layout/replay identity
+  must agree. The independent component reports, waveforms, fixtures, original
+  inputs and producer code are bound in a separate immutable admission record.
+  No missing component simulation can start from this cached admission path.
+- It reuses the existing matched native driver engine with the selected
+  receiver fixed in both alternatives. A failed receiver-only reference may
+  supply the fixture, since its old driver may be limiting; both component
+  suites must still pass. Candidate success requires actual decoding and
+  sampling margins plus at least 100 mV at every measured TX/RX clock center
+  in the original 60--120 ns diagnostic window. The control may fail without
+  invalidating a passing candidate. Partial uncached traces are retained and
+  refused for in-place retry. This remains one ideal-phase loaded-link
+  diagnostic, without selected-DLL/digital assembly or full-PHY admission.
+- Actual `a3a34b4ac8e5f600/combined_link_preflight.json` records rejection of
+  the incomplete driver suite and zero new comparison contexts. Seven tests
+  cover that gate, receiver identity mismatch, the admitted failed-reference
+  path, independent candidate/control verdicts, decoder/sensitivity failures,
+  changed admission inputs and partial-trace preservation.
+  `selected_analog_followup/run.py` is active as
+  `openlvds-selected-analog-link-followup.service`, waiting for the driver
+  component and receiver integration owners. It calls the strict adapter
+  after the owners finish and relies on actual scientific evidence, including
+  a completed negative reference diagnostic, rather than process exit alone.
+  Both matched workers retain the existing shared six-slot scheduler.
+  Full regression: 543 tests, 542 passed and one skipped.
 
 
 Current bring-up evidence on 2026-11-01:
