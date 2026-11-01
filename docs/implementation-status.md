@@ -2193,3 +2193,24 @@ Receiver precision retry and complete predecessor results on 2026-11-01:
 - The smaller-tail DC matrix now has seven passing completed cases, adding
   SS/0 to all TT/FF temperatures. Remaining source/static/native/link gates
   are still outstanding. Regression: 447 tests, 446 passed and one skipped.
+
+
+Completed unchanged-control precision check on 2026-11-01:
+
+- The 1 ps source retry's `unclamped_captured` control completes all 80 ns
+  with exactly one output transition in all 47 original checked input periods,
+  zero missing and zero repeated edges. Its circuit is the unchanged standard
+  unclamped fast-restoration receiver, not the smaller-tail modified case.
+- `receiver_clamp/dee37af388e0ca28/unchanged_control_precision_comparison.json`
+  binds both complete original/retry waveform, deck and report hashes. Across
+  the 47 ordered corresponding transitions, maximum absolute output-crossing
+  difference is 0.055405 ps. On a separate diagnostic 5001-point 20–75 ns grid,
+  P/N source differences are below 4.45e−16 V; maximum PP/PN/CO differences
+  are 39.584/17.265/245.467 µV. Both complete traces are finite and monotonic
+  through 80 ns. This is numerical agreement of the unchanged control, not a
+  modified-receiver/native/PHY verdict or a new acceptance threshold. The
+  modified captured and sharp-control cases remain outstanding.
+- The 20 ps driver ratio candidate has now obtained a shared lease (ngspice
+  PID 1199093); unchanged driver control remains queued. No full driver
+  comparison result is available. The smaller-tail DC matrix now has eight
+  passing completed cases, including SS/25; SS/40 and FS/SF remain pending.
