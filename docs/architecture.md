@@ -28,9 +28,15 @@ transitions before the decision stage. Its DRC/LVS checks pass. Native
 sharp-clock testing now passes with zero missing edges; the retained
 captured stimulus improves from 39 missing edges to 18 and still fails.
 A separate diagnostic tests the same receiver with completed corrected-driver
-pin waveforms; it retains the original failure and provides no automatic
-admission. Neither receiver alternative is promoted into the canonical
-analog source automatically.
+pin waveforms; it also fails, with 22 missing edges. Its frontend common mode
+is only 0.735–0.854 V, with the decision-tail node at 28–131 mV. The existing
+passive load network nominally centers the frontend at 0.75*VREF (0.9 V).
+Two bounded passive corrections now target 1.2 V: returning the grounded
+load legs to VREF preserves differential resistance/gain; adding matched
+pull-ups to VDDD trades some gain for higher bandwidth. Both pass the SS/40 °C
+DC/current/twelve-device screen. Full source PVT, clocks, new physical/native
+models and sampling margins remain required. No receiver alternative is
+promoted into the canonical analog source automatically.
 
 The OTA DLL also needs a compensation correction. Independently measured
 native loop models pass the 60° phase-margin gate at SS/0 °C but fail at

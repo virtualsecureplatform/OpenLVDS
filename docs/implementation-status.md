@@ -3,6 +3,67 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Completed receiver failure motivates passive common-mode corrections; both initial DC pilots pass:
+
+- Corrected-driver replay `receiver_current_pins/bb736100f334c145` completes
+  the full 80 ns fixture and still has **22 missing clock edges**. None of
+  those missing-edge records has an input midpoint below 100 mV. Improved
+  driver amplitude alone does not solve the receiver. Bound observer
+  `completed_headroom_diagnosis/` measures 50 frontend differential zero
+  crossings but only 32 CO and 27 restored-clock crossings at 0.9 V.
+  Frontend common mode spans **0.735–0.854 V**, minimum own-halfcycle
+  differential magnitude 31.945 mV; CT spans **27.82–131.46 mV**.
+  These measurements motivate testing decision-stage headroom. CT voltage
+  alone does not establish saturation without VDSAT.
+- The actual load network is R directly to VREF, 2R to VREF and 2R to
+  ground in parallel. Its nominal unloaded center is **0.75*VREF=0.9 V**,
+  with R/2 differential load resistance. `receiver_common_mode.py` implements
+  two bounded alternatives while preserving the input pairs, decision
+  devices, restorers, reference currents and public ports:
+  `reference_return` changes only the two grounded load-leg return nodes
+  to VREF, targeting 1.2 V at unchanged R/2; `rail_pullup` adds one matched
+  R from each frontend output to VDDD, targeting
+  0.5*VREF+VDDD/3=1.2 V with R/3 resistance. The latter trades gain for
+  bandwidth. These are passive-network nominal values, not assumed loaded
+  operating points or timing results.
+- Matched SS40 source context `receiver_common_mode/cfd8597a4a88cf85` is
+  complete. **Control and both corrections pass all twelve original DC
+  decisions and the observed twelve-device 1.95 V project screen.**
+  Ideal zero-volt current meters and one-ohm transresistance outputs
+  measure actual tail/replica currents without changing terminal potentials;
+  physical candidate files remain uninstrumented. All original 144 ns
+  stimuli, fixed supplies and numerical policies are retained.
+- Minimum settled tail VDS across the twelve points improves from
+  **34.012 mV control** to **182.660 mV reference-return** and
+  **248.887 mV rail-pullup**. Settled tail-current magnitudes span
+  73.882–344.727 uA, 281.481–364.782 uA and 320.844–361.099 uA respectively.
+  Actual current is measured rather than inferred from unchanged widths.
+  Remaining PVT, dynamic clocks, layout/extraction and native/full-PHY
+  qualification remain open; neither correction is automatically selected.
+- The 100:1 matched source-link control `analog_link_pilot/1756da2637c3e420`
+  was separately verified numerically stalled near 81.808 ns: only
+  0.057883 ps accepted progress in 40.034 seconds while CPU time increased,
+  with recent accepted timesteps down to 0.05835 fs. Receipt
+  `resident_jobs/current_link_control_stall/after_stop.json` records
+  89 archived files, all original hashes unchanged, all old processes gone
+  and unchanged six-slot inodes. The control is inconclusive, not an
+  electrical failure, and the paired comparison remains incomplete.
+- `continue_current_lvt_corrected.py` dispatches only the already-prepared
+  110:1 child `analog_link_pilot/86dc1c67c50cb1a2`, owned by
+  `openlvds-corrected-current-lvt-link`. It validates the retirement receipt,
+  archived/child/source-admission bindings and uses the original frozen
+  scientific fixture and fair lease. Even a successful child cannot mark
+  the pair complete or qualify the PHY. Partial output cannot be overwritten.
+- Exact-driver benchmark `driver_exact_benchmark/2c5e22ac31f7529b` now
+  **passes both full SF40/FF0 comparisons** and all original driver metrics.
+  Each compares 416 differential crossings: maximum timing errors
+  0.416/0.437 ps, differential plateau differences 0.677/0.698 mV and
+  common-mode differences 0.504/0.756 mV. No live model/catalog is replaced.
+  All **656 regression tests pass**, no skips, including passive-network
+  center/resistance checks, exact source-change guards, current-observer
+  validity, retirement/partial-output guards and prevention of paired/PHY
+  admission from a standalone corrected child.
+
 Rejected baseline DLL work retired; corrected-driver source matrix passes:
 
 - The old 4 pF DLL's three **unfinished** 410 MHz step runs have been
