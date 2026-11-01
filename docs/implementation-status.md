@@ -3,6 +3,53 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Calibrated selected-pin receiver architecture replay:
+
+- `replay_selected_receiver.py` reuses every recorded timestamp and voltage
+  from the completed selected-driver/LVT-source link; it does not resample or
+  compress the pin stimuli. The source library retains the actual native
+  digital RX, its output loads, shared RX bias, fixed supplies, reset waveform
+  and SS/40 process condition. The receiver pair is replaced by the declared
+  fingered schematic architecture. Transmitter/channel instances are omitted;
+  their recorded pin response and observation vectors are replayed instead.
+- An unchanged LVT source must reproduce the parent's exact receiver closure
+  before preparation. Its replay compares every rising/falling data and clock
+  crossing in 50–125 ns against the completed link, requiring matching counts
+  and at most 20 ps crossing error. Changed variants require a completed,
+  remeasured, calibrated control from this same parent and a completed passing
+  source DC/current observation before they can be prepared.
+- Actual control `selected_receiver_replay/c89c0fa91344c0df` is prepared and
+  queued on shared slot 0 as
+  `openlvds-selected-receiver-replay-control.service`. It retains the complete
+  188.049 ns interval with a 5 ps integration/output policy. The initial
+  preparation revision retains matching producer bytes; no simulation used it.
+  Full finite monotonic traces, scientific input/code/runtime hashes and
+  partial-run preservation are enforced. Cached analyses are remeasured.
+- The resource-only control `followup/run.py` is verified live as
+  `openlvds-selected-receiver-architecture-followup.service`. It admits exactly
+  three subsequent source replays: bias x2, bias x4, then `pmos_p8_t4`.
+  Each waits for its actual nominal source owner, checks that source screen,
+  prepares against the calibrated control, and obtains its own slot-0 lease.
+  A failed nominal hypothesis is recorded without admitting it; a failed
+  control or incomplete simulation holds the comparison for diagnosis.
+  Decoding, clock transport, raw edge distances and additional sampling
+  margins are reported separately. No architecture is automatically promoted.
+- Slot 1 had been acquired by a long driver component test, so the two
+  still-queued bias-current controllers were frozen, archived and superseded
+  with slot-0 waits. All old processes and 56 files were preserved and checked;
+  no simulator had started, all old processes disappeared, and all case/source
+  hashes remained unchanged. Receipts are retained under
+  `resident_jobs/bias_current_slot0_rescheduling`; replacement units are
+  `openlvds-lvt-bias2-current-slot0.service` and
+  `openlvds-lvt-bias4-current-slot0.service`. The global limit remains six.
+- Five tests cover exact stimulus roundtripping, retained RX/bias fixture and
+  fixed rails, calibration-error rejection, unrelated-control refusal and
+  preservation of partial traces without simulator admission. Full regression
+  passes: 587 tests, 586 passed and one skipped. Fixed pin sources suppress
+  changes in receiver loading from feeding back into the board/transmitter;
+  this experiment guides dynamic architecture selection and cannot replace
+  native receiver or complete selected-link qualification.
+
 Completed mixed-view link and LVT current findings:
 
 - The early selected-driver/fingered-LVT-source diagnostic
