@@ -3,6 +3,40 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Exact resistor-only digital RX replay control prepared and dispatched:
+
+- The bounded-pin control `828b7249a2cfba8e` also became numerically
+  unproductive. Two observations of the same live simulator, 93.8 seconds
+  apart, show only 0.255 ps of advancement near 62.107 ns, against a
+  188.049 ns stop. Its last 3,000 accepted steps span only 0.941 ps;
+  this incomplete trace does not establish an electrical failure.
+- The control and its queued architecture followup were frozen, archived
+  (94 files, including partial raw data and producer/input bytes), and retired.
+  `resident_jobs/bounded_replay_stall/` records process start times, progress,
+  snapshots and terminal-state verification. Systemd reported an auxiliary
+  process signalling error after termination; independent checks confirmed
+  every target process gone, MainPID=0 for both units and all archived bytes
+  unchanged. Useful DLL, driver and aperture simulations were retained.
+- `replay_selected_receiver_exact.py` applies degree-eight positive-conductance
+  star-mesh reduction only to internal resistor nodes of the native digital
+  RX. All capacitors, devices, protected connections and non-resistor
+  statements remain unchanged. The four physical pin sources and integration
+  settings match the bounded-pin control. No approximate RC model is used.
+- New control `selected_receiver_replay/76df1c52c72e5db0` removes 522 internal
+  nodes and reduces 4,229 resistors to 3,447. Four independent sparse
+  clamped-terminal witnesses over 1,937 boundary nodes pass, with maximum
+  current discrepancy 8.41 pA. The certificate captures both libraries,
+  numerical runtime binaries and the invariant non-resistor signature.
+  These checks support algebraic preservation; full transient calibration
+  remains pending and the candidate is explicitly unqualified.
+- `openlvds-selected-receiver-replay-exact` is dispatched with its own shared
+  simulation lease. `openlvds-selected-receiver-architecture-exact` waits for
+  a completed, calibrated control, then runs bias x2, bias x4 and PMOS p8/t4
+  in order, each with an independent lease and no enclosing lease. No
+  architecture is automatically promoted. All 601 regression tests pass
+  using the captured NumPy/SciPy environment, including changed-capacitor
+  rejection and scoped factory restoration tests.
+
 Dispatcher handover completed; bounded replay replaces a numerical stall:
 
 - The aperture handover waited until the old coordinator held no simulation
@@ -40,10 +74,12 @@ Dispatcher handover completed; bounded replay replaces a numerical stall:
   source certificate: 13,569 retained vertices from 32,104 original timestamps,
   each pin's maximum error below 0.1 mV and zero measured error for every
   differential crossing. Its separate source/producer-bound control and
-  architecture followup run as `openlvds-selected-receiver-replay-bounded` and
-  `openlvds-selected-receiver-architecture-bounded`. The control has advanced
-  beyond the old stall to 62.103 ns; this is partial progress, not completed
-  calibration. Earlier unrun preparation revisions retain matching producers.
+  architecture followup originally ran as
+  `openlvds-selected-receiver-replay-bounded` and
+  `openlvds-selected-receiver-architecture-bounded`. The control advanced
+  beyond the old stall, but subsequently stalled near 62.107 ns and was
+  superseded as described above. It never completed calibration. Earlier
+  unrun preparation revisions retain matching producers.
 - Both replica-bias nominal measurements completed and passed all twelve DC
   points and the observed thin-device screen. Bias x2 measures tail current
   138.486–371.407 uA with minimum tail VDS 46.818 mV. Bias x4 measures
