@@ -4834,3 +4834,50 @@ Passive receiver source-clock handoff prepared on 2026-11-01:
   missing actual child reports without calling the DC runner. All 662 full
   regression tests pass; the three adapter tests also pass after the handoff
   lock adjustment. No new source-clock, native or PHY result is claimed yet.
+
+
+Passive receiver physical path and SF/40 failure diagnosis on 2026-11-01:
+
+- `layout_receiver_common_mode.py` builds either declared passive correction
+  using the existing frontend-local geometry after complete fifteen-case DC
+  and three-case source-clock admission. Candidate source bytes must match
+  the admitted DC candidate. The original frontend-local physical reference
+  `receiver_layout/74f1d1fd9724608e` is revalidated against its physical cache,
+  source/GDS binding, producer/input hashes and independent RC audit. Each
+  correction receives a distinct immutable profile and physical identity.
+- `probe_receiver_common_mode.py` retains the original captured/sharp native
+  fixtures, full 80 ns duration, 1 ps maximum step, native shared bias and
+  digital RX. New geometry must first pass DRC/LVS, extraction and independent
+  RC audit. The unchanged native engine requires exactly one output edge per
+  original period in both 47-period controls. Frontend probes are retained;
+  native simulations independently lease existing shared slots at priority 1.
+- Four tests verify the actual 70/72-device flattened candidates and local
+  placement of every changed resistor, reject a clock from the other variant,
+  refuse missing physical evidence without creating native contexts, and
+  restore all temporary producer/resource bindings after failure while
+  preserving idempotent probes and exact numerical policy. Actual
+  `225f22209016b597/physical_preflight.json` proves both layout preparations
+  reject incomplete DC and both native preparations reject missing geometry;
+  zero new layout/native contexts were created. All 666 regression tests pass.
+- The live matrix now contains a decisive negative result: VREF return fails
+  SF/40 at the original 130 ns sensitivity point (P=2.3 V, N=2.4 V). Q is
+  1.799999955 V instead of low. Its twelve observed devices still pass the
+  project stress screen. Control and rail pullup pass the identical point.
+  Full fifteen-case candidate admission remains pending; no passing nominal
+  case can override this failure for the VREF-return candidate.
+- Read-only bound diagnosis is saved at
+  `225f22209016b597/completed_sf40_diagnosis/summary.json` with its reader.
+  All three complete traces are scientifically remeasured before reporting.
+  At the failed point VREF-return PP/PN=1.38934/1.48970 V,
+  CT=0.625579 V, CL=0.674634 V and CO=0.725255 V. Restoration stage zero
+  stays high at 1.26404 V, leaving Q high. XC0 drain-source voltage is only
+  49.055 mV despite improved tail headroom. This supports decision-stage
+  drain-headroom/swing compression at high input common mode; BSIM VDSAT or
+  operating-region classification has not been measured.
+- At the same point rail pullup gives PP/PN=1.31905/1.38462 V,
+  CT=0.594818 V, CO=0.771745 V, restoration zero=0.627263 V,
+  restoration one=1.75218 V and Q=-4.793 microvolt, passing the original
+  output criterion. Its observed twelve-device stress screen also passes.
+  Continue the remaining PVT cases; the clock handoff already excludes any
+  correction without fifteen passing DC cases. Source-clock, native, loaded
+  link, full component/stability/aperture and final PHY qualification remain.
