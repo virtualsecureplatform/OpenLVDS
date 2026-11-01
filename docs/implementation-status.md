@@ -2331,3 +2331,35 @@ No such workaround, model-version edit or engine substitution is applied.
 [Upstream ngspice news](https://ngspice.sourceforge.io/news.html) lists newer
 releases, but their compatibility or effect on these fixtures is unverified;
 all live campaigns retain the pinned ngspice-42 runtime and SKY130 model set.
+
+
+Reduced decision-tail source gates on 2026-11-01:
+
+- Matrix `receiver_tail_headroom_matrix/eaf3b93c66400e6c` completes all
+  fifteen source DC cases: TT/FF/SS/FS/SF at 0, 25 and 40 °C. All 180
+  original static samples pass, including the previously failing SF
+  high-common-mode polarity. The physical admission gate remeasures every
+  cached waveform and verifies the exact smaller-tail factory closure. Its
+  `physical_gate_recheck.json` records 77 proof files and the complete matrix
+  summary hash. This is source DC evidence; native DC/rate coverage is pending.
+- Modified `clamped_captured` in the 1 ps source retry
+  `receiver_clamp/dee37af388e0ca28` completes all 80 ns. Every one of the
+  47 original checked periods contains exactly one output transition, with
+  zero missing/repeated edges. Transport latency is 343.165203–404.410922 ps.
+  The historical task label is retained, but this factory has no CO clamps.
+  The final sharp control must still pass before layout/native admission.
+- After the modified captured case completed, its coordinator was verified
+  childless with only the sharp control pending and no sharp waveform. The
+  same guarded scheduling-only handoff preserves both completed control
+  traces and the original manifest; no simulator is signalled. Receipt
+  `execution_scheduling/handoff_20261101T050300Z/receipt.json` records this
+  handoff. Replacement source owner
+  `openlvds-receiver-tail-headroom-1ps-source-blocking` has acquired slot 4
+  and started the sharp control. Native watcher
+  `openlvds-receiver-tail-headroom-native-kernel-wait-v2` follows this owner
+  and the completed DC owner; all source/DC/physical/native gates remain.
+- The completed serial DC batch released slot 1. The matched native driver
+  candidate has acquired it and reached 23.195 ns, beyond the two slow source
+  intervals. Its full 188.049 ns result and matched native control remain
+  pending. This prefix establishes progress only. The six-slot budget and
+  all scientific settings remain unchanged.
