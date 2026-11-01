@@ -4,7 +4,7 @@ The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
 
-Current bring-up evidence on 2026-10-31:
+Current bring-up evidence on 2026-11-01:
 
 - All three source-matched SS/TT/FF fast-reset architecture loops pass
   (`dll_architecture/0ca8225b328ecaa1`). All 21 selected native static offsets
@@ -64,7 +64,11 @@ Current bring-up evidence on 2026-10-31:
   659.955500–660.204682 ps. Cadence and omitted-pulse section checks pass;
   section delays are 660.037/649.233/639.480/640.926 ps and mean power is
   6.897270 mW. Its actual deck, waveform and raw hashes match the report.
-  This yields 23 passing screen cases; FF/0 acquisition is now running.
+  FF/0 acquisition now also completes and passes: CTRL ripple 1.781503 mV,
+  feedback error 7.417610 ps and quarter delay 653.018658–653.408804 ps.
+  Cadence/marker checks pass and mean power is 6.365241 mW. All 24 initial
+  screen cases pass and the continuation has remeasured their cached traces,
+  advancing to the three-corner measured-model/stability stage.
   No measured-model or full-native qualification result is claimed. The
   handoff holds on failed gates, ended producers or changed inputs. Native
   acquisition/recovery at remaining required conditions remains unqualified.
@@ -78,8 +82,10 @@ Current bring-up evidence on 2026-10-31:
   subset remains 210/50 ps. All 32 SS/0 °C conditions also pass, with global
   guarded bounds 280/120 ps. All 32 SS/25 °C conditions now also pass, with
   guarded bounds 270/110 ps. Exact 32-condition coverage is verified separately
-  at each SS temperature: 96 of 480 conditions pass; other process corners
-  remain outstanding and the full table is unqualified. The preceding three
+  at each SS temperature. SF/0 and SF/40 now also have all 32 conditions
+  verified, with guarded setup/hold bounds 260/150 and 250/140 ps. Twelve
+  SF/25 cases also pass: 172 of 480 conditions are complete and passing.
+  Remaining conditions are outstanding and the full table is unqualified. The preceding three
   publication variants remain timing failures and cannot qualify this RX.
 - Staged early-RX bundle `phy_candidate/8f364c6a8fdabafb` passes all 54
   generic/native functional cases (2,373,588 bits). Its complete six-fixture RC
@@ -2550,3 +2556,46 @@ Automatic driver component continuation on 2026-11-01:
   is a new numerical stall observation, not a completed comparison or proof
   of repair. The matched native candidate remains live near 97 ns, and
   native FF/0 DLL acquisition remains live near 1608 ns of 1700 ns.
+
+
+Completed initial native DLL screen and driver steady window on 2026-11-01:
+
+- `dll_qualification/15cac0ba813a9333/loop_ff_0` completes all 1700 ns
+  and passes. CTRL ripple is 1.781503 mV, feedback error 7.417610 ps and
+  quarter delay 653.018658–653.408804 ps. Marker section delays are
+  653.295344/649.270988/638.576953/641.094580 ps; cadence/marker checks
+  pass and mean power is 6.365241 mW. Actual deck, ordered waveform and raw
+  hashes match the report. All 21 static offsets and SS/TT/FF acquisition
+  loops now pass: exactly 24 screen cases. `screen_completion_recheck.json`
+  verifies 98 file bindings across all 24 reports/decks/waveforms/raw files.
+- The existing native continuation remeasures its completed screen and enters
+  `running_stability_screen`, with `measure_dll_stability.py` active for
+  SS/0, TT/25 and FF/0. This stage still needs simulator leases and verified
+  measured-model/step evidence. Remaining 312 cases of the full 336 and all
+  fifteen PVT stability models remain gated; the initial screen is not release.
+- Receiver native `sharp_control` in `receiver_replay/54184829d6357e3c`
+  acquires the released DLL slot 3 and starts; captured control remains queued
+  independently behind it. No receiver native result is yet available.
+- The native driver candidate completes the entire diagnostic 60–120 ns
+  window and advances past 125 ns. Immutable prefix arrays, column maps,
+  producer/manifest/prefix hashes and observations are saved under
+  `driver_native_restore/0e89103385daf182/steady_prefix/`. Original/new
+  TX clock-center minima are 76.416519/117.255151 mV; RX minima are
+  85.215528/133.034402 mV. Among 49 centers per lane in this raw-prefix
+  comparison, original TX/RX have 4/3 below 100 mV, whereas the candidate
+  has zero below 100 mV on either lane. The full 188.049 ns run and matched
+  native control still must finish; different baseline GDS and integration
+  settings prevent attributing this unmatched comparison solely to sizing.
+- At the same diagnostic 1.65 V crossing level, clock DN changes from
+  16 rises/15 falls to 25/24 within 60–120 ns; complete high pulses widen
+  from 369.055–714.148 ps to 532.731–1097.661 ps. DP remains 24/25;
+  AD/AB and L/R remain 25/25. These are stage observations, not transistor
+  conduction-state proof, full decoder admission or a PHY verdict.
+- Fresh audited loading inspections `receiver_loading/11bbf00548f00ecc`
+  and `f8866328c8821f78` compare standard and reduced-tail receiver GDSs.
+  PP/PN incident routing capacitance changes from 100.38130/107.54226 fF
+  to 96.07947/103.21285 fF; CT changes from 70.87449 to 30.01471 fF.
+  CO/CL/RESTORE0/RESTORE1 remain 35.91650/25.00118/47.75790/58.94737 fF.
+  These full-coupling wire values exclude device/MIM capacitance and are
+  not effective AC loads. Native replay therefore includes both the intended
+  smaller-tail electrical change and its new extracted routing.
