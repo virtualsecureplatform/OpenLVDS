@@ -9,7 +9,8 @@ Latest receiver decision on 2026-11-01:
 - Active experiment: uniform fourfold scaling of the DC-passing reduced-tail
   decision stage, retaining the input-pair/mirror/tail width ratios. TT/25
   `receiver_scaled_decision_static/de8b99d5cb7a5d5e` now passes all twelve
-  original DC samples. SF/40 and FS/40 remain queued. Full static matrix
+  original DC samples. FS/40 also passes all twelve points, including the
+  two that rejected the PMOS-only variant; SF/40 remains queued. Full static matrix
   `receiver_scaled_decision_matrix/a3a34b4ac8e5f600` remains gated on all
   three passing pilots; no source-clock or physical result is admitted.
 - The PMOS-only W32 alternative is rejected: FS/40 fails two original
@@ -3152,3 +3153,45 @@ Uniform-decision full DC admission prepared on 2026-11-01:
   No old scientific code, live simulator, supply, sampling rule or six-slot
   resource limit was changed. Source clock and downstream physical/native
   gates have not been admitted for the uniformly scaled circuit.
+
+
+Uniform-decision clock handoff and completed native rejection on 2026-11-01:
+
+- FS/40 uniform-scaling pilot `receiver_scaled_decision_static/d3d3385283fb72cb`
+  passes all twelve original DC samples. In particular Q is high at both
+  22 and 46 ns, which failed with PMOS-only scaling. TT/25 already passes;
+  SF/40 is still queued. The remaining twelve DC cases stay held until all
+  three pilots pass and their actual waveforms are remeasured.
+- `receiver_scaled_decision_clock.py` reuses the immutable source-clock
+  reconstruction and admission helpers with an explicit uniform-scaling
+  factory profile. Its control is the reduced-tail receiver, and the modified
+  source scales all five decision devices together. The profile restores
+  every temporary factory/gate binding on success or error. Preparation
+  captures inherited code from all actual DC manifests, including source
+  factory dependencies, before deriving a fresh full three-control context.
+- Clock admission retains all original stimuli and probes, full 80 ns,
+  5 ps output step, 1 ps maximum integration and original 15–75 ns scoring.
+  All three controls must have exactly one output per original 47 periods,
+  complete finite monotonic traces, and unchanged static evidence. This is
+  source-clock admission only; all physical/native/component/link gates remain.
+- Actual `a3a34b4ac8e5f600/source_clock_preflight/receipt.json` proves that
+  incomplete full DC evidence refuses preparation and creates zero clock
+  contexts. `clock_followup/run.py` is verified active as
+  `openlvds-scaled-decision-clock-followup.service`, waiting for the exact
+  full-DC owner and a manifest-bound fifteen-case passing report. It freezes
+  the leaf and shared helper code/environment and uses the unchanged global
+  six-slot budget and actual shared slot 1.
+- Three new tests verify exact profile selection, restoration of temporary
+  factories/code on errors, and refusal of uncached DC or clock preparation
+  from incomplete evidence. Full regression: 509 tests, 508 passed and one
+  skipped; all nine uniform-decision tests pass.
+- Native monitor-after replay `receiver_replay/822c30476339d818` is now
+  fully complete and independently remeasured through the serialized cached
+  verifier. Both original 80 ns cases contain 47 scored periods. Sharp
+  control has zero missing/extra edges; captured control has eighteen
+  missing (nine rising, nine falling), zero extra. `completion_recheck.json`
+  binds the full scientific reports, waveforms, decks and manifest. The
+  native owner exits successfully as a completed diagnostic; its actual
+  electrical failure correctly holds the downstream owner. Both prepared
+  component `d6fda107c33d401a` and link `e8fada5af2c6c3a0` still have
+  zero simulations. No failed native branch is promoted.
