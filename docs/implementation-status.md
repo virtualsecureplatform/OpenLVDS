@@ -2266,3 +2266,68 @@ Matched native driver experiment on 2026-11-01:
 - Five physical/cache/extraction tests and three matched native scope/parallel
   tests pass. Full regression: 455 tests, 454 passed and one skipped. The
   smaller-tail DC matrix remains at eight passing completed cases.
+
+
+Queue-starvation correction on 2026-11-01:
+
+- Real `/proc/locks` inspection identifies the aperture coordinator holding
+  slots 1 and 4. Four long scientific runs hold the other four slots. The DC
+  matrix and matched native driver cases repeatedly wait while aperture
+  searches finish and reacquire leases. The existing
+  `rx_candidate_aperture.lease(wait_slot)` already provides a kernel-blocking
+  alternative to the shared allocator's 250 ms polling; that exact lease
+  implementation is reused, without changing the global six-slot budget.
+- `run_spice_wait_slot.py` is an execution-scheduling wrapper, with separate
+  receipts bound to the original scientific manifest and all producer hashes.
+  It preserves the scientific manifest, fixtures, cached reports, waveform
+  data and engine settings. Each parallel simulation still owns a real shared
+  lease; selecting one slot serializes independent cases safely. The serial
+  DC matrix can retain one real lease across its remaining short cases and
+  cached checks. Retained allocation is unavailable for parallel profiles.
+  This scheduling receipt carries no qualification verdict.
+- The resource handoff is preserved in
+  `resident_jobs/queued_spice_handoff_20261101.py` and
+  `resident_jobs/kernel_wait_handoff_20261101.json`. Each retired scientific
+  coordinator was quiesced alone, with every thread stopped, then verified
+  childless and waiting on incomplete cases with no simulation data. Only
+  that coordinator was terminated; no process group or simulator was stopped.
+  Actual original manifest, deck, source, cached report and raw/ordered
+  waveform hashes are verified unchanged before/after the handoff and bound
+  in per-artifact `execution_scheduling/handoff_20261101T045020Z` /
+  `handoff_20261101T045021Z` receipts. Cached cases are remeasured by the
+  unchanged original producers rather than being recopied into a new context.
+- `openlvds-receiver-tail-headroom-matrix-blocking` now waits for slot 1,
+  retaining it only for the serial matrix. Its scientific artifact remains
+  `receiver_tail_headroom_matrix/eaf3b93c66400e6c`. Both cases of
+  `openlvds-native-driver-restore-comparison-blocking` independently wait for
+  the same slot after that batch, retaining the original
+  `driver_native_restore/0e89103385daf182` manifest. Kernel waiter states are
+  captured in `b74f93ef596be915` / `e1c3f4b1772fad30` scheduling receipts.
+- The source receiver was deliberately left alone: its modified 1 ps case had
+  just started and already had an actual raw file. Ngspice PID 1204428 is
+  progressing normally (33.174 ns at the latest recorded prefix), so the
+  handoff guard refused to retire that coordinator. Its full 80 ns result
+  remains pending; no numerical fix is claimed from the prefix.
+- The old childless native watcher is archived at
+  `dee37af388e0ca28/native_continuation_history_20261101T044631Z`. Updated
+  `continue_receiver_tail_headroom.py` captures the scheduling producer and
+  supports an explicit native wait slot. Replacement
+  `openlvds-receiver-tail-headroom-native-kernel-wait` watches the unchanged
+  active source owner and resumed DC owner. Future native controls use slot 4,
+  with all original source/DC/DRC/LVS/RC and complete native waveform gates.
+- Four scheduling tests prove real blocking exclusion, unchanged six-slot
+  reservation bounds, a single retained serial lease, restoration on failure
+  and byte-preserved scientific manifests. Two command tests preserve the
+  default native invocation and reject invalid explicit slots. Full regression:
+  461 tests, 460 passed and one skipped. No acceptance criterion changed.
+
+The upstream search finds [ngspice issue 887](https://sourceforge.net/p/ngspice/bugs/887/),
+which reports failures exactly at coincident PWL corners and an experimental
+`minbreak` workaround. It does not establish the cause of these local stalls:
+current receiver, original driver control and 20 ps candidate trace endpoints
+are about 0.346 / 3.563 / 32.369 ps after their nearest PWL corners. These are
+local read-only observations, not a proof that the reported mechanism is absent.
+No such workaround, model-version edit or engine substitution is applied.
+[Upstream ngspice news](https://ngspice.sourceforge.io/news.html) lists newer
+releases, but their compatibility or effect on these fixtures is unverified;
+all live campaigns retain the pinned ngspice-42 runtime and SKY130 model set.
