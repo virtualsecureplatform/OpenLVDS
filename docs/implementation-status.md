@@ -2443,3 +2443,31 @@ Reduced-tail physical result and downstream preflight on 2026-11-01:
   files. Native replay's `downstream_preflight/receipt.json` records the two
   expected holds and zero simulations started. The automatic follow-up will
   reuse these exact immutable fixtures only after successful native admission.
+
+
+Native driver training-prefix observation on 2026-11-01:
+
+- The live P64/N24 native case has advanced beyond 56 ns. Its completed
+  20–35 ns training window is compared with the original completed native
+  observation, using copied finite, strictly monotonic prefixes through
+  40 ns. `driver_native_restore/0e89103385daf182/training_prefix/` stores
+  the analysis producer, prefix arrays, column maps, prefix/model-manifest
+  hashes and diagnostic report. No live producer, circuit or simulator setting
+  is edited, and this prefix is not substituted for a complete experiment.
+- Complete DN high pulses at the diagnostic 1.65 V crossing level span
+  621.448–923.655 ps in the new case versus 123.759–734.732 ps in the
+  original observation. DP spans 1644.217–1877.569 ps versus
+  1310.171–1488.294 ps. Both are threshold observations, not transistor
+  conduction-region measurements.
+- At the thirteen clock-pulse centers in this same training window, minimum
+  TX/RX magnitudes are 149.443/152.267 mV in the new case versus
+  113.389/120.907 mV in the original. Both windows have zero centers below
+  100 mV. This does not address the original failing centers in 60–120 ns.
+- The matched control remains pending. Original and new diagnostics use
+  different extracted GDSs and maximum integration steps, so these results
+  do not isolate the sizing effect, establish full-run improvement or qualify
+  the driver/PHY. Complete matched native traces and original source/native
+  component, headroom/power, RC and loaded-link checks remain necessary.
+- Receiver native replay remains kernel-queued on slot 4, now held by the
+  live 20 ps source-driver control during operating-point solution. That
+  simulation is left undisturbed; no scientific job is restarted or stopped.
