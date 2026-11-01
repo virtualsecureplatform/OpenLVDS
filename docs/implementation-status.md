@@ -3329,3 +3329,40 @@ Uniform-decision component/link selector prepared on 2026-11-01:
 - The actual full DC campaign now has nine completed passing cases, including
   SS/0. SS/25 is next in the live campaign. No new receiver clock, geometry,
   native replay, component or reference-link simulation is admitted yet.
+
+
+Changed-decision terminal observations on 2026-11-01:
+
+- `receiver_decision_headroom.py` measures all six terminal-pair differences
+  for each of the five changed thin decision devices from every recorded
+  time point in each completed original 144 ns schematic trace. Settled
+  drain/source magnitudes use the original twelve sampling times separately.
+  It remeasures the actual waveforms, verifies their saved results, code,
+  input/fixture/runtime hashes, exact five-width source intervention, fixed
+  3.3/1.8 V rails and required process/temperature coverage. It launches no
+  simulator and changes no existing producer, fixture or waveform.
+- Immutable report
+  `a3a34b4ac8e5f600/decision_headroom/5c8b09f2bb46fee8/summary.json`
+  covers eleven completed source cases, not all fifteen. All five observed
+  devices remain below the existing project thin-device screening guard of
+  1.95 V. This is the guard already used by `ota_operating_points.py`, not
+  a newly asserted PDK safe-operating-area rating.
+- The largest recorded difference is 1.793156 V at XC1 drain/body in FF/0,
+  83.953226 ns. Minimum settled tail drain/source magnitude is 5.530552 mV
+  in SS/0. The CL-side and CO-side input-device minima are 298.724 mV and
+  25.429 mV respectively. These are measured terminal voltages, not BSIM
+  VDSAT values or saturation-region classifications. Source currents and
+  power are explicitly unmeasured; remaining receiver devices and all native
+  parasitics are outside this observation's scope.
+- Initial observation `decision_headroom/6fa068f689870e81` is retained with
+  its matching `producer.py`; the current report additionally validates the
+  exact matrix coverage and producer context. More completed cases generate
+  a new content-bound report rather than rewriting earlier observations.
+- Three tests cover all five declared devices, a transient guard violation
+  between the static sampling times, separate settled headroom measurement,
+  and refusal of incomplete waves or unobserved terminal nodes. Full
+  regression: 526 tests, 525 passed and one skipped.
+- The actual DC campaign has now completed twelve passing cases, including
+  FS/0; FS/25, SF/0 and SF/25 remain. Clock and downstream continuations
+  still require the complete actual upstream reports; no partial voltage
+  observation is promoted to full receiver or PHY qualification.
