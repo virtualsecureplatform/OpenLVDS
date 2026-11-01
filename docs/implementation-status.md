@@ -2630,3 +2630,43 @@ Isolated 1 ps source-driver integration experiment on 2026-11-01:
   shortened fixtures, restoration after failure, policy binding, byte-stable
   preparation and tamper refusal. Full regression: 474 tests, 473 passed and
   one skipped. Implementation commit: `92f6abc`.
+
+
+Receiver cached-verification race corrected on 2026-11-01:
+
+- The component and loaded-link follow-ups run in separate processes and
+  both invoke the same native replay producer for cached remeasurement.
+  That producer deliberately uses a nonblocking execution lock; simultaneous
+  healthy cache checks could therefore make one follow-up fail before any
+  component/link simulation. `qualify_unclamped_receiver.recheck` now uses
+  a separate blocking cached-verification lock around this shared operation.
+  It revalidates the selected profile and requires all three completed replay
+  report files inside that lock, preventing a missing case from launching a
+  simulation through the cached path. Exceptions propagate and release the
+  lock. All source/waveform/model/PVT/timing gates are retained.
+- Only cached replay verification is serialized. The independent component
+  and loaded-link simulations retain their parallel workers and the original
+  shared six-slot allocation. A real-lock concurrency test proves the second
+  check waits, never overlaps the first and resumes after the first throws;
+  a separate test proves missing cached cases cannot call the producer.
+  Full regression: 476 tests, 475 passed and one skipped. Code commit `52f2891`.
+- The waiting direct follow-up watcher is verified childless after all its
+  threads quiesce, then retired without signalling a simulator. Exact evidence
+  is in `resident_jobs/retire_receiver_cached_check_watcher_20261101.{py,json}`
+  and the old watcher's `superseded.json`. Current native/physical/driver
+  manifests are checked not to capture the modified selector, so those live
+  scientific jobs and their producers remain unchanged.
+- Fresh components `receiver_components/e5095fc389735754` and loaded-link
+  `receiver_candidate_link/15d06853a0ad3ce1` capture the new selector. Actual
+  recheck `receiver_cached_check_fixture_recheck_20261101.py` verifies all
+  sixty component libraries byte-identical and all decks identical after only
+  include-path normalization, including the loaded-link library/deck. Identity
+  contexts differ only in the selector producer hash. The replay's
+  `followup_context_replacement.json` captures 248 bindings and verifies zero
+  simulations started in either the old or new component/link artifacts.
+- Replacement `openlvds-receiver-tail-headroom-serialized-cache-followup.service`
+  is active and waiting on the unchanged native owner, selecting these fresh
+  artifacts. Its receipts are in replay `followup/e9500fb9e650e5ea`; the
+  previous watcher's `replacement.json` links the new owner/context proofs.
+  Native sharp replay is progressing beyond 22 ns and the native driver
+  candidate beyond 170 ns; complete native results are still required.
