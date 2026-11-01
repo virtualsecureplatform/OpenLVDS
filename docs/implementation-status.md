@@ -2112,3 +2112,32 @@ Decision-tail repair on 2026-11-01:
   terminal before the selector changed; the live tail native continuation
   does not capture this selector. No tail component/link artifact or simulation
   is claimed before its actual physical/native model is available.
+
+
+Driver numerical retry on 2026-11-01:
+
+- The prior original-circuit repair `component_refresh/sf0_driver_repair.json`
+  records the same class of thick-oxide source/body timestep collapse clearing
+  with a 20 ps maximum integration step. This motivates a numerical retry,
+  without assuming that it will cure the current SS/40 loaded fixture.
+- `driver_restore_timestep_retry.py` prepares a separate comparison
+  `driver_restore/00fe9eaeef273780`, retaining both source control and P64/N24
+  candidate, fixed rails, complete 188.049 ns run, original sources/channel,
+  loads, payload, publication window and 200 ps sampling-margin gate. Only
+  maximum integration step changes from 100 to 20 ps; output step stays 20 ps.
+  `retry_comparison.json` proves byte-identical circuit libraries against
+  `cff36fa92d24e01b` and exact deck identity after include-root rebinding and
+  that single transient-field substitution. The wrapper captures its own
+  producer and restores shared dispatch in `finally`; unexpected original
+  timestep commands are rejected. Three targeted tests pass.
+- Service `openlvds-driver-restore-20ps-comparison` is active with both fixtures
+  waiting for shared leases. The original failed candidate and still-running
+  original control remain untouched. No numerical recovery or performance
+  improvement is claimed. Regression now covers 438 tests: 437 passed and
+  one skipped.
+- The smaller-tail source campaign's unchanged captured-clock control now
+  completes with no missing output transitions. Its modified captured case
+  is running; the sharp case remains outstanding. The full DC matrix has
+  five passing completed cases (all TT temperatures and FF/0, FF/25), with
+  FF/40 waiting/running next. Native advancement remains gated on the complete
+  fifteen-case matrix and all three original source clock reports.
