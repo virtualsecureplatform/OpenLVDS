@@ -3,6 +3,46 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+PMOS architecture sanity and measurement instrumentation:
+
+- The nominal TT/25 `pmos_p8_t4` source sanity check completed as
+  `receiver_architecture_static/095f9e8483f806bf`: all twelve original DC
+  points pass, including both input polarities near the bottom and top of
+  the 0–2.4 V pin range. A fresh cached remeasurement confirms the result.
+  Settled output levels are approximately 0.000000112 V and 1.8 V. This is
+  a nominal DC implementation check, not dynamic or full-PVT qualification.
+- `receiver_architecture_observations.py` adds ideal zero-volt meters at
+  the decision tail and NBC diode drain, retaining all original transistor
+  models, widths and terminal potentials. Unloaded 1-ohm transresistance
+  outputs expose signed amperes as voltage vectors through the unchanged
+  simulator adapter. Supply meters observe the existing VIO/VDIG branches.
+  Public-node observations use their actual bench aliases, including IREF
+  for the core's PB port; nonexistent hierarchical port aliases are avoided.
+- Reports retain the original 144 ns waveform and twelve sample times, and
+  add signed/absolute branch currents, signed rail-source current and
+  delivered power per rail. They check the meter's zero-voltage constraint
+  across the complete trace and measure all six terminal-pair differences
+  for XCT/XC0/XC1/XCD/XCM/XNCB. The existing 1.95 V project screen applies
+  only to the observed thin devices; no foundry absolute rating is asserted.
+  Thick-device stress limits, other receiver devices, BSIM VDSAT/region and
+  dynamic/native performance remain outside this observation's scope.
+- Current-observed PMOS context `ce9d010f1316caed` is prepared from the same
+  completed reduced-tail control. Its separate producer-bound source/deck
+  are queued on shared slot 1 as
+  `openlvds-pmos-decision-current-sanity.service`. No current or power value
+  is claimed before the actual simulation and complete-waveform analysis.
+  The uninstrumented architecture remains the physical-source candidate.
+- The instrumented LVT baseline is prepared as `0c8f8fae13878a21` from the
+  exact same nominal control and queued on slot 1 as
+  `openlvds-lvt-decision-current-sanity.service`. This enables a matched
+  schematic current/headroom comparison with PMOS; it neither selects the
+  fallback ahead of native LVT results nor admits lower-overdrive variants.
+- Five tests cover all nine variants' exact device/source preservation when
+  meters are removed, fixed-rail fixture checks and actual public aliases,
+  signed current/power conversion, a stress violation between DC samples,
+  missing/nonzero meter refusal and restoration of scientific bindings.
+  Full regression passes: 573 tests, 572 passed and one skipped.
+
 Compact LVT native replay handoff:
 
 - `probe_receiver_lvt_compact.py` accepts only the exact new compact-layout
