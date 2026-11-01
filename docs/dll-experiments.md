@@ -2004,3 +2004,34 @@ simulation. The original supplies, source/native PVT coverage, loaded payload,
 publication window and 200 ps margin remain unchanged. These are prepared
 diagnostics, not component/link passes or PHY qualification. Full regression:
 399 tests, 398 passing and one skipped in the pinned ngspice environment.
+
+The unclamped native captured prefix reaches 27.380 ns and fails at the first
+short pulse. Over 24.5–26.5 ns, CO spans 0.033684–0.676372 V, RESTORE0 stays
+within 1.783624–1.811894 V, RESTORE1 within −0.000111–0.000316 V, and Q
+within 1.799909–1.799960 V. No falling output crossing occurs. The preceding
+clamped fast-restoration circuit recovered this pulse, but had failed DC and
+link gates. This localizes the unclamped failure to insufficient CO swing for
+the first restoration inverter; both original complete native runs continue.
+
+Next controlled factory `receiver_lvt_restore_experiment.py` retains the
+unclamped frontend and restoration widths, changing only the first restoration
+NFET model to `sky130_fd_pr__nfet_01v8_lvt`. It clones P8/N4
+`lvds_rx_restore_mid` into a new private helper, leaving every existing helper
+definition, transistor size, node, later-stage binding and control unchanged.
+The pinned PDK at revision `1689ac3f2dc763876eaf967227c7dfe831b031ae` contains
+the LVT corner models and Magic defaults/draw/check PCell procedures. This
+confirms tool/model availability, not dynamic behavior or manufacturability
+of a future candidate layout.
+
+Three targeted tests prove exactly one flattened device model changes, all
+sizes/connections remain and the static intervention equals the proposed
+clock source. Static root `receiver_lvt_static/6dd7065538873479`, service
+`openlvds-receiver-lvt-static-screen`, queues the original TT/25 fixture with
+all common-mode samples, supplies, 144 ns run, 100 fF load and thresholds
+retained. Its control is the completed clamped fixture; unclamped standard
+NFET results remain separately available from the matched DC matrix. The
+intervention removes the two clamps and substitutes the first-stage NFET;
+it is not labeled a single-factor comparison against the clamped control.
+No source clock run is launched before this first DC screen. No static,
+clock or native improvement is claimed yet. Full regression: 402 tests,
+401 passing and one skipped in the pinned ngspice environment.

@@ -523,6 +523,12 @@ Current bring-up evidence on 2026-10-31:
   reports incident CO wire sum 35.917 fF versus 44.360 fF with the clamp;
   these sums exclude device capacitance and do not prove effective AC load
   or timing. No extracted recovery verdict is available yet.
+  A captured native prefix reaches 27.380 ns and misses the first short pulse:
+  over 24.5–26.5 ns CO peaks at 0.676372 V, RESTORE0 stays above 1.783624 V,
+  RESTORE1 stays below 0.000316 V and Q stays above 1.799909 V. No output
+  falling crossing occurs in that interval. This identifies the first
+  restoration threshold as the local failure point. Both complete native
+  controls continue; no downstream component/link simulation is admitted.
 - The current VREF-clamped component campaign has a numerical slowdown in
   `schematic_receiver_rate_ss_40`. Its simulator is confirmed active and using
   CPU, but a saved prefix advances only about 7 ps over several minutes near
@@ -587,12 +593,26 @@ Current bring-up evidence on 2026-10-31:
   native controls, then lets each child independently remeasure that evidence
   before simulation. No component/link pass is claimed. Two targeted selector
   tests verify exact dispatch, captured code and restoration after a failure.
+- `receiver_lvt_restore_experiment.py` proposes a controlled first-stage
+  threshold change: clone the existing P8/N4 helper and change only its NFET
+  model to `sky130_fd_pr__nfet_01v8_lvt`. All sizes, nodes, other helper
+  definitions, unclamped input/decision circuitry, monitor and later stages
+  remain. The pinned PDK contains all corner models and Magic PCell procedures
+  for this device. Three structural tests prove the single device-model change,
+  unchanged control and exact static/source intervention identity. Static root
+  `receiver_lvt_static/6dd7065538873479`, service
+  `openlvds-receiver-lvt-static-screen`, queues the original TT/25 static
+  fixture with unchanged supplies, common modes, 100 fF load and thresholds.
+  The original clamped fixture is its recorded control; the unclamped standard
+  NFET result is available separately in the matched DC matrix. No LVT clock
+  run, physical/native result or static improvement is claimed before this
+  screen completes.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 399 tests, 398 passed and one skipped in the pinned ngspice
+- Last full unit suite: 402 tests, 401 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
