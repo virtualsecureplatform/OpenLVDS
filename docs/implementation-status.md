@@ -26,8 +26,8 @@ Current bring-up state (2026-11-01):
   component conditions and a corrected 110:1-driver/native-receiver coupled
   diagnostic are implemented behind exact source/native gates. The two-unit
   and three-unit layouts/extractions/RC audits now pass. The complete two-unit
-  native replay fails with eighteen captured-clock edges missing and zero
-  sharp-control edges missing. The three-unit native replay is running.
+  and three-unit native replays each fail with eighteen captured-clock edges
+  missing and zero sharp-control edges missing.
   Continuations independently lease from the
   six existing SPICE slots. They do not select a PHY or publish a release.
 - **Both first-restorer threshold candidates pass all fifteen source cases.**
@@ -39,7 +39,10 @@ Current bring-up state (2026-11-01):
   original full-duration source-clock controls. Neither candidate is admitted
   to physical/native or PHY qualification yet. Control and both LVT widths
   pass all fifteen cases with independent admissions. Fresh source-clock and
-  physical/component/coupled continuations bind this recovery matrix.
+  physical/component/coupled continuations bind this recovery matrix. New
+  physical context `receiver_physical_followup/5896ecbb92009d53` lets both
+  variants advance independently after their own complete source-clock gates;
+  actual simulators still lease from the same six global slots.
   The matched SF/40 1 ps retry now completes all three variants and passes
   original DC/current/stress checks. Its superseded 50 ps LVT-N4 run was
   archived and retired near 71.9 ns; all 71 archived files and six shared-slot
@@ -66,7 +69,7 @@ Current bring-up state (2026-11-01):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 736 tests**, with no skips. Electrical
+- The last full regression passes **all 742 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -76,6 +79,35 @@ candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
 
 Two-unit native transport failure and controlled restoration experiment:
+
+- Three-unit replay `receiver_replay/ef823b6778f2d9a5` now completes both full
+  original 80 ns native fixtures. Captured transport misses nine rising and
+  nine falling edges; sharp control misses none. Independent full-trace
+  restoration receipt `restoration_observations/9344a19497ca9ff3/` exactly
+  reproduces transport and identifies no first-restorer falling crossing in
+  any of its nine missing falling-pulse windows. Six exceed 100 mV input peak;
+  three do not. Across all nine windows CO peaks span 0.641–0.933 V and
+  RESTORE0 minima span 1.349–1.790 V. Both bias-only native candidates are
+  rejected; their component and coupled followers correctly skip both without
+  dispatching any dependent electrical test.
+- Commit `db2060a` introduces independent physical handoffs for the two LVT
+  restorers. `continue_receiver_restore_parallel.py` keeps every scientific
+  source/physical/native producer and gate unchanged, dispatches at most two
+  variants in isolated subprocesses, records separate progress/results and
+  owns no outer SPICE lease. One variant's completed failure cannot borrow
+  another's native admission. Geometry, extraction and native replay for N8
+  can advance while N4's replay runs, once N8 independently passes source clocks.
+  All 742 regression tests pass, including concurrent-worker and partial-
+  evidence refusal checks.
+- Only the three waiting resource owners under
+  `receiver_physical_followup/2a4d9c17db429082` were frozen, archived and
+  retired before rebinding. Receipt
+  `resident_jobs/restorer_parallel_handoff/after_stop.json` verifies nine
+  archived files, all original hashes and all six shared-slot inodes; each
+  old owner had no scientific subprocess. Source-clock and live SPICE jobs
+  remain untouched. Fresh physical context `5896ecbb92009d53` binds the
+  same live source-clock owner, and its new component/coupled followers bind
+  the new exact physical owner. No active model, gate or PHY pointer changes.
 
 - Fresh source matrix `receiver_restore_threshold_matrix/0f010f4a46bd1d37`
   completes all fifteen PVT cases for control and both first-restorer LVT
