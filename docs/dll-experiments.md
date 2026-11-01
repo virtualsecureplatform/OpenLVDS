@@ -1657,3 +1657,32 @@ RESTORE0 falls to 0.329422 V, RESTORE1 rises to 1.780347 V, and RXCLOCK spans
 CO_TRACK stays within 0.832336–0.833612 V. Both original 80 ns controls continue
 to full reports; this local response is not a complete clock-recovery, aperture,
 component or link qualification.
+
+The VREF-biased native captured prefix subsequently reaches 62.890 ns and
+fails on the weakest negative pulse at 58.919554 ns (514.802 ps, 83.068 mV).
+Over 58.7–60.7 ns CO reaches 1.060980 V and RESTORE0 falls to 0.718403 V,
+but RESTORE1 reaches only 0.551259 V and RXCLOCK remains above 1.783342 V.
+No falling output crossing occurs before the next same-polarity input crossing
+at 61.212597 ns. This identifies a restoration-chain response to investigate;
+the complete native reports still remain outstanding.
+
+Next isolated source comparison `receiver_fast_restore_experiment.py` doubles
+only the first two restoration stages, retaining the final output driver.
+XIB0 changes from `lvds_inv18` to the existing `lvds_rx_restore_mid`, and XIB1
+changes from that helper to `lvds_inv18_drive`. The chain becomes P/N widths
+8/4 → 16/8 → 16/8 µm; every helper definition, input/decision device, clamp,
+unloaded monitor, port and other connection remains unchanged. Stronger drive
+of the measured internal wire/gate loads is a hypothesis, not demonstrated
+improvement; new source and physical/native evidence remain necessary.
+
+```sh
+scripts/env.sh --ngspice python3 scripts/receiver_fast_restore_experiment.py prepare \
+  build/diagnostics/clock_restore/50565a94b3b04171
+scripts/env.sh --ngspice python3 scripts/receiver_fast_restore_experiment.py run \
+  build/diagnostics/receiver_clamp/d2827cbf76f9eb80
+```
+
+Service `openlvds-fast-restore-source-screen` queues the same three original
+controls under the six-slot budget. Two targeted tests verify only those stage
+bindings change, their actual helper widths and unchanged final/control paths.
+Original native bias/digital load, 80 ns stimuli and 15–75 ns scoring remain.

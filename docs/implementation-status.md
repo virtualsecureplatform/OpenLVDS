@@ -407,6 +407,18 @@ Current bring-up evidence on 2026-10-31:
   RESTORE1 rises to 1.780347 V and RXCLOCK falls near 25.837800 ns. The trace
   prefix reaches 28.772 ns at inspection. Both complete native controls continue;
   this partial observation does not qualify clock recovery or link timing.
+  A later prefix through 62.890 ns shows failure on the weakest negative pulse
+  at 58.920 ns: CO reaches 1.060980 V and RESTORE0 falls to 0.718403 V,
+  but RESTORE1 reaches only 0.551259 V. No RXCLOCK falling crossing occurs
+  before the next same-polarity input edge at 61.213 ns. Complete reports remain
+  outstanding; the next comparison targets the internal restoration stages.
+- Source comparison `receiver_clamp/d2827cbf76f9eb80` retains VREF bias and all
+  input/decision devices, but doubles the first two restoration stages using
+  existing inverter definitions: P/N widths become 8/4 → 16/8 → 16/8 µm.
+  Final output drive and overall polarity are retained. Two structural tests
+  verify only those instance bindings change and the control remains identical.
+  Service `openlvds-fast-restore-source-screen` is live and queued under the
+  unchanged six-slot limit. No electrical, physical or native improvement is claimed.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
