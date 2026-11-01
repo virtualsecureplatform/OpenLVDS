@@ -2897,3 +2897,56 @@ Capacity review on 2026-11-01:
   untouched, so user approval was requested asynchronously. Its status is
   `pending_user_approval`; no simulator has been signalled. Native/PVT work
   and the unchanged six-slot budget continue while a decision is pending.
+
+
+Decision-load circuit experiment on 2026-11-01:
+
+- Monitor-after native replay `822c30476339d818` still runs its original
+  full 80 ns captured case. Its `first_captured_pulse/summary.json` measures
+  CO peak 0.753394 V versus 0.709227 V before relocation, but neither
+  layout produces an output crossing for the original 526.689 ps pulse.
+  `first_captured_pulse/check_periods.py` applies the original scoring rule
+  only to complete available periods: both prefixes have three missing
+  edges in ten periods. This is a negative prefix observation, not a
+  completed native report; the full controls remain required.
+- `receiver_decision_load_experiment.py` changes only the decision PMOS
+  diode/mirror XCD/XCM from W8 to W32, retaining L0.15, original W64/L0.5
+  decision tail, W8 input pair, removed clamps and original stronger
+  restoration buffers. This compares against the standard unclamped W64
+  control, not against the reduced-tail W16 circuit. The hypothesis is to
+  raise the decision common-mode/headroom while retaining higher charging
+  current. Actual static and dynamic results must decide whether that works.
+- `receiver_decision_load_static.py` remeasures a completed original control
+  and verifies its exact factory closure, immutable fixtures, inherited input
+  hashes, producer hashes and pinned runtime. The candidate changes only
+  those two widths and adds unloaded CL/CT/NBC observations. It preserves
+  the original 144 ns, all twelve sampling points and 100 fF output load.
+  Full finite, monotonic waveforms are required; cached reports are
+  remeasured, and partial executions are retained rather than overwritten.
+- Three pilots are queued on actual shared slot 1, within the six-slot
+  budget: TT/25 `receiver_decision_load_static/e33c866803601b0d`, SF/40
+  `51e8be8847013846`, FS/40 `21e1c870086d1f65`. Services are
+  `openlvds-decision-load-{tt25,sf40,fs40}`. All remain waiting at this
+  observation; no passing electrical result is claimed. A preparation-only
+  TT artifact `abd07dedf91fbbfc` predates the stronger inherited-input and
+  partial-run guards and has never been queued.
+- Admission order remains: three pilots, all fifteen source static corners,
+  original three source clock controls, physical DRC/LVS/RC audit, both
+  full native replay controls, full component and loaded-link gates. Do not
+  queue clock or physical work for this circuit before its static gate passes.
+  The reduced-tail circuit retains its demonstrated DC evidence separately.
+- Matched native driver comparison `driver_native_restore/0e89103385daf182`
+  is now complete for both cases. Both fail the full decoder/margin gates.
+  In the matched 60–120 ns observation, receiver-input minimum magnitude
+  improves from 86.644 to 133.034 mV, but the stronger-driver clock output
+  has no crossings. Component campaign `driver_components/f3d1cd21d727bcc8`
+  has started independently; its first schematic TT/0 case passes. Full
+  thirty-case component admission is still pending and cannot establish
+  complete link qualification by itself.
+- Four targeted tests cover the exact two-device intervention, unchanged
+  static fixture, all original sampling points, and rejection of incomplete,
+  nonfinite, nonmonotonic or missing-observation data. No live simulator was
+  stopped, scientific gate weakened, or active analog pointer promoted.
+
+- Validation after the decision-load addition: 491 regression tests, 490
+  passed and one skipped. All four new targeted tests pass.
