@@ -2950,3 +2950,45 @@ Decision-load circuit experiment on 2026-11-01:
 
 - Validation after the decision-load addition: 491 regression tests, 490
   passed and one skipped. All four new targeted tests pass.
+
+
+Full decision-load DC gate prepared on 2026-11-01:
+
+- `receiver_decision_load_matrix.py` prepares exactly the fifteen required
+  source process/temperature points from the completed standard unclamped
+  control matrix, ordered with TT/25, SF/40 and FS/40 first. It captures the
+  complete child manifests, source selection, current requirements and code.
+- Matrix `receiver_decision_load_matrix/6fd0fd7ce4169f32` reuses the three
+  live pilot artifacts without changing their manifests. Before running any
+  remaining case it requires every pilot's complete report, remeasures each
+  actual waveform through the scientific runner, and requires all three to
+  pass. Incomplete or failed pilots cannot launch remaining simulations.
+- Actual run preflight refuses incomplete pilots and records
+  `incomplete_pilot_preflight.json`: fifteen required cases, zero complete,
+  zero new simulations. This is an expected admission hold, not a numerical
+  failure. Four targeted matrix tests exercise exact coverage, pilot order,
+  missing results, failed results and mandatory remeasurement/hash binding.
+- The full matrix is prepared but not running. Once all independent pilot
+  owners finish successfully, resume with
+  `./scripts/env.sh --ngspice python3 scripts/receiver_decision_load_matrix.py run build/diagnostics/receiver_decision_load_matrix/6fd0fd7ce4169f32 --wait-slot 1`.
+  It holds a shared lease only during each actual uncached child simulation;
+  it does not retain a lease while invoking nested runners.
+
+- Matrix regression: 495 tests, 494 passed and one skipped; all eight
+  decision-load factory/static/matrix tests pass.
+
+Completed monitor-after captured replay on 2026-11-01:
+
+- `receiver_replay/822c30476339d818/captured` has finished its complete
+  original 80 ns. The scientific report checks 47 periods and finds eighteen
+  missing edges (nine rising and nine falling), matching the previous
+  monitor-before reduced-tail layout. The sharp-control simulator has now
+  started; no aggregate completion or downstream admission is claimed.
+- `completed_captured_comparison/analyze.py` independently remeasures both
+  complete captured waveforms with the original 15–75 ns period rule and
+  verifies reports against waveform/deck/library/manifest hashes, current
+  code, inherited inputs and runtime. Both layouts miss exactly the same
+  eighteen input edges and have no extra edges. The lower wire capacitance
+  and larger first-pulse CO swing therefore do not resolve the captured
+  clock failure. Continue the stronger-PMOS circuit's static pilots before
+  another physical receiver build.
