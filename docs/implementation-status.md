@@ -3,6 +3,43 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Rejected baseline DLL work retired; corrected-driver source matrix passes:
+
+- The old 4 pF DLL's three **unfinished** 410 MHz step runs have been
+  archived and retired. Its independently measured TT25/FF0 phase margins
+  already fail at 47.192/34.408° against 60° required; completed 390 MHz
+  validations at SS0/TT25/FF0 are retained. Further baseline 410 MHz
+  agreement could not admit this circuit. Capacity now serves the 16 pF
+  correction and current receiver/driver qualification instead.
+- The targeted owner was `openlvds-local-delay-native-continuation`, with
+  `Restart=no`. Before stopping it, the complete service was frozen and
+  **222 files** were copied, including completed/partial stability evidence,
+  continuation metadata, circuit snapshots and producer code. Receipt
+  `resident_jobs/obsolete_dll_storage4/after_stop.json` independently
+  verifies every original file hash is unchanged, every old process is
+  gone, and all six shared-slot file inodes are unchanged. Exactly three
+  simulators were retired; other scientific jobs were preserved. A terminal
+  sidecar `dll_qualification/15cac0ba813a9333/baseline_retirement.json`
+  records the intentional retirement while original producer state files
+  remain byte-preserved. The partial 410 MHz traces are **inconclusive**,
+  not completed electrical failures. No passing stability summary or
+  baseline/native PHY admission is created.
+- Freed leases were acquired by queued aperture/driver work; the global
+  budget remains six actual simultaneous SPICE processes. The corrected
+  source, native receiver replay, matched link and exact-driver benchmark
+  owners remain live. No original scientific producer, active model or
+  fixture was edited to accelerate them.
+- All **15 corrected-driver schematic cases pass** across the five
+  required process corners and 0/25/40 °C. Read-only observer
+  `driver_components/a1d220a703a6ac2b/completed_source_observations/`
+  verifies exact matrix coverage, producer/runtime/input hashes, source and
+  original full 2540 ns fixture reconstruction, complete waveforms and
+  exact cached metric agreement. Minimum loaded differential magnitude
+  is 314.990 mV at SF40. This includes the campaign's additional loaded-eye
+  screen; the voltage requirement itself remains settled DC into 100 ohms.
+  Native cases remain live, so this is not the full thirty-case report or
+  driver/RC/link/PHY qualification. No test gates are relaxed.
+
 Driver exact-network benchmark dispatched; completed FF0 DLL step agrees with its model:
 
 - Read-only exact reduction observer
