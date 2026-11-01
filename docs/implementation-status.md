@@ -5189,3 +5189,41 @@ Weaker receiver complete component selector prepared on 2026-11-01:
   fixtures. No dynamic verdict is inferred from these partial times. New
   native geometry/replays, all components, corrected-driver coupling, DLL,
   sampling aperture and final release evidence remain required.
+
+
+Corrected native-driver/native-receiver coupled diagnostic prepared on 2026-11-01:
+
+- `probe_corrected_driver_soft_receiver.py` first requires both exact admitted
+  weaker-bias native receiver controls, then remeasures the completed corrected
+  driver comparison and reaudits its physical models. The preserved corrected
+  link must contain exactly the audited P64/N24 110:1 native driver closure.
+  Actual read-only checking confirms closure SHA
+  `c9bc8c12c14ab1ee4395a6ede6f5d77b540689f572c56e9f3f9c599c34f72a64`.
+- The new fixture replaces only the analog receiver closure with the admitted
+  native model. Driver, shared bias, digital RX, original channel and all
+  other protected closures remain. Full original SS/40, 410 MHz, 45% duty,
+  +100 ps skew/100 ps peak-to-peak jitter, 188.049 ns duration, 20 ps maximum
+  step, 60 ns training and 32-bit payload remain. Exact internal receiver
+  probes are rebound to the new audited native node aliases. The original
+  incomplete schematic-RX link is preserved; no partial waveform is reused.
+- The diagnostic checks complete waveform/clock coverage, payload decoding,
+  clock transport and at least 200 ps setup/hold sampling margin. Passing
+  this short ideal-phase fixture cannot admit real-DLL startup, qualified
+  aperture, full components/PVT, required long payloads or the complete PHY.
+  Every result retains `qualified_phy=false`, and partial outputs cannot be
+  overwritten for an in-place retry.
+- Four tests prove only the library path/native probe aliases change,
+  shortened/coarse/ambiguous fixtures are refused, missing native admission
+  cannot launch driver/link work, and partial coupled output remains intact.
+  Actual `d3271555fcb702b9/coupled_link_preflight.json` proves the old failed
+  frontend native profile cannot substitute and creates zero new coupled
+  contexts. All 700 regression tests pass, no skips.
+- Resource-only `receiver_physical_followup/948f4f24130c3d2f/coupled_link_followup/run.py`
+  is verified live as
+  `openlvds-corrected-driver-soft-receiver-coupled-followup.service`. Its
+  immutable manifest binds the exact physical/native owner PID/invocation,
+  corrected parent fixture, driver comparison and scientific producers. It
+  waits for admitted per-variant native receipts, then runs each new coupled
+  diagnostic with one actual fair lease and no outer lease. A completed
+  electrical failure is recorded as a failure, not promoted or automatically
+  retried. Actual new coupled-link results remain pending upstream gates.
