@@ -3,6 +3,43 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Compact LVT receiver physical experiment:
+
+- `layout_receiver_compact.py` requires the three original passing TT/25,
+  SF/40 and FS/40 DC pilots, rechecks their scientific results and captures
+  their source/fixture/waveform hashes. This early geometry experiment does
+  not replace full fifteen-case DC or source-clock admission.
+- `receiver_compact_geometry.py` folds the frontend into four columns with
+  shared M4 trunks. Summing-node mirrors and resistors, decision devices and
+  restoration stages occupy one packed row with short M2 connections to M3
+  buses. The device multiset, connectivity and public terminal order remain
+  unchanged. The physical circuit has 70 devices and nine ports.
+- Actual context `receiver_layout/5743800311436cdd` passes DRC with zero
+  violations, LVS, extraction and independent wire-collapsed RC LVS audit.
+  Its footprint is 295.4 by 357.2 um: this folds the critical circuitry, but
+  does not claim a smaller total area than the original one-row macro.
+  Extracted netlist SHA256 is
+  `ec1ad5c7869bb8869231433c25fd91844780b6bd2485efca93b0492e9552c573`.
+- The bound observation and its producer are saved under that context's
+  `loading_observation/`. Incident routing capacitance is CO 29.116 fF,
+  CL 26.606 fF, CT 28.888 fF, PP 93.301 fF and PN 105.851 fF. This includes
+  full coupling capacitance and excludes device-model capacitance. It is
+  not an effective AC-load measurement or a timing qualification.
+- Earlier folded contexts and matching producer bytes remain preserved.
+  `10b212fd921b8390` had CO 134.735 fF and PP/PN 433.771/421.081 fF;
+  `9887011dc217851d` brought CO to 28.180 fF but PP/PN remained
+  219.313/233.802 fF. Moving all summing-node devices into the packed row
+  resolved that routing penalty. No native simulation was spent on those
+  worse layouts. The final loads are close to the original reference;
+  waveform tests must establish the LVT pair's actual benefit.
+- Full regression passes: 561 tests, 560 passed and one skipped. New tests
+  cover preserved device graphs/ports, complete clustering of PP/PN-connected
+  devices and refusal before executing any source or layout producer when
+  a required DC pilot is missing. The actual DC continuation currently has
+  seven passing cases; FF/40 is next. The selected-driver/LVT-source link
+  diagnostic is verified running, while the PMOS DC sanity check is still
+  waiting for a shared slot. No new receiver or PHY qualification is claimed.
+
 
 
 Implementation of the usable-macro plan:
