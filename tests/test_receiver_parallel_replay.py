@@ -70,14 +70,17 @@ class ParallelReceiverReplay(unittest.TestCase):
         import probe_receiver_vref_clamp_candidate as vref
         import probe_receiver_fast_restore_candidate as fast
         import probe_receiver_unclamped_restore_candidate as unclamped
-        for selected in [vref,fast,unclamped]:
+        import probe_receiver_lvt_restore_candidate as lvt
+        for selected in [vref,fast,unclamped,lvt]:
             for fail in [False,True]:
                 with self.subTest(variant=selected.__name__,fail=fail),tempfile.TemporaryDirectory() as temp,patch.dict(globals(),replay=selected):
                     artifact=self.exercise(Path(temp),fail_captured=fail)
                     self.assertTrue((artifact/'sharp_control/summary.json').exists())
                     self.assertEqual((artifact/'summary.json').exists(),not fail)
-                    if selected is unclamped:
+                    if selected in [unclamped,lvt]:
                         result=json.loads((artifact/'sharp_control/summary.json').read_text())
                         self.assertFalse(result['decision_clamped'])
                         self.assertEqual(result['parallel_clamp_units'],0)
                         self.assertIsNone(result['clamp_reference'])
+                        if selected is lvt:
+                            self.assertEqual(result['first_restoration_nfet_model'],'sky130_fd_pr__nfet_01v8_lvt')
