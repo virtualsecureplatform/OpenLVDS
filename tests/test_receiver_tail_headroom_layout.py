@@ -65,12 +65,69 @@ class TailHeadroomPhysicalGate(unittest.TestCase):
         for name in sorted(physical.CASES):
             folder=screen/name;folder.mkdir();tasks.append(dict(id=name))
             (folder/'candidate.spice').write_text(factory(SOURCE,name.startswith('clamped_')))
-            for leaf in ['library.spice','bench.cir','bench.cir.prn','summary.json']:(folder/leaf).write_text('{}')
+            for leaf in ['library.spice','bench.cir','bench.cir.prn','summary.json']:
+                (folder/leaf).write_text('.tran 5p 80n 0 5p\n' if leaf=='bench.cir' else '{}')
             results.append(dict(task=name,receiver_transport=dict(missing_output_edges=0,
                 pulses=[dict(output_edges_in_next_input_period=1)])))
-        (screen/'manifest.json').write_text(json.dumps(dict(tasks=tasks)))
+        (screen/'manifest.json').write_text(json.dumps(dict(identity=dict(code={},parent='build/diagnostics/clock_restore/original'),tasks=tasks)))
         (screen/'summary.json').write_text(json.dumps(dict(diagnostic_complete=True,results=results)))
         return screen
+
+    def declare_retry(self,root,screen):
+        path=root/'scripts/receiver_tail_timestep_retry.py';path.parent.mkdir(exist_ok=True)
+        path.write_bytes(Path(physical.numerical.__file__).read_bytes())
+        manifest=json.loads((screen/'manifest.json').read_text())
+        manifest['identity']['code']['receiver_tail_timestep_retry.py']=physical.digest(path)
+        (screen/'manifest.json').write_text(json.dumps(manifest))
+        for task in manifest['tasks']:
+            deck=screen/task['id']/'bench.cir';deck.write_text(physical.numerical.tighten(deck.read_text()))
+        (screen/'numerical_policy.json').write_text(json.dumps(physical.numerical.policy(screen,manifest)))
+
+    def test_original_and_declared_retry_have_distinct_bound_numerical_policies(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);screen=self.source_fixture(root)
+            with patch.object(physical,'ROOT',root):
+                self.assertEqual(physical.source_numerical_policy(screen),(5,{}))
+                self.declare_retry(root,screen)
+                maximum,proofs=physical.source_numerical_policy(screen)
+                self.assertEqual(maximum,1)
+                self.assertEqual(proofs,{str((screen/'numerical_policy.json').relative_to(root)):physical.digest(screen/'numerical_policy.json')})
+                report=json.loads((screen/'numerical_policy.json').read_text());report['stop_ns']=79
+                (screen/'numerical_policy.json').write_text(json.dumps(report))
+                with self.assertRaisesRegex(ValueError,'numerical policy differs'):physical.source_numerical_policy(screen)
+
+    def test_undeclared_retry_or_mixed_control_steps_hold_the_source_gate(self):
+        for declared in [False,True]:
+            with self.subTest(declared=declared),tempfile.TemporaryDirectory() as directory:
+                root=Path(directory);screen=self.source_fixture(root)
+                if declared:
+                    self.declare_retry(root,screen)
+                    (screen/'clamped_captured/bench.cir').write_text('.tran 5p 80n 0 5p\n')
+                else:(screen/'clamped_captured/bench.cir').write_text('.tran 5p 80n 0 1p\n')
+                with patch.object(physical,'ROOT',root),self.assertRaises(ValueError):physical.source_numerical_policy(screen)
+
+    def test_physical_capture_includes_each_source_producer(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);screen=self.source_fixture(root)
+            manifest=json.loads((screen/'manifest.json').read_text())
+            manifest['identity']['code']['extra_source_producer.py']='bound hash'
+            (screen/'manifest.json').write_text(json.dumps(manifest))
+            matrix=root/'matrix';matrix.mkdir();(matrix/'manifest.json').write_text(json.dumps(dict(identity=dict(children=[]))))
+            original_draw=physical.physical.draw_macro
+            with patch.object(physical,'ROOT',root),patch.object(physical,'recheck'),patch.object(physical,'static_gate',return_value={}),\
+                 patch.object(physical.physical,'build',return_value=(root/'layout',dict(passed=True))) as build:
+                self.assertEqual(physical.build(screen,matrix),0)
+                self.assertIn('extra_source_producer.py',build.call_args.args[2])
+                self.assertEqual(build.call_args.args[1]['source_maximum_step_ps'],5)
+            self.assertIs(physical.physical.draw_macro,original_draw)
+
+    def test_native_precision_changes_only_maximum_step_and_retains_full_duration(self):
+        deck='VIO VDDIO 0 3.3\n.tran 5p 80n 0 5p\n.print tran V(Q)\n.end\n'
+        self.assertEqual(replay.replay_deck(deck,5),deck)
+        self.assertEqual(replay.replay_deck(deck,1),deck.replace('.tran 5p 80n 0 5p','.tran 5p 80n 0 1p'))
+        for maximum in [True,0,10]:
+            with self.assertRaises(ValueError):replay.replay_deck(deck,maximum)
+        with self.assertRaises(ValueError):replay.replay_deck(deck.replace('80n','79n'),1)
 
     def test_source_gate_rejects_original_tail_or_repeated_clock_edges(self):
         for factory,repeat,valid in [(source_variant,False,True),(previous_source,False,False),

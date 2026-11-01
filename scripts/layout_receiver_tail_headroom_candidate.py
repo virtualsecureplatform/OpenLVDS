@@ -9,6 +9,7 @@ import layout_receiver_variant as physical
 from receiver_tail_headroom_experiment import source_variant
 from receiver_clamp_experiment import run as recheck
 import receiver_tail_headroom_matrix as dc
+import receiver_tail_timestep_retry as numerical
 from spice_scope import closure_hash
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -16,6 +17,26 @@ CASES={'unclamped_captured','clamped_captured','clamped_sharp_control'}
 
 
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def source_numerical_policy(screen):
+    manifest=json.loads((screen/'manifest.json').read_text())
+    captured=manifest.get('identity',{}).get('code',{}).get('receiver_tail_timestep_retry.py')
+    path=screen/'numerical_policy.json'
+    if captured is None:
+        if path.exists():raise ValueError('Undeclared source numerical policy')
+        for task in manifest['tasks']:
+            deck=(screen/task['id']/'bench.cir').read_text()
+            if numerical.tighten(deck)==deck:raise ValueError('Undeclared 1 ps source integration')
+        return 5,{}
+    if captured!=digest(ROOT/'scripts/receiver_tail_timestep_retry.py'):
+        raise ValueError('Receiver numerical producer changed')
+    if not path.exists() or json.dumps(json.loads(path.read_text()),sort_keys=True)!=json.dumps(numerical.policy(screen,manifest),sort_keys=True):
+        raise ValueError('Receiver numerical policy differs from its captured fixture')
+    for task in manifest['tasks']:
+        deck=(screen/task['id']/'bench.cir').read_text()
+        if numerical.tighten(deck)!=deck:raise ValueError('Retry control lacks its declared 1 ps maximum step')
+    return 1,{str(path.relative_to(ROOT)):digest(path)}
 
 
 def static_gate(screen):
@@ -78,7 +99,8 @@ def source_gate(screen,static_screen):
     for task in manifest['tasks']:
         folder=screen/task['id']
         files += [folder/n for n in ['candidate.spice','library.spice','bench.cir','summary.json','bench.cir.prn']]
-    return {**{str(p.relative_to(ROOT)):digest(p) for p in files},**static_gate(static_screen)}
+    _,numerical_proofs=source_numerical_policy(screen)
+    return {**{str(p.relative_to(ROOT)):digest(p) for p in files},**static_gate(static_screen),**numerical_proofs}
 
 
 def place_monitor(devices):
@@ -91,6 +113,7 @@ def place_monitor(devices):
 
 def build(screen,static_screen):
     proofs=source_gate(screen,static_screen)
+    maximum_step_ps,_=source_numerical_policy(screen)
     source=source_variant((ROOT/'analog/openlvds.spice').read_text(),True)
     # Move only the six unloaded monitor devices. Existing device banks keep
     # their relative order, matching the preceding physical placement policy.
@@ -102,8 +125,9 @@ def build(screen,static_screen):
         out,summary=physical.build(source,dict(input_tail_scale=2,decision_scale=1,decision_clamped=False,clamp_variant='unclamped_tail_headroom',decision_tail_scale=0.25,decision_tail_width_um=16,clamp_reference=None,replica_monitor_unloaded=True,reference_widths_um=[32,16],parallel_clamp_units=0,
             first_restoration_nfet_model='sky130_fd_pr__nfet_01v8',restoration_widths_um=[[8,4],[16,8],[16,8]],restoration='Three inverters: P/N widths 8/4, 16/8, 16/8; unchanged final drive and overall polarity',
             placement='Only six unloaded monitor devices moved before first restoration inverter',
-            source_screen=str(screen.relative_to(ROOT)),static_screen=str(static_screen.relative_to(ROOT)),source_screen_proofs=proofs),
-            [Path(__file__).name,'receiver_tail_headroom_matrix.py','receiver_tail_headroom_static.py','receiver_static_diagnosis.py','receiver_tail_headroom_experiment.py','receiver_unclamped_restore_experiment.py','receiver_fast_restore_experiment.py','receiver_vref_clamp_experiment.py','receiver_light_clamp_experiment.py','receiver_light_decision_experiment.py','receiver_strong_clamp_experiment.py','receiver_clamp_experiment.py','layout_receiver_gain_candidate.py','layout_receiver_tail_candidate.py']+
+            source_screen=str(screen.relative_to(ROOT)),static_screen=str(static_screen.relative_to(ROOT)),source_screen_proofs=proofs,source_maximum_step_ps=maximum_step_ps),
+            [Path(__file__).name,'receiver_tail_timestep_retry.py','receiver_tail_headroom_matrix.py','receiver_tail_headroom_static.py','receiver_static_diagnosis.py','receiver_tail_headroom_experiment.py','receiver_unclamped_restore_experiment.py','receiver_fast_restore_experiment.py','receiver_vref_clamp_experiment.py','receiver_light_clamp_experiment.py','receiver_light_decision_experiment.py','receiver_strong_clamp_experiment.py','receiver_clamp_experiment.py','layout_receiver_gain_candidate.py','layout_receiver_tail_candidate.py']+
+            list(json.loads((screen/'manifest.json').read_text())['identity']['code'])+
             sorted({name for child in json.loads((static_screen/'manifest.json').read_text())['identity']['children'] for name in json.loads((ROOT/child['root']/'manifest.json').read_text())['identity']['code']}))
     finally:
         physical.draw_macro=original

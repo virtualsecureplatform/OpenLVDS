@@ -19,13 +19,14 @@ class ParallelReceiverReplay(unittest.TestCase):
         artifact=root/'build/diagnostics/receiver_replay/test';artifact.mkdir(parents=True)
         (artifact/'library.spice').write_text('* test model\n');tasks=[]
         for name in ['captured','sharp_control']:
-            folder=artifact/name;folder.mkdir();(folder/'bench.cir').write_text('* '+name+'\n')
+            folder=artifact/name;folder.mkdir();(folder/'bench.cir').write_text('* '+name+'\n.tran 5p 80n 0 5p\n')
             tasks.append(dict(id=name,deck_sha256=replay.digest(folder/'bench.cir')))
         identity=dict(replay_parallel_jobs=2,simulator_provenance={},code={},inputs={},observation_nodes={},
                       input_tail_scale=2,decision_scale=1,restoration='test',restoration_widths_um=[[8,4],[16,8],[16,8]])
         if replay.__name__=='probe_receiver_tail_headroom_candidate':
             identity.update(clamp_variant='unclamped_tail_headroom',decision_tail_scale=0.25,
-                            decision_tail_width_um=16,first_restoration_nfet_model='sky130_fd_pr__nfet_01v8')
+                            decision_tail_width_um=16,first_restoration_nfet_model='sky130_fd_pr__nfet_01v8',
+                            source_maximum_step_ps=5,native_maximum_step_ps=5)
         manifest=dict(identity=identity,tasks=tasks,library_sha256=replay.digest(artifact/'library.spice'))
         (artifact/'manifest.json').write_text(json.dumps(manifest))
         barrier=threading.Barrier(2);sharp_done=threading.Event();started=[]
