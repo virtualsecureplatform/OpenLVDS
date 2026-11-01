@@ -3,6 +3,146 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Frontend routing regression identified and a circuit-preserving correction dispatched:
+
+- All three LVT source-clock controls completed successfully (47 periods
+  each), but compact native context `receiver_replay/911c0f415c65ece8`
+  completed its captured case with **39 missing edges**. The complete
+  schematic/native comparison shows 49 versus 28 PP-minus-PN frontend
+  zero crossings in 15–75 ns. Minimum magnitude at the frontend's own
+  half-cycle centers drops from 125.168 mV to 5.250 mV. Transitions are
+  already being lost upstream of the decision output; CO-only optimization
+  was insufficient.
+- The preceding compact placement moved input mirror endpoints into the
+  decision row while leaving their diode/reference and tail devices on
+  long folded trunks. Independent wire-net aggregation exposes a major
+  loading regression. The original uniform-layout NL/NR loads were
+  60.717/61.920 fF; the compact LVT layout raised them to
+  367.038/413.222 fF while reducing CO to 29.116 fF.
+- `receiver_frontend_geometry.py` now keeps the complete active frontend,
+  including mirrors, tails and intermediate resistor-load nodes, local with
+  the decision/restoration chain. Only unused bias/monitor cells retain
+  folded trunks. New layout `receiver_layout/74f1d1fd9724608e` has
+  **identical source-circuit bytes**, 70 devices and the same nine ports.
+  It measures 598.46 x 144.2 um. DRC, LVS, extraction and the independent
+  RC audit pass; exact native model SHA256 is
+  `658ce921e3a7198991113aa5a485d3af17c8f6d698fdef22e4ade332d84be949`.
+
+| Wire-net coupling sum (fF) | Previous compact LVT | Frontend-local LVT |
+| --- | ---: | ---: |
+| NL | 367.038 | 62.471 |
+| NR | 413.222 | 62.549 |
+| PL | 280.315 | 67.381 |
+| PR | 279.685 | 68.224 |
+| NT | 439.189 | 87.636 |
+| PT | 368.429 | 117.663 |
+| PP | 93.301 | 111.443 |
+| PN | 105.851 | 116.756 |
+| CO | 29.116 | 34.941 |
+
+- These are extracted wire coupling sums, excluding intrinsic MOS
+  capacitance. The trade increases PP/PN/CO loading modestly while removing
+  the much larger frontend mirror/tail loads. The bound observer, source-byte
+  check, completed wave evidence and extraction hashes are in the new
+  layout's `completed_frontend_audit/`. Transient improvement is not yet
+  established.
+- New native context `receiver_replay/c1109a1560bd4e6e`, owned by
+  `openlvds-lvt-frontend-local-native`, retains both original captured/sharp
+  fixtures, full 80 ns duration, 1 ps maximum timestep, native bias and
+  digital RX load. Full source DC and source-clock admission is required.
+  Extra NL/NR/PL/PR/NT/PT probes allow direct testing of the diagnosed
+  frontend bottleneck. Two independently leased workers use the six-slot
+  dispatcher; no outer lease or active-pointer promotion is introduced.
+- The still-useful sharp control of the preceding native context was queued
+  on long-running slot 3. Once its captured simulator finished, only the
+  queued coordinator was frozen and archived (176 files); no simulator or
+  completed waveform was stopped or changed. A second process observation
+  confirmed every helper gone before starting
+  `openlvds-lvt-compact-sharp-fair` on the **same scientific context**, with a
+  separately captured fair resource policy. Receipts are under
+  `resident_jobs/lvt_sharp_rescheduling/`. The old selected-PHY link waiter
+  stays unadmitted because its required captured native screen failed.
+
+Completed driver correction, bounded PMOS results and numerical diagnosis:
+
+- The 110:1 current correction completed all three pilots successfully.
+  Native SF40 minimum loaded-eye amplitude is **264.227 mV**, compared with
+  247.550 mV in the preceding campaign; DC levels, polarity, cadence and
+  common-mode checks also pass. The native FF0 upper-swing guard passes.
+  This fixes the campaign's stricter loaded-eye check; the declared TX
+  voltage qualification policy remains settled DC into 100 ohms, with
+  loaded-eye measurements otherwise diagnostic.
+- Matched native comparison `driver_native_restore/65d922eb5c270776` and
+  full thirty-case context `driver_components/a1d220a703a6ac2b` are prepared
+  from the exact corrected source/GDS/RC model. Owner
+  `openlvds-driver-current-native-components` remeasures the three completed
+  pilots, runs both original matched native controls, then admits the
+  original thirty source/native component fixtures with two independent
+  leases. Partial outputs cannot be silently rerun. Completion of a loaded
+  comparison does not promote its decoder result or the full PHY.
+- PMOS p8/t4 passed all fifteen original DC/current/six-device stress cases.
+  A read-only extension checks the six downshift/restorer MOS as well over
+  each full 144 ns trace: all fifteen twelve-device screens pass, with
+  worst observed thin terminal difference 1.896729 V (SS0) and minimum
+  absolute PMOS tail VDS 649.869 mV. This is the 1.95 V project screen,
+  not a foundry rating or a VDSAT/saturation proof. The bound report is
+  `receiver_architecture_matrix/66493e9dc77d72e6/completed_observations/49cf25636c9d0ee7/`.
+- PMOS p8/t4 nevertheless fails its completed source-clock suite:
+  retained reference 0, captured PMOS **24**, sharp PMOS **18** missing
+  edges, each from 47 tested periods. Its source admission is false and
+  native followup is held. The old weak stimulus has three of 48 complete
+  half-cycle midpoints below 100 mV (minimum 82.592 mV); however, **21 of
+  the 24 missed PMOS edges pass that midpoint amplitude screen**. This
+  does not excuse its failure. A completed selected-driver mixed-view
+  comparison has 133.640 mV minimum and no midpoint violations, but is not
+  a final valid-source certificate. The partial contract audit is under
+  `receiver_clamp/4119a08677e336d8/completed_contract_audit/`.
+- The next bounded PMOS intervention doubles only tail width from 4 to
+  8 um with the pair retained at 8 um. Its SS40 twelve-point static/current
+  screen `receiver_architecture_static/45a626e63053c607` passes, measuring
+  settled tail-current magnitudes 110.501–129.477 uA and minimum settled
+  absolute VDS 608.840 mV. Matched captured-clock pilot
+  `receiver_clamp/952e982341202ffb` completes with **18 missing edges**,
+  improving on 24 but still failing. It is not advanced to full native or
+  release admission. No unbounded width sweep is started.
+- The iteration-budget replay also stalled: 0.406 ps advancement in
+  109.9 seconds near 62.105 ns. It and its queued architecture watcher
+  were archived (98 files) and retired. An observation-only control
+  `selected_receiver_replay/4842a2e1ca90e99f` added internal voltage probes
+  without circuit or numerical changes. Its immutable last-0.25-ps snapshot
+  shows 0.030–1.936 fs accepted steps, 11.970 mV movement at RXDATA and
+  only 5.761 uV maximum movement among observed capture/publication nets.
+  This narrows the next isolation test to the data-restoration/native-input
+  interface; it does not identify a particular device or solver rejection
+  mechanism. The incomplete probe was archived after diagnosis (101 files)
+  and retired after only 0.403 ps advancement in 108 seconds.
+- SPICE exports the two public RX inputs under parent RXDATA/RXCLOCK
+  names. Their voltages were present in the raw snapshot, but duplicate
+  hierarchical aliases would fail strict table export. After archiving and
+  stopping that context, the probe list was corrected to retain all 160
+  internal observations while using the existing parent input vectors.
+  Every corrected name was checked against the actual captured native raw
+  header. Corrected control `selected_receiver_replay/b04d252f9f86d586` is
+  prepared only; it is not another dispatched numerical retry. Prefixes,
+  matching producer bytes and retirement receipts are in
+  `resident_jobs/internal_replay_diagnosis/` and
+  `resident_jobs/iteration_replay_progress/`.
+- Conditional old-trace timing algebra finds separate causal delay ranges
+  of 310.246–454.966 ps for rising edges and 0–184.217 ps for falling edges,
+  despite an empty common-delay interval. This motivates duty-shaping
+  investigation only if the admitted new architecture still needs it.
+  No shaper is implemented or qualified; the old out-of-domain slew and
+  incomplete aperture-table limitations remain. The report is in the old
+  pilot's `capture_aperture_diagnosis/independent_edge_budget/`.
+- Four queued controllers for the superseded uniform x4 receiver were
+  archived (651 files) and retired. The completed 18-edge native failure
+  and all existing data remain. No target simulator or held simulation
+  lease was present. Receipts are in
+  `resident_jobs/obsolete_uniform_decision/`; unrelated active jobs continue.
+- Validation: all **629 tests pass** in the captured NumPy/SciPy environment.
+  The exact new native result, full driver campaign, complete component/PVT,
+  aperture, DLL, matched-link and release gates remain open.
+
 Compact PMOS physical implementation and guarded clock followup:
 
 - All three PMOS p8/t4 DC pilots (TT25, SF40, FS40) passed the twelve
