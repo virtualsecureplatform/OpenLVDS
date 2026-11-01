@@ -1922,3 +1922,49 @@ timing separations in the observed interval, not official aligned margins:
 the decoder has not identified the payload preamble. They support investigating
 clock/data relative latency after recovery, without moving the publication
 window, changing payload alignment or weakening the 200 ps margin requirement.
+
+The loaded-link diagnostic now completes its original 188.049 ns run and
+confirms the prefix result: no correctly ordered payload preamble, with
+`sampling_margin_passed=false`. Full waveform SHA256 is
+`71970afeaaaed89b0a4e86b0efe9e46c2741b5bfb06fd943da6d7dfe577cbea6`.
+The original publication window and strict margin gates remain unchanged.
+Component qualification continues independently; this failed link cannot
+qualify the receiver or PHY.
+
+The first DC matrix `dc93e971d02bb60c` completes TT/0 successfully, then holds
+at cached TT/25. Read-only reconstruction shows that only `manifest_sha256`
+differs from the saved report: re-preparation serialized code dictionaries in
+a different insertion order and rewrote the same semantic manifest. The
+original TT/25 report declares manifest hash `9475432a6118fe95...`, while the
+rewritten file is `0ce2ab9d57c9fe89...`. The failed matrix's `retirement.json`
+and producer snapshots preserve this history; no scientific child is live.
+
+Preparation now sorts code identities and preserves existing manifest bytes
+when canonical JSON is identical, rejecting changed values or JSON types.
+Matrix exceptions also write a terminal `held_for_diagnosis` state before
+raising. Seven targeted tests pass. Fresh matrix
+`receiver_static_matrix/1ac68453f143818d` uses the corrected producer and reruns
+the cases; the old cache is not promoted or rewritten to make it pass.
+Re-preparation in an independent pinned interpreter preserves all 16 fresh
+manifest hashes, recorded in `preparation_recheck.json`. Service
+`openlvds-receiver-unclamped-static-matrix-v2` is live. No aggregate DC result
+is claimed before all 15 new child reports complete. Full regression:
+397 tests, 396 passing and one skipped in the pinned ngspice environment.
+
+All three unclamped source controls now complete with exactly one output edge
+in every one of 47 checked periods. The continuation remeasures all source
+waveforms and passes the exact-source gate. Physical root
+`receiver_layout/cc8468627923265c` then passes zero-error DRC, LVS and independent
+RC connectivity audit, with 76 devices and nine original ports. Native network
+SHA256 is `5479cc708d5f7c06815b5286b5a632e386d981bfda62057c8bdd4cd08b28352d`.
+Both original native controls are prepared in `receiver_replay/7be8ec522902db81`
+and queued under separate shared leases, with original 80 ns stimuli, bias,
+native digital RX load and scoring window. No extracted recovery verdict is
+claimed before both complete.
+
+Loading root `receiver_loading/11bbf00548f00ecc` reports incident wire sums
+PP/PN/CO 100.381/107.542/35.917 fF and RESTORE0/RESTORE1 47.758/58.947 fF.
+CO was 44.360 fF in the preceding clamped layout. These include full coupling
+values but exclude device/MIM capacitance, and cannot establish effective
+AC load or dynamic improvement. The fresh corrected DC matrix completes
+TT/0 successfully and continues with TT/25; its aggregate remains incomplete.

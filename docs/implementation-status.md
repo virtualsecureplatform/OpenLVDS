@@ -511,12 +511,18 @@ Current bring-up evidence on 2026-10-31:
   `openlvds-unclamped-restore-native-continuation` waits on the actual source
   owner before attempting these stages. No new layout or native result exists
   while the source screen remains incomplete.
-  The source screen's unchanged control and modified captured-clock case now
-  complete all 47 checked periods with no missing or repeated edge. Modified
+  All three source controls now complete all 47 checked periods with no
+  missing or repeated edge. Modified
   captured latency spans 291.168–403.633 ps; the weakest 514.802 ps/83.068 mV
-  negative pulse is recovered with 403.633 ps latency. The modified sharp
-  control remains outstanding; the physical/native continuation still waits
-  for all three. Source recovery does not prove extracted timing.
+  negative pulse is recovered with 403.633 ps latency. Physical root
+  `receiver_layout/cc8468627923265c` passes zero-error DRC, LVS and independent
+  RC audit, with 76 devices and the original nine ports. Native network SHA256
+  is `5479cc708d5f7c06815b5286b5a632e386d981bfda62057c8bdd4cd08b28352d`.
+  Both original controls are prepared in `receiver_replay/7be8ec522902db81`
+  and waiting for shared slots. Loading root `receiver_loading/11bbf00548f00ecc`
+  reports incident CO wire sum 35.917 fF versus 44.360 fF with the clamp;
+  these sums exclude device capacitance and do not prove effective AC load
+  or timing. No extracted recovery verdict is available yet.
 - The current VREF-clamped component campaign has a numerical slowdown in
   `schematic_receiver_rate_ss_40`. Its simulator is confirmed active and using
   CPU, but a saved prefix advances only about 7 ps over several minutes near
@@ -525,20 +531,34 @@ Current bring-up evidence on 2026-10-31:
   1.799942–1.799946 V. This establishes timestep collapse, without identifying
   its internal cause or a qualification verdict. No solver tolerance, stop
   time or scoring gate is changed, and the live simulation is not interrupted.
-- Matched DC matrix `receiver_static_matrix/dc93e971d02bb60c` now prepares the
+- Matched DC matrix `receiver_static_matrix/1ac68453f143818d` now prepares the
   clamp-removal intervention at all 15 required source PVT points. Every
   original static case is complete; preparation verifies each waveform,
   producer, runtime and fixture before removing only the two resistors.
   `receiver_static_matrix.py` enforces exact process/temperature coverage and
   child-to-parent identity, captures every child manifest and remeasures cached
-  traces. Service `openlvds-receiver-unclamped-static-matrix` runs cases
+  traces. Service `openlvds-receiver-unclamped-static-matrix-v2` runs cases
   sequentially, with each new simulation acquiring its own shared lease.
   Two targeted tests reject missing/duplicate/mislabeled cases and native/rate
   substitutions. This is source DC diagnosis only; it cannot establish rate,
   extracted, aperture or PHY qualification. No aggregate electrical result is
   claimed while the matrix is incomplete.
-- Loaded-link diagnostic `receiver_candidate_link/0dee72b71f4525df` remains
-  active toward its original 188.049 ns endpoint. A read-only prefix at
+- The earlier matrix `dc93e971d02bb60c` completes TT/0 with all 12 unclamped
+  samples passing, then holds on cached TT/25 provenance. Its re-preparation
+  rewrote JSON dictionary order, changing manifest bytes; actual waveform
+  reanalysis differs only in `manifest_sha256`. It is terminally failed, with
+  `retirement.json` and original producers preserved. The corrected producer
+  sorts code identities and preserves existing manifest bytes, rejecting
+  changed content or JSON types. Matrix failures now save a terminal held
+  receipt. Seven targeted tests pass; a second independent preparation process
+  preserves all 16 fresh manifest hashes (`preparation_recheck.json`). The new
+  matrix reruns the cases under its new producer rather than accepting the
+  old cache. The old traces and reports remain unchanged.
+- Loaded-link diagnostic `receiver_candidate_link/0dee72b71f4525df` completes
+  its original 188.049 ns run and fails: no correctly ordered payload preamble,
+  with `sampling_margin_passed=false`. Waveform SHA256 is
+  `71970afeaaaed89b0a4e86b0efe9e46c2741b5bfb06fd943da6d7dfe577cbea6`.
+  The earlier read-only prefix at
   137.628 ns covers the payload interval, but the unchanged decoder reports
   no correctly ordered preamble. Over 60–120 ns, matched edge transport finds
   no missing/extra edges in 47 clock and 16 data periods. Clock latency spans
@@ -547,13 +567,13 @@ Current bring-up evidence on 2026-10-31:
   data edge and 63.827 ps after the preceding data edge respectively. These
   narrow separations can explain corruption after edge recovery, but without
   a decoded preamble the official aligned payload margins remain undefined.
-  The complete run, original publication window and 200 ps margin gate remain.
+  The original publication window and 200 ps margin gate remain.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 394 tests, 393 passed and one skipped in the pinned ngspice
+- Last full unit suite: 397 tests, 396 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
