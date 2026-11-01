@@ -2214,3 +2214,55 @@ Completed unchanged-control precision check on 2026-11-01:
   PID 1199093); unchanged driver control remains queued. No full driver
   comparison result is available. The smaller-tail DC matrix now has eight
   passing completed cases, including SS/25; SS/40 and FS/SF remain pending.
+
+
+Matched native driver experiment on 2026-11-01:
+
+- The 20 ps source P64/N24 run remains live but has entered a second very
+  slow interval near 13.447 ns, earlier than the original 15.366 ns abort.
+  It has not reported an abort and provides no full-run comparison yet.
+  The original native driver observation completed 188.049 ns, motivating
+  a matched extracted-geometry experiment while source numerical issues
+  remain under diagnosis. No source simulation is stopped.
+- `layout_driver_restore_candidate.py` builds isolated control/candidate GDS
+  without changing active pointers. Both retain the original nine driver
+  ports and exact declared source factories. Immutable captured geometry,
+  source, DRC/LVS reports and producer hashes are checked on re-use.
+  Control `driver_layout/2457353bd0bd4650` and candidate `57c38a7401ebd975`
+  both pass with 266 devices, nine ports, zero DRC errors and strict LVS.
+  Their footprints are 4029.07/4030.19 × 154.22 µm respectively. These are
+  diagnostic physical results; neither establishes electrical qualification.
+- `driver_restore_candidate_rc.py` extracts both GDSs and runs independent
+  strict connectivity LVS on their wire-collapsed networks. Both audits pass.
+  Control has 3970 capacitors and 63664 → 53633 resistors, exact network hash
+  `189a2d70f025fad24ffa5329bcc0e9cfb694085f1fc9b903e186ee23ba3bf372`;
+  candidate has 4023 capacitors and 63660 → 53641 resistors, hash
+  `e3afbae2c9c91bbf17e6e45bf9649ab625407fb1d4929cc285d6053bfbd2847f`.
+  Every capacitor is retained by the degree-four exact resistor reduction;
+  approximate transient certification remains separate.
+- `probe_native_driver_restore.py` prepares matched native experiment
+  `driver_native_restore/0e89103385daf182` from the original completed
+  `receiver_candidate_link/0dee72b71f4525df` loaded fixture. Both drivers
+  (clock/data) use their selected audited native model. All receiver, bias,
+  DLL, delay, serializer and early-RX closures remain exact. Original supplies,
+  channel, 32-bit payload, full 188.049 ns run, publication window and 200 ps
+  sampling-margin requirement are retained. The declared numerical change
+  is a stricter 20 ps maximum integration step in both cases, with unchanged
+  20 ps output step. Twelve unloaded driver-stage observations are added.
+  `fixture_recheck.json` verifies exact deck restoration and protected/model
+  closure hashes for both actual prepared cases. A manual comparison initially
+  normalized the experiment root rather than each case directory; correcting
+  that comparison confirms the generated fixtures themselves are unchanged
+  except for their explicitly declared model/probe/integration differences.
+- Each native case owns an independent shared lease. Both complete even if
+  one raises an error, and errors leave terminal held receipts. Reports include
+  original decoder/margin checks, clock centers, internal stage voltage/edge
+  observations and control differences against the saved parent. Every result
+  remains `qualified_phy=false`; diagnostic thresholds do not replace PHY
+  criteria. Service `openlvds-native-driver-restore-comparison` is queued
+  under the existing six-slot limit. No native ratio improvement is claimed.
+  Electrical qualification still requires source/native component coverage,
+  headroom/power evidence, RC certificates and the full selected link matrix.
+- Five physical/cache/extraction tests and three matched native scope/parallel
+  tests pass. Full regression: 455 tests, 454 passed and one skipped. The
+  smaller-tail DC matrix remains at eight passing completed cases.
