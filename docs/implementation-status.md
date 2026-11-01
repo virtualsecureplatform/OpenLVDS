@@ -15,9 +15,9 @@ Latest receiver decision on 2026-11-01:
   `receiver_scaled_decision_matrix/a3a34b4ac8e5f600` now passes all fifteen
   process/temperature cases (180 original samples, fixed supplies).
   Source-clock comparison `receiver_clamp/b9f840b0494a787c` has completed
-  its reduced-tail control with zero missing edges; the uniformly scaled
-  captured-input candidate is running. Physical admission remains gated on
-  all three original source-clock fixtures.
+  both its reduced-tail control and uniformly scaled captured-input candidate
+  with zero missing edges. The sharp-clock fixture remains outstanding.
+  Physical admission remains gated on all three original source-clock fixtures.
 - The PMOS-only W32 alternative is rejected: FS/40 fails two original
   low-common-mode points despite TT/25 and SF/40 passing. Its remaining
   twelve DC cases and all clock cases were correctly held. Monitor relocation
@@ -62,6 +62,9 @@ Latest receiver decision on 2026-11-01:
   model-parameter analysis. Other simulation/provenance errors remain errors.
   This is a static tail-current/headroom and rail/reference-power diagnostic,
   without native/dynamic power, remaining-device stress or PHY admission.
+  Four additional tests verify completed-evidence reuse, partial-trace
+  preservation, strict error handling and refusal of incomplete source
+  coverage. Full regression: 536 tests, 535 passed and one skipped.
 
 
 Current bring-up evidence on 2026-11-01:
