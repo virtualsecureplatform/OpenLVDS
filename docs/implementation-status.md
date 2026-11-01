@@ -3,6 +3,48 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Compact LVT native replay handoff:
+
+- `probe_receiver_lvt_compact.py` accepts only the exact new compact-layout
+  profile and unchanged LVT source. It requires all fifteen passing DC cases
+  and all three passing source-clock controls, remeasured through their
+  scientific producers. All completed source fixtures/waveforms, producer
+  ancestry, physical source/GDS, extracted model and independent RC audit are
+  bound into the new replay context. Missing source results cannot trigger
+  an uncached source simulation through this admission path.
+- The original captured and sharp native fixtures remain unchanged apart
+  from replacing the receiver model, adding validated internal probes and
+  tightening the maximum integration step to 1 ps. Both complete 80 ns traces
+  are required, with the original 15–75 ns, 47-period edge test. Bias and
+  digital receiver circuit closures and public port order are protected.
+  Each worker takes its own actual shared lease; the six-slot limit remains.
+  Partial traces are retained and refused for in-place execution. Cached
+  results are remeasured from complete finite monotonic waveforms.
+- Actual preflight under
+  `receiver_layout/5743800311436cdd/native_followup/` rejects the incomplete
+  fifteen-case DC matrix and creates zero native contexts. Resource-only
+  `run.py` is verified live as
+  `openlvds-lvt-compact-native-followup.service`. It waits for successful
+  completion of the exact source-clock owner and hash-bound passing report,
+  then prepares the native pair and waits independently on shared slots 1/3.
+  A failed upstream or native result holds downstream admission for diagnosis.
+- Seven new tests cover exact profile and numerical policy, missing physical,
+  DC and source-clock evidence, preservation of partial traces, complete-wave
+  cached remeasurement and rejection of a truncated cached waveform. Full
+  regression passes: 568 tests, 567 passed and one skipped. This legacy-pin
+  diagnostic remains separate from selected-driver, startup, PVT, stress,
+  aperture, component, matched-link and final PHY qualification.
+- The PMOS sanity check's polling coordinator was superseded with a blocking
+  slot-1 wait to give it an opportunity between aperture boundary searches.
+  The queued unit was frozen first; all five cgroup processes, start records,
+  case files and producer bytes were archived, and absence of any simulator
+  or raw/log/PRN output was verified. Only then was that coordinator retired.
+  Old MainPID=0, disappearance of all old processes and unchanged case/source
+  bytes were confirmed before launching the same scientific context with
+  `--wait-slot 1` as `openlvds-pmos-decision-dc-sanity-blocking.service`.
+  Receipts are under `resident_jobs/pmos_sanity_blocking_reschedule`.
+  The deliberate old-unit termination is not an electrical test failure.
+
 Compact LVT receiver physical experiment:
 
 - `layout_receiver_compact.py` requires the three original passing TT/25,
