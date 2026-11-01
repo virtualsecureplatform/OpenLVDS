@@ -4994,3 +4994,49 @@ Full passive-bias rejection and weaker-pullup experiment on 2026-11-01:
   required. Native preparation/dispatch has not bypassed this source gate.
 
 Full regression after both additions: all 677 tests pass, no skips.
+
+
+Weaker receiver-bias clock/physical continuation prepared on 2026-11-01:
+
+- Both weaker variants complete and pass SF/0 and SF/25 full 144 ns,
+  twelve-point DC/current/observed-device-stress controls in
+  `receiver_soft_common_mode_matrix/d3271555fcb702b9`. At the formerly
+  failing SF/0, 130 ns high-common-mode point, CO is 0.900370 V for the
+  two-unit pullup and 1.018675 V for the three-unit pullup; both Q outputs
+  are below 0.2 nanovolt and pass the original low-output criterion. At
+  SF/25, CO is 0.961600/1.058458 V and both outputs also pass. These are
+  actual matched loaded measurements, not the unloaded network estimates.
+  SS/40, TT/25 and FS/40 still gate the remaining ten PVT conditions.
+- `receiver_soft_common_mode_clock.py` requires full fifteen-case admission
+  for each specific weaker variant, then reconstructs the original three
+  80 ns source-clock controls with exact candidate bytes. The original
+  reduced-tail reference, captured/sharp waveforms, 1 ps maximum step,
+  native shared bias and digital RX remain. Old strong-bias matrices and
+  nominal/partial reports cannot admit either new candidate.
+- `receiver_soft_frontend_geometry.py` keeps all four/six added resistor
+  segments local, including the final boost-to-VDDD segments that would
+  otherwise fall into the unused-monitor region. It temporarily extends
+  the original critical-net predicate and restores it after every exit.
+  `layout_receiver_soft_common_mode.py` and
+  `probe_receiver_soft_common_mode.py` require the exact softer profile,
+  source DC/clock proofs, new DRC/LVS/extraction and independent RC audit
+  before original captured/sharp native replays. Original failed-candidate
+  producers and physical artifacts are preserved.
+- `openlvds-receiver-soft-common-mode-clock-followup.service` is verified
+  live, bound to the exact active new DC matrix owner, waiting for full
+  source DC admission. Its immutable resource adapter is under
+  `d3271555fcb702b9/clock_followup/`.
+- `continue_receiver_soft_common_mode_physical.py` runs as verified-live
+  `openlvds-receiver-soft-common-mode-physical-followup.service`, context
+  `receiver_physical_followup/948f4f24130c3d2f`. It waits for exact admitted
+  clock receipts, then runs the scientific layout/extraction/native gates
+  with independently leased SPICE processes and no outer lease. Even a
+  future passing native diagnostic grants no component or PHY admission.
+- Eleven new tests cover exact candidate/reference clocks and exclusion of
+  old matrices, missing-child refusal without dispatch, full local placement
+  of all actual 74/76-device candidates, restoration after failure, strict
+  native profile separation, receipt/path binding, qualification scope and
+  preservation of prior controller state. Native GDS and clock results for
+  these new candidates are still pending upstream electrical evidence.
+
+Full regression after the weaker clock/physical continuation: all 688 tests pass, no skips.
