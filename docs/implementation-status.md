@@ -4778,3 +4778,28 @@ Changed-decision terminal observations on 2026-11-01:
   FS/0; FS/25, SF/0 and SF/25 remain. Clock and downstream continuations
   still require the complete actual upstream reports; no partial voltage
   observation is promoted to full receiver or PHY qualification.
+
+
+Passive receiver common-mode full DC matrix launched on 2026-11-01:
+
+- `matrix_receiver_common_mode.py` prepares the original fifteen PVT fixtures
+  for each of the unchanged LVT control, VREF-return correction and rail-pullup
+  correction. Every process corner and 0/25/40 degree case occurs exactly once;
+  each variant uses identical physical circuit bytes across all fifteen cases.
+  Original full 144 ns sensitivity stimuli, fixed supplies, current observations
+  and twelve-device project stress screening remain unchanged.
+- Immutable context `receiver_common_mode_matrix/225f22209016b597` binds the
+  completed original LVT matrix, requirements, producers and all fifteen child
+  manifests. SS/40, TT/25 and FS/40 pilots gate the remaining twelve PVT cases.
+  Each candidate has a separate fifteen-case DC admission report; a passing
+  control or another candidate cannot supply its missing or failing results.
+- `openlvds-receiver-common-mode-matrix.service` is running two workers. Each
+  actual simulation independently acquires its existing fair shared lease;
+  there is no outer lease and the global six-SPICE limit is unchanged. Cached
+  SS/40 is remeasured, and incomplete traces cannot be overwritten for retry.
+- Three new tests cover exact PVT coverage and labels, separate candidate
+  admission, incomplete coverage and the independent DC/stress pass flags.
+  Full SciPy-enabled Apptainer regression: all 659 tests pass, no skips.
+  This campaign provides source DC/current/observed-device evidence only.
+  Source-clock, layout/extraction, native receiver and coupled-link validation
+  remain required before selecting either correction for the usable PHY.
