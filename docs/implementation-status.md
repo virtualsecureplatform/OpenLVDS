@@ -499,7 +499,7 @@ Current bring-up evidence on 2026-10-31:
   denote the modified cases; the new factory removes both actual CO clamps.
   The unloaded replica monitor remains untouched. One structural test proves
   the modified core equals the passing matched DC intervention and preserves
-  the existing control. No clock or physical/native improvement is claimed.
+  the existing control. No physical/native improvement is claimed.
   Dedicated physical/native producers now bind identity
   `unclamped_fast_restore`, `decision_clamped=false`, zero clamp units and no
   clamp reference. They retain the exact source, unloaded monitor, nine-port
@@ -537,6 +537,17 @@ Current bring-up evidence on 2026-10-31:
   substitutions. This is source DC diagnosis only; it cannot establish rate,
   extracted, aperture or PHY qualification. No aggregate electrical result is
   claimed while the matrix is incomplete.
+- Loaded-link diagnostic `receiver_candidate_link/0dee72b71f4525df` remains
+  active toward its original 188.049 ns endpoint. A read-only prefix at
+  137.628 ns covers the payload interval, but the unchanged decoder reports
+  no correctly ordered preamble. Over 60–120 ns, matched edge transport finds
+  no missing/extra edges in 47 clock and 16 data periods. Clock latency spans
+  804.843–1247.376 ps; data latency spans 761.984–1432.602 ps. Observed clock
+  captures at 73.893010 and 83.627458 ns lie only 13.934 ps before the next
+  data edge and 63.827 ps after the preceding data edge respectively. These
+  narrow separations can explain corruption after edge recovery, but without
+  a decoded preamble the official aligned payload margins remain undefined.
+  The complete run, original publication window and 200 ps margin gate remain.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains

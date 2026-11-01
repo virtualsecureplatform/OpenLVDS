@@ -1900,3 +1900,25 @@ latency. Waveform SHA256 is
 Together with the unchanged control this completes two of three source cases.
 The modified sharp control is still pending, so the physical/native gate
 remains closed. No extracted timing or PVT qualification is inferred.
+
+The VREF-clamped stronger-restoration loaded-link diagnostic
+`receiver_candidate_link/0dee72b71f4525df` continues toward its original
+188.049 ns endpoint. Read-only prefix analysis at 137.627686 ns uses the
+unchanged canonical decoder, original 32-bit sequence, actual launch edges,
+0.8–1.05 ns publication window and original sampling-margin requirements.
+It reports no correctly ordered preamble. This is a prefix diagnostic, not
+the completed official report, and the live run continues unchanged.
+
+A subsequent prefix beyond 140 ns covers all checked 60–120 ns transport
+periods: 47 clock and 16 data periods have exactly one corresponding output
+edge, without missing/extra edges. Clock latency spans 804.842596–1247.375975 ps;
+data latency spans 761.984312–1432.601578 ps. A simple interval count gives
+25 pin rises and 24 clock rises; this boundary-sensitive count alone would
+misidentify a lost edge, while the same-polarity period matching finds none.
+Captures at 73.893010 ns and 83.627458 ns lie 13.933615 ps before the next
+data edge and 63.826587 ps after the preceding data edge. Other nearby
+captures have preceding-edge separations 171.981–252.398 ps. These are local
+timing separations in the observed interval, not official aligned margins:
+the decoder has not identified the payload preamble. They support investigating
+clock/data relative latency after recovery, without moving the publication
+window, changing payload alignment or weakening the 200 ps margin requirement.
