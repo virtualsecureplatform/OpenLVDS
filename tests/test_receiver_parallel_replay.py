@@ -69,9 +69,15 @@ class ParallelReceiverReplay(unittest.TestCase):
     def test_reference_variants_run_both_controls_and_preserve_the_other_on_failure(self):
         import probe_receiver_vref_clamp_candidate as vref
         import probe_receiver_fast_restore_candidate as fast
-        for selected in [vref,fast]:
+        import probe_receiver_unclamped_restore_candidate as unclamped
+        for selected in [vref,fast,unclamped]:
             for fail in [False,True]:
                 with self.subTest(variant=selected.__name__,fail=fail),tempfile.TemporaryDirectory() as temp,patch.dict(globals(),replay=selected):
                     artifact=self.exercise(Path(temp),fail_captured=fail)
                     self.assertTrue((artifact/'sharp_control/summary.json').exists())
                     self.assertEqual((artifact/'summary.json').exists(),not fail)
+                    if selected is unclamped:
+                        result=json.loads((artifact/'sharp_control/summary.json').read_text())
+                        self.assertFalse(result['decision_clamped'])
+                        self.assertEqual(result['parallel_clamp_units'],0)
+                        self.assertIsNone(result['clamp_reference'])
