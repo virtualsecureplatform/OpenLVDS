@@ -76,6 +76,15 @@ Latest receiver decision on 2026-11-01:
   the hypothesis still needs the actual extracted-RC replay. This source
   diagnostic includes a captured pulse below the 100 mV specified sensitivity
   and does not replace the component or aperture qualification fixtures.
+- The operating-point matrix has completed all twelve TT/25 points. Its
+  independently revalidated static tail current spans 116.828--1390.293 uA;
+  rail power spans 2.727599--7.101542 mW, excluding reference-source power.
+  At the six original low-common-mode points (P/N through 0.65 V), tail VDS
+  is 11.572--17.422 mV against modeled VDSAT near 219.187 mV. At P/N of
+  1.15/1.25 V the tail current is 869.507 uA, versus 485.507 uA with input
+  polarity reversed. DC logic passes despite substantial common-mode and
+  polarity dependence of current. Dynamic/native bandwidth must be measured;
+  width scaling is not treated as a fourfold increase in operating current.
 
 
 Current bring-up evidence on 2026-11-01:
