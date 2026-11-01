@@ -2103,3 +2103,48 @@ screen remains incomplete.
 
 Full regression after these gates: 413 tests, 412 passing and one skipped in
 the pinned ngspice environment.
+
+Read-only driver-prefix analysis now covers the complete 20–35 ns training
+interval. TXCLOCK low widths span 860.706–1065.734 ps. AD/AB are both below
+0.9 V for 172.825–173.229 ps and both above 0.9 V for 150.429–152.213 ps.
+At a 1.65 V observation level, L low widths span 1612.738–1771.218 ps and R
+low widths 781.084–1080.717 ps. DP high widths span 1310.171–1488.294 ps;
+DN high widths only 123.759–734.732 ps. DP/DN observed maxima are
+3.323564/2.837657 V. These are fixed-level diagnostic crossing widths, not
+actual inverter trip voltages or transistor conduction intervals. They point
+to complementary converter/output restoration timing as a repair target,
+without assigning exclusive causality to the extra input inverter. The five
+external traces TXCLOCK, CP, CN, RCP and RCN match the original completed run
+exactly on a 5001-point grid over this interval. The full driver observation
+continues unchanged to 188.049 ns.
+
+`driver_restore_variant.py` now proposes P64/N24 output restoration in place
+of P48/N40, preserving total gate width 88 µm and channel length 0.5 µm.
+It adds private restoration/level-converter helpers and changes only the
+driver core's selected level converter. Existing helper definitions, input
+complement generation, current-mode pair/tail, bridge, CMFB and unrelated
+circuits remain unchanged. The hypothesis is stronger pull-up drive and a
+shifted switching point can recover the short DN high pulse; it is not a
+demonstrated improvement.
+
+Comparison `driver_restore/cff36fa92d24e01b` places both original and modified
+schematic driver closures into the same saved native link. The schematic
+control is necessary to distinguish ratio changes from removing driver wire
+parasitics. All other circuits are native and closure-protected. Supplies,
+input waveforms, load, 32-bit payload, original publication window, strict
+200 ps sampling margin and full 188.049 ns transient are retained. Only
+library bindings, corresponding source-driver nodeset names and unloaded
+DP/DN observations are rebound. Actual preparation validates the protected
+closures and hierarchical nodes. Three targeted structural/fixture tests pass.
+Service `openlvds-driver-restore-source-comparison` starts both independent
+cases with separate shared leases, allowing the other to finish after one
+simulator error. Reports explicitly remain source-driver diagnostics and
+cannot establish native driver or PHY qualification. No performance gain is
+claimed before both reports complete.
+
+The LVT source screen's unchanged control and modified captured-clock case
+also complete all 47 checked periods with one output edge each. Modified
+latency spans 292.324739–377.719831 ps; the weakest negative input pulse is
+recovered with 377.719831 ps latency. The sharp control remains pending, so
+the LVT physical/native gates stay closed. Full regression: 416 tests,
+415 passing and one skipped in the pinned ngspice environment.

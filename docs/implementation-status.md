@@ -612,6 +612,11 @@ Current bring-up evidence on 2026-10-31:
   `receiver_clamp/4ea0f56c1098842a`, service
   `openlvds-lvt-restore-source-screen`, queues the three original clock source
   controls. No LVT clock or physical/native improvement is claimed yet.
+  Its unchanged control and modified captured-clock case now complete with
+  one output edge in all 47 checked periods and no missing/extra edges.
+  Modified latency spans 292.325–377.720 ps; the weakest negative pulse has
+  377.720 ps latency. The sharp control remains pending, so physical/native
+  stages remain gated. This source result does not establish native recovery.
   Dedicated LVT physical/native producers now require that exact passing
   TT/25 static screen plus all three complete passing clock source controls.
   The static gate remeasures actual cached waveforms and binds the exact
@@ -637,12 +642,30 @@ Current bring-up evidence on 2026-10-31:
   exact deck instrumentation and reject missing/ambiguous nodes. Service
   `openlvds-native-driver-internal-observation` is queued. No stage delay cause
   or driver improvement is claimed before its measured trace is available.
+  A read-only 20–35 ns prefix now shows AD/AB simultaneously below 0.9 V for
+  172.825–173.229 ps and above 0.9 V for 150.429–152.213 ps per interval.
+  At the 1.65 V observation level, DN high widths span 123.759–734.732 ps,
+  versus DP 1310.171–1488.294 ps; DN peaks at 2.837657 V. These are measured
+  crossing widths, not the actual inverter switching thresholds or a claim
+  about which transistors conduct. External TXCLOCK/CP/CN/RCP/RCN traces match
+  the original on a 5001-point training grid with zero interpolated difference.
+- Source driver comparison `driver_restore/cff36fa92d24e01b` tests original
+  P48/N40 restoration against P64/N24, retaining 88 µm total gate width per
+  inverter. Private helpers change only the two 3.3 V restoration buffers in
+  the driver level converter. The matched control and candidate both use
+  schematic drivers in the same saved native link; unrelated circuits,
+  supplies, stimulus, load, payload, publication window and full 188.049 ns
+  transient remain. Three structural/fixture tests pass; actual preparation
+  verifies protected closures and probe/node names. Service
+  `openlvds-driver-restore-source-comparison` runs both independent cases
+  through the shared slot budget. It is source-only evidence, without native
+  driver or PHY qualification; no improvement is claimed before both finish.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 413 tests, 412 passed and one skipped in the pinned ngspice
+- Last full unit suite: 416 tests, 415 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.
