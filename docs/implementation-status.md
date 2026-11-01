@@ -18,9 +18,10 @@ Current bring-up state (2026-11-01):
   Their unchanged reference controls independently complete all 47 periods
   with zero missing edges. Actual waveforms are byte-identical to the
   previously completed reference; active libraries agree apart from comments
-  and blank lines, and decks agree apart from include paths. The modified
-  captured-clock cases are running. Their sharp controls and full dynamic
-  verdicts are still pending.
+  and blank lines, and decks agree apart from include paths. Both modified
+  captured-clock cases now complete the full 80 ns with 47 edge-matching
+  checks and no missing/repeated edges. Their sharp controls are running;
+  full source-clock admission is still pending.
 - Workflows for new geometry/extraction/native tests, all sixty receiver
   component conditions and a corrected 110:1-driver/native-receiver coupled
   diagnostic are implemented and waiting behind exact source/native gates. Continuations independently lease from the
@@ -5264,3 +5265,28 @@ Matched partial captured-clock observation on 2026-11-01:
   No simulation was stopped, changed or restarted, no live waveform file
   was modified, and no partial observation supplies qualification evidence.
   Canonical science remains unchanged from the passing 700-test regression.
+
+
+Both weaker receivers complete captured-clock transport on 2026-11-01:
+
+- `receiver_clamp/efcc143161073193/clamped_captured` and
+  `receiver_clamp/1ea95c4cfc1e34f4/clamped_captured` now complete the full
+  original 80 ns source transient. Each passes all 47 rising/falling
+  same-polarity input-period checks in the full original 15–75 ns analysis
+  window, with zero missing and zero repeated output crossings.
+- Bound observer `d3271555fcb702b9/completed_captured_clocks/read.py`
+  verifies exact declared candidate source, every captured input/code hash,
+  completed waveform/report bindings, finite strictly increasing full trace,
+  and independently reproduces the original transport and internal-node
+  range measurements exactly. It never calls a producer run and therefore
+  cannot launch or duplicate a pending sharp simulation. Its immutable
+  summary grants no overall source-clock or PHY admission.
+- Both original unchanged reference controls have already passed. The two
+  sharp controls are verified live at exact SPICE PIDs 1326515 (two-unit)
+  and 1326474 (three-unit). Each must still complete and pass before the
+  existing source-clock gate can release new layout/extraction/native replay.
+  Pending physical/native/component/coupled-link continuations remain gated.
+- Source-waveform results do not establish native wire-RC performance or
+  sampling margin. Full component, corrected driver, DLL, aperture, real-clock
+  long-payload and release obligations remain. Scientific code is unchanged
+  from the passing 700-test regression; no solver policy or gate was relaxed.
