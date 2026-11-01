@@ -22,7 +22,7 @@ class ParallelReceiverReplay(unittest.TestCase):
             folder=artifact/name;folder.mkdir();(folder/'bench.cir').write_text('* '+name+'\n')
             tasks.append(dict(id=name,deck_sha256=replay.digest(folder/'bench.cir')))
         identity=dict(replay_parallel_jobs=2,simulator_provenance={},code={},inputs={},observation_nodes={},
-                      input_tail_scale=2,decision_scale=1,restoration='test')
+                      input_tail_scale=2,decision_scale=1,restoration='test',restoration_widths_um=[[8,4],[16,8],[16,8]])
         manifest=dict(identity=identity,tasks=tasks,library_sha256=replay.digest(artifact/'library.spice'))
         (artifact/'manifest.json').write_text(json.dumps(manifest))
         barrier=threading.Barrier(2);sharp_done=threading.Event();started=[]
@@ -66,10 +66,12 @@ class ParallelReceiverReplay(unittest.TestCase):
             self.assertFalse((artifact/'captured/summary.json').exists())
             self.assertFalse((artifact/'summary.json').exists())
 
-    def test_vref_variant_also_runs_both_controls_and_preserves_the_other_on_failure(self):
-        import probe_receiver_vref_clamp_candidate as selected
-        for fail in [False,True]:
-            with self.subTest(fail=fail),tempfile.TemporaryDirectory() as temp,patch.dict(globals(),replay=selected):
-                artifact=self.exercise(Path(temp),fail_captured=fail)
-                self.assertTrue((artifact/'sharp_control/summary.json').exists())
-                self.assertEqual((artifact/'summary.json').exists(),not fail)
+    def test_reference_variants_run_both_controls_and_preserve_the_other_on_failure(self):
+        import probe_receiver_vref_clamp_candidate as vref
+        import probe_receiver_fast_restore_candidate as fast
+        for selected in [vref,fast]:
+            for fail in [False,True]:
+                with self.subTest(variant=selected.__name__,fail=fail),tempfile.TemporaryDirectory() as temp,patch.dict(globals(),replay=selected):
+                    artifact=self.exercise(Path(temp),fail_captured=fail)
+                    self.assertTrue((artifact/'sharp_control/summary.json').exists())
+                    self.assertEqual((artifact/'summary.json').exists(),not fail)

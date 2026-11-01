@@ -26,6 +26,7 @@ CODE=['probe_receiver_candidate_link.py','probe_receiver_gain_candidate.py','lay
       'probe_receiver_wide_input_candidate.py','layout_receiver_wide_input_candidate.py','receiver_wide_input_experiment.py',
       'probe_receiver_light_clamp_candidate.py','layout_receiver_light_clamp_candidate.py','receiver_light_clamp_experiment.py','receiver_light_decision_experiment.py',
       'probe_receiver_vref_clamp_candidate.py','layout_receiver_vref_clamp_candidate.py','receiver_vref_clamp_experiment.py',
+      'probe_receiver_fast_restore_candidate.py','layout_receiver_fast_restore_candidate.py','receiver_fast_restore_experiment.py',
       'layout_receiver_variant.py','layout_receiver_tail_candidate.py','receiver_candidate_rc.py',
       'probe_link_clock_restore.py','diagnose_link_clock.py','spice_scope.py','spice_probes.py','dll_candidate_library.py',
       'dll_campaign.py','dll_measurements.py','physical_policy.py','simulate_link.py',
@@ -37,7 +38,9 @@ def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def recheck_replay(root):
     identity=json.loads((root/'manifest.json').read_text())['identity']
-    if identity.get('clamp_variant')=='vref_1k_clamp':
+    if identity.get('clamp_variant')=='vref_fast_restore':
+        from probe_receiver_fast_restore_candidate import run
+    elif identity.get('clamp_variant')=='vref_1k_clamp':
         from probe_receiver_vref_clamp_candidate import run
     elif identity.get('clamp_variant')=='light_decision_1k_clamp':
         from probe_receiver_light_clamp_candidate import run
@@ -101,7 +104,9 @@ def prepare(link,replay):
     if clamped!=physical['identity'].get('decision_clamped',False):raise ValueError('Receiver replay architecture differs from layout')
     if capture['identity'].get('clamp_variant')!=physical['identity'].get('clamp_variant'):
         raise ValueError('Receiver replay clamp variant differs from layout')
-    if capture['identity'].get('clamp_variant')=='vref_1k_clamp':
+    if capture['identity'].get('clamp_variant')=='vref_fast_restore':
+        from receiver_fast_restore_experiment import source_variant as selected_source
+    elif capture['identity'].get('clamp_variant')=='vref_1k_clamp':
         from receiver_vref_clamp_experiment import source_variant as selected_source
     elif capture['identity'].get('clamp_variant')=='light_decision_1k_clamp':
         from receiver_light_clamp_experiment import source_variant as selected_source

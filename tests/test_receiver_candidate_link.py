@@ -47,6 +47,13 @@ class ReceiverLinkDiagnostic(unittest.TestCase):
                 diagnostic.recheck_replay(root)
             selected.assert_called_once_with(root);tracked.assert_not_called()
 
+    def test_stronger_restoration_uses_its_exact_native_verifier(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);(root/'manifest.json').write_text('{"identity":{"decision_clamped":true,"clamp_variant":"vref_fast_restore"}}')
+            with patch('probe_receiver_fast_restore_candidate.run') as selected,patch('probe_receiver_vref_clamp_candidate.run') as previous:
+                diagnostic.recheck_replay(root)
+            selected.assert_called_once_with(root);previous.assert_not_called()
+
     def test_receiver_swap_preserves_all_other_macros_and_terminal_order(self):
         ports=['P','N','Q','NB','PB','VDDIO','VDDD','VSS','ENABLE']
         receiver='.subckt openlvds_receiver_core '+' '.join(ports)+'\nR1 Q VSS 10k\n.ends openlvds_receiver_core\n'
