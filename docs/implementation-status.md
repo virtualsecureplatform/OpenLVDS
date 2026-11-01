@@ -2471,3 +2471,50 @@ Native driver training-prefix observation on 2026-11-01:
 - Receiver native replay remains kernel-queued on slot 4, now held by the
   live 20 ps source-driver control during operating-point solution. That
   simulation is left undisturbed; no scientific job is restarted or stopped.
+
+
+Driver component flow and receiver queue retargeting on 2026-11-01:
+
+- `qualify_driver_restore_components.py` prepares all thirty original
+  source/native driver process/temperature fixtures for either matched
+  physical variant. It verifies both declared source factories, physical
+  DRC/LVS/GDS/extraction audits and current baseline component proofs. Only
+  the selected driver closure, source include and exact unloaded native
+  observation aliases change; bias, stimulus, supplies, loads, transient
+  settings and original 2510 ns scoring window remain unchanged.
+- Execution requires both complete matched native driver reports before
+  calling their producer for cached waveform remeasurement; missing cases
+  cannot be launched through that gate. All thirty conditions must pass
+  original DC polarity/levels, transition order/cadence and loaded-eye
+  voltage criteria. A component verdict cannot qualify the PHY. Prepared
+  fixtures, manifest and source/runtime/model inputs are checked around
+  slot waits and before final reporting. Parallel cases use independent
+  shared leases and finish even when another case fails.
+- Actual candidate `driver_components/f3d1cd21d727bcc8` contains all thirty
+  fixtures. Its `pending_native_preflight.json` binds the manifest and log:
+  execution holds with “Both matched native driver cases must complete
+  first,” with zero simulations started. Earlier preparation `00f96295947be647`
+  is preserved as historical evidence from before additional integrity checks.
+- Five tests verify all required conditions, exact source fixture/bias
+  preservation, refusal before complete native coverage, strict waveform/eye/DC
+  admission and independent parallel completion on simulator failure. Full
+  regression passes: 467 tests, 466 passed and one skipped. Implementation
+  commit: `55d30fc`. No existing live producer was edited.
+- Real coordinator file descriptors identify DLL slot 3 and the source-driver
+  operating-point solve in slot 4. The receiver's two native controls had
+  queued behind slot 4 without starting. Guarded handoff
+  `receiver_replay/54184829d6357e3c/execution_scheduling/`
+  `handoff_20261101T053258Z/receipt.json` verifies every queued coordinator
+  thread stopped, no descendants, no native data and unchanged scientific
+  manifests/decks/libraries before moving only that coordinator to slot 3.
+  No simulator is signalled. The exact handoff command/producer is recorded
+  in `resident_jobs/receiver_native_slot3_handoff_20261101.{py,json}`.
+- Replacement native owner
+  `openlvds-receiver-tail-headroom-native-kernel-wait-v2-blocking.service`
+  is active with both controls kernel-waiting on slot 3. Replacement
+  `openlvds-receiver-tail-headroom-direct-followup.service` directly watches
+  that owner and the exact prepared 60-component/link fixtures. The original
+  source-to-native watcher ends after its queued subprocess is retired; its
+  old dependent queue consequently holds. Supplemental `superseded.json`
+  receipts connect their unchanged historical states to the new owners.
+  This operational retirement is not an electrical receiver failure.
