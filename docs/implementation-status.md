@@ -3289,3 +3289,43 @@ Uniform-decision native replay prepared on 2026-11-01:
   All seventeen uniform-decision tests pass. The actual full DC campaign has
   eight passing cases; SS/0 is queued for its shared lease. Source clock,
   physical and native continuations remain gated on completed evidence.
+
+
+Uniform-decision component/link selector prepared on 2026-11-01:
+
+- `qualify_scaled_receiver.py` explicitly selects the new native profile for
+  the unchanged receiver component and saved reference-link engines. It
+  requires the exact uniform-decision metadata; old reduced-tail and PMOS-only
+  profiles cannot be substituted. Factories, verifiers and producer-code
+  bindings are restored after preparation/run success or any error.
+- Before integration can start, both actual native waveforms are remeasured
+  through their scientific producer. Complete case reports must already
+  exist, so this cache path cannot launch a missing native simulation. A
+  shared blocking cache-verification lock serializes the independent component
+  and link consumers. The new `native_clock_passed` result must be true and
+  bound to the current manifest, in addition to the existing transport gate.
+- The original component engine retains all sixty source/native DC/rate
+  conditions and exact fixture reconstruction. The link engine retains the
+  saved full-RC ideal-phase SS/40, 410 MHz, 32-bit diagnostic reference
+  `build/link/ss_40_410m_d0.45_s100_e0_ideal_32/6735242e52a2`.
+  This receiver-only diagnostic does not establish final selected-driver,
+  measured-DLL, early-digital-RX or full-PHY qualification. Uncached partial
+  integration traces are refused for in-place retry and retained for diagnosis.
+- Actual `a3a34b4ac8e5f600/integration_selector_preflight.json` binds the
+  current selector and completed old native replay. Both component and link
+  preparation reject that profile before creating any diagnostic context.
+- Resource-only `integration_followup/run.py` is verified active as
+  `openlvds-scaled-decision-integration-followup.service`. It waits for the
+  exact native owner and passing hash-bound report, then prepares the full
+  sixty-case suite and reference-link check. Two component workers and one
+  link process use independent actual shared leases within the unchanged
+  six-slot limit; no outer lease is retained around child workers. Both
+  diagnostics must report passing results bound to their actual manifests.
+  Fresh selected-analog/digital assembly and complete release gates remain.
+- Six tests verify exact profile selection, restoration of temporary bindings,
+  missing-case refusal, rejection of false native admission despite successful
+  exit, real flock serialization for both cache consumers, and partial-trace
+  preservation. Full regression: 523 tests, 522 passed and one skipped.
+- The actual full DC campaign now has nine completed passing cases, including
+  SS/0. SS/25 is next in the live campaign. No new receiver clock, geometry,
+  native replay, component or reference-link simulation is admitted yet.
