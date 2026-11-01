@@ -174,11 +174,29 @@ Latest receiver decision on 2026-11-01:
   `openlvds-receiver-lvt-pair-pilots.service`, at most two workers within the
   six-slot budget. It launches only these three pilots and records negative
   electrical results separately from incomplete or numerical failures.
-  No remaining twelve DC cases, new clock/physical/native context or PHY
-  admission is created for this alternative. Three new tests prove the exact
+  No remaining twelve DC simulations, new clock/physical/native context or PHY
+  admission is allowed before the applicable gates. Three new tests prove the exact
   two-model change, retention of every other source device, rejection of
   modified controls and refusal of a missing completed control. Full
   regression: 546 tests, 545 passed and one skipped.
+- Full original LVT decision-pair DC matrix
+  `receiver_lvt_pair_matrix/ad5c6e2037ee5519` now has all fifteen fixture
+  templates prepared. `receiver_lvt_pair_matrix.py` retains the exact five
+  process corners and three temperatures, fixed supplies, twelve original
+  points, control-source mapping and immutable child/producer proofs. It
+  requires all three complete pilot reports, remeasures their actual traces,
+  checks each manifest binding and requires all three electrical verdicts to
+  pass before launching any of the remaining twelve simulations. Full-matrix
+  DC admission still requires all fifteen actual passing reports.
+- Actual `ad5c6e2037ee5519/incomplete_pilot_preflight.json` records refusal
+  of the incomplete pilots and zero simulation launches. Three matrix tests
+  cover missing pilots, negative remeasured pilots and changed report binding.
+  `followup/run.py` is active as `openlvds-lvt-pair-dc-followup.service`,
+  waiting for the three-pilot owner and its actual bound results before
+  invoking the scientific matrix gate. No outer simulator lease is retained;
+  sequential full-matrix cases use the unchanged shared six-slot scheduler.
+  Source clocks and all physical/native/component/link work remain gated.
+  Full regression: 549 tests, 548 passed and one skipped.
 
 
 Latest DLL model observation on 2026-11-01:
