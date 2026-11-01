@@ -2141,3 +2141,55 @@ Driver numerical retry on 2026-11-01:
   five passing completed cases (all TT temperatures and FF/0, FF/25), with
   FF/40 waiting/running next. Native advancement remains gated on the complete
   fifteen-case matrix and all three original source clock reports.
+
+
+Receiver precision retry and complete predecessor results on 2026-11-01:
+
+- The original smaller-tail modified source clock run remains live but advances
+  extremely slowly near 43.840 ns with its original 5 ps maximum integration
+  step. No abort is reported. `receiver_tail_timestep_retry.py` prepares a
+  separate three-control source campaign `receiver_clamp/dee37af388e0ca28`
+  with 1 ps maximum integration step, unchanged 5 ps output step, full 80 ns
+  run and original 15–75 ns scoring. Original supplies, saved pin waveforms,
+  bias, early digital RX and all receiver devices are preserved.
+- The retry's three candidate/library pairs are byte-identical to the original
+  campaign. Its decks differ only by include-root rebinding and the final
+  `.tran` field, 5 → 1 ps. `preparation_recheck.json` verifies all eleven
+  manifest/policy/fixture hashes survive actual re-preparation unchanged.
+  Five tests cover exact field substitution, fixed duration/output step,
+  immutable cached manifests, changed fixtures and refusal to edit any executed
+  control. Service `openlvds-receiver-tail-headroom-1ps-source` queues this
+  independent numerical retry under the same shared six-slot budget. The
+  original scientific run is not stopped or reinterpreted as failed.
+- Source numerical policy is now checked explicitly by physical/native gates.
+  Every source producer is captured transitively, including extra numerical
+  leaves; policy hashes and the declared maximum step are bound into the
+  physical identity. Native fixtures retain all original circuit/stimulus/
+  observation/scoring fields and use the same declared 1 or 5 ps maximum
+  integration step. Undeclared, mixed, changed, shortened or noninteger
+  numerical policies are rejected. Both native controls still require their
+  complete original 80 ns traces and independent shared leases.
+- Before changing these waiting downstream producers, host PID 1194345 was
+  confirmed childless in `waiting_for_source_and_full_dc`. Only that watcher
+  was stopped; its original producer, manifest and state are preserved under
+  `d9d7143b8bf2b7a7/native_continuation_history_20261101T034425Z`, with a
+  retirement receipt. All scientific simulations continue. Replacement
+  `openlvds-receiver-tail-headroom-1ps-native-continuation` is now bound to
+  the new retry root and the unchanged fifteen-corner DC matrix. It waits on
+  both actual owners before repeating complete source/DC gates, layout,
+  DRC/LVS, independent RC audit and audited native replay. A real preflight
+  validates the numerical policy and stops at the incomplete source gate.
+- The complete predecessor clamped fast-restoration component campaign
+  `receiver_components/58bb3aa28d907d28` is now reanalyzed from all sixty
+  cached child waveforms, without starting SPICE. It passes 27/60: all fifteen
+  schematic rate cases and twelve native rate cases. All thirty schematic/
+  native DC cases fail. Native SS rate cases fail at all three temperatures
+  with zero rising/falling output transitions; at SS/40 Q ranges only
+  −1.304 to +1.426 mV in 20–60 ns, versus −23.497 mV to 1.881633 V
+  schematically under identical ±250 mV differential drive, 100 ps edges,
+  1.2 V common mode and 100 fF output load. Those decks did not save internal
+  decision nodes, so no unique analog failure mechanism is claimed from them.
+  Full-rate native component checks remain necessary after clock recovery.
+- The smaller-tail DC matrix now has seven passing completed cases, adding
+  SS/0 to all TT/FF temperatures. Remaining source/static/native/link gates
+  are still outstanding. Regression: 447 tests, 446 passed and one skipped.
