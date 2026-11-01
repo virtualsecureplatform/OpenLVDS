@@ -3,6 +3,48 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Explicit selected-PHY assembly and PMOS current results:
+
+- `selected_phy.py` provides one versioned staging manifest and shared loader
+  for all eight exact-RC blocks: driver core, receiver core, analog DLL,
+  PFD, bias, delay line, digital TX and digital RX. It assembles the current
+  DLL qualification context and audited digital candidates, then overlays
+  the actual selected P64/N24 driver and compact LVT receiver. Public pin
+  order and unrelated circuit closures are checked. Every block records its
+  exact model metadata/hash, instantiated closure hash and physical origin.
+- The loader reconstructs through the same physical validators used by
+  staging and compares the selection and exact library bytes. It binds all
+  physical evidence, scientific producer bytes, requirements and manifest
+  identity. An approximate view is refused; no missing fast model silently
+  falls back to a different circuit. Diagnostic and unqualified flags cannot
+  be edited into qualification. No active extraction pointer is changed.
+- Actual `selected_phy/05aad8955a1b0cf7` stages and reloads successfully.
+  It uses DLL qualification `15cac0ba813a9333`, driver layout
+  `57c38a7401ebd975`, receiver layout `5743800311436cdd`, TX buf_4 and the
+  early digital RX. Library SHA256 is
+  `f3bba6b33030850681a27c4f729ddf9fb80ac477126e6f4f0da7becfacaeeece`.
+  Earlier preparation revisions preserve matching producer copies. Existing
+  live link/release consumers retain their frozen producers; migrating them
+  to this shared selection and qualifying/publishing its bytes remain work.
+- Five tests cover both analog overlays and protected closures, pin-order
+  refusal, identical staging/loading reconstruction, model-selection and
+  file/evidence tampering, diagnostic flag protection and approximate-view
+  refusal. Full regression: 578 tests, 577 passed and one skipped.
+- The instrumented nominal PMOS run `ce9d010f1316caed` has now completed;
+  cached scientific remeasurement confirms all twelve DC points still pass.
+  Tail-current magnitudes at those points are 60.321–65.687 uA, and absolute
+  tail drain/source voltages are 0.765–1.154 V. This is measured headroom,
+  not a BSIM saturation-region classification. Among the six observed
+  decision/bias devices, the retained NBC diode is the thin device; its
+  largest recorded terminal difference is 0.896053 V, below the existing
+  project screen. Remaining thin restoration devices are outside this screen.
+- Sampled delivered power is 1.866–4.159 mW from VDDIO and approximately
+  0.8304 mW from VDDD for the original complete fixture, including its
+  retained monitor/bias branches and 100 fF output load. These are settled
+  samples on the two rails, not total endpoint power, reference-source power
+  or dynamic power. LVT current comparison and dynamic/native PMOS pulse
+  recovery remain unproven; no architecture selection follows from DC alone.
+
 LVT continuation resource correction:
 
 - The seven-case-complete DC campaign was waiting on shared slot 4 behind
