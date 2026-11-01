@@ -1686,3 +1686,12 @@ Service `openlvds-fast-restore-source-screen` queues the same three original
 controls under the six-slot budget. Two targeted tests verify only those stage
 bindings change, their actual helper widths and unchanged final/control paths.
 Original native bias/digital load, 80 ns stimuli and 15–75 ns scoring remain.
+
+VREF-biased native replay `77252e9aa3abb333` now completes both controls.
+Captured inputs miss one rising and one falling edge; sharp inputs miss none.
+Reanalysis reproduces both cached reports with their captured input/producer
+proofs unchanged. The native continuation and downstream follow-up hold for
+failed captured recovery. Neither component root `a09b869f2ffff52b` nor link
+root `3635f229cd4efe04` has an execution receipt or raw simulation trace. The
+candidate is not selected for qualification. The stronger-restoration source
+experiment's unchanged control is now running within the same six-slot budget.
