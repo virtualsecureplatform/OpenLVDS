@@ -2762,3 +2762,69 @@ Reduced-tail sharp prefix and input placement experiment on 2026-11-01:
   issued. The ratio case remains queued, so the comparison is incomplete.
   The released slot now runs matched native driver control, PID 1215510.
   Further precision-only changes are not established as a repair.
+
+
+Receiver bus-order experiment and captured-prefix diagnosis on 2026-11-01:
+
+- Reduced-tail native `receiver_replay/54184829d6357e3c/sharp_control`
+  completes all 80 ns. All 47 original checked periods contain exactly one
+  output transition; zero missing/repeated edges. Latency is
+  853.026050–1072.241020 ps. Its `completion_recheck.json` verifies the
+  exact library, manifest, deck and ordered waveform bindings. Captured-input
+  replay has acquired slot 3 and is running; the full native gate is pending.
+- `layout_receiver_bus_priority.py` changes only the internal bus-order
+  assignment in the captured drawing function. A guarded syntax-tree
+  specialization preserves every other drawing statement, including device
+  transforms, bus widths and public pins. The order is PP/PN/CO/CL/CT/
+  NL/NR/PL/PR, followed by remaining internal nets. Source/DC admission and
+  immutable physical caching remain. Unknown routing code or missing nets
+  is refused. This alternative does not alter active layout pointers.
+- `receiver_layout/5fae56c00f7706ad` passes zero-error DRC, strict LVS
+  and independent extraction/connectivity audit. All 70 devices, nine ports,
+  657.160 × 100.045 µm dimensions and public pin positions match reference
+  `30a2456cc94d73ea`. Actual `routing_scope_recheck.json` verifies identical
+  source bytes, flattened schematic and every device transform. GDS hash is
+  `c7fd75bb4aaf5a2b0f2b7bd08987f20e33e4891b8b43cf41bed28413df1d843b`;
+  native network hash
+  `edc3c2af481a47140dad7d000a995b14ce2fde858f34b5c6019994b29298c969`
+  (`build/extracted/ae0110e5e51039e6/openlvds_receiver_core/`). Exact
+  reduction retains all 1058 capacitors and reduces 15232 resistors to 12502.
+- The result is a negative routing experiment. Its full
+  `input_loading_comparison.json` reports PP/PN increasing from
+  96.07947/103.21285 fF to 98.78515/111.21920 fF; CO/CL increase from
+  35.91650/25.00118 fF to 39.83411/28.85147 fF. NL/NR/PL/PR improve
+  modestly, but sensitive-node incident capacitance does not. Wire length
+  alone did not predict full coupling capacitance. No native replay is
+  launched for this alternative. Three routing/geometry tests pass; full
+  regression: 482 tests, 481 passed and one skipped. Code commit `54ab292`.
+- Captured replay's `first_captured_pulse/` stores immutable prefixes through
+  30 ns. In the original 24.5–26.5 ns local observation, reduced-tail CO peaks
+  at 0.709227 V versus standard-tail 0.676372 V, and RESTORE0 remains
+  above 1.783265 V. `known_complete_periods.json` applies the unchanged
+  15–75 ns matching rule only to periods whose next same-polarity edge
+  already exists in the prefix. Both layouts have three missing edges in
+  ten complete available periods. Specifically the 24.777050 ns falling
+  pulse is 526.689 ps wide, peaks at 108.848 mV and has no corresponding
+  output crossing before the next input period. This confirms a local missed
+  edge, while the original full 80 ns run continues for its complete report.
+- Source-only `decision_threshold_envelope.json` sidecars bind all 180
+  original DC samples for standard-tail matrix `1ac68453f143818d` and
+  reduced-tail matrix `eaf3b93c66400e6c`. Standard-tail expected-output-high
+  CO can reach 0.915188 V (FS/40) while expected-output-low CO can be as
+  low as 0.703679 V (SF/0); a single ideal fixed threshold cannot separate
+  that complete set. Reduced-tail extrema are 0.934215 V and 1.380087 V,
+  a 0.445871 V gap. These envelopes are not measured inverter transfer
+  curves or native admission, but support preserving the DC headroom fix.
+- A concrete next placement test is to move the six unloaded reference
+  monitor devices after all functional devices, preserving their circuit and
+  all other device order. That removes them from the physical decision-output
+  to first-restorer span without lengthening upstream mirror nets. Measure
+  CO and all input-stage loads before deciding to simulate this alternative.
+- The 1 ps source-driver pair is explicitly held after its unchanged control
+  aborts. Its remaining ratio case was unstarted; its coordinator is quiesced,
+  verified childless, then retired alone. No simulator is signalled and all
+  failed-control/fixture/manifest bytes are preserved. Exact receipt/procedure:
+  `resident_jobs/hold_failed_driver_precision_20261101.py` and
+  `driver_restore/5a976ac3781d6832/held_after_control_abort.json`. Required
+  coverage remains two, with zero complete, one numerically failed and one
+  unstarted. No incomplete source comparison is admitted as passing.
