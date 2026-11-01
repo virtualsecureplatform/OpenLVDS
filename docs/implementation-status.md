@@ -3195,3 +3195,36 @@ Uniform-decision clock handoff and completed native rejection on 2026-11-01:
   electrical failure correctly holds the downstream owner. Both prepared
   component `d6fda107c33d401a` and link `e8fada5af2c6c3a0` still have
   zero simulations. No failed native branch is promoted.
+
+
+Uniform-decision physical gate prepared on 2026-11-01:
+
+- `layout_receiver_scaled_decision_candidate.py` requires all three completed
+  source-clock controls, their passing admission, and the exact correlated
+  full DC matrix before any geometry is drawn. It serializes cached source
+  remeasurement separately from the scientific execution lock; missing
+  results cannot launch missing simulations through a cache-verification path.
+- The source is reconstructed from the exact uniform-scaling factory. New
+  metadata explicitly identifies `unclamped_uniform_decision_scale4`,
+  decision input/load W32 and tail W64, retaining input-tail scale 2 and
+  original three restoration buffers. This is distinct from the old reduced-
+  tail profile and cannot acquire its native/component admission implicitly.
+- Placement reuses the monitor-after ordering and verifies the full device
+  multiset before drawing, including all nodes, models and parameters.
+  Geometry caches verify all seven physical evidence files, preserve partial
+  builds for diagnosis and refuse changed source or identity. The source
+  flattening has 88 devices and nine ports; those are not yet GDS/LVS counts.
+- `a3a34b4ac8e5f600/physical_preflight.json` binds the actual expected refusal
+  from missing source-clock results and zero generated layouts. Resource-only
+  `physical_followup/run.py` is verified active as
+  `openlvds-scaled-decision-physical-followup.service`. It waits for the exact
+  clock owner and hash-bound passing source report, then invokes the gated
+  Magic DRC/LVS build and independent extracted-connectivity audit. It freezes
+  code/context/environment, handles completed collected owners, and leaves
+  native/component/link/PHY admission explicitly pending after extraction.
+- Three tests check exact scaled devices and functional placement order,
+  incomplete-clock refusal before rechecking or launching simulations, and
+  prevention of drawing after a failed source gate. Full regression: 512
+  tests, 511 passed and one skipped; all twelve uniform-decision tests pass.
+  No geometry or source-clock case has yet run for this branch. SF/40 remains
+  queued; TT/25 and FS/40 are the only completed uniform-scaling pilots.
