@@ -69,7 +69,7 @@ Current bring-up state (2026-11-01):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 742 tests**, with no skips. Electrical
+- The last full regression passes **all 746 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -79,6 +79,28 @@ candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
 
 Two-unit native transport failure and controlled restoration experiment:
+
+- Commit `601f26d` adds a fresh isolated driver-only RC comparison after
+  remeasuring the complete passing thirty-case component campaign. Context
+  `driver_rc_comparison/a0cec6d01291f958` retains the audited 110:1 driver,
+  exact shared bias and original full 2560 ns TT/25 comparison fixture.
+  The 0.1 ps quick-node approximation reduces wire resistors from 54,491
+  to 10,629 and capacitors from 4,165 to 953; all non-wire-passive statements,
+  device terminals and public ports are retained. It remains unqualified.
+  Full reference `rc_validation/ngspice/driver/full_ffbc0373b1_2f56048094_cccfc614c6`
+  is running under one actual fair lease; fast comparison follows sequentially
+  with the original 20 ps edge/20 mV voltage limits and trace attestation.
+  Partial/unattested traces cannot be overwritten. No active library, model
+  catalog or six-case certificate is written. All 746 regression tests pass.
+- The new LVT-restorer source-clock contexts are `receiver_clamp/9b41a25364c5819f`
+  (N4) and `receiver_clamp/7cf3e0668ce610ec` (N8). Their unchanged references
+  each complete 47 periods without missing/repeated edges; the actual modified
+  captured and sharp cases remain required. Historical task labels must be
+  interpreted through manifest `clamped`: `unclamped_captured` is the
+  unmodified reference, while `clamped_captured` is the modified candidate
+  despite its historical name. The LVT circuits themselves are unclamped.
+  A reference pass is not candidate admission; the scientific gate requires
+  all three original controls and the exact declared source factory.
 
 - Three-unit replay `receiver_replay/ef823b6778f2d9a5` now completes both full
   original 80 ns native fixtures. Captured transport misses nine rising and
