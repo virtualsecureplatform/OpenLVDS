@@ -3,6 +3,43 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Point-level dispatcher and aperture continuation prepared:
+
+- `spice_dispatch.py` adds priority with FIFO ordering and 180-second aging,
+  using the existing six shared SPICE lock-file inodes. It never replaces
+  those files or creates additional simulation slots. Ticket lifetime is
+  checked with file locks rather than PID assumptions, so abandoned tickets
+  are discarded safely across Apptainer PID namespaces. A 100 ms release
+  handoff gives existing blocking-lock users a chance before dispatcher
+  workers reacquire the same slot. Legacy controllers do not yet participate
+  in its priority queue; this is not a claim of universal scheduling fairness.
+- `continue_rx_aperture_fair.py` keeps the original captured aperture
+  fixtures, native model, numerical policy, point analyzer and all 480
+  conditions. It obtains one dispatcher lease for each uncached simulation
+  point, instead of holding a lease for an entire binary boundary search.
+  Cached points are remeasured without taking a simulation slot. Existing
+  completed boundaries are reused only after their failing, passing and
+  guarded witnesses are scientifically remeasured. Uncached partial traces
+  are refused for restart. Resource policy and new producer hashes are
+  captured separately from the unchanged scientific manifest.
+- Actual read-only preflight at `resident_jobs/fair_aperture_preflight/`
+  validates the current model/context, remeasures all native seed witnesses
+  and all 32 completed SS/40 boundaries, and confirms the live coordinator's
+  execution lock excludes a second coordinator before any simulation or
+  boundary search is admitted. This confirms compatibility with the real
+  captured campaign, not only synthetic fixtures.
+- The old aperture coordinator acquired a newly freed slot and has active
+  simulations. It has not been retired or replaced: a completion-safe,
+  evidence-preserving handover is still required before activating the new
+  continuation. The replay control remains live; bias-current variants remain
+  queued, and no new receiver architecture is electrically selected.
+- Six new tests exercise aging/FIFO ordering, stale and live tickets,
+  cross-process exclusion against all six existing locks and inode reuse,
+  scientific completed-boundary witnesses, partial/cached point handling and
+  exactly one lease around the original uncached point execution. Full
+  regression passes: 593 tests, 592 passed and one skipped. No tracked
+  running scientific producer was edited.
+
 Native capture failure narrowed using the completed mixed-view trace:
 
 - Bound observation `analog_link_pilot/36b513f21de11d28/ideal_capture_diagnosis/`
