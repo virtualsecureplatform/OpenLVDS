@@ -53,7 +53,7 @@ Current bring-up state (2026-11-01):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 719 tests**, with no skips. Electrical
+- The last full regression passes **all 727 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -104,6 +104,18 @@ Two-unit native transport failure and controlled restoration experiment:
   or source-clock evidence, and a native diagnostic cannot publish a PHY.
   Implementation commits are `6e10ef8` (source experiments) and `a23744f`
   (physical/native continuation). All 719 regression tests pass without skips.
+- Commit `2ddf9b2` adds the restorer-specific component selector and corrected
+  driver/native-receiver coupled diagnostic. Separate resource followers under
+  `eb3d0b22853c2cb7/component_followup/` and `coupled_link_followup/` bind the
+  exact live physical owner and wait for a completed passing native result.
+  They skip rejected or unadmitted variants. Component admission requires all
+  sixty original source/native DC/rate conditions. Coupling retains the audited
+  110:1 driver, original channel and native bias/digital RX, exact 188.049 ns
+  fixture, 20 ps maximum step, 32-bit payload and the 200 ps additional margin
+  gate. This remains a short ideal-phase diagnostic; measured DLL, real-clock
+  startup, full PVT/aperture and long payloads are still required. All 727
+  regression tests pass without skips. These followers own no outer SPICE
+  lease and do not change any active circuit or qualification pointer.
 - Independent wire-load observation in
   `receiver_layout/9d740d19bee2c0d0/compared_frontend_loads/` finds that the
   two-unit correction leaves critical mirror/tail/CO/CL/CT wire capacitances
