@@ -2709,3 +2709,56 @@ on 2026-11-01:
   control remains kernel-waiting on that slot; no process is stopped. The
   receiver native sharp control and DLL measured-model coordinator remain
   active, with the native captured receiver and remaining source cases queued.
+
+
+Reduced-tail sharp prefix and input placement experiment on 2026-11-01:
+
+- Native sharp replay `receiver_replay/54184829d6357e3c` advances beyond
+  50 ns. Its `first_sharp_pulse/` stores immutable prefixes through 30 ns,
+  column maps, producer/model/deck hashes and the same 24.5–26.5 ns diagnostic
+  window used previously. Standard/new reduced-tail CO peaks are
+  1.356111/1.233518 V; RESTORE0 minima 82.448/236.534 mV. Both recover
+  this sharp pulse: standard output fall/rise 25.723799/26.128155 ns, new
+  25.809655/26.187368 ns. This local observation does not qualify the full
+  80 ns sharp control or the still-queued weak captured-input control.
+- `layout_receiver_input_island.py` explores placement only: it preserves
+  every exact source device/finger/model/dimension/node and moves the four
+  input mirror output banks and ten load resistors immediately before the
+  decision stage. All other device order, including the admitted unloaded
+  monitor placement, is retained. The source is byte-identical to reduced-tail
+  reference `30a2456cc94d73ea`; source/DC gates are remeasured unchanged.
+- Alternative `receiver_layout/f0f9ee68d2a80ba2` passes zero-error DRC,
+  strict LVS and independent extracted connectivity audit: 70 devices,
+  nine ports, 657.160 × 100.045 µm. Its GDS hash is
+  `ec1687c02706de3876e6cbf0e785359c77625a75be3f2e8eac6cbae3e24bea13`.
+  Exact reduction retains all 1031 capacitors and reduces 15234 resistors to
+  12507, network hash
+  `469e760c9619668808006f992d1c61ebf1e6386ab9d1cacb9af2c9df0e3da250`
+  (`build/extracted/8736fe0c98351e95/openlvds_receiver_core/`).
+- Loading `receiver_loading/c540d6e865f9d33a` reduces PP/PN incident wire
+  capacitance from 96.07947/103.21285 fF to 80.78245/74.77354 fF. However,
+  the full `input_loading_comparison.json` also checks upstream mirror nodes:
+  NL/NR increase from 60.71743/61.92002 to 81.91689/85.17926 fF; PL/PR
+  increase from 62.79109/70.95722 to 67.63202/73.33675 fF. CO/CL/CT
+  remain 35.91650/25.00118/30.01471 fF. These incident full-coupling wire
+  loads exclude device capacitance and are not effective AC loads or timing
+  proof. The mirror-node penalty may offset the smaller decision-input load.
+- Consequently this alternative is retained for diagnosis, without replacing
+  the running native layout or launching a new native replay. A useful next
+  layout experiment should reduce decision-node routing without lengthening
+  upstream mirror-control nets, for example by changing sensitive-net bus
+  priority while preserving the original device order. It must still pass
+  exact source/physical/audit and complete native controls.
+- Immutable caching records every actual GDS/schematic/DRC/LVS/source/report
+  hash and refuses changed or partial geometry. Actual cached evidence is
+  verified without redrawing. Three structural/cache tests pass; full
+  regression: 479 tests, 478 passed and one skipped. Code commit `dc06552`.
+- The 1 ps unchanged source-driver control terminates numerically at
+  13.782610 ns (14326 raw rows), reported timestep 1.25e−24 s and node
+  `xtx.vgnd.t436`. `driver_restore/5a976ac3781d6832/source_control/`
+  `failure_observation.json` binds its log/raw/deck/library/manifest/policy.
+  Its inherited execution receipt remains stale `running`; actual PID 1214447
+  is gone and ngspice explicitly reports aborted. No performance verdict is
+  issued. The ratio case remains queued, so the comparison is incomplete.
+  The released slot now runs matched native driver control, PID 1215510.
+  Further precision-only changes are not established as a repair.
