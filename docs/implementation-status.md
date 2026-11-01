@@ -3,6 +3,50 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Driver exact-network benchmark dispatched; completed FF0 DLL step agrees with its model:
+
+- Read-only exact reduction observer
+  `driver_layout/086066e18f25d11a/exact_reduction_observation/` applies the
+  existing degree-8 positive-conductance elimination to the corrected
+  driver's 54,491-resistor network. The result has **15,783 resistors**,
+  eliminating 14,304 additional algebraic nodes while preserving every
+  capacitor, device, port and protected terminal statement. Four sparse
+  terminal-admittance witnesses pass across 4,441 boundary nodes, maximum
+  absolute current discrepancy 1.635e-13 A. Result SHA256 is
+  `7f2bad3925ab4ca2bcc0801ceb47e55e53dfb3c504255090c324fdfe997ebc3d`.
+  This is a mathematical result, not a measured simulation speedup or
+  transient certificate. No physical catalog entry or live model changes.
+- `benchmark_driver_exact.py` prepares context
+  `driver_exact_benchmark/2c5e22ac31f7529b` against the complete native
+  SF40 and FF0 pilots in `driver_current/89250b060d3d9825`. Preparation
+  remeasures all original current-correction pilots, binds the same physical
+  driver and reference resistor-network hash, verifies mathematical witness
+  inputs/runtime, and preserves the shared bias. Every original printed
+  node is checked against the reduced hierarchy before simulation.
+- Both benchmark fixtures retain the **entire 2540 ns original waveform**,
+  numerical policy, supply/reference values and 100 ohm/2 pF loads. Only
+  algebraic resistor rows and the source artifact path differ. Comparison
+  checks every differential crossing in 2010–2530 ns, requiring at least
+  sixteen matched edges within 20 ps; plateau difference must be at most
+  20 mV outside 300 ps edge windows. Common mode is compared over the
+  complete interval without excluding transitions, also within 20 mV.
+  All original loaded-eye/DC/polarity/cadence metrics must still pass.
+- Unit `openlvds-driver-exact-native-benchmark` is dispatched with one fair
+  worker inside the unchanged six-slot budget. Partial output is retained;
+  completed results require scientific remeasurement. Passing these two
+  comparisons cannot replace full PVT, final six-block RC certification,
+  link qualification or explicit model selection. All **647 regression
+  tests pass**, no skips; tests reject lost activity, common-mode errors,
+  non-resistor substitution and overwriting partial output.
+- Completed baseline FF0 400-to-390 MHz stability evidence now passes the
+  original measured-model step comparison: amplitude error 1.293%,
+  measured/predicted t90 105/112.5 ns, settling error 7.143%. The bound
+  read-only report is under native stability root
+  `1cdf451bf81d3ee8/completed_ff_step_observation/`. Its independently
+  measured phase margin remains 34.408°, so this step agreement does not
+  waive the 60° gate or admit the baseline DLL. The 16 pF correction's
+  own source/native qualification remains pending.
+
 Frontend-local native controls complete; corrected-driver pin replay dispatched:
 
 - Context `receiver_replay/c1109a1560bd4e6e` completes both full 80 ns
