@@ -2518,3 +2518,35 @@ Driver component flow and receiver queue retargeting on 2026-11-01:
   old dependent queue consequently holds. Supplemental `superseded.json`
   receipts connect their unchanged historical states to the new owners.
   This operational retirement is not an electrical receiver failure.
+
+
+Automatic driver component continuation on 2026-11-01:
+
+- `continue_driver_restore_components.py` captures the prepared component
+  manifest, all scientific input/producer hashes, its own producer and the
+  environment launcher. It verifies the exact matched native comparison
+  manifest binding and selected physical variant before observing the owner.
+  Active/activating/deactivating owners hold work; observation errors retry.
+  A terminal owner must finish successfully, and both complete native child
+  reports must exactly match their aggregate and current comparison manifest.
+- Only then does the continuation invoke the pinned driver component runner,
+  which independently remeasures both native traces and all original fixture
+  reconstructions before acquiring any simulator lease. A successful process
+  exit alone cannot admit the component campaign: its final report must pass
+  and match the exact component manifest. Every continuation state remains
+  `qualified_phy=false`; full-PHY release gates remain outstanding.
+- Unit `openlvds-driver-restore-component-followup.service` is active,
+  waiting on `openlvds-native-driver-restore-comparison-blocking.service`
+  for `driver_components/f3d1cd21d727bcc8`. Two eventual workers independently
+  use the existing shared six-slot allocator. Its identity/state/producer
+  receipts are under the component artifact's `followup/` directory.
+- Three tests cover incomplete/wrong native manifests and actual child
+  reports, active/failed owners, a component command that exits successfully
+  but reports failure, a wrong component-report manifest and changed or
+  mismatched physical/producer inputs. Full regression: 470 tests, 469 passed
+  and one skipped. Implementation commit: `16d992f`.
+- The 20 ps source-driver control has solved its operating point and started
+  transient analysis, but advances extremely slowly near 14.9978 ns. This
+  is a new numerical stall observation, not a completed comparison or proof
+  of repair. The matched native candidate remains live near 97 ns, and
+  native FF/0 DLL acquisition remains live near 1608 ns of 1700 ns.
