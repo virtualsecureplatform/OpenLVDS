@@ -12,8 +12,12 @@ Latest receiver decision on 2026-11-01:
   original DC samples. SF/40 and FS/40 also pass all twelve points, including
   the conditions that rejected the PMOS-only variant. All three pilot
   waveforms have been remeasured, and full static matrix
-  `receiver_scaled_decision_matrix/a3a34b4ac8e5f600` is now advancing through
-  its remaining cases. No full-DC, source-clock or physical admission is claimed.
+  `receiver_scaled_decision_matrix/a3a34b4ac8e5f600` now passes all fifteen
+  process/temperature cases (180 original samples, fixed supplies).
+  Source-clock comparison `receiver_clamp/b9f840b0494a787c` has completed
+  its reduced-tail control with zero missing edges; the uniformly scaled
+  captured-input candidate is running. Physical admission remains gated on
+  all three original source-clock fixtures.
 - The PMOS-only W32 alternative is rejected: FS/40 fails two original
   low-common-mode points despite TT/25 and SF/40 passing. Its remaining
   twelve DC cases and all clock cases were correctly held. Monitor relocation
@@ -24,7 +28,28 @@ Latest receiver decision on 2026-11-01:
   original sample, while CO shifts by up to 80.807 mV, CL by 45.084 mV and
   CT by 25.231 mV. Width ratios are preserved; exact operating voltages are
   not assumed invariant. The PP/PN static shifts are at most 34.856/17.900 µV.
-  Remaining DC corners, current, capacitance and dynamic behavior remain unproved.
+  Dynamic behavior and native capacitance remain unproved.
+- The full fifteen-case terminal-voltage report is
+  `a3a34b4ac8e5f600/decision_headroom/fb9f945f405afaec/summary.json`.
+  All five changed schematic decision devices pass the 1.95 V project screen
+  over each complete original 144 ns trace. This is not a PDK absolute-rating
+  claim or coverage of the remaining receiver/native devices.
+- Fixed-supply TT/25 operating-point probe
+  `receiver_operating_points/41735e88e064dc98` completed both original
+  low/high common-mode input points. Its initial parser held on ngspice's
+  unit-wrapped aliases; the simulation and original producer are retained.
+  `scripts/analyze_receiver_operating_points.py` validates the unchanged
+  manifest, producer, runtime, source fixtures and raw evidence, then compares
+  each alias with the actual model parameter. No simulation is rerun.
+  The bound result is `analysis/b9f35f4ed065a4af/summary.json` under that probe.
+  Tail current is 147.650 uA at P/N=0/0.1 V and 1.390293 mA at 2.3/2.4 V.
+  Tail VDS is approximately 14.726/278.641 mV versus modeled VDSAT
+  219.187/219.236 mV: the low-common-mode point has limited tail headroom.
+  Receiver/bias rail power is 2.797/6.799 mW, with the separate ideal reference
+  source delivering 0.820/0.087 mW. These are schematic static points only,
+  without native/dynamic/all-PVT power qualification. The low point agrees
+  with its transient sample within 1.2 pV; the high point differs by up to
+  2.075 mV. Neither exact operating-point invariance nor current scaling is assumed.
 
 
 Current bring-up evidence on 2026-11-01:
