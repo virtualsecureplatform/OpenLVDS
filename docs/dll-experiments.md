@@ -1639,3 +1639,21 @@ Service `openlvds-vref-clamp-receiver-followup` waits on the actual native owner
 requires complete one-to-one edge recovery, and lets both scientific children
 repeat the native waveform/provenance checks before simulation. No native
 improvement, component/link pass or release is claimed at this preparation stage.
+
+Native DLL screen `15cac0ba813a9333` completes SS/0 acquisition successfully in
+the original 1200–1500 ns window: CTRL variation 1.849904 mV (20 mV limit),
+feedback error 19.010343 ps and quarter delay 668.380426–668.485247 ps
+(625 ± 100 ps). Cadence and omitted-pulse marker checks pass. Unwrapped marker
+section delays are 668.411765, 642.797953, 633.562612 and 632.784872 ps;
+mean power is 8.451226 mW. The 1700 ns fixture is complete. Together with all
+21 static offsets this yields 22 passing screen cases. TT/25 acquisition is
+running; FF/0 is pending. The measured native model and remaining 312 fixtures
+remain gated on the complete three-corner screen.
+
+The VREF-biased native captured prefix reaches 28.772 ns and restores the first
+previously lost short pulse. In 24.5–26.5 ns CO peaks at 1.152635 V,
+RESTORE0 falls to 0.329422 V, RESTORE1 rises to 1.780347 V, and RXCLOCK spans
+−0.014268–1.833817 V. The sampled falling crossing is near 25.837800 ns.
+CO_TRACK stays within 0.832336–0.833612 V. Both original 80 ns controls continue
+to full reports; this local response is not a complete clock-recovery, aperture,
+component or link qualification.

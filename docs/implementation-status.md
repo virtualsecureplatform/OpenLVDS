@@ -56,8 +56,11 @@ Current bring-up evidence on 2026-10-31:
   static offsets and three native loops); remaining 312 fixtures are held for
   the measured model. All 21 selected static offsets now pass, with exact
   SS/0, TT/25 and FF/0 coverage at 0, ±50, ±150 and ±300 ps. The acquisition
-  loops remain outstanding. Observation terminals are validated; no new native loop
-  result is claimed. The
+  SS/0 acquisition now completes and passes: CTRL variation 1.849904 mV,
+  feedback error 19.010343 ps and quarter delay 668.380426–668.485247 ps.
+  The omitted-pulse section check also passes (668.412/642.798/633.563/632.785 ps);
+  mean power is 8.451226 mW. TT/25 acquisition is running and FF/0 remains
+  pending. No measured-model or full-native qualification result is claimed. The
   handoff holds on failed gates, ended producers or changed inputs. Native
   acquisition and omitted-pulse timing remain unproven.
 - The early-publication RX (`rx_early_physical_v1`) passes physical DRC/LVS,
@@ -399,6 +402,11 @@ Current bring-up evidence on 2026-10-31:
   incomplete native gate with no simulation started (`gate_preflight.json`).
   Service `openlvds-vref-clamp-receiver-followup` waits for complete one-to-one
   native recovery before running them. No native/component/link pass is claimed.
+  The live native captured trace restores the first previously lost short pulse:
+  over 24.5–26.5 ns CO reaches 1.152635 V, RESTORE0 falls to 0.329422 V,
+  RESTORE1 rises to 1.780347 V and RXCLOCK falls near 25.837800 ns. The trace
+  prefix reaches 28.772 ns at inspection. Both complete native controls continue;
+  this partial observation does not qualify clock recovery or link timing.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
