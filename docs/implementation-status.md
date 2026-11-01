@@ -3102,3 +3102,32 @@ PMOS-only rejection and uniform decision scaling on 2026-11-01:
   and prevention of an uncached control simulation during preparation.
   Full regression: 503 tests, 502 passed and one skipped. No analog pointer
   or physical/native/PHY admission is promoted.
+
+
+Uniform-decision full DC admission prepared on 2026-11-01:
+
+- `receiver_scaled_decision_matrix.py` prepares exactly all fifteen original
+  process/temperature source DC conditions from completed reduced-tail matrix
+  `eaf3b93c66400e6c`. Each control is independently remeasured before cloning
+  the uniform five-device width scaling. Selection uses the existing exact
+  coverage/name checker; the new matrix captures that helper's code as well.
+- Matrix `receiver_scaled_decision_matrix/a3a34b4ac8e5f600` reuses the same
+  TT/25, SF/40 and FS/40 pilot contexts. Before any remaining case it requires
+  complete manifest-bound pilot reports and remeasures all three actual
+  waveforms. Any failed pilot holds the remaining simulations. Every child
+  retains the original twelve points and full 144 ns static fixture.
+- Actual `incomplete_pilot_preflight.json` binds an expected hold with zero
+  additional nonpilot simulations. Resource-only `followup/run.py` is verified
+  active as `openlvds-scaled-decision-dc-followup.service`, waiting for those
+  exact pilot owners. Its immutable code/context receipts and handling of
+  successful collected units follow the prior corrected resource policy.
+  The scientific matrix, rather than service exit alone, decides admission.
+- Three targeted tests verify that missing reports cannot invoke the runner,
+  failed remeasured pilots block advancement, and passing flags require
+  complete reports bound to the expected manifests. Full regression: 506
+  tests, 505 passed and one skipped. All six uniform-decision tests pass.
+- At this observation all three uniform-scaling pilots still wait on actual
+  shared slot 1. The live native sharp-control simulator continues separately.
+  No old scientific code, live simulator, supply, sampling rule or six-slot
+  resource limit was changed. Source clock and downstream physical/native
+  gates have not been admitted for the uniformly scaled circuit.
