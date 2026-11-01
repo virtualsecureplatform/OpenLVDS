@@ -439,8 +439,12 @@ Current bring-up evidence on 2026-10-31:
   passes DRC (zero errors), LVS and independent RC audit, with 78 devices and
   the original nine ports. Native network SHA256 is
   `b6e0bec697e9ef60f8677d77e1817d9c0e70cd26ab45445ee57ead09a36a4d69`.
-  Both original native controls are running concurrently in
-  `receiver_replay/93c5ecd2ff603292`; no native verdict is available yet.
+  Both original native controls complete in `receiver_replay/93c5ecd2ff603292`:
+  each recovers all 47 checked periods with zero missing or repeated edges.
+  The weakest captured pulse now produces RXCLOCK falling/rising crossings at
+  59.977506/60.493634 ns; RESTORE0 reaches 0.456733 V and RESTORE1 1.770205 V.
+  Captured latency spans 804.040–1244.370 ps. This passes the replay diagnostic,
+  not component coverage, aperture or full-link qualification.
   Loading receipt `receiver_loading/820ed53b4961c8bb` reports incident CO,
   RESTORE0 and RESTORE1 wire sums 44.360, 47.681 and 58.947 fF. These exclude
   device capacitance and do not establish effective AC load or timing.
@@ -465,6 +469,20 @@ Current bring-up evidence on 2026-10-31:
   `component_link_continuation_history_bafce31`, also without a scientific child.
   Replacement service `openlvds-fast-restore-component-link-queue-v3` retains
   the same native gate, stimuli, component coverage and simulator budget.
+  Actual container preparation produces component root
+  `receiver_components/58bb3aa28d907d28` and loaded-link root
+  `receiver_candidate_link/0dee72b71f4525df`. Component preflight reconstructs
+  all 60 fixtures and holds before any simulation while native reports are
+  incomplete. After both native reports pass, the queue automatically starts
+  component/link diagnostics; both independently recheck native waveforms.
+  The first three source static cases (TT at 0/25/40°C) fail. At TT/25, expected
+  high outputs fail at common modes 0.05/0.2/0.6 V, while 1.2/1.8/2.35 V pass.
+  Actual PP/PN differential polarity remains correct, but CO stays at
+  1.140763/1.137516/1.127988 V in the failed samples and Q remains low. The
+  original source fixture passes these samples with CO at
+  0.492830/0.480999/0.451381 V. This identifies a DC decision/clamp interaction
+  to isolate; the comparison also changes input-tail sizing and cannot assign
+  causality to the clamp alone. The campaign continues without changing gates.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains

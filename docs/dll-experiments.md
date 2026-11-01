@@ -1773,3 +1773,35 @@ outgoing container-style paths. All six targeted tests pass. The second waiting
 queue was verified childless, retired and preserved under
 `component_link_continuation_history_bafce31`. Replacement service
 `openlvds-fast-restore-component-link-queue-v3` retains the original native gate.
+
+Both stronger-restoration native controls in `receiver_replay/93c5ecd2ff603292`
+now complete: all 47 checked periods in each contain exactly one output edge,
+with no missing rising or falling edges. The weakest captured pulse produces
+output falling/rising crossings at 59.977506/60.493634 ns. Over 58.7–60.7 ns,
+CO peaks at 1.052827 V, RESTORE0 falls to 0.456733 V, RESTORE1 rises to
+1.770205 V and RXCLOCK spans −0.016088–1.837766 V. The earlier VREF chain
+reached RESTORE1 only 0.551259 V at this pulse and missed the output crossing.
+The first short pulse also improves: RXCLOCK falls at 25.682580 ns versus
+25.837800 ns previously. Captured latency spans 804.040–1244.370 ps; sharp
+latency spans 779.589–1300.195 ps. This is complete replay evidence only.
+
+Actual contained preparation creates all 60 component fixtures in
+`receiver_components/58bb3aa28d907d28` and the unchanged loaded-link diagnostic
+in `receiver_candidate_link/0dee72b71f4525df`. Before native completion, the
+component runner reconstructs all fixtures then holds at the native gate with
+no execution receipt or raw trace; `gate_preflight.json` records this check.
+Once both native controls pass, the queue starts the existing scientific
+follow-up automatically. It independently remeasures native traces before
+running component/link diagnostics under the original shared budget.
+
+The first three source static cases (TT at 0/25/40°C) fail. TT/25 fails the
+expected-high samples at common modes 0.05/0.2/0.6 V; higher common modes
+1.2/1.8/2.35 V pass. At those failed samples the PP−PN differentials are
++56.176/+59.170/+65.250 mV, preserving input polarity, while CO stays at
+1.140763/1.137516/1.127988 V and Q stays low. The original baseline source
+passes the same samples with CO 0.492830/0.480999/0.451381 V. This localizes
+the DC failure downstream of a nonzero differential input, but baseline and
+candidate also differ in tail sizing and restoration, so this comparison
+does not isolate the clamp as the sole cause. A controlled DC comparison is
+needed before selecting a repair. No component gates are relaxed; remaining
+component cases and the loaded-link diagnostic continue.
