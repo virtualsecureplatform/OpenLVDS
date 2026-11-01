@@ -3062,3 +3062,43 @@ Gated stronger-PMOS source clock implementation on 2026-11-01:
 - Full regression: 500 tests, 499 passed and one skipped; all thirteen
   decision-load tests pass. No new clock case is running or claimed passing
   at this observation. SF/40 remains the sole completed static pilot.
+
+
+PMOS-only rejection and uniform decision scaling on 2026-11-01:
+
+- All three PMOS-only W32 pilots are now complete. TT/25 and SF/40 pass;
+  FS/40 fails original 22 ns and 46 ns low-common-mode, positive-polarity
+  samples. CO is 1.033041 / 0.984529 V and Q remains approximately
+  0 V instead of the required high. The standard-load control at these
+  same samples gives CO 0.915188 / 0.858569 V and correct high Q.
+  Increasing only the PMOS mirror raises CO in both polarity conditions;
+  its SF headroom benefit does not establish all-corner restoration.
+- `receiver_decision_load_matrix/6fd0fd7ce4169f32/rejected_static_pilot.json`
+  binds the failed report and actual waveform. The automatic full-DC gate
+  remeasures the completed pilots and holds on the actual FS failure.
+  Its clock continuation also holds. Exactly three pilot simulations ran;
+  zero of the remaining twelve DC cases and zero clock cases were launched.
+  The gate prevented unnecessary downstream work without moving criteria.
+- `receiver_scaled_decision_experiment.py` implements a different hypothesis:
+  uniformly scale all five decision devices by four from the independently
+  DC-passing reduced-tail receiver. XCT goes W16 to W64; XC0/XC1 and
+  XCD/XCM each go W8 to W32, with original models, nodes, lengths and all
+  other circuit devices unchanged. This preserves decision-device sizing
+  ratios and seeks more charging current. It also increases PP/PN gate
+  loading, so a DC pass cannot establish dynamic improvement.
+- Preparation remeasures the completed reduced-tail static control, verifies
+  its exact declared source closure and full waveform, and binds inherited
+  inputs, code and runtime. The original 144 ns deck already contains the
+  unloaded CL/CT/NBC observations; only its source inclusion is rebound.
+  All twelve sampling times, supplies, stimuli and 100 fF load remain.
+  New waveform validation rejects incomplete/nonfinite/nonmonotonic data;
+  partial failures are retained and cached measurements rechecked.
+- New pilots under `receiver_scaled_decision_static/` are queued on actual
+  shared slot 1: TT/25 `de8b99d5cb7a5d5e`, SF/40 `aeb25b9ac3f5874e`,
+  FS/40 `d3d3385283fb72cb`. Units are `openlvds-scaled-decision-{tt25,sf40,fs40}`.
+  None is yet complete. The original six-slot budget and live jobs remain.
+- Three new tests verify the exact five-device intervention and every other
+  circuit/device, all five width ratios, refusal of wrong/repeated topology,
+  and prevention of an uncached control simulation during preparation.
+  Full regression: 503 tests, 502 passed and one skipped. No analog pointer
+  or physical/native/PHY admission is promoted.
