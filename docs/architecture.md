@@ -59,12 +59,13 @@ failure used a different frontend and is retained as separate evidence.
 The OTA DLL correction increases nominal CTRL storage from 4 pF to 16 pF by
 adding twelve MIM capacitors while preserving every original device. The
 4 pF native model fails the required phase margin at TT/25 °C and FF/0 °C.
-The new layout, extraction and independent RC audit pass, and the first full
-SS/0 °C source-acquisition case passes with lower control ripple. Remaining
+The new layout, extraction and independent RC audit pass, and full SS/0 °C
+and TT/25 °C source-acquisition cases pass with lower control ripple. Remaining
 source acquisition, fresh native margins, steps, recovery, readiness, OTA
 operating points and full PVT qualification are still required. The corrected
-110:1 native driver likewise remains under component qualification; these
-separate candidates have not yet established a usable, released PHY.
+110:1 driver passes all thirty source/native component cases, including its
+loaded-eye screen. Receiver qualification and coupled-link timing remain
+open; these separate candidates have not established a usable, released PHY.
 
 ```mermaid
 flowchart LR

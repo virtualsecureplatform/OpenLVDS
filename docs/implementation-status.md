@@ -43,15 +43,21 @@ Current bring-up state (2026-11-01):
   transition; an isolated matched 1 ps retry is running while its original
   50 ps fixture and live trace are preserved. No completed electrical failure
   or replacement source admission follows from this numerical slowdown.
-- **The 16 pF DLL passes its first SS/0 source-acquisition case.** The full
+- **The 16 pF DLL passes SS/0 and TT/25 source acquisition.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
   10.690 ps quarter-phase error and 0.745 mV control ripple, versus
-  2.576 mV ripple for the matched 4 pF source control. TT/25 and FF/0
-  acquisition remain required. New DRC/LVS/extraction/RC audit pass; native
+  2.576 mV ripple for the matched 4 pF source control. Full TT/25 gives
+  7.758 ps feedback error, 10.296 ps quarter-phase error and 0.861 mV
+  ripple versus 3.014 mV for its matched 4 pF control. FF/0 acquisition
+  remains required. New DRC/LVS/extraction/RC audit pass; native
   screening, fresh measured stability and the full qualification remain gated.
-- The corrected 110:1 driver's fifteen schematic cases pass; its native
-  component matrix is still running. Exact-resistor SF/40 and FF/0 waveform
-  comparisons pass, but no live model or catalog is silently replaced.
+- **The corrected 110:1 driver passes all thirty component cases.** All
+  fifteen source and fifteen native original full 2540 ns fixtures pass
+  across five process corners and 0/25/40 °C. Native settled 100-ohm DC
+  differential magnitude spans 286.789–333.012 mV, with common mode
+  1.219–1.266 V; its separate loaded-eye minimum is 264.227 mV at SF/40.
+  Exact-resistor SF/40 and FF/0 comparisons also pass. No active model or
+  catalog is replaced, and coupled-link/PHY qualification remains open.
 - Both earlier matched driver/source-receiver links were verified numerically
   stalled, archived and retired with original hashes and all slot inodes
   preserved. Their partial results remain inconclusive. The original
@@ -67,6 +73,27 @@ candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
 
 Two-unit native transport failure and controlled restoration experiment:
+
+- Corrected-driver campaign `driver_components/a1d220a703a6ac2b` completes
+  with required=30, passed_cases=30 and passed=true; the exact producer exits
+  successfully. Independent completed-native observation
+  `completed_native_observations/2a95092ff56f7f44/` selects all fifteen native
+  tasks from the original manifest, reconstructs each original fixture against
+  the audited 110:1 model, checks producer/runtime/input/trace hashes and
+  remeasures every original DC/loaded-eye metric. All fifteen agree exactly
+  with cached reports and pass. Earlier fifteen-source evidence remains
+  separate; no observation directory is counted as a component task. This
+  closes component coverage, not receiver coupling, fresh final RC certificates
+  or complete PHY release.
+- The 16 pF DLL completes the original full 1500 ns TT/25 source fixture
+  with cadence and loop metrics passing. Independent matched read-only audit
+  `dll_architecture/368259f7b02c5fdc/completed_source_tt25_observation/`
+  remeasures both original 4 pF and new 16 pF traces and exactly reproduces
+  their cached metrics. Ripple falls from 3.014114 to 0.860954 mV; feedback
+  error changes from 7.852593 to 7.758238 ps, while quarter-phase error
+  changes from 8.557648 to 10.295527 ps. Both full source fixtures pass their
+  unchanged gates. FF/0 is still required; no native stability or full DLL
+  admission is inferred from source acquisition.
 
 - `receiver_replay/c130e79d2f47a246` completes both original full 80 ns,
   1 ps maximum-step fixtures. Captured transport misses nine rising and nine
