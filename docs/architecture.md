@@ -16,10 +16,25 @@ uses a low-threshold NMOS pair. The compact PMOS p8/t4 alternative uses a
 3.3 V PMOS pair and tail source with an NMOS mirror. Its first inverter uses
 thick-oxide devices powered at 1.8 V, followed by two thin-oxide restoration
 stages. This allows the decision node to swing above 1.8 V while keeping that
-voltage off thin-oxide gates. The PMOS candidate has passed nominal source
-rate testing and physical topology checks; full PVT, extracted timing and
-link qualification remain open. Neither alternative is promoted into the
+voltage off thin-oxide gates. The PMOS p8/t4 candidate passes its fifteen
+source DC cases and nominal source rate test, but fails the captured and
+sharp-clock controls. Doubling its tail width improves the captured result
+but still loses edges, so these variants are held before native admission.
+
+The immediate LVT correction preserves its circuit and localizes the complete
+frontend mirror, tail and resistor-load network with the decision chain.
+This removes a routing-capacitance regression that was already losing
+transitions before the decision stage. Its DRC/LVS checks pass; native
+clock tests are running. Neither receiver alternative is promoted into the
 canonical analog source automatically.
+
+The OTA DLL also needs a compensation correction. Independently measured
+native loop models pass the 60° phase-margin gate at SS/0 °C but fail at
+TT/25 °C and FF/0 °C. A separate candidate increases CTRL storage from
+nominally 4 pF to 16 pF while preserving every existing device and adding
+twelve MIM capacitors. Its layout passes DRC/LVS. Measured-model estimates
+motivate this change; its own extracted margins, acquisition, frequency
+steps, recovery and full PVT qualification remain required.
 
 ```mermaid
 flowchart LR

@@ -3,6 +3,58 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Native digital replay completes; measured DLL margins require a compensation correction:
+
+- Digital-only recorded-pin context `native_rx_pin_replay/8281fd2383199c25`
+  completes its entire 188.049 ns fixture and passes cached scientific
+  remeasurement. Its systemd owner exits successfully. In 50–125 ns,
+  RXDATA/RXCLOCK crossing times agree with the recorded inputs to numerical
+  precision; Q0/Q1 crossing counts match with maximum errors
+  2.2331/1.6705 ps. RXVALID has no crossings in either trace and maximum
+  interpolated voltage difference is 0.412 mV. Output voltage differences
+  near transitions reach 40.1/23.4 mV and are reported separately.
+  Thus the digital-only test does not reproduce the analog replay's
+  62.1 ns numerical stall. This narrows the next isolation to analog
+  restoration/loading interaction; it does not identify a device/solver
+  mechanism or repair the parent link's incorrect captured bits.
+- Read-only, hash-bound observers under native stability root
+  `dll_qualification/15cac0ba813a9333/stability_screen/1cdf451bf81d3ee8/`
+  now measure the completed SS0/TT25 400-to-390 MHz steps. Both match the
+  original model within its amplitude/settling limits: SS0 amplitude error
+  1.627%, measured/predicted t90 80/90 ns; TT25 amplitude error 2.724%,
+  t90 95/92.5 ns. Their 410 MHz validations remain outstanding.
+- Independently measured native AC/PFD/delay models nevertheless fail the
+  phase-margin gate at TT25 and FF0. Minimum margin over the two static
+  clock states and averaged G/Y model is **67.042° SS0, 47.192° TT25,
+  34.408° FF0**, against 60° required. Corresponding averaged unity-gain
+  frequencies are 2.984/6.504/9.142 MHz. Passing step agreement does not
+  waive these failures or admit the remaining DLL qualification suite.
+- `completed_step_observations/` binds the two completed step reports;
+  `compensation_observations/` evaluates ideal added CTRL capacitance
+  0/1/2/4 pF using measured G/(Y+j*w*C). Extra 4 pF passes TT25 but FF0
+  remains at 50.653°. The bounded extension in `compensation_extension/`
+  evaluates 0/4/8/12 pF: extra 8 pF still gives only 59.822° at FF0;
+  extra 12 pF predicts 82.872/73.771/65.688° at SS0/TT25/FF0, with all
+  three model states passing at each condition. These are algebraic
+  small-signal estimates at the measured operating points, not new physical
+  or transient qualification. The observers preserve all original producer
+  and running fixture bytes and do not dispatch simulators.
+- `dll_storage_compensation.py` implements one source correction admitted
+  by these bound three-condition estimates. It preserves all existing
+  devices, subcircuits and public ports and adds six pairs of 30x30/10x10
+  um MIM capacitors at CTRL/VSS: nominal storage 4 to 16 pF. Changed original
+  capacitor topology/dimensions, repeated application, stale model inputs
+  and estimates belonging to another baseline layout are rejected.
+- Source context `dll_compensation/b16fb6056968bed0` has SHA256
+  `e37634f60cd95b032ad8114dfc15debc3de8f3a9436853cc79bd010feb0deea4`.
+  Its local-delay/local-comparator layout `dll_layout/35555c8719890933`
+  passes **DRC 0 and LVS**, with 531 devices versus the original 519.
+  Extraction and independent RC audit are running through the existing
+  isolated DLL flow. No canonical source, live baseline or selected PHY
+  pointer changes. New extracted model/margins, source/native acquisition,
+  steps, all fifteen PVT conditions, recovery/readiness/OTA and full PHY
+  admission remain required. All **638 regression tests pass**, no skips.
+
 Matched corrected-driver/current-LVT link diagnostic implemented:
 
 - The completed native-driver comparison `65d922eb5c270776` retains the
