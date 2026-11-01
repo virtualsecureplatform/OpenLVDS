@@ -500,12 +500,23 @@ Current bring-up evidence on 2026-10-31:
   The unloaded replica monitor remains untouched. One structural test proves
   the modified core equals the passing matched DC intervention and preserves
   the existing control. No clock or physical/native improvement is claimed.
+  Dedicated physical/native producers now bind identity
+  `unclamped_fast_restore`, `decision_clamped=false`, zero clamp units and no
+  clamp reference. They retain the exact source, unloaded monitor, nine-port
+  order, restoration widths and original native bias/digital load. Layout
+  requires all three complete source traces with one edge per checked period,
+  followed by DRC/LVS and an independent RC audit. Six source/physical identity
+  tests pass; parallel replay tests cover both completion and one-child
+  failure, including truthful unclamped result metadata. Service
+  `openlvds-unclamped-restore-native-continuation` waits on the actual source
+  owner before attempting these stages. No new layout or native result exists
+  while the source screen remains incomplete.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 386 tests, 385 passed and one skipped in the pinned ngspice
+- Last full unit suite: 392 tests, 391 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.

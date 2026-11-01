@@ -1834,3 +1834,24 @@ matched DC intervention, including the unchanged control path. Source root
 `clamped_captured`/`clamped_sharp_control` labels refer to modified cases only;
 the selected source has no CO clamps. New source-clock and physical/native
 evidence are required before this candidate can replace the VREF-clamped one.
+
+The unclamped candidate now has dedicated physical/native producers and a
+source-to-native host continuation. Identity `unclamped_fast_restore` requires
+`decision_clamped=false`, zero parallel clamp units, no clamp reference, the
+unloaded monitor and exact restoration widths [[8,4],[16,8],[16,8]]. The source
+gate remeasures all three actual cached traces and checks exact source identity;
+each checked period must contain one output edge. Layout moves only the six
+unloaded monitor devices beside the first inverter, preserving every device
+and the relative order of all others. Native preparation then requires passing
+DRC/LVS and independent RC connectivity audit, with exact original nine-port
+order, shared bias/digital RX load, both original 80 ns stimuli and scoring.
+
+Six targeted source/physical tests pass, including rejection of VREF-clamped
+evidence, repeated edges, wrong restoration widths and nonzero clamp metadata.
+Parallel replay tests cover both independent fixtures completing and one
+simulator failure without interrupting the other, and require explicit
+unclamped result metadata. Service
+`openlvds-unclamped-restore-native-continuation` waits on the actual source
+owner, with receipts in `receiver_clamp/2c86c40885f97e87/native_continuation/`.
+It may attempt physical/native stages only after the complete source screen.
+No new physical/native result is claimed while that gate remains incomplete.
