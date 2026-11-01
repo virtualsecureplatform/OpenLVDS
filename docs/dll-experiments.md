@@ -2160,3 +2160,20 @@ selector before editing it. Existing scientific producer files remain unchanged.
 This prepares the dispatch path only: no LVT component/link fixtures are
 created before audited physical/native evidence exists. Full regression:
 417 tests, 416 passing and one skipped in the pinned ngspice environment.
+
+Native DLL TT/25 acquisition in `dll_qualification/15cac0ba813a9333/loop_tt_25`
+now completes the original 1700 ns transient and passes the original
+1200–1500 ns measurement-window gates: control ripple 1.671669 mV,
+feedback error 10.840051 ps and quarter delay 659.955500–660.204682 ps
+(625 ± 100 ps requirement). Cadence and omitted-pulse recovery also pass.
+Unwrapped marker sections are 660.036865, 649.233106, 639.479979 and
+640.925721 ps; marker total is 2589.675671 ps. Mean power is 6.897270 mW,
+recorded here without claiming complete power/headroom qualification.
+
+Deck, waveform and raw SHA256 values reproduce the actual files. Waveform
+SHA256 is `74bcbe8432081448308cb2b7dff6cada2d8c20a9bdefc407215707672c8b0ee8`;
+raw SHA256 is `f21c06586f3720a21d2bdd1954b4a8d3e082b1057504a793b4e26459bf2961ae`.
+Together with SS/0 and all 21 selected static offsets this yields 23 passing
+native screen cases. FF/0 acquisition is queued under the shared six-slot
+budget. The measured three-corner native model, remaining 312 fixtures and
+all required native stability/PHY gates stay held until the full screen passes.

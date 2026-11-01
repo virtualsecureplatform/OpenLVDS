@@ -55,14 +55,19 @@ Current bring-up evidence on 2026-10-31:
   `dll_qualification/15cac0ba813a9333` now runs its 24-case screen (21 selected
   static offsets and three native loops); remaining 312 fixtures are held for
   the measured model. All 21 selected static offsets now pass, with exact
-  SS/0, TT/25 and FF/0 coverage at 0, ±50, ±150 and ±300 ps. The acquisition
+  SS/0, TT/25 and FF/0 coverage at 0, ±50, ±150 and ±300 ps.
   SS/0 acquisition now completes and passes: CTRL variation 1.849904 mV,
   feedback error 19.010343 ps and quarter delay 668.380426–668.485247 ps.
   The omitted-pulse section check also passes (668.412/642.798/633.563/632.785 ps);
-  mean power is 8.451226 mW. TT/25 acquisition is running and FF/0 remains
-  pending. No measured-model or full-native qualification result is claimed. The
+  mean power is 8.451226 mW. TT/25 acquisition also completes and passes:
+  CTRL variation 1.671669 mV, feedback error 10.840051 ps and quarter delay
+  659.955500–660.204682 ps. Cadence and omitted-pulse section checks pass;
+  section delays are 660.037/649.233/639.480/640.926 ps and mean power is
+  6.897270 mW. Its actual deck, waveform and raw hashes match the report.
+  This yields 23 passing screen cases; FF/0 is queued for a shared slot.
+  No measured-model or full-native qualification result is claimed. The
   handoff holds on failed gates, ended producers or changed inputs. Native
-  acquisition and omitted-pulse timing remain unproven.
+  acquisition/recovery at remaining required conditions remains unqualified.
 - The early-publication RX (`rx_early_physical_v1`) passes physical DRC/LVS,
   strict topology checks and an independent exact-RC connectivity audit. All
   12 loaded admissions pass. All four native continuous-data duty/jitter/skew
