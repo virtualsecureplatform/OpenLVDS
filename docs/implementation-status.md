@@ -3,66 +3,50 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
-Completed receiver failure motivates passive common-mode corrections; both initial DC pilots pass:
+Current bring-up state (2026-11-01):
 
-- Corrected-driver replay `receiver_current_pins/bb736100f334c145` completes
-  the full 80 ns fixture and still has **22 missing clock edges**. None of
-  those missing-edge records has an input midpoint below 100 mV. Improved
-  driver amplitude alone does not solve the receiver. Bound observer
-  `completed_headroom_diagnosis/` measures 50 frontend differential zero
-  crossings but only 32 CO and 27 restored-clock crossings at 0.9 V.
-  Frontend common mode spans **0.735–0.854 V**, minimum own-halfcycle
-  differential magnitude 31.945 mV; CT spans **27.82–131.46 mV**.
-  These measurements motivate testing decision-stage headroom. CT voltage
-  alone does not establish saturation without VDSAT.
-- The actual load network is R directly to VREF, 2R to VREF and 2R to
-  ground in parallel. Its nominal unloaded center is **0.75*VREF=0.9 V**,
-  with R/2 differential load resistance. `receiver_common_mode.py` implements
-  two bounded alternatives while preserving the input pairs, decision
-  devices, restorers, reference currents and public ports:
-  `reference_return` changes only the two grounded load-leg return nodes
-  to VREF, targeting 1.2 V at unchanged R/2; `rail_pullup` adds one matched
-  R from each frontend output to VDDD, targeting
-  0.5*VREF+VDDD/3=1.2 V with R/3 resistance. The latter trades gain for
-  bandwidth. These are passive-network nominal values, not assumed loaded
-  operating points or timing results.
-- Matched SS40 source context `receiver_common_mode/cfd8597a4a88cf85` is
-  complete. **Control and both corrections pass all twelve original DC
-  decisions and the observed twelve-device 1.95 V project screen.**
-  Ideal zero-volt current meters and one-ohm transresistance outputs
-  measure actual tail/replica currents without changing terminal potentials;
-  physical candidate files remain uninstrumented. All original 144 ns
-  stimuli, fixed supplies and numerical policies are retained.
-- Minimum settled tail VDS across the twelve points improves from
-  **34.012 mV control** to **182.660 mV reference-return** and
-  **248.887 mV rail-pullup**. Settled tail-current magnitudes span
-  73.882–344.727 uA, 281.481–364.782 uA and 320.844–361.099 uA respectively.
-  Actual current is measured rather than inferred from unchanged widths.
-  Remaining PVT, dynamic clocks, layout/extraction and native/full-PHY
-  qualification remain open; neither correction is automatically selected.
-- The 100:1 matched source-link control `analog_link_pilot/1756da2637c3e420`
-  was separately verified numerically stalled near 81.808 ns: only
-  0.057883 ps accepted progress in 40.034 seconds while CPU time increased,
-  with recent accepted timesteps down to 0.05835 fs. Receipt
-  `resident_jobs/current_link_control_stall/after_stop.json` records
-  89 archived files, all original hashes unchanged, all old processes gone
-  and unchanged six-slot inodes. The control is inconclusive, not an
-  electrical failure, and the paired comparison remains incomplete.
-- `continue_current_lvt_corrected.py` dispatches only the already-prepared
-  110:1 child `analog_link_pilot/86dc1c67c50cb1a2`, owned by
-  `openlvds-corrected-current-lvt-link`. It validates the retirement receipt,
-  archived/child/source-admission bindings and uses the original frozen
-  scientific fixture and fair lease. Even a successful child cannot mark
-  the pair complete or qualify the PHY. Partial output cannot be overwritten.
-- Exact-driver benchmark `driver_exact_benchmark/2c5e22ac31f7529b` now
-  **passes both full SF40/FF0 comparisons** and all original driver metrics.
-  Each compares 416 differential crossings: maximum timing errors
-  0.416/0.437 ps, differential plateau differences 0.677/0.698 mV and
-  common-mode differences 0.504/0.756 mV. No live model/catalog is replaced.
-  All **656 regression tests pass**, no skips, including passive-network
-  center/resistance checks, exact source-change guards, current-observer
-  validity, retirement/partial-output guards and prevention of paired/PHY
-  admission from a standalone corrected child.
+- **Both weaker receiver corrections pass all fifteen source DC cases.**
+  `receiver_soft_common_mode_matrix/d3271555fcb702b9` retains every original
+  144 ns/twelve-point fixture, fixed supply, measured current and observed
+  twelve-device stress gate. Two/three series resistor units to VDDD target
+  unloaded common modes of 1.08/1.028571 V. At SS/40, minimum sampled tail
+  VDS is 139/101 mV versus 34 mV control, while SF high-common-mode
+  sensitivity remains passing. This is source admission, not native or PHY
+  qualification. The stronger 1.2 V alternatives are rejected at SF corners.
+- The new source-clock contexts are `receiver_clamp/efcc143161073193`
+  (two-unit pull-up) and `receiver_clamp/1ea95c4cfc1e34f4` (three-unit).
+  Their unchanged reference controls independently complete all 47 periods
+  with zero missing edges. Actual waveforms are byte-identical to the
+  previously completed reference; active libraries agree apart from comments
+  and blank lines, and decks agree apart from include paths. The modified
+  captured-clock cases are running. Their sharp controls and full dynamic
+  verdicts are still pending.
+- Workflows for new geometry/extraction/native tests, all sixty receiver
+  component conditions and a corrected 110:1-driver/native-receiver coupled
+  diagnostic are implemented and waiting behind exact source/native gates. Continuations independently lease from the
+  six existing SPICE slots. They do not select a PHY or publish a release.
+- **The 16 pF DLL passes its first SS/0 source-acquisition case.** The full
+  original 1500 ns trace gives 10.039 ps maximum feedback error,
+  10.690 ps quarter-phase error and 0.745 mV control ripple, versus
+  2.576 mV ripple for the matched 4 pF source control. TT/25 and FF/0
+  acquisition remain required. New DRC/LVS/extraction/RC audit pass; native
+  screening, fresh measured stability and the full qualification remain gated.
+- The corrected 110:1 driver's fifteen schematic cases pass; its native
+  component matrix is still running. Exact-resistor SF/40 and FF/0 waveform
+  comparisons pass, but no live model or catalog is silently replaced.
+- Both earlier matched driver/source-receiver links were verified numerically
+  stalled, archived and retired with original hashes and all slot inodes
+  preserved. Their partial results remain inconclusive. The original
+  frontend-local native receiver loses 22 edges even with corrected-driver
+  recorded pins; this motivates the new bias correction, not a relaxed gate.
+- The last full regression passes **all 700 tests**, with no skips. Electrical
+  closure still requires new receiver clock/native/component/link results,
+  full driver and DLL evidence, aperture, long-payload/real-clock link cases,
+  exact RC certificates and final artifact/release validation.
+
+The entries below preserve the laboratory history. Earlier running states and
+candidate pilots describe their observation time; the summary above reflects
+the current branch. Detailed immutable receipts appear in the dated entries.
 
 Rejected baseline DLL work retired; corrected-driver source matrix passes:
 
@@ -5227,3 +5211,25 @@ Corrected native-driver/native-receiver coupled diagnostic prepared on 2026-11-0
   diagnostic with one actual fair lease and no outer lease. A completed
   electrical failure is recorded as a failure, not promoted or automatically
   retried. Actual new coupled-link results remain pending upstream gates.
+
+
+Completed unchanged clock-control reproducibility audit on 2026-11-01:
+
+- `receiver_soft_common_mode_matrix/d3271555fcb702b9/completed_clock_controls/read.py`
+  revalidates the completed original clock producer using cached evidence only,
+  verifies both new completed reference controls and every saved source/deck/
+  waveform/runtime/code binding, and retains an immutable summary.
+- The complete active library statements are equal after excluding comments
+  and blank lines, including unchanged receiver, native shared-bias and
+  digital RX closures. Complete original numerical/stimulus decks match after
+  replacing only their include paths. Both independently simulated waveform
+  files are byte-identical to the original reference, and all transport/node
+  observations agree exactly. Each has 47 periods with zero missing or
+  repeated edges. Neither partial candidate trace is read or reused.
+- Both duplicate reference jobs had already completed when this audit ran;
+  no healthy process was stopped. The two weaker-circuit captured cases are
+  actively simulating, with sharp controls still queued. No weaker-candidate
+  source-clock or native qualification is inferred from the reference results.
+- Architecture and top-level status prose now reflect the rejected stronger
+  corrections, full weaker source admission and remaining dynamic/native gates.
+  Canonical scientific code remains unchanged from the 700-test regression.

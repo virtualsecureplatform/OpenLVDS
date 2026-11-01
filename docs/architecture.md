@@ -21,30 +21,35 @@ source DC cases and nominal source rate test, but fails the captured and
 sharp-clock controls. Doubling its tail width improves the captured result
 but still loses edges, so these variants are held before native admission.
 
-The immediate LVT correction preserves its circuit and localizes the complete
-frontend mirror, tail and resistor-load network with the decision chain.
-This removes a routing-capacitance regression that was already losing
-transitions before the decision stage. Its DRC/LVS checks pass. Native
-sharp-clock testing now passes with zero missing edges; the retained
-captured stimulus improves from 39 missing edges to 18 and still fails.
-A separate diagnostic tests the same receiver with completed corrected-driver
-pin waveforms; it also fails, with 22 missing edges. Its frontend common mode
-is only 0.735–0.854 V, with the decision-tail node at 28–131 mV. The existing
-passive load network nominally centers the frontend at 0.75*VREF (0.9 V).
-Two bounded passive corrections now target 1.2 V: returning the grounded
-load legs to VREF preserves differential resistance/gain; adding matched
-pull-ups to VDDD trades some gain for higher bandwidth. Both pass the SS/40 °C
-DC/current/twelve-device screen. Full source PVT, clocks, new physical/native
-models and sampling margins remain required. No receiver alternative is
-promoted into the canonical analog source automatically.
+The LVT layout localizes the complete frontend mirror, tail and resistor-load
+network with the decision chain. This reduces the routing capacitance, but the
+native receiver still loses captured clock edges. Completed corrected-driver
+pin replay also fails: frontend common mode is only 0.735–0.854 V and the tail
+node spans 28–131 mV. The passive load network nominally centers each summing
+node at 0.75*VREF (0.9 V). Terminal voltages motivate a headroom correction;
+they do not establish a BSIM operating region without VDSAT.
 
-The OTA DLL also needs a compensation correction. Independently measured
-native loop models pass the 60° phase-margin gate at SS/0 °C but fail at
-TT/25 °C and FF/0 °C. A separate candidate increases CTRL storage from
-nominally 4 pF to 16 pF while preserving every existing device and adding
-twelve MIM capacitors. Its layout passes DRC/LVS. Measured-model estimates
-motivate this change; its own extracted margins, acquisition, frequency
-steps, recovery and full PVT qualification remain required.
+The current source-qualified alternatives add a matched pull-up from each
+summing node to the stable 1.8 V digital rail. Two or three original precision
+poly resistor units in series give unloaded centers of 1.08 V or 1.028571 V,
+with equivalent load resistances of 0.4R or 3R/7 instead of R/2. Every original
+input, decision, restoration and bias device remains. Both alternatives pass
+all fifteen source DC/current/twelve-observed-device stress cases. All added
+resistor segments stay in the local frontend row when layout is admitted.
+Source clock tests are running; new DRC/LVS/extraction, native transport,
+components and coupled-link timing remain gated and unproven. The earlier
+1.2 V corrections are rejected because they lose high-common-mode sensitivity
+in SF corners. No receiver alternative is promoted into the canonical source.
+
+The OTA DLL correction increases nominal CTRL storage from 4 pF to 16 pF by
+adding twelve MIM capacitors while preserving every original device. The
+4 pF native model fails the required phase margin at TT/25 °C and FF/0 °C.
+The new layout, extraction and independent RC audit pass, and the first full
+SS/0 °C source-acquisition case passes with lower control ripple. Remaining
+source acquisition, fresh native margins, steps, recovery, readiness, OTA
+operating points and full PVT qualification are still required. The corrected
+110:1 native driver likewise remains under component qualification; these
+separate candidates have not yet established a usable, released PHY.
 
 ```mermaid
 flowchart LR
