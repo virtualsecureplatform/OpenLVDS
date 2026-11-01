@@ -422,8 +422,10 @@ Current bring-up evidence on 2026-10-31:
   existing inverter definitions: P/N widths become 8/4 → 16/8 → 16/8 µm.
   Final output drive and overall polarity are retained. Two structural tests
   verify only those instance bindings change and the control remains identical.
-  Service `openlvds-fast-restore-source-screen` is live and running its control under the
-  unchanged six-slot limit. No electrical, physical or native improvement is claimed.
+  The unchanged control and modified captured source case now complete: each
+  recovers all 47 checked periods with no missing or repeated edges. The sharp
+  control is still running under the unchanged six-slot limit. Extracted
+  improvement remains unproven.
   Dedicated physical/native producers bind identity `vref_fast_restore` and
   widths [[8,4],[16,8],[16,8]], rejecting the previous restoration topology or
   source evidence. They retain VREF bias, unloaded monitor, all nine ports,
@@ -434,12 +436,23 @@ Current bring-up evidence on 2026-10-31:
   then requires all three source controls, physical DRC/LVS and independent RC
   audit before native replay. Eight targeted source/physical tests pass; no
   physical/native result is claimed yet.
+- `queue_receiver_followup.py` now waits for that complete native continuation,
+  requires both original replay controls to recover every checked edge, then
+  prepares the 60 schematic/native component cases and the saved loaded-link
+  diagnostic. The existing follow-up independently remeasures native evidence
+  before acquiring simulator slots. Service
+  `openlvds-fast-restore-component-link-queue` is waiting; its frozen code,
+  requirements, upstream manifest and original link receipts are under
+  `receiver_clamp/d2827cbf76f9eb80/component_link_continuation/`. Five targeted
+  tests cover active/incomplete/failed owners, selection, edge loss/repetition,
+  path confinement and the prepare/run handoff. These diagnostics cannot
+  qualify the PHY.
 - Xyce 7.10.0 parses the actual native receiver replay successfully in a
   parser-only check (`xyce_compatibility/ba10c72ce84ed18a`). It reports BSIM4
   4.5→4.6.1 substitution. Inspected upstream commit `e5b7b9bb5b221630` retains
   that fallback. No speed or numerical-equivalence result is claimed, and no
   running qualification campaign changes runtime.
-- Last full unit suite: 377 tests, 376 passed and one skipped in the pinned ngspice
+- Last full unit suite: 382 tests, 381 passed and one skipped in the pinned ngspice
   environment. The shared native budget
   remains six real simultaneous simulator leases. Captured active producers,
   fixed supplies, PVT coverage, voltage windows and timing margins are unchanged.

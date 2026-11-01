@@ -1713,3 +1713,21 @@ Service `openlvds-fast-restore-native-continuation` is waiting on the actual
 source owner before attempting these stages. Its receipt is under
 `receiver_clamp/d2827cbf76f9eb80/native_continuation/`. No stronger-restoration
 physical/native result is claimed while source comparisons are incomplete.
+
+The stronger-restoration unchanged control and modified captured source case
+now finish with all 47 checked periods containing exactly one output edge;
+neither misses an edge. The original sharp control remains in progress.
+This source result does not establish extracted restoration performance.
+
+`queue_receiver_followup.py` supplies the next automatic handoff without
+changing any captured scientific producer. Service
+`openlvds-fast-restore-component-link-queue` waits for the actual native owner
+to terminate and its state to report a complete passing replay. Both original
+native reports must recover every checked edge before it prepares all 60
+schematic/native component fixtures and the original loaded-link diagnostic.
+The existing follow-up repeats native waveform/provenance checks and runs
+components plus link under the shared six-slot budget. Failed native recovery
+holds both. Queue receipts freeze producer code, requirements, upstream
+manifest and the saved link inputs; all states explicitly remain unqualified.
+Five targeted tests pass, including the wait/prepare/run handoff and failure
+path without any downstream launch.
