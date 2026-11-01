@@ -2828,3 +2828,72 @@ Receiver bus-order experiment and captured-prefix diagnosis on 2026-11-01:
   `driver_restore/5a976ac3781d6832/held_after_control_abort.json`. Required
   coverage remains two, with zero complete, one numerically failed and one
   unstarted. No incomplete source comparison is admitted as passing.
+
+
+Decision-output placement improvement on 2026-11-01:
+
+- `layout_receiver_monitor_after.py` moves only the six unloaded XTRACK
+  fingers after all functional devices. `receiver_layout_reference.py`
+  shares the source-bound validation/cache/build policy for this experiment.
+  Before drawing it captures the original device multiset and refuses any
+  change of model, parameter, node, instance or count, including accidental
+  in-place mutation by a placement callback. Policy overrides cannot replace
+  source/admission metadata. Original source/DC gates are remeasured.
+- New `receiver_layout/8be736a2b11e5b89` passes zero-error DRC, strict
+  LVS and independent extracted connectivity audit: 70 devices, nine ports,
+  657.160 × 100.045 µm. Actual `placement_scope_recheck.json` verifies
+  identical source bytes and the complete flattened device multiset, with
+  every functional device retaining its relative order. CO-connected device
+  origin span falls from 71.10 to 28.44 µm. That geometric observation is
+  not itself a capacitance/timing verdict.
+- Extraction confirms the intended load change. Its
+  `input_loading_comparison.json` reports CO incident routing capacitance
+  35.91650 → 28.24057 fF; PP/PN 96.07947/103.21285 →
+  92.04186/99.08609 fF. NL/NR/PL/PR remain effectively unchanged at
+  60.71743/61.92006/62.79109/70.95722 fF; CL/CT also remain essentially
+  unchanged. These are full incident coupling wire values, excluding device
+  capacitance, and still require native timing verification.
+- GDS hash is
+  `7d668f0234c7419ec42e0cae7684ad95ef84ea7105484d7d6a80db55cea3ee32`.
+  Exact reduction preserves all 1012 capacitors and reduces 15236 resistors
+  to 12499, native hash
+  `178acfa1051455861d35031f91a4deeeea21edf12a9d844a680287e6bebd8293`
+  (`build/extracted/d351f4892818f104/openlvds_receiver_core/`). Five tests
+  cover exact monitor-only movement, malformed device mutations, missing
+  monitor fingers, immutable/partial caches and protected admission metadata.
+  Full regression: 487 tests, 486 passed and one skipped. Code `030df0e`.
+- Native `receiver_replay/822c30476339d818` prepares both original full
+  80 ns controls with the inherited declared 1 ps maximum step, 5 ps output
+  command and 15–75 ns analysis window. Actual `fixture_recheck/summary.json`
+  verifies both decks identical to previous native replay after include-path
+  normalization; the selected receiver matches its audited RC and both
+  unrelated replay closures (bias and digital RX) are identical. A manual
+  checker initially assumed the full-link library's roots; correcting it to
+  this replay's actual two protected roots passes without changing fixtures.
+- `openlvds-receiver-monitor-after-native.service` has both cases queued
+  independently on shared slot 3. Prepared full 60-case component campaign
+  `receiver_components/d6fda107c33d401a` and loaded link
+  `receiver_candidate_link/e8fada5af2c6c3a0` select this exact layout/replay.
+  `openlvds-receiver-monitor-after-followup.service` is active, waiting for
+  both native controls to pass. Actual downstream run preflights refuse
+  execution before native completion, preserve both manifests and start zero
+  simulations; replay `downstream_preflight/receipt.json` records this.
+  No voltage/timing/PVT/coverage gate or active pointer is changed.
+
+Capacity review on 2026-11-01:
+
+- Four live source diagnostics currently occupy four of six simulator slots.
+  Two observations 137.215 seconds apart measure advances of
+  0.000190260 / 0.000010773 / 0.000000361 / 0.000168779 ns for
+  PIDs 1191416 / 1194729 / 1199093 / 1207333. These are live processes,
+  not jobs declared terminal from an observation timeout. Required native
+  receiver and driver controls are still progressing in the other slots.
+- `resident_jobs/stalled_source_retirement_proposal/proposal.json` binds
+  exact three source-diagnostic units, process start ticks, commands/cgroups,
+  immutable available raw-prefix snapshots, scientific inputs and protected
+  completed-case proofs. It proposes retiring only these four simulations,
+  preserving incomplete evidence rather than admitting any result as passing.
+- This proposal changes the current practice of leaving live simulations
+  untouched, so user approval was requested asynchronously. Its status is
+  `pending_user_approval`; no simulator has been signalled. Native/PVT work
+  and the unchanged six-slot budget continue while a decision is pending.
