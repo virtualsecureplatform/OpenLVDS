@@ -5290,3 +5290,33 @@ Both weaker receivers complete captured-clock transport on 2026-11-01:
   sampling margin. Full component, corrected driver, DLL, aperture, real-clock
   long-payload and release obligations remain. Scientific code is unchanged
   from the passing 700-test regression; no solver policy or gate was relaxed.
+
+
+Manifest-bound completed native-driver remeasurement on 2026-11-01:
+
+- `driver_components/a1d220a703a6ac2b/completed_native_observations/read.py`
+  selects only completed native tasks named in the original thirty-case
+  manifest. It validates exact original coverage, pinned runtime/code/input
+  hashes, audited physical model and reconstruction of every original source
+  and complete 2540 ns fixture. Every DC/loaded-eye metric must reproduce its
+  saved result exactly; it never calls a simulator or the live campaign runner.
+- Immutable report `completed_native_observations/8f73f56942c52e6b/summary.json`
+  covers nine complete native TT/FF/SS cases, all three required temperatures,
+  and all nine pass. Settled differential output across both polarities is
+  307.698760–331.571597 mV into 100 ohms; common mode is
+  1.219365891–1.261373535 V. The campaign's additional loaded-eye screen
+  also passes, with minimum 279.746968 mV at native SS/40. Loaded-eye
+  limits remain separate from the settled DC voltage contract.
+- Combined with the already remeasured fifteen source cases, this is
+  twenty-four actual completed manifest conditions out of thirty. Directory
+  glob counts also included an observation summary and are not condition
+  counts. Status reporting now uses actual manifest tasks. FS/0, FS/25,
+  FS/40, SF/0, SF/25 and SF/40 native conditions remain required.
+- The report explicitly records `native_all_passed=false`; these nine cases
+  cannot replace the six missing native results, full driver campaign, RC
+  certificates, loaded coupling or PHY qualification. Model/code/fixtures and
+  live output files are unchanged. No additional SPICE slot was acquired.
+- Both weaker receiver captured-clock cases remain completely passing;
+  their exact sharp-control SPICE processes and source-clock owner are still
+  verified live. Existing source/native/physical continuations remain gated
+  on complete reports. Canonical code is unchanged since all 700 tests passed.
