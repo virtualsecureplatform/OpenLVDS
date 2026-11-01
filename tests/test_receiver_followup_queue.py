@@ -53,6 +53,19 @@ class ReceiverFollowupQueue(unittest.TestCase):
         self.assertTrue({'qualify_receiver_components.py', 'probe_receiver_fast_restore_candidate.py',
                          'run_ngspice.py', 'continue_receiver_candidate.py'} <= names)
 
+    def test_tail_profile_captures_selected_verifier_and_dispatches_exact_selector(self):
+        names = producer_names(profile='unclamped_tail_headroom')
+        self.assertTrue({'qualify_unclamped_receiver.py', 'continue_receiver_unclamped_candidate.py',
+                         'probe_receiver_tail_headroom_candidate.py', 'receiver_tail_timestep_retry.py',
+                         'receiver_tail_headroom_matrix.py', 'layout_receiver_tail_headroom_candidate.py'} <= names)
+        commands = queue.preparation_commands('unclamped_tail_headroom', Path('layout'), Path('replay'), Path('link'))
+        self.assertEqual(commands, (
+            ['scripts/qualify_unclamped_receiver.py', 'prepare-components', 'layout', '--replay', 'replay'],
+            ['scripts/qualify_unclamped_receiver.py', 'prepare-link', 'link', '--replay', 'replay'],
+            'scripts/continue_receiver_unclamped_candidate.py'))
+        with self.assertRaisesRegex(ValueError, 'Unknown'):
+            queue.preparation_commands('unexpected', Path('layout'), Path('replay'), Path('link'))
+
     def test_container_paths_map_to_host_with_kind_and_traversal_checks(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -66,8 +79,12 @@ class ReceiverFollowupQueue(unittest.TestCase):
                     queue_artifact(value, 'receiver_components', root)
 
     def test_queue_waits_then_prepares_and_checks_both_child_reports(self):
-        for native_passes in [False, True]:
-            with self.subTest(native_passes=native_passes), tempfile.TemporaryDirectory() as temp:
+        for native_passes, profile, replay_profile in [
+                (False, 'baseline', 'baseline'), (True, 'baseline', 'baseline'),
+                (False, 'unclamped_tail_headroom', 'unclamped_tail_headroom'),
+                (True, 'unclamped_tail_headroom', 'unclamped_tail_headroom'),
+                (True, 'unclamped_tail_headroom', 'unclamped_fast_restore')]:
+            with self.subTest(native_passes=native_passes, profile=profile), tempfile.TemporaryDirectory() as temp:
                 root = Path(temp)
                 screen = root / 'build/diagnostics/receiver_clamp/source'
                 upstream = screen / 'native_continuation'
@@ -84,6 +101,8 @@ class ReceiverFollowupQueue(unittest.TestCase):
                     (link / name).write_text('fixture')
                 layout = root / 'build/diagnostics/receiver_layout/selected'
                 replay = root / 'build/diagnostics/receiver_replay/selected'
+                replay.mkdir(parents=True)
+                (replay / 'manifest.json').write_text(json.dumps(dict(identity=dict(clamp_variant=replay_profile))))
                 components = root / 'build/diagnostics/receiver_components/selected'
                 candidate_link = root / 'build/diagnostics/receiver_candidate_link/selected'
                 calls = []
@@ -94,12 +113,15 @@ class ReceiverFollowupQueue(unittest.TestCase):
                         return queue.subprocess.CompletedProcess(command, 0,
                             stdout='active\n' if len(calls) == 1 else 'inactive\n')
                     self.assertGreaterEqual(len(calls), 3)
-                    if 'prepare' in command:
+                    if any(value.startswith('prepare') for value in command):
+                        tail = profile == 'unclamped_tail_headroom'
+                        component_command = ('prepare-components' in command if tail else
+                                             'scripts/qualify_receiver_components.py' in command)
                         self.assertTrue(all(not Path(value).is_absolute() for value in command[-2:]))
                         self.assertEqual(command[-1], str(replay.relative_to(root)))
-                        self.assertEqual(command[-2], str((layout if
-                            'scripts/qualify_receiver_components.py' in command else link).relative_to(root)))
-                        path = components if 'scripts/qualify_receiver_components.py' in command else candidate_link
+                        self.assertEqual(command[-3] if tail else command[-2],
+                                         str((layout if component_command else link).relative_to(root)))
+                        path = components if component_command else candidate_link
                         path.mkdir(parents=True)
                         (path / 'manifest.json').write_text('{}')
                         kwargs['stdout'].write(str(Path('/work/OpenLVDS') / path.relative_to(root)) + '\n')
@@ -116,15 +138,16 @@ class ReceiverFollowupQueue(unittest.TestCase):
                      patch.object(queue, 'completed_native', side_effect=[None, (layout, replay)] if native_passes
                                   else [None, ValueError('Native receiver continuation did not pass')]), \
                      patch.object(queue.subprocess, 'run', side_effect=child), patch.object(queue.time, 'sleep'):
-                    if native_passes:
-                        queue.run(screen, link, 'fixture.service')
+                    succeeds = native_passes and profile == replay_profile
+                    if succeeds:
+                        queue.run(screen, link, 'fixture.service', profile)
                     else:
-                        with self.assertRaisesRegex(ValueError, 'did not pass'):
-                            queue.run(screen, link, 'fixture.service')
+                        with self.assertRaisesRegex(ValueError, 'did not pass' if not native_passes else 'requested receiver profile'):
+                            queue.run(screen, link, 'fixture.service', profile)
                 saved = json.loads((screen / 'component_link_continuation/state.json').read_text())
                 self.assertFalse(saved['qualified_phy'])
-                self.assertEqual(saved['status'], 'diagnostics_passed' if native_passes else 'held_for_diagnosis')
-                self.assertEqual(len(calls), 5 if native_passes else 2)
+                self.assertEqual(saved['status'], 'diagnostics_passed' if succeeds else 'held_for_diagnosis')
+                self.assertEqual(len(calls), 5 if succeeds else 2)
 
 
 queue_artifact = queue.artifact

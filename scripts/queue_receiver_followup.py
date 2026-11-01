@@ -39,9 +39,19 @@ def completed_native(state, owner_active, root=ROOT):
     return layout, replay
 
 
-def producer_names(root=ROOT):
+def producer_names(root=ROOT, profile='baseline'):
+    if profile not in ['baseline', 'unclamped_tail_headroom']:
+        raise ValueError('Unknown receiver follow-up profile')
     names = {'queue_receiver_followup.py', 'continue_receiver_candidate.py'}
-    for name in ['qualify_receiver_components.py', 'probe_receiver_candidate_link.py']:
+    producers = ['qualify_receiver_components.py', 'probe_receiver_candidate_link.py']
+    if profile == 'unclamped_tail_headroom':
+        names.update(['qualify_unclamped_receiver.py', 'continue_receiver_unclamped_candidate.py'])
+        # The selector imports all three verifiers, and preparation captures the
+        # chosen verifier's complete scientific producer set.
+        producers += ['probe_receiver_unclamped_restore_candidate.py',
+                      'probe_receiver_lvt_restore_candidate.py',
+                      'probe_receiver_tail_headroom_candidate.py']
+    for name in producers:
         tree = ast.parse((root / 'scripts' / name).read_text())
         value = next(ast.literal_eval(node.value) for node in tree.body
                      if isinstance(node, ast.Assign) and any(
@@ -50,20 +60,36 @@ def producer_names(root=ROOT):
     return names
 
 
-def run(screen, link, unit):
+def preparation_commands(profile, layout, replay, link):
+    if profile == 'baseline':
+        return ([ 'scripts/qualify_receiver_components.py', 'prepare', str(layout), str(replay)],
+                ['scripts/probe_receiver_candidate_link.py', 'prepare', str(link), str(replay)],
+                'scripts/continue_receiver_candidate.py')
+    if profile == 'unclamped_tail_headroom':
+        return (['scripts/qualify_unclamped_receiver.py', 'prepare-components', str(layout), '--replay', str(replay)],
+                ['scripts/qualify_unclamped_receiver.py', 'prepare-link', str(link), '--replay', str(replay)],
+                'scripts/continue_receiver_unclamped_candidate.py')
+    raise ValueError('Unknown receiver follow-up profile')
+
+
+def run(screen, link, unit, profile='baseline'):
+    preparation_commands(profile, Path('layout'), Path('replay'), Path('link'))
     screen = artifact(str(screen), 'receiver_clamp')
     link = link.resolve()
     if not link.is_relative_to(ROOT / 'build/link'):
         raise ValueError('Use an original saved link reference')
     upstream = screen / 'native_continuation'
     upstream_manifest = json.loads((upstream / 'manifest.json').read_text())
-    files = [ROOT / 'scripts' / n for n in producer_names() | set(upstream_manifest['code'])]
+    names = producer_names() if profile == 'baseline' else producer_names(profile=profile)
+    files = [ROOT / 'scripts' / n for n in names | set(upstream_manifest['code'])]
     files += [upstream / 'manifest.json', screen / 'manifest.json', ROOT / 'requirements.json',
               ROOT / 'scripts/env.sh', link / 'summary.json', link / 'bench.cir',
               link / 'library.spice', link / 'bench.cir.prn']
     identity = dict(producer_unit=unit, screen=str(screen.relative_to(ROOT)),
                     link=str(link.relative_to(ROOT)),
                     inputs={str(p.relative_to(ROOT)): digest(p) for p in files})
+    if profile != 'baseline':
+        identity['receiver_profile'] = profile
     folder = screen / 'component_link_continuation'
     folder.mkdir(exist_ok=True)
 
@@ -110,13 +136,15 @@ def run(screen, link, unit):
                 save('waiting_for_native_replay', owner_state=owner, native_state=state['status'])
                 time.sleep(10)
             env = [str(ROOT / 'scripts/env.sh'), '--ngspice', 'python3']
-            components = artifact(execute('prepare_components', env + [
-                'scripts/qualify_receiver_components.py', 'prepare', str(layout.relative_to(ROOT)),
-                str(replay.relative_to(ROOT))]), 'receiver_components')
-            candidate_link = artifact(execute('prepare_link', env + [
-                'scripts/probe_receiver_candidate_link.py', 'prepare', str(link.relative_to(ROOT)),
-                str(replay.relative_to(ROOT))]), 'receiver_candidate_link')
-            execute('run_followup', ['/usr/bin/python3', 'scripts/continue_receiver_candidate.py',
+            if profile != 'baseline':
+                selected = json.loads((replay / 'manifest.json').read_text())['identity']
+                if selected.get('clamp_variant') != profile:
+                    raise ValueError('Native replay differs from the requested receiver profile')
+            component_command, link_command, follower = preparation_commands(
+                profile, layout.relative_to(ROOT), replay.relative_to(ROOT), link.relative_to(ROOT))
+            components = artifact(execute('prepare_components', env + component_command), 'receiver_components')
+            candidate_link = artifact(execute('prepare_link', env + link_command), 'receiver_candidate_link')
+            execute('run_followup', ['/usr/bin/python3', follower,
                     str(replay), str(components), str(candidate_link), '--producer-unit', unit])
             reports = {}
             for name, path in [('components', components), ('link', candidate_link)]:
@@ -137,5 +165,6 @@ if __name__ == '__main__':
     parser.add_argument('screen', type=Path)
     parser.add_argument('link', type=Path)
     parser.add_argument('--producer-unit', required=True)
+    parser.add_argument('--receiver-profile', choices=['baseline', 'unclamped_tail_headroom'], default='baseline')
     args = parser.parse_args()
-    run(args.screen.resolve(), args.link.resolve(), args.producer_unit)
+    run(args.screen.resolve(), args.link.resolve(), args.producer_unit, args.receiver_profile)
