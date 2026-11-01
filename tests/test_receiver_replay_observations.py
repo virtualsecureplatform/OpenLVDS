@@ -18,6 +18,8 @@ class ReceiverReplayObservations(unittest.TestCase):
         for n in ['rise_enable.A', 'rise_enable.A.t0', 'rise_enable.A.n0']:
             self.assertIn('XRX:'+n, nodes)
         self.assertIn('XCR:openlvds_receiver_core__CO', nodes)
+        self.assertNotIn('XRX:serial', nodes)
+        self.assertNotIn('XRX:clk', nodes)
         with self.assertRaises(ValueError):
             probe.aliases(library.replace('fall_enable.A', 'unrelated'))
 

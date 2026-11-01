@@ -28,7 +28,11 @@ def aliases(library):
         matching = sorted(n for n in nodes if n == leaf or re.fullmatch(re.escape(leaf)+r'\.(?:t|n)\d+', n))
         if not matching:
             raise ValueError('Missing retained native capture observation '+leaf)
-        result.extend('XRX:'+n for n in matching)
+        # ngspice exports these two public ports under their parent names
+        # RXDATA/RXCLOCK, which the original nine vectors already include.
+        # Retain all internal RC fragments, but avoid duplicate port aliases
+        # that the strict raw-to-table exporter cannot name independently.
+        result.extend('XRX:'+n for n in matching if not (leaf in ['serial', 'clk'] and n == leaf))
     result.extend(instance+':openlvds_receiver_core__'+leaf
         for instance in ['XDR', 'XCR'] for leaf in ['PP', 'PN', 'CO', 'CL', 'CT', 'NBC', 'RESTORE0', 'RESTORE1'])
     return result
