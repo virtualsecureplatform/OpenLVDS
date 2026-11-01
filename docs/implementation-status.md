@@ -2101,3 +2101,14 @@ Decision-tail repair on 2026-11-01:
   0.676372 V. The LVT pair gives essentially the same internal attenuation.
   This supports a front-end bandwidth limitation in addition to the measured
   DC headroom issue; tail-repair native timing must demonstrate improvement.
+
+- The unclamped follow-up selector now also supports `unclamped_tail_headroom`,
+  dispatching its exact source factory and native verifier into the unchanged
+  sixty component fixtures and original loaded link. It requires explicit
+  tail width 16 µm, scale 0.25 and standard first-stage NFET metadata; carrying
+  reduced-tail metadata under an older profile is also rejected. Four selector
+  tests pass, including transitive producer capture and restoration after an
+  exception. Both previous standard/LVT follower services were confirmed
+  terminal before the selector changed; the live tail native continuation
+  does not capture this selector. No tail component/link artifact or simulation
+  is claimed before its actual physical/native model is available.
