@@ -983,3 +983,48 @@ The live full-DLL continuation has advanced to `running_full_336_native_cases`.
 Its scientific child runs the original full qualification, followed by all
 fifteen stability corners only on a full native pass. Recovery, readiness,
 OTA, RC and actual coupled DLL timing remain required afterward.
+
+## Geometric-cap36 pilot passes all three points
+
+Pilot `driver_source_pilot/2dc8b9a5062d0dc9` completes all six cases and
+passes the unchanged reference checks at all three declared PVT points:
+
+| PVT | Negative / positive common mode, mVpp | Combined calibrated transition range, ps |
+| --- | --- | --- |
+| TT25 | 89.971 / 88.822 | 320.146–324.585 |
+| SS25 | 117.549 / 116.130 | 307.017–317.547 |
+| FF40 | 141.813 / 142.180 | 319.706–329.673 |
+
+Every trace has 44 monotonic 20–80% transitions and 22 rising output edges.
+Each point uses its own solved negative and positive DC levels; the final
+edge results do not assume symmetry. This resolves the observed SS
+common-mode/fast-edge failures in the bounded pilot while preserving FF40.
+FF40 still has only about 7.8 mV common-mode headroom to the 150 mVpp
+reference, so physical margin and the remaining process/temperature cases
+cannot be inferred from these results.
+
+Observed IO/digital powers across these six cases are
+28.496–28.693 / 1.136–1.292 mW per driver, and the largest added-MOS terminal
+difference is approximately 4.067 V. These remain source observations,
+without native power/device-stress or PHY admission.
+
+The complete read-only pilot verifier remeasured all six raw/export results,
+both DC calibrations and all three pair reports before preparing
+`driver_shape_source/b1325bf847630063`. Unit
+`openlvds-geometric-driver-source-pvt.service` now owns its thirty source
+cases: all five processes × 0/25/40 C × both initial logic polarities.
+The fixed 1/3/8-cap36 circuit, rails, reference, load, stimulus and time
+step remain unchanged. Two P1 workers use the existing six-slot dispatcher;
+there is no outer lease or retry of partial output.
+
+Only complete passing source evidence can produce the next readiness
+receipt:
+
+```sh
+scripts/env.sh --ngspice /usr/bin/python3 scripts/probe_geometric_driver.py verify \
+  /work/OpenLVDS/build/diagnostics/driver_shape_source/b1325bf847630063
+```
+
+That receipt still sets physical admission and PHY qualification false.
+Power/stress review, a compact physical driver, native PVT, coupled timing,
+the final current apertures and all release gates remain required.

@@ -5,6 +5,14 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-02):
 
+The calculated **1/3/8-cap36** driver now passes all six fresh TT25/SS25/FF40
+pilot cases. Calibrated transitions span 307.0–329.7 ps, and common-mode
+movement spans 88.8–142.2 mVpp. The complete pilot was independently
+remeasured before preparing the full thirty-case source matrix
+`driver_shape_source/b1325bf847630063`, now queued. The remaining PVT points,
+physical/native driver and coupled acceptance remain unproven. See the
+[complete pilot results](chain-restoration.md#geometric-cap36-pilot-passes-all-three-points).
+
 Receiver bring-up has passed **33/33 screens, 60/60 components and the new
 specification-admitted RC comparison**. All three C16 DLL stability screens
 pass, and full 336-case native qualification is active. The 2/4/8 driver
