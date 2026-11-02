@@ -10,6 +10,14 @@ development DLL retains the preceding charge-pump implementation. The OTA
 candidate under qualification uses the separate assembly described below; no
 electrical release has been published.
 
+Current chain restoration starts with the source-qualified original
+two-resistor TIA receiver: complementary frontend, W8 LVT decision pair,
+first standard inverter with resistive negative feedback, then two standard
+restoring inverters. The native clock/data receivers drive the extracted DDR
+capture core. Fresh specification screens and the two bounded later-buffer
+alternatives are described in [chain restoration](chain-restoration.md);
+the alternatives have not been physically qualified or selected.
+
 The receiver alternatives under qualification retain the complementary input
 frontend and change the following decision stage. The compact LVT candidate
 uses a low-threshold NMOS pair. The compact PMOS p8/t4 alternative uses a

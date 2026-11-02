@@ -5,6 +5,13 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-02):
 
+The current [chain-restoration implementation](chain-restoration.md) runs a
+fresh specification-based RX campaign and raw/reduced TX convergence
+isolation. `receiver_acceptance.json` records the revised admission policy:
+the earlier captured replay remains a stress diagnostic. Its failures below
+are preserved and do not serve as the new specification admission gate.
+No new RX or PHY admission has passed yet.
+
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
 | Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
