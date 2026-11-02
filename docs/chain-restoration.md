@@ -48,7 +48,7 @@ the unique ordered sixteen-word payload.
 
 These raw distances do not subtract measured aperture, and the short
 training is not qualified. The thirty wide-static cases remain required;
-the first schematic TT/0 case passes and subsequent cases are running.
+schematic TT/0, TT/25, TT/40 and FF/0 pass and subsequent cases are running.
 The baseline remains preferred; there is no evidence yet requiring either
 later-buffer alternative on these representative inputs.
 
@@ -230,6 +230,47 @@ Direct Linear Solver`; full completion is still pending. Both solvers are docume
 [ngspice manual](https://ngspice.sourceforge.io/docs/ngspice-manual.pdf).
 This bounded numerical control does not admit a circuit or replace RC checks.
 
+## Channel-model isolation
+
+The both-endpoints MOS-removal diagnostic remains live but takes very small
+timesteps around 7.0465 ns: one inspected last-step interval was approximately
+1.58e-20 s. It is not a terminal result and is not restarted. This behavior
+does not establish decap removal as a usable fix. The independent Sparse
+control also remains live.
+
+`channel_model_isolation/1eaa65d55aa8616a`, owned by
+`openlvds-channel-model-isolation.service`, now isolates the delayed channel
+with all original MOS and wire RC retained. It first requires three passive
+calibration fixtures at 25/50/100 ohm termination. Reflective cases use a
+10 ohm source; the matched case uses 50 ohms. Both the original T element and
+the zero-loss LTRA element must agree with each other and the independent
+analytic reflection series within 1 mV over the full twelve ns. The analytic
+calculation includes the exact initial DC state and every causal reflection
+arrival in the observation interval. This tests delay, DC gain and echoes;
+agreement between two equally wrong simulated waveforms cannot pass it.
+
+Only successful calibration starts the two bounded coupled controls:
+
+- `zero_delay` replaces only the four line elements with zero-volt shorts.
+  It retains package L/C, source resistance, termination, all devices and all
+  internal extracted R/C. It localizes the effect of delay and cannot qualify
+  the required cable.
+- `ltra_lossless` preserves every original line terminal and its original
+  delay/impedance. For each 50 ohm leg, LEN=1, L=Z0*TD and C=TD/Z0, with
+  R=G=0: clock legs use 60 nH/24 pF for 1.2 ns and data legs use 65 nH/26 pF
+  for 1.3 ns, including the original 100 ps data skew. It changes the numerical
+  transmission-line implementation while retaining the analytic two-port
+  transfer function. Coupled models, fixed supplies, stimuli, tolerances,
+  iteration budget and 1 ps maximum step remain unchanged.
+
+The ngspice manual explicitly notes that a zero-loss LTRA element may be
+more accurate than the T element because of implementation details
+([sections 6.1–6.2](https://ngspice.sourceforge.io/docs/ngspice-46-manual.pdf)).
+This is a documented representation control, not a claim that the T element
+caused the observed collapse. The calibration and coupled results remain
+pending. Every actual simulation uses its own P2 lease in the same six-slot
+dispatcher; no healthy simulation was stopped or outer lease added.
+
 ## Remaining closure
 
 Release still requires at least 256 training cycles, all forty-five link
@@ -239,6 +280,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1064 tests, no skips**. Actual
+The full pinned regression suite passes **1070 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.

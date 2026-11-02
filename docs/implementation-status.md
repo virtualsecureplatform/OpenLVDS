@@ -20,6 +20,10 @@ MOS-removal diagnostics and an original-device Sparse-solver control are
 running. Both single-endpoint removals fail with the reported node in the
 other endpoint. The both-endpoints removal has advanced past that time but
 remains unqualified. The causal gate holds the tap-endcap physical rebuild.
+An additional channel-model control retains all original devices and tests
+the delayed-line representation, with passive analytic/reflection calibration
+before coupled zero-delay and equivalent zero-loss LTRA diagnostics. Its
+results remain pending and cannot admit the PHY.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
