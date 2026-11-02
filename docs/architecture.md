@@ -120,6 +120,30 @@ source clocks, new geometry/LVS/RC audit, native
 transport, component conditions and coupled timing remain required before
 selection. No ideal comparator substitutes for the transistor circuit.
 
+The first differential factory's smaller amplifier fails SF/0 at the highest
+input common mode, while its larger amplifier passes. At the 142 ns sample,
+CO minus CL is -87.602 mV, but AMP_OUT is 743.433 mV, RESTORE0 is 702.085 mV
+and Q remains low. The observed-device stress screen passes. This is a source
+sensitivity failure in restoration, not loss of the first decision polarity.
+
+A separate fixed-supply trip characterization identifies a source-model offset:
+whole-width P16/N8 first inverter and P32/N16 reference switch at 740.391 and
+765.255 mV at SF/0. Their equal width ratio does not provide identical trip
+voltages in these models. The physical finger equivalents both switch at
+741.399 mV in the isolated unloaded test. This test uses one PVT and fixed
+1.8 V; it establishes neither loaded-reference behavior nor native timing.
+Evidence is `receiver_trip_reference/b5abcf678318f470`.
+
+`receiver_matched_trip_restore.py` addresses that mismatch in a new source
+family. Its reference uses two parallel copies of the exact first inverter,
+each P16/N8, preserving total width and reference strength. The flattened
+physical device/connectivity multiset is unchanged, with 87 or 90 devices for
+the two amplifier sizes. This does not transfer qualification: the new family
+has separate source fixtures and requires its own admissions. Full SF/0 and
+SS/40 DC pilots are running in `receiver_matched_trip_static/4815725ab130e6ee`
+and `48704bf4e6b7438d`. Prior source factories, reports and campaigns remain
+unchanged.
+
 A separate three-bus W32 routing experiment moves only CT, CO and CL below
 the critical row. Layout `receiver_layout/677ed99567c83bfb` passes DRC/LVS,
 extraction and independent RC audit. Explicit boundary wire capacitance falls
