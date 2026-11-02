@@ -96,8 +96,8 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
         placements.append(dict(instance=ident,cell=cell,bbox_um=bound,members=members,row=row))
         for pin, net in zip(pin_order,nodes):
             _,px,py = info['ports'][pin]
-            ends[net].append(dict(x=px+x,y=py+cy,pin=pin,bbox=bound,row=row))
-        return bound[2]+28.
+            ends[net].append(dict(x=px+x,y=py+cy,pin=pin,bbox=bound,row=row,instance=ident))
+        return bound[2]+44.
 
     def tile(pair,cursor,cy,row):
         p,n = pair
@@ -129,14 +129,14 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
         cursor = device(cml,branch_x,cy,row)
         for i in range(2):
             r = named(f'__XR{"L" if branch==0 else "R"}{i}')
-            device(r,branch_x+i*25.,cy+25.,row)
+            device(r,branch_x+i*64.,cy+40.,row)
         for stage in range(3):
             pair = pair_by_name[named(f'__XB{branch}_S{stage}_0__XP_')['name']]
             cursor = tile(pair,cursor,cy,row)
             if stage<2: direct.add(pair[0]['nodes'][0])
         # Put the small DP/DN capacitor beside the last gate tile, and the
         # bridge devices and output MIM in the same local branch channel.
-        device(named('__XCDP' if branch==0 else '__XCDN'),cursor-25.,cy+45.,row)
+        device(named('__XCDP' if branch==0 else '__XCDN'),cursor-35.,cy+45.,row)
         for fragment in (['__XPR_', '__XNR_'] if branch==0 else ['__XPL_', '__XNL_']):
             cursor = device(named(top+fragment),cursor,cy,row)
         device(named('__XCOUTN' if branch==0 else '__XCOUTP'),cursor,cy,row)
@@ -196,8 +196,17 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
             edge = point['bbox'][0 if left else 2]
             track = math.floor((edge-5.)/5.) if left else math.ceil((edge+5.)/5.)
             while track in used_tracks: track += -1 if left else 1
-            used_tracks.add(track)
             ex = track*5.
+            # Never escape onto another child's capacitor plate or local
+            # wiring. A globally free M5 track alone does not make its
+            # M3/M4 landing safe. Check the full horizontal access corridor.
+            lo,hi = sorted([x,ex])
+            for child in placements:
+                if child['instance']==point['instance']: continue
+                x0,y0,x1,y1=child['bbox_um']
+                if y0-1.2<y<y1+1.2 and min(hi+1.2,x1)>max(lo-1.2,x0):
+                    raise ValueError('Unsafe escape from '+point['instance']+' onto '+child['instance'])
+            used_tracks.add(track)
             g.wire('metal3',x,y,ex,y,.8)
             g.via34(ex,y); via45(g,ex,y)
             g.wire('metal5',ex,y,ex,bus_y,3. if supply else 1.6)
