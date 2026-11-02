@@ -96,7 +96,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 785 tests**, with no skips. Electrical
+- The last full regression passes **all 791 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -104,6 +104,33 @@ Current bring-up state (2026-11-02):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — receiver RC comparison adapter and strict component handoff:
+
+- `validate_receiver_gain_balance_rc.py` adds the final receiver component
+  RC comparison path. It requires every one of the sixty original
+  source/native DC/rate reports, a passing complete component summary, and
+  the exact current gain/balance selector. Its unchanged cached selector
+  rechecks native transport and component evidence before model preparation;
+  missing prerequisites cannot dispatch from this path.
+- Physical replay and component layout identities must agree. The native
+  model must match the declared source factory, GDS and independent RC audit.
+  Quick-node reduction retains every non-wire device, port and directive,
+  with the same exact shared bias in both views. The comparison uses the
+  original full 60 ns TT/25 fixture, 100 ps maximum / 20 ps output steps and
+  original 20 ps edge / 20 mV plateau limits. Partial or unattested traces
+  are retained. Each actual simulation owns one fair priority-one lease.
+- Resource
+  `receiver_physical_followup/e0fd4ab9ad39d586/receiver_rc_followup` is live
+  and waits for its exact receiver component owner. Rejected dependencies
+  are retained without dispatch. No receiver RC comparison is admitted yet;
+  current W32 sharp-clock testing is still running, and physical/native and
+  all sixty component conditions remain required first.
+- The focused admission/model-binding/cache-policy tests and full regression
+  pass: **791 tests, no skips**. Driver and the independently verified RX/TX/
+  delay RC cases retain their existing evidence. Corrected DLL and analog
+  receiver comparisons and a consistent joint six-case certificate remain
+  open. Aperture, final coupled timing/payloads and PHY admission remain open.
 
 2026-11-02 — W32 full captured source clock passes:
 
