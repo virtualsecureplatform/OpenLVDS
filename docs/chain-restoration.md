@@ -564,6 +564,35 @@ queued. All three causal controls and this completed pilot have independent
 cached waveform remeasurement; no unfinished producer was invoked to obtain
 these observations.
 
+The completed first taper also has estimated differential 20–80% transition
+times of 151.740–158.267 ps over 44 edges. This estimate infers the positive
+steady-state level by symmetry from its initial negative operating point;
+it is not a compliance measurement. It nevertheless motivates separating
+fast gate restoration from output edge shaping: slowing the gates alone
+already worsens common-mode movement in the 400 ps control.
+
+`probe_driver_output_shape.py` implements one calculated symmetric MIM
+candidate, source context `driver_output_shape/8a7fdbf9ec16dd27`, owned by
+`openlvds-driver-output-shape.service`. It changes only the two existing
+output capacitors from 10×10 to 30×30 um on the first taper. The pinned TT
+MIM model's area/perimeter terms estimate 0.20658 versus 1.81978 pF per
+capacitor. Including the unchanged external 2 pF per pin gives a nominal
+capacitance ratio near 1.73. Simple capacitive scaling predicts roughly
+263–274 ps transitions; actual nonlinear waveforms must determine the result.
+The estimated minimum is close to 260 ps, so full PVT margin cannot be
+assumed even if this TT25 trial passes.
+
+Two otherwise matched 80 ns/1 ps TT25 cases start from opposite initial
+logic states and retain the same subsequent alternating cadence. They
+measure fresh negative and positive DC levels over 0–8 ns before evaluating
+the 20–75 ns transitions. No symmetry assumption is used in the final
+calibrated edge analysis. The experiment retains supply-current and added-MOS
+voltage observations, checks monotonic 20–80% transitions against the
+260–375 ps reference for this 800 Mb/s fixture, and reports the common-mode
+and DC reference comparisons. These are source pilot checks, not generator
+compliance or hardware selection. Both cases use individual fair P2 leases;
+no supply sweep, original-model replacement or healthy-job restart occurs.
+
 Release still requires at least 256 training cycles, all forty-five link
 conditions, 4096 nominal/512 corner payload bits, at least 200 ps margin after
 measured aperture subtraction, the sixty RX and thirty driver component
@@ -571,6 +600,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1104 tests, no skips**. Actual
+The full pinned regression suite passes **1108 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.

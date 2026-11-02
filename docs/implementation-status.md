@@ -70,6 +70,11 @@ improving on the baseline but remaining above the 150 mVpp reference. Its
 measured IO/digital powers are 26.0/1.21 mW and its largest added-device
 terminal difference is 4.04 V. The stronger taper remains queued. No PVT
 admission or physical selection is claimed.
+An additional fixed MIM-size pilot is queued on the first taper to separate
+fast gate drive from output edge shaping. It changes only the two existing
+MIMs from 10×10 to 30×30 um and measures both initial DC polarities for fresh
+transition calibration. Its calculated nominal edge times are near the
+lower reference limit; neither TT25 success nor PVT margin is assumed.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
