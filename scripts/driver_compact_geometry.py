@@ -82,7 +82,6 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
     pair_by_name = {p['name']:(p,n) for p,n in pairs}
     rows = defaultdict(list)
     direct = set()
-    used_tracks = set()
 
     def place(cell, nodes, pin_order, cursor, cy, members, row):
         info = physical_info(out,cell)
@@ -168,6 +167,51 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
         a,b = points
         g.wire('metal3',a['x'],a['y'],b['x'],b['y'],.8)
         routes.append(dict(net=net,kind='direct_metal3',length_um=abs(a['x']-b['x'])))
+    # Match globally distinct M5 tracks to physically safe access corridors.
+    # Greedy port-order allocation can consume a narrow corridor needed by
+    # another child, even though an unconstrained pin could move elsewhere.
+    access=[]
+    for net,points in ends.items():
+        for point in points:
+            x,y=point['x'],point['y']
+            left=point['pin'] in ['A','G','B','R1','C1']
+            edge=point['bbox'][0 if left else 2]
+            start=math.floor((edge-5.)/5.) if left else math.ceil((edge+5.)/5.)
+            candidates=[]
+            for step in range(80):
+                track=start+(-step if left else step)
+                ex=track*5.
+                lo,hi=sorted([x,ex])
+                if any(child['instance']!=point['instance'] and
+                       child['bbox_um'][1]-1.2<y<child['bbox_um'][3]+1.2 and
+                       min(hi+1.2,child['bbox_um'][2])>max(lo-1.2,child['bbox_um'][0])
+                       for child in placements):
+                    break
+                candidates.append(track)
+            access.append((point,candidates,net))
+    # Identical safe corridors on the two mirrored branches can share a
+    # supply drop. Every shared column carries exactly one electrical net.
+    grouped_access={}
+    for point,candidates,net in access:
+        k=net,tuple(candidates)
+        grouped_access.setdefault(k,[]).append(point)
+    access=[(points,list(k[1])) for k,points in grouped_access.items()]
+    owner={}
+    assigned={}
+    def match(index,seen):
+        for track in access[index][1]:
+            if track in seen: continue
+            seen.add(track)
+            if track not in owner or match(owner[track],seen):
+                owner[track]=index
+                assigned[index]=track
+                return True
+        return False
+    for index in sorted(range(len(access)),key=lambda i:len(access[i][1])):
+        if not match(index,set()):
+            raise ValueError('No safe M5 access assignment for '+access[index][0][0]['instance'])
+    for index,(points,_) in enumerate(access):
+        for point in points: point['escape_x']=assigned[index]*5.
     overall = [min(b[0] for b in uses_bounds(placements)),min(b[1] for b in uses_bounds(placements)),
                max(b[2] for b in uses_bounds(placements)),max(b[3] for b in uses_bounds(placements))]
     top_y = math.ceil(overall[3]+15.)
@@ -190,13 +234,7 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
         xs=[]
         for point in points:
             x,y = point['x'],point['y']
-            left = point['pin'] in ['A','G','B','R1','C1']
-            # Each M5 drop gets a globally distinct x coordinate, including
-            # across rows. Its M3 landing lies outside its child geometry.
-            edge = point['bbox'][0 if left else 2]
-            track = math.floor((edge-5.)/5.) if left else math.ceil((edge+5.)/5.)
-            while track in used_tracks: track += -1 if left else 1
-            ex = track*5.
+            ex = point['escape_x']
             # Never escape onto another child's capacitor plate or local
             # wiring. A globally free M5 track alone does not make its
             # M3/M4 landing safe. Check the full horizontal access corridor.
@@ -206,7 +244,6 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
                 x0,y0,x1,y1=child['bbox_um']
                 if y0-1.2<y<y1+1.2 and min(hi+1.2,x1)>max(lo-1.2,x0):
                     raise ValueError('Unsafe escape from '+point['instance']+' onto '+child['instance'])
-            used_tracks.add(track)
             g.wire('metal3',x,y,ex,y,.8)
             g.via34(ex,y); via45(g,ex,y)
             g.wire('metal5',ex,y,ex,bus_y,3. if supply else 1.6)
