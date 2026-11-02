@@ -56,7 +56,7 @@ Current bring-up state (2026-11-02):
 - **Separate receiver gain/balance experiments are running.** Matrix
   `receiver_gain_balance_matrix/f6d247d3b64483af` compares the exact P8/N8
   control with first-restorer P4/N8 and decision-input-pair W32 alternatives.
-  All three pass all six initial DC pilots; ten of fifteen full PVT cases
+  All three pass all six initial DC pilots; thirteen of fifteen full PVT cases
   are complete at this observation. The new source-clock, physical and native
   adapters preserve all admission gates. A conditional differential gain stage
   comparing CO with CL is the next topology fallback, not a selected circuit.
@@ -83,7 +83,9 @@ Current bring-up state (2026-11-02):
   traces. Maximum differential crossing error is 0.409331 ps; differential
   plateau and common-mode errors are 0.426267 mV and 0.476026 mV, within the
   original 20 ps/20 mV limits. Independent read-only remeasurement agrees.
-  This is one driver case; delay, DLL, receiver, RX and TX certificates remain.
+  Independent current-model RX, TX and delay-line RC remeasurement also passes.
+  Current corrected DLL and analog-receiver comparisons plus the joint
+  six-case certificate remain required.
 - Both earlier matched driver/source-receiver links were verified numerically
   stalled, archived and retired with original hashes and all slot inodes
   preserved. Their partial results remain inconclusive. The original
@@ -97,6 +99,40 @@ Current bring-up state (2026-11-02):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — matched pilot current observations and current digital RC evidence:
+
+- `receiver_gain_balance_matrix/f6d247d3b64483af/completed_pilot_observation/summary.json`
+  remeasures only the six complete matched pilots with the unchanged source
+  producer, requiring every child/variant report before any cached call.
+  Across their 72 settled samples per variant, P4/N8 changes CO by at most
+  0.065 mV and tail current by at most 0.0011 µA relative to P8/N8. Its
+  purpose remains restoration balance, not changing decision gain.
+- Pair-only W32 raises measured tail current by 3.019–59.690 µA at matched
+  sample points. Its absolute tail-current range is 294.290–379.793 µA,
+  versus 238.987–373.356 µA for control. The six-pilot cross-corner settled
+  CO polarity gap changes from 160.005 mV to 176.366 mV. Neither this gap
+  nor source DC correctness establishes dynamic restoration or inverter trip.
+  Full-fixture rail-current observations are not isolated receiver power.
+- Read-only receipt `current_digital_rc_observation/1711728db4fe8d29/summary.json`
+  validates existing attested full/fast early RX, direct-buffer TX and
+  delay-line traces against their exact current physical model hashes,
+  independent RC audits, producer/runtime, original complete 60 ns TT/25
+  fixtures and unchanged 20 ps edge/20 mV plateau comparisons. No simulator,
+  model, certificate or active pointer is changed.
+- RX native model `6def14fbd570903751f922c3a86132bbd801957c3dfd3d09c7c81729361515c3`
+  preserves both sets of sixteen data crossings and high valid; its worst
+  edge and plateau errors are 2.662596 ps and 0.854346 mV.
+- TX native model `cdf6cbd8a901e40f450f3e5a1824c05cb48b3a5de9663aa84d5b9ebd65829713`
+  preserves sixteen data and thirty-two forwarded-clock crossings; worst
+  errors are 2.991435 ps and 4.159472 mV.
+- Delay native model `114cb6db9709e846ad645c904dcd9a668f37c20b747fa6dc5dcd93ea37f99696`
+  preserves thirty-two crossings on every output; worst errors are
+  0.747545 ps and 0.078714 mV. All three component comparisons pass.
+  Alongside the independently verified current-driver case, four current
+  component RC cases now have evidence. Corrected DLL and analog-receiver
+  RC comparisons and a consistent joint six-case certificate remain required.
+  Digital functional/aperture/PVT and full PHY admission remain separate.
 
 2026-11-02 — complete 16 pF source acquisition and native-screen handoff:
 
