@@ -8,7 +8,7 @@ Current bring-up state (2026-11-02):
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
 | Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
-| Matched smaller amplifier | 15/15 | 3/3 | Pass, 87 devices | In progress |
+| Matched smaller amplifier | 15/15 | 3/3 | Pass, 87 devices | Fail: 16 captured edges missing, 0 sharp |
 | Matched larger amplifier | 15/15 | 3/3 | Pass, 90 devices | In progress |
 | Feedback inverter, two resistor units | 15/15 | In progress | Gated | Gated |
 | Feedback inverter, four resistor units | 15/15 | 3/3 | Pass, 79 devices | In progress |
@@ -165,10 +165,21 @@ qualification. Detailed evidence follows.
   and `866d09bdfac98b69` (90 devices, 903.26 by 129.20 micrometres) each pass
   zero-error DRC, LVS, extraction and independent RC audit, with nine ports.
   Fresh native contexts are `receiver_replay/5d6ec09cc0b5e515` and
-  `7e767d28755ed462`. Both full captured/sharp controls are in progress;
-  the smaller matched amplifier's complete sharp control now loses no edges,
-  while its captured waveform is still running. Neither variant has complete
-  native/component/PHY admission yet.
+  `7e767d28755ed462`. The smaller matched amplifier completes and fails:
+  sixteen captured transitions missing, zero sharp-control transitions
+  missing. The larger matched amplifier remains in progress. Neither has
+  native/component/PHY admission.
+- Complete smaller matched-amplifier stage observation is
+  `receiver_replay/5d6ec09cc0b5e515/amplifier_transport_observations/c00a01def73f960f`.
+  Eight falling periods are lost: one without positive CO-minus-CL, three
+  without positive AMP_OUT-minus-loaded-reference, seven without RESTORE0
+  crossing 0.9 V, and one despite that crossing. At the difficult 58.919554 ns
+  period CO-minus-CL improves to a -2.871 mV peak but never becomes positive.
+  Complete matched-fixture comparison
+  `receiver_decision_comparison/267a791ef8cd2149` binds unchanged stimuli,
+  numerical policies and shared bias/digital load across W8/N8, original
+  larger amplifier and matched smaller amplifier. The source-reference fix
+  restores fifteen-corner source sensitivity but does not close native timing.
 - Exact receiver reduction observation
   `receiver_layout/fe64cc74ba1efc50/exact_reduction_observation/e7268fd5ddd266ee`
   retains every capacitor/device/port and all eighteen native observation
@@ -177,6 +188,20 @@ qualification. Detailed evidence follows.
   boundary-current witnesses pass; maximum current disagreement is
   6.661338e-15 A at 1,525 boundary nodes. This candidate has no transient
   comparison or speed result and is not used by live native simulations.
+- Exact receiver transient benchmark
+  `receiver_exact_benchmark/a585e2b3b0a99eaa` is queued as
+  `openlvds-receiver-exact-benchmark.service`. It retains both completed
+  original amplifier 80 ns fixtures, 1 ps maximum step and all eighteen native
+  probe vertices. All twenty-five printed voltage signals are compared across
+  the complete waveform on a 1 ps observation grid with a 20 mV limit; both
+  digital crossing polarities use a 20 ps limit and all original 47-period
+  transport counts must agree. A failed baseline can agree and remain failed.
+  The completed-trace self-check preserves all eighteen baseline losses and
+  gives zero error across all twenty-five voltages. Actual candidate
+  simulations run serially at priority two through the existing six slots;
+  partial output is retained. Captured complete simulator elapsed times are
+  recorded as workload-dependent observations. No transient agreement or
+  speedup is established yet, and the live native models are unchanged.
 - **The three-bus W32 route passes physical checks.** Layout
   `receiver_layout/677ed99567c83bfb` passes DRC/LVS, extraction and independent
   audit. Read-only wire observation `wire_capacitance_observation/d1be9c61c7463050`
@@ -305,7 +330,7 @@ qualification. Detailed evidence follows.
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 977 tests**, with no skips. Electrical
+- The last full regression passes **all 982 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.

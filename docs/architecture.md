@@ -173,8 +173,13 @@ old-family qualification for this source-model correction.
 
 Both matched-amplifier sizes pass all three original full source-clock controls.
 Their own 87- and 90-device layouts pass DRC/LVS, extraction and independent
-RC audit. Both native captured/sharp replays are running; the source-model
-matching correction is not a native transport or PHY result.
+RC audit. The smaller matched amplifier completes its native controls and fails with
+sixteen captured transitions missing and zero sharp-control transitions
+missing. Stage observation `amplifier_transport_observations/c00a01def73f960f`
+inside its replay finds eight lost falling periods: one without positive
+CO-minus-CL, three without positive AMP_OUT-minus-loaded-reference and seven
+without a first-restorer crossing. The larger matched amplifier is still
+running. Source-model matching alone has not closed native transport.
 
 A separate three-bus W32 routing experiment moves only CT, CO and CL below
 the critical row. Layout `receiver_layout/677ed99567c83bfb` passes DRC/LVS,
