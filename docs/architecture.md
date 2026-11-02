@@ -144,8 +144,10 @@ the two amplifier sizes. This does not transfer qualification: the new family
 has separate source fixtures and requires its own admissions. Full SF/0 and
 SS/40 DC pilots pass for control and both amplifier sizes in `receiver_matched_trip_static/4815725ab130e6ee`
 and `48704bf4e6b7438d`. Prior source factories, reports and campaigns remain
-unchanged. The matched-unit fifteen-corner campaign is running at
-`receiver_matched_trip_matrix/9847fc526899414a`. Its own source-clock,
+unchanged. The matched-unit fifteen-corner campaign
+`receiver_matched_trip_matrix/9847fc526899414a` completes with 15/15 for control
+and both amplifier sizes. Both candidates advance to source clocks with
+independent admissions. Its own source-clock,
 physical/native, sixty-component, corrected-driver coupling and RC adapters
 preserve the original fixtures and admission gates. They cannot substitute
 old-family qualification for this source-model correction.
@@ -401,6 +403,16 @@ configuration table, and divider 16. Its `TRACKING` flag describes controller
 state. The simulation fixture pulses reset with enable asserted so internally
 gated resets receive an initialization event. The test rejects unknown DCO
 codes and measures the resulting frequency and duty cycle.
+
+The current recorded OpenPLL RTL/controller and fixed-code extracted DCO traces
+also pass the revised 390–410 MHz / 45–55 percent duty contract. Their measured
+frequencies are 400.942482 and 399.546838 MHz. `check_openpll_contract.py`
+remeasures both archived traces, checks the required Git revision, source and
+PDK fingerprints, and reconstructs the physical CSV from the original waveform.
+`require_openpll_contract.py` fails if either current-contract result is false
+or incomplete. This preserves the frozen legacy producer and its historical
+380–420 MHz acceptance test. It does not establish closed-loop physical PLL
+jitter performance; the extracted trace remains a fixed-code DCO observation.
 
 The generated analog layouts prioritize inspectable, deterministic connectivity.
 Their long bus placement has considerable area and parasitic cost and is not an

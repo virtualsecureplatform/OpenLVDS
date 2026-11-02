@@ -82,7 +82,13 @@ Current bring-up state (2026-11-02):
   control to pass all fifteen source cases before preparing the original three
   full source-clock fixtures. Only the exact unchanged reference can be reused;
   modified captured/sharp cases require fresh simulations. No new-topology
-  source-clock or native admission exists.
+  native admission exists. All three original source-clock controls now pass
+  at `receiver_clamp/60f22049d7c05297`, with 47 checks each and no missing or
+  repeated edges. The ninety-device, nine-port layout
+  `receiver_layout/fe64cc74ba1efc50` passes DRC/LVS, extraction and independent
+  RC audit. Dimensions are 903.26 by 129.20 micrometres. Native model SHA is
+  `00dfa063eaa8c4bdd030e9e04d8bcd75c2b14b7cf425431e657f651bf091c636`;
+  its original full native captured/sharp replay is being prepared.
 - The original differential factory's smaller amplifier now fails SF/0 at
   the final high-common-mode sensitivity point; the larger amplifier passes.
   All observed-device stress checks pass. The unchanged control retains the
@@ -99,8 +105,10 @@ Current bring-up state (2026-11-02):
   failed 142 ns point, the smaller matched candidate gives AMP_OUT 720.154 mV,
   RESTORE0 1.012324 V and Q 1.8 V; CO minus CL remains -87.602 mV.
   Its full fifteen-corner campaign is `receiver_matched_trip_matrix/9847fc526899414a`.
-  Source, clock, native and component admissions remain open; no old evidence
-  is relabelled as qualification.
+  Control and both matched amplifier sizes now pass all fifteen cases and
+  receive their own source DC admissions. Both variants have advanced to the
+  original source-clock fixtures. Clock, native and component admissions remain
+  open; no old evidence is relabelled as qualification.
 - Local differential layout and native adapters plus persistent resource
   handoffs are implemented. The amplifier, loaded reference and shunt resistors
   remain in the critical row in stage order; functional AMP nodes and CO_TRACK
@@ -137,7 +145,7 @@ Current bring-up state (2026-11-02):
   is used. Full SS/40 `receiver_tia_static/e00432100ec8ebad` and SF/0
   `receiver_tia_static/49580e6e4b65d68f` compare both feedback values to the exact
   control at fixed supplies and uniform 1 ps maximum step. No source or native
-  admission exists. Both feedback values now pass both initial corners.
+  admission exists. Both feedback values now pass both initial corners and all six pilot PVT conditions.
   Full fifteen-corner campaign `receiver_tia_matrix/33a571a155c3a105` is running
   with two workers. Source-clock and physical/native handoffs are implemented;
   physical context `receiver_physical_followup/ed30d5877c629f40` waits for each
@@ -146,6 +154,21 @@ Current bring-up state (2026-11-02):
   Preparation recovered from a concurrent cached-reference lock without a
   simulation retry or scientific-code change: only completed reference reads
   are serialized, and every non-lock scientific error remains fatal.
+- Feedback-inverter downstream handoffs are now live and waiting:
+  `receiver_tia_downstream/469fe88f6e83a36f` (sixty component cases),
+  `82ff9c871fa9d9ef` (corrected-driver diagnostic) and `81515c914e0baf1c` (RC).
+  Each candidate advances independently after its own complete native result;
+  RC additionally requires all sixty component passes. No downstream scientific
+  test is admitted yet, and waiting controllers hold no SPICE slot.
+- Current OpenPLL contract audit `openpll_current_contract/440f3c5adb6e8f26`
+  passes for both captured traces at the exact required OpenPLL revision.
+  RTL/controller frequency is 400.942482 MHz; archived extracted fixed-code
+  DCO frequency is 399.546838 MHz. The read-only checker uses the current
+  390–410 MHz and 45–55 percent duty contract, verifies source/PDK/trace hashes
+  and replays the original raw-to-CSV conversion. The frozen legacy producer
+  still uses its historical 380–420 MHz range. `require_openpll_contract.py`
+  provides a failing command gate for a false or incomplete current audit.
+  This is clock evidence only; final PHY qualification remains required.
 - Matched-unit downstream resource handoffs are now live and waiting:
   `receiver_matched_downstream/39758258f2f754b9` (components),
   `d9de4e75f3501c61` (corrected-driver diagnostic) and `39650feb10a68c33` (RC).
@@ -192,7 +215,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 908 tests**, with no skips. Electrical
+- The last full regression passes **all 937 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
