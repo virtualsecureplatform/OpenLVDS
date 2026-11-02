@@ -153,7 +153,46 @@ the critical row. Layout `receiver_layout/677ed99567c83bfb` passes DRC/LVS,
 extraction and independent RC audit. Explicit boundary wire capacitance falls
 on PP, PN, CO, CL and CT relative to the original W32 layout. These are passive
 wire measurements, not effective input capacitances or timing proof; this
-layout needs its own full native captured and sharp controls.
+layout completes both full native controls in `receiver_replay/96ae8fcd14f244e4`.
+It still misses eighteen captured-clock edges and loses none in the sharp
+control. It is rejected for native transport despite the passive improvements.
+
+Complete waveform comparison `receiver_decision_comparison/da25d827957d1f62`
+remeasures all three native receivers with unchanged original stimuli and
+numerical policies. The W8/N8 receiver misses eight falling periods; one has
+no positive CO-minus-CL excursion throughout the response period. Original
+W32 misses nine, with seven lacking that excursion; the three-bus W32 route
+still misses nine, with six lacking it. These are wire observations, not
+MOS terminal measurements. The associated read-only `frontend_observation/`
+shows that at the W8/N8 58.919554 ns missed period, PP minus PN reaches only
+-2.183 mV during the negative input pulse and -18.286 mV over the response
+period. CO minus CL never exceeds -22.892 mV. An output gain stage alone
+cannot recover a polarity that never develops; the changed loading and new
+geometry of the amplifier candidates must be tested natively.
+
+A separate feedback-inverter experiment addresses the decision-node swing
+itself. `receiver_tia_restore.py` retains the original two-unit frontend,
+W8 decision pair, W16 tail and W8 PMOS mirror. The first restorer becomes the
+standard P16/N8 inverter. Two or four original precision-poly units in series
+connect RESTORE0 back to CO, providing negative feedback around that inverter.
+Its intended role is a current-to-voltage amplifier: decision current changes
+RESTORE0 while CO remains closer to the inverter's operating point. The next
+two restoring stages are unchanged. No extra differential pair or functional
+trip replica is added; the original unloaded reference remains diagnostic.
+This is an unproven circuit hypothesis with full source pilots running at
+SS/40 (`receiver_tia_static/e00432100ec8ebad`) and SF/0 (`49580e6e4b65d68f`).
+All fourteen observed MOS devices retain the original project stress screen.
+
+```mermaid
+flowchart LR
+  SUM[PP and PN] --> PAIR[Original W8 decision pair and mirror]
+  PAIR --> CO[CO current node]
+  CO --> INV[Standard first inverter]
+  INV --> REST[RESTORE0]
+  REST --> BUF[Two restoring inverters]
+  BUF --> Q[Q]
+  REST -- Series poly feedback --> CO
+```
 
 The OTA DLL correction increases nominal CTRL storage from 4 pF to 16 pF by
 adding twelve MIM capacitors while preserving every original device. The

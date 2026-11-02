@@ -120,7 +120,29 @@ Current bring-up state (2026-11-02):
   finds lower boundary wire capacitance on all five PP/PN/CO/CL/CT nets than
   the original W32 route. This does not establish timing improvement. Its own
   full native captured/sharp replay `receiver_replay/96ae8fcd14f244e4` is
-  running in its own persistent service.
+  complete and rejected: eighteen captured edges missing, zero sharp-control
+  edges missing. Full restoration observation is `restoration_observations/b687ae2607e5381b`.
+  Complete decision comparison `receiver_decision_comparison/da25d827957d1f62`
+  shows one W8/N8 missed response period without positive CO-minus-CL polarity;
+  original W32 and three-bus W32 have seven and six such missed periods.
+  The associated frontend observation records the weak, late PP-minus-PN
+  excursion at the difficult W8/N8 period. New amplifier native behavior
+  remains unproven; passive routing alone has not closed transport.
+- **Feedback-inverter source pilots are running.** Separate factory and screen
+  retain the W8 decision pair and add two/four series original poly units from
+  RESTORE0 to CO around a standard first inverter. The aim is lower decision
+  node swing through negative feedback and faster current-to-voltage conversion. No extra differential amplifier or functional trip reference
+  is used. Full SS/40 `receiver_tia_static/e00432100ec8ebad` and SF/0
+  `receiver_tia_static/49580e6e4b65d68f` compare both feedback values to the exact
+  control at fixed supplies and uniform 1 ps maximum step. No source or native
+  admission exists.
+- Matched-unit downstream resource handoffs are now live and waiting:
+  `receiver_matched_downstream/39758258f2f754b9` (components),
+  `d9de4e75f3501c61` (corrected-driver diagnostic) and `39650feb10a68c33` (RC).
+  Two independent variant workers bind exact live prerequisite owners and
+  their report hashes. Native failure cannot dispatch components or coupling;
+  all sixty component passes are required before RC. These controllers hold
+  no outer SPICE lease and cannot promote a selected PHY.
 - **The 16 pF DLL passes all three source-acquisition cases.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
   10.690 ps quarter-phase error and 0.745 mV control ripple, versus
@@ -152,7 +174,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 872 tests**, with no skips. Electrical
+- The last full regression passes **all 886 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
