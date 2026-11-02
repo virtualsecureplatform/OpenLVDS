@@ -132,6 +132,15 @@ period. The extra amplifier does not close native transport and receives no
 component or PHY admission. Matched-unit variants retain their own ongoing
 native tests.
 
+Further complete stage observation
+`amplifier_transport_observations/53b6e8d770e8ebad` within that replay finds
+seven of its nine missing falling periods never develop positive
+AMP_OUT-minus-loaded-CO_TRACK. At 41.823952 ns that difference reaches
++24.624 mV but RESTORE0 remains above 0.9 V. At 56.447186 ns RESTORE0 does
+cross, while RESTORE1 peaks at only 0.681132 V and never crosses. Thus losses
+appear at multiple stages. These are measured wire excursions and threshold
+crossings; they do not establish transistor gain or static switching offsets.
+
 The first differential factory's smaller amplifier fails SF/0 at the highest
 input common mode, while its larger amplifier passes. At the 142 ns sample,
 CO minus CL is -87.602 mV, but AMP_OUT is 743.433 mV, RESTORE0 is 702.085 mV

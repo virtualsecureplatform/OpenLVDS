@@ -111,6 +111,19 @@ qualification. Detailed evidence follows.
   period, RESTORE0 does cross 0.9 V, so that case needs later-chain/pulse-width
   analysis; the other eight remain first-restoration failures. Added output
   gain has not repaired native transport.
+- Complete amplifier-stage observation
+  `receiver_replay/80ceda71c5337d7a/amplifier_transport_observations/53b6e8d770e8ebad`
+  binds original complete native controls, input/code/deck/library/trace hashes
+  and unchanged transport remeasurement. Of nine missing falling periods,
+  seven never develop positive AMP_OUT-minus-loaded-CO_TRACK, including one
+  without positive CO-minus-CL. At 41.823952 ns the amplifier difference does
+  reach +24.624 mV but RESTORE0 bottoms at 0.9927 V, never crossing 0.9 V.
+  At 56.447186 ns it reaches +56.329 mV and RESTORE0 crosses, but RESTORE1
+  peaks at only 0.681132 V and never crosses. The latter loss therefore
+  occurs at the next restoring stage; additional output gain has not closed
+  the earlier weak-pulse or frontend-polarity failures. These are bus and
+  threshold observations, not transistor-terminal gain, static trip or a
+  phase-margin measurement. Native TIA and matched-family tests continue.
 - The original differential factory's smaller amplifier now fails SF/0 at
   the final high-common-mode sensitivity point; the larger amplifier passes.
   All observed-device stress checks pass. The unchanged control retains the
@@ -153,7 +166,9 @@ qualification. Detailed evidence follows.
   zero-error DRC, LVS, extraction and independent RC audit, with nine ports.
   Fresh native contexts are `receiver_replay/5d6ec09cc0b5e515` and
   `7e767d28755ed462`. Both full captured/sharp controls are in progress;
-  no native/component/PHY admission exists yet.
+  the smaller matched amplifier's complete sharp control now loses no edges,
+  while its captured waveform is still running. Neither variant has complete
+  native/component/PHY admission yet.
 - Exact receiver reduction observation
   `receiver_layout/fe64cc74ba1efc50/exact_reduction_observation/e7268fd5ddd266ee`
   retains every capacitor/device/port and all eighteen native observation
@@ -290,7 +305,7 @@ qualification. Detailed evidence follows.
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 974 tests**, with no skips. Electrical
+- The last full regression passes **all 977 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
