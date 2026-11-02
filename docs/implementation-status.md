@@ -60,8 +60,10 @@ Current bring-up state (2026-11-02):
   admits control and W32 at 15/15 each. P4/N8 fails one FF/40 DC sample
   and is rejected at 14/15 before source clocks.
   The new source-clock, physical and native
-  adapters preserve all admission gates; the fresh W32 captured-clock
-  simulation is running in `receiver_clamp/873e9ffbc7e55e38`. A conditional differential gain stage
+  adapters preserve all admission gates. In `receiver_clamp/873e9ffbc7e55e38`,
+  the fresh W32 captured-clock control passes all 47 checks without loss or
+  repeats; the sharp-clock control is running. Joint source-clock admission
+  and all native/timing gates remain unproven. A conditional differential gain stage
   comparing CO with CL is the next topology fallback, not a selected circuit.
 - **The 16 pF DLL passes all three source-acquisition cases.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
@@ -102,6 +104,21 @@ Current bring-up state (2026-11-02):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — W32 full captured source clock passes:
+
+- The actual modified `clamped_captured` task in
+  `receiver_clamp/873e9ffbc7e55e38` completes its fresh full 80 ns simulation
+  and passes all 47 original 15–75 ns transport checks with zero missing or
+  repeated edges. This task has `clamped=true`; it is the W32 candidate,
+  distinct from the adopted P8/N8 reference. Its saved full-wave hash,
+  input-file hashes and exact new manifest binding are verified.
+- The original producer advances to a fresh sharp-clock control under the
+  same six actual shared SPICE slots. No joint `source_clock_admission.json`
+  exists yet. Physical geometry, native replay, components and coupled-link
+  diagnostics remain gated on all three original source controls. Earlier
+  receiver alternatives passed source clocks and failed native transport;
+  this source result therefore does not establish native or PHY admission.
 
 2026-11-02 — current behavioral evidence independently checked:
 

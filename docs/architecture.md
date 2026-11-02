@@ -74,7 +74,9 @@ unchanged from control, but the weaker PMOS pulls the first-restorer output
 too low for the following stages to recognize the intended state. The W32
 pair completes and passes all fifteen original source DC/current/stress
 cases. Its fresh source-clock context is prepared; the modified candidate
-has no clock or native transport admission yet.
+passes all 47 captured-clock checks in the full 80 ns source fixture. The
+sharp-clock control is running; joint clock and native transport admissions
+remain required.
 A completed, byte-identical P8/N8 captured reference can be reused with an
 explicit receipt; each modified candidate still needs fresh captured and sharp
 source clocks, its own GDS/extraction audit and both full native replays.
