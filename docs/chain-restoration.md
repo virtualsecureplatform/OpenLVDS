@@ -401,9 +401,8 @@ pulse widths, payload correctness, aperture-subtracted margin or release.
 ## Receiver component and RC continuation
 
 The specification campaign has completed all fifteen schematic wide-DC
-cases, the three native 390/400/410 MHz rate cases, all nine native TT/FF/SS
-wide-DC cases and native FS0: **28/33 pass**, with five native wide-DC cases
-pending.
+cases, the three native 390/400/410 MHz rate cases and all twelve native
+TT/FF/SS/FS wide-DC cases: **30/33 pass**, with native SF0/SF25/SF40 pending.
 The verified component handoff
 still requires all 33 screen cases before dispatching the original sixty
 component conditions. A read-only preflight confirms that all sixty original
@@ -610,9 +609,15 @@ zero, 22 rising output edges and 139.842 mVpp common-mode movement. Its
 solved initial DC point is -339.728 mV differential at 1.248092 V common mode,
 with less than 5e-12 V variation over 0–8 ns. With a *temporarily assumed*
 symmetric positive DC level, 44 monotonic edges estimate 265.371–269.952 ps.
-These estimates remain uncalibrated until the queued `positive_op` case
-completes. The two-polarity source checks and PVT margin remain unproven;
-the narrow nominal timing/common-mode margins cannot select the candidate.
+The `positive_op` case has now completed with return code zero. Its solved
+initial point is +339.728 mV differential at 1.248092 V common mode, and
+dynamic common-mode movement is 139.047 mVpp. Fresh two-polarity calibration
+measures 265.371–269.952 ps for `negative_op` and 265.383–269.923 ps for
+`positive_op`, with 44 monotonic edges each. Both retain 22 rising output
+edges, and the complete nominal source reference checks pass. The initial
+symmetry estimate is no longer used for this nominal verdict. This is only
+TT25 source evidence: the narrow nominal timing/common-mode margins cannot
+select a physical candidate or establish PVT margin.
 
 `qualify_driver_output_shape_source.py` implements the next required source
 matrix: all five process corners × 0/25/40 C × both initial logic polarities,
@@ -632,6 +637,12 @@ Missing, failed or changed evidence holds the handoff. The source matrix
 uses at most two workers, each with one P1 lease in the existing six-slot
 dispatcher; the host waiter holds no SPICE lease. No physical dispatch is
 automatic, even after a source waveform pass.
+
+The nominal handoff has now independently remeasured both completed cases
+and prepared `driver_shape_source/40b882e177324c81`, containing all thirty
+source fixtures. Its two workers are queued through P1 leases. There is no
+source PVT result yet; no source circuit or physical selection is promoted
+from the nominal pass.
 
 The initial childless resource waiter `d7c392bc3bd8201a` was stopped before
 any source matrix was prepared to correct handling of an empty successful

@@ -35,7 +35,7 @@ preferred two-resistor receiver in fresh context `02c868108c5b1da1`; its short
 check completed twelve ns, followed by a wrapper missing-import error.
 Recovery context `678e1b24d0305732` verifies its complete raw/export evidence
 and queues only the full 188.049 ns diagnostic, preserving the original
-producer and outputs. The specification screen has passed 28/33 cases;
+producer and outputs. The specification screen has passed 30/33 cases;
 native wide-DC cases remain, with sixty components and the receiver RC
 comparison queued behind their complete admission. This cannot
 substitute the isolation receiver or short training for final qualification.
@@ -78,13 +78,14 @@ fast gate drive from output edge shaping. It changes only the two existing
 MIMs from 10×10 to 30×30 um and measures both initial DC polarities for fresh
 transition calibration. Its calculated nominal edge times are near the
 lower reference limit; neither TT25 success nor PVT margin is assumed.
-The negative-initial-state case has completed at 140 mVpp, with estimated
-265–270 ps edges. The positive-initial-state case is still queued, so its
-fresh two-polarity calibration and source reference checks remain incomplete.
-A gated continuation now prepares all thirty shaped-driver source cases
-across the fifteen PVT points only after that complete nominal pass. It
-remeasures the nominal proof before dispatch and retains the fixed-supply
-scope. Source waveform success cannot automatically select a physical macro.
+Both initial-state cases have now completed, with 140/139 mVpp common-mode
+movement and freshly calibrated 265–270 ps monotonic edges. The complete
+nominal source reference checks pass; no symmetry estimate is used for that
+verdict. PVT margin and physical selection remain unproven.
+The gated continuation has remeasured that nominal proof and prepared all
+thirty shaped-driver source cases across the fifteen PVT points. Its two
+workers are queued within the fixed-supply scope. Source waveform success
+cannot automatically select a physical macro.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
