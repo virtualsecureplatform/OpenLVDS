@@ -78,23 +78,50 @@ with 47 checks each, zero missing/repeated edges and explicit positive
 source-clock admission. The fresh captured and sharp candidate traces pass;
 the matched P8/N8 reference is reused with its explicit identical-fixture
 receipt. The new eighty-device layout passes DRC/LVS, extraction and RC
-audit; both full native replays are running. Native transport admission
-remains required. Physical-only routing alternatives preserve the source
+audit. Both full native replays are complete: the captured clock misses
+eighteen edges and the sharp control misses none. This layout is rejected
+for native transport. Physical-only routing alternatives preserve the source
 and devices while testing shorter internal bus access; they have no native
 or component admission.
 A completed, byte-identical P8/N8 captured reference can be reused with an
 explicit receipt; each modified candidate still needs fresh captured and sharp
 source clocks, its own GDS/extraction audit and both full native replays.
 
-A topology change is included as the next fallback if these bounded changes
-cannot pass native transport. The proposed experiment adds a differential
-gain stage sensing CO against CL before logic restoration. The source DC
-observations show useful polarity separation between CO and CL despite large
-absolute common-mode changes, which motivates this comparison. This stage
-has not been implemented or qualified. Its device headroom, output polarity,
-loading of both decision nodes, current, stress, startup and extracted timing
-must be established with matched controls before it can replace the existing
-restorer path. No ideal comparator can stand in for the final analog circuit.
+The next receiver topology is implemented as a separate experimental factory
+in `scripts/receiver_differential_restore.py`. It retains the original W8 LVT
+decision pair, W16 tail, W8 PMOS mirror and two-unit frontend correction.
+A new LVT differential amplifier senses CO against CL. Seven parallel original
+poly resistor units connect its current output to CO_TRACK, the existing
+matched-inverter trip replica. A standard P16/N8 first restoring inverter
+has the same device models, lengths and width ratio as that replica. The
+original later buffers and external 35 microampere bias contract remain.
+The amplifier has two sizes, with W8 or W16 inputs and proportionally scaled
+tail and mirror devices. Its extra 1.8 V supply current must be measured.
+
+This choice follows saved native waveform comparisons: widening the original
+input pair to W32 removes the correct CO-minus-CL polarity throughout four
+of five examined missed response periods, whereas the original W8 pair
+retains small late differential excursions. Amplifying the W32 result alone
+would therefore leave an upstream failure. The new topology tests whether
+those W8 excursions can drive restoration through a loaded trip reference.
+This is a hypothesis, not a demonstrated timing improvement.
+
+The full source DC screen is implemented in
+`scripts/screen_receiver_differential_restore.py`. SS/40 and FF/40 pilots each
+compare an unchanged matched control with both amplifier sizes using the
+original 144 ns/twelve-point sensitivity fixture, fixed supplies and uniform
+1 ps maximum step. Fourteen control or nineteen modified MOS devices are
+observed, including the now functional trip reference and amplifier tail.
+All fifteen source corners, source clocks, new geometry/LVS/RC audit, native
+transport, component conditions and coupled timing remain required before
+selection. No ideal comparator substitutes for the transistor circuit.
+
+A separate three-bus W32 routing experiment moves only CT, CO and CL below
+the critical row. Layout `receiver_layout/677ed99567c83bfb` passes DRC/LVS,
+extraction and independent RC audit. Explicit boundary wire capacitance falls
+on PP, PN, CO, CL and CT relative to the original W32 layout. These are passive
+wire measurements, not effective input capacitances or timing proof; this
+layout needs its own full native captured and sharp controls.
 
 The OTA DLL correction increases nominal CTRL storage from 4 pF to 16 pF by
 adding twelve MIM capacitors while preserving every original device. The
