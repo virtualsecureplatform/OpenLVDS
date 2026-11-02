@@ -37,23 +37,39 @@ crossing per input clock event, and high/low pulses valid beyond 1.44/below
 claiming aperture-subtracted margin. A 0.9 V crossing alone cannot pass.
 These short synthetic screens do not establish long-training or PHY release.
 
-The completed 390 and 400 MHz native cases both pass, including the unique
-ordered sixteen-word payload. At 390 MHz, minimum valid clock high/low widths
-are 1155.625/1172.511 ps and raw setup/hold minima are 634.688/632.799 ps.
-At 400 MHz they are 1123.452/1140.564 ps and 617.845/616.747 ps. These raw
-distances do not subtract measured aperture, and the short training is not
-qualified. The 410 MHz case and the thirty wide-static cases remain required.
+All three completed 390/400/410 MHz native rate cases now pass, including
+the unique ordered sixteen-word payload.
+
+| Clock, MHz | Minimum valid high/low pulse, ps | Raw setup/hold minima, ps |
+| --- | --- | --- |
+| 390 | 1155.625 / 1172.511 | 634.688 / 632.799 |
+| 400 | 1123.452 / 1140.564 | 617.845 / 616.747 |
+| 410 | 1092.841 / 1110.182 | 601.762 / 601.468 |
+
+These raw distances do not subtract measured aperture, and the short
+training is not qualified. The thirty wide-static cases remain required;
+the first schematic TT/0 case passes and subsequent cases are running.
 The baseline remains preferred; there is no evidence yet requiring either
 later-buffer alternative on these representative inputs.
 
-`openlvds-receiver-spec-baseline.service` owns this campaign. Host continuation
-`receiver_spec_followup/ab6d392c598ac24d`, owned by
-`openlvds-receiver-spec-components-followup.service`, binds that exact owner
+`openlvds-receiver-spec-baseline.service` owns this campaign. Verified host
+continuation `receiver_spec_verified_followup/7491414dd4892210`, owned by
+`openlvds-receiver-spec-verified-components.service`, binds that exact owner
 invocation. Only all 33 passing cases allow the new `qualify_receiver_spec.py`
 adapter to remeasure every saved result and run the original sixty component
 tests. It captures a separate specification-admission receipt. Original
 component/native producers and their old gates are unchanged. A failed or
 missing prerequisite holds the handoff; partial output is never retried.
+
+This replaces resource waiter `receiver_spec_followup/ab6d392c598ac24d`:
+its invocation-ID check could reject a completed producer after systemd
+unloads the transient unit. The replacement accepts an inactive/unloaded
+owner only with bound terminal scientific evidence, which is then fully
+remeasured by the unchanged admission adapter. A changed live owner is still
+rejected. The old waiter was explicitly checked to be waiting, childless and
+without a terminal source report before stopping it. No SPICE worker or
+scientific producer was restarted; `supersedes.json` preserves the resource
+handoff reason and old owner identity.
 
 `receiver_later_buffers.py` implements the two bounded alternatives for use
 if representative baseline tests fail: parallel-unit symmetric taper
@@ -166,6 +182,17 @@ conditioning, but does not yet establish that a physical decap change fixes
 convergence. The saved RX-only failure-prefix observation is
 `endpoint_decap_isolation/335f03b43d9dd052/rx_only/failure_prefix_observation/ba7f3c55f74422d1`.
 
+The live both-endpoints prefix has advanced beyond 4.5465 ns but has not
+completed 12 ns. This is not numerical completion or physical admission.
+`rebuild_endpoint_tap_cells.py` is ready for a passing complete result: it
+rebuilds TX and RX sequentially with original source/constraints and explicit
+tap endcaps/well taps, using at most two flow jobs. It requires resolved
+configuration, all boundary placements, powered-cell connections, well taps,
+DRC/LVS, disconnected-pin/power-grid checks, setup/hold signoff and retained
+endpoint-specific functional paths, then fresh extraction and independent RC
+audit. TX and RX retain their respective archive/identity validation formats.
+The twelve-ns causal gate has not passed, so no such physical flow is started.
+
 `rebuild_tx_tap_endcaps.py` implements a conditional isolated physical flow
 using the original RTL/constraints and explicit tap endcaps/well taps. It
 checks resolved config, all 56 legal boundary placements, well taps, powered
@@ -192,13 +219,14 @@ remain low; the recovered RX clock peaks at only 0.805 mV. The supplied first
 clock edge starts at 5 ns, so these aborts precede functional clock activity.
 These are observations of incomplete numerical traces, not electrical passes.
 
-One independent original-model control is queued:
+One independent original-model control is running:
 `tx_sparse_isolation/b05c673bfe98d862`, owned by
 `openlvds-original-coupled-sparse-isolation.service`. It changes only linear
 solver selection to Sparse 1.3, retaining every original device and all raw
 TX RC, stimuli, tolerances, iteration budget, and 1 ps maximum step. The
 actual solver must be verified in the ngspice log before numerical completion
-can be recorded. Both solvers are documented in the
+can be recorded. Its live log now explicitly confirms `Using SPARSE 1.3 as
+Direct Linear Solver`; full completion is still pending. Both solvers are documented in the
 [ngspice manual](https://ngspice.sourceforge.io/docs/ngspice-manual.pdf).
 This bounded numerical control does not admit a circuit or replace RC checks.
 
@@ -211,6 +239,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1057 tests, no skips**. Actual
+The full pinned regression suite passes **1064 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
