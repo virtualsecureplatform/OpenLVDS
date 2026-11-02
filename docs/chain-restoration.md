@@ -683,7 +683,7 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1120 tests, no skips**. Actual
+The full pinned regression suite passes **1127 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
 
@@ -728,3 +728,67 @@ assumed to preserve the source improvement. Then compare the compliant native
 driver/channel against this same preferred receiver. An early receiver
 architecture change requires failures on that representative input, with
 stage and shared-bias observations sufficient to isolate the cause.
+
+## Fast-corner failure and stronger gate pilot
+
+The first shaped driver's source matrix now has actual fast-corner failures.
+FF0 measures 183.177/181.697 mVpp common-mode movement in the negative/positive
+initial-polarity cases; FF25 measures 185.864/185.297 mVpp. The FF40 negative
+case measures 187.422 mVpp. These exceed the unchanged 150 mVpp reference,
+so this candidate cannot receive the full source waveform handoff even
+though TT0/25/40 pairs pass. The original matrix continues all thirty cases;
+no failed result or healthy worker is reset.
+
+`probe_stronger_driver_shape.py` prepares bounded pilot
+`stronger_driver_shape/1b35b6d74efed383`, owned by
+`openlvds-stronger-driver-shape.service`. It first remeasures and binds the
+actual FF0 failure and the completed stronger real-MOS taper. The candidate
+uses that existing 1/4/8 taper (P16/N8, P64/N32, P128/N64) with the **same
+30×30 um output capacitors**. Relative to the failed shaped driver, only
+the gate taper changes. Bridge, 110:1 mirror, CMFB, supplies, reference,
+load, stimulus and time step remain fixed. TT25 and FF0 each have fresh
+negative/positive DC calibration and full 80 ns traces. Two P2 workers
+queue individually through the existing dispatcher. Its three tests check
+the bounded coverage, unchanged circuit outside the two capacitor sizes
+and rejection without a measured prerequisite failure. Passing this pilot
+would still require a fresh complete fifteen-point source matrix before
+physical work.
+
+A signed-voltage spot check of the completed weaker-taper TT0 traces finds
+the first-stage input reaching 4.041 V on the fixed 3.3 V rail; the following
+stage drain extrema span -0.157 to 3.451 V. The first PMOS therefore reaches
+positive VGS of approximately 0.741 V, while a later NMOS reaches negative
+VGS of approximately -0.157 V. The existing maximum-absolute terminal report
+alone does not describe these excursions. The published [SKY130 device
+details](https://skywater-pdk.readthedocs.io/en/main/rules/device-details.html)
+give signed model operating ranges for these thick-oxide devices. Those
+ranges are model-characterization information, not a transient reliability
+certificate. Keep signed excursions and actual device/body currents in the
+physical review; this observation neither introduces a zero-overshoot
+acceptance rule nor declares the devices safe from an absolute maximum alone.
+
+## Matched LTRA benchmark for exact TX reduction
+
+`benchmark_ltra_exact_tx.py` prepares
+`ltra_exact_tx_benchmark/df68f33bb3275375`, owned by
+`openlvds-ltra-exact-tx-benchmark.service`. It binds the existing independent
+TX current witnesses and replaces only the raw TX resistor network with the
+canonical exact degree-four elimination (22,909 to 5,757 resistors). All
+capacitors, MOS devices, public terminals, printed probes and directives
+are retained. The full preferred-r2/110:1-driver LTRA fixture keeps its
+188.049 ns duration, 1 ps step, stimuli, shared native bias and solver
+settings. One P2 worker runs the reduced case; the healthy raw reference
+`baseline_payload_recovery/678e1b24d0305732` is reused without another raw run.
+
+Comparison waits for both full terminal traces, verifies their raw/export
+agreement and original diagnostic metrics, and compares all saved voltages
+on a 1 ps grid over the full interval. It requires matching public digital
+edge counts, at most 20 ps edge error, at most 20 mV voltage error and the
+same payload diagnostic outcome. Four tests cover unchanged non-resistor
+statements, complete matching waveforms, incorrect voltages/clock edges and
+rejection of incomplete or nonfinite evidence. This is a numerical and
+performance experiment: reproducing a failing payload cannot qualify it.
+
+The TT25 C16 DLL corner stability run has now completed and passed its full
+3300 ns screen. SS0 and FF0 continue; all three passing corner screens are
+still required before the queued full campaign advances.

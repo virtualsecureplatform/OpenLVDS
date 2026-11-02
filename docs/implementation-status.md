@@ -5,6 +5,14 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-02):
 
+The shaped-driver source matrix now exposes fast-corner common-mode failures:
+FF0/FF25 measure 182–186 mVpp versus the 150 mVpp reference, while TT pairs
+pass. A bounded stronger-taper/same-capacitor pilot is queued at TT25 and
+FF0. A matched exact-TX/LTRA benchmark is also queued to compare the existing
+resistor-only reduction against the unchanged running raw reference. The
+TT25 C16 DLL stability screen has completed and passed; SS0/FF0 continue.
+See [current experiments](chain-restoration.md#fast-corner-failure-and-stronger-gate-pilot).
+
 The current [chain-restoration implementation](chain-restoration.md) runs a
 fresh specification-based RX campaign and raw/reduced TX convergence
 isolation. `receiver_acceptance.json` records the revised admission policy:
