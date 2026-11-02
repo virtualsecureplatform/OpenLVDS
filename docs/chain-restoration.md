@@ -393,8 +393,9 @@ required before proceeding to longer training and payloads.
 ## Receiver component and RC continuation
 
 The specification campaign has completed all fifteen schematic wide-DC
-cases, the three native 390/400/410 MHz rate cases and all six native TT/FF
-wide-DC cases: **24/33 pass**, with nine native wide-DC cases pending.
+cases, the three native 390/400/410 MHz rate cases, all six native TT/FF
+wide-DC cases and native SS0/SS25: **26/33 pass**, with seven native wide-DC
+cases pending.
 The verified component handoff
 still requires all 33 screen cases before dispatching the original sixty
 component conditions. A read-only preflight confirms that all sixty original
@@ -498,10 +499,14 @@ completes all 80 ns with return code zero and 22 rising output edges.
 Common-mode movement falls to 95.5864 mVpp (1.184353–1.279940 V), with
 gate-sum error below 9e-16 V. This supports the gate-drive path as a major
 contributor while the bridge, CMFB and output load remain fixed. Ideal drive
-changes both complementarity and transition shape; the 400 ps control remains
-pending to distinguish those effects. It does not establish a real converter
-implementation or generator compliance. Prioritize balanced gate drive and
-its extracted loading before assuming that a CMFB-only redesign is necessary.
+changes both complementarity and transition shape. The 400 ps control now
+also completes with return code zero and 22 rising output edges, but shows
+374.539 mVpp common-mode movement (0.985566–1.360105 V) despite gate-sum
+error below 9e-16 V. Complementarity alone is insufficient in this source
+fixture; transition speed matters as well. These controls do not establish
+a real converter implementation or generator compliance. Prioritize balanced,
+fast gate drive and its extracted loading before assuming that a CMFB-only
+redesign is necessary.
 The original coupled payload continues independently, with no restart.
 
 Historical matched native-driver observation
@@ -546,6 +551,18 @@ these pilots. Any promising taper still needs all fifteen source conditions,
 DC and waveform checks, power/stress review, local balanced placement,
 fresh physical/extraction audits, the full component matrix and corrected
 coupled loopback before it can replace the current driver.
+
+The first real-MOS pilot, `taper_16_32_64`, now completes all 80 ns with
+return code zero. It retains 22 rising output edges and reduces common-mode
+movement to 170.213 mVpp (1.143361–1.313574 V), versus the baseline's
+478.881 mVpp. This is an improvement, but remains above the 150 mVpp
+reference. Mean measured IO/digital supply powers are 25.998/1.210 mW.
+The maximum absolute terminal-voltage difference among the added devices
+is 4.04222 V. These are source TT25 measurements only, not PVT stress/power
+qualification or a hardware selection. The stronger `taper_16_64_128` remains
+queued. All three causal controls and this completed pilot have independent
+cached waveform remeasurement; no unfinished producer was invoked to obtain
+these observations.
 
 Release still requires at least 256 training cycles, all forty-five link
 conditions, 4096 nominal/512 corner payload bits, at least 200 ps margin after

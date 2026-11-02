@@ -35,7 +35,7 @@ preferred two-resistor receiver in fresh context `02c868108c5b1da1`; its short
 check completed twelve ns, followed by a wrapper missing-import error.
 Recovery context `678e1b24d0305732` verifies its complete raw/export evidence
 and queues only the full 188.049 ns diagnostic, preserving the original
-producer and outputs. The specification screen has passed 24/33 cases;
+producer and outputs. The specification screen has passed 26/33 cases;
 native wide-DC cases remain, with sixty components and the receiver RC
 comparison queued behind their complete admission. This cannot
 substitute the isolation receiver or short training for final qualification.
@@ -59,13 +59,17 @@ The original-converter control reproduces 479 mVpp common-mode movement,
 with up to 2.25 V error in the complementary gate sum. Ideal 100 ps
 complementary gates reduce movement to 96 mVpp while retaining all 22 expected
 rising output edges. This supports the gate-drive path as a major contributor;
-the slower ideal-gate control is pending, and no real converter or TX
+the slower ideal-gate control has now completed at 375 mVpp despite perfect
+complementarity. Fast transitions matter as well. No real converter or TX
 architecture change has been selected.
 Two real-MOS three-stage gate-restoration tapers are now implemented and
 queued as TT25 source pilots, with supply-current and added-device voltage
 observations. They retain the current bridge, mirror and CMFB. Their purpose
-is to test a practical gate-drive fix; no improvement, PVT admission or
-physical selection is claimed before their results.
+is to test a practical gate-drive fix. The first completes at 170 mVpp,
+improving on the baseline but remaining above the 150 mVpp reference. Its
+measured IO/digital powers are 26.0/1.21 mW and its largest added-device
+terminal difference is 4.04 V. The stronger taper remains queued. No PVT
+admission or physical selection is claimed.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
