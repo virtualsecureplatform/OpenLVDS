@@ -1098,3 +1098,37 @@ These are unconnected primitive interfaces: a complete driver still needs
 connected banks/inverter tiles, compact fast-node routing and power delivery,
 DRC/LVS, fresh RC extraction/audit and native electrical qualification. No
 GDS or interface-only result is promoted as a usable driver.
+
+
+## Connected finger banks pass physical checks
+
+The full source gate remains `driver_shape_source_verification/49d28e2c45badad9`:
+30/30 cases and 15/15 PVT points. The connected-bank build
+`driver_connected_banks/628b8eaa6b8adda3` now passes **nineteen of nineteen
+recipes with zero DRC errors and strict LVS matches** against every original
+independent MOS finger. Gate routing accommodates both alternating contact
+sides, and bulk routing leaves the guard vertically before crossing gate
+access. Drain/source landings are staggered to fit the dense thin-oxide
+contacts; no transistor or terminal was removed.
+
+Two failed physical contexts remain available. `c3715658165e4f35` passed
+LVS throughout but used undersized Magic via drawing layers and produced
+spacing notches around repeated landing pads. `83754c6a3c794e6e` corrected
+those issues and passed eighteen recipes; the single-finger 1.8 V cell
+retained four metal1 spacing violations. The final 0.37 um metal landing
+with a legal 0.26 um via1 drawing clears that cell as well. These corrections
+change physical access only, with the source circuit held fixed.
+
+`build_driver_inverter_tiles.py` selects the nine original CMOS inverters
+by common drain/gate and supply-tied source/body connectivity. There are
+five distinct P/N recipes. The new tiles stack the checked P/N banks with
+local input/output spines and separate supply rails. Their own DRC/LVS
+checks precede complete-driver placement; bank admission does not admit a
+tile or a native electrical model. Source readiness, parent evidence,
+technology and producer hashes bind each build, and partial contexts are
+retained rather than overwritten.
+
+The complete regression passes **1,152 tests without skips**. Complete-driver
+compact routing, GDS RC extraction/audit, native waveform qualification and
+the restored coupled link remain required. The existing six-slot simulation
+campaigns continue without restart or changed accuracy settings.
