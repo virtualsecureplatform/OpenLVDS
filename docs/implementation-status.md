@@ -39,6 +39,10 @@ producer and outputs. The specification screen has passed 24/33 cases;
 native wide-DC cases remain, with sixty components and the receiver RC
 comparison queued behind their complete admission. This cannot
 substitute the isolation receiver or short training for final qualification.
+An immutable 25–40 ns snapshot of the running coupled test now decodes all
+six observed public words as the expected training `01`, with RX clock and
+RXVALID active. This supports startup chain restoration; the full payload,
+long training and timing qualification remain unproven.
 
 A new read-only observation of all thirty completed corrected-driver traces
 finds substantial common-mode movement during transitions: 326–500 mVpp

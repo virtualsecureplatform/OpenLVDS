@@ -375,6 +375,21 @@ it does not rerun the completed short test. The original failed service and
 its stale `running_short` state are preserved for provenance. A recovered
 short observation carries no electrical verdict or PHY admission.
 
+Read-only startup snapshot
+`startup_training_observation/12c60c696ecef7b2` now shows functional activity
+through the restored chain. The unchanged parallel sources issue training
+`01` throughout the fixed 25–40 ns publication interval. The existing public
+pair/VALID decoder reads six words as `[1, 1, 1, 1, 1, 1]`, using its full
+0.8–1.05 ns publication windows. RX clock and RXVALID are active. The raw
+prefix, source deck/library/manifest hashes, publication times and decoder
+hash are captured independently of the live simulation.
+
+This is a short startup observation from an unfinished trace. It does not
+test the later payload, sustained clock transport, 256 training cycles,
+sampling aperture/margin, PVT or release. The full 188.049 ns diagnostic
+continues without restart; its original complete-trace analysis remains
+required before proceeding to longer training and payloads.
+
 ## Receiver component and RC continuation
 
 The specification campaign has completed all fifteen schematic wide-DC
