@@ -15,20 +15,24 @@ No new RX or PHY admission has passed yet.
 The new loaded native RX screens at 390/400/410 MHz all pass ordered DDR
 payload and valid pulse checks; wide-static PVT cases remain in progress.
 TX-only boundary MOS removal fails at the same 4.5465 ns with
-the reported node moved into the native digital RX. Mapped RX-only/both-end
-MOS-removal diagnostics and an original-device Sparse-solver control are
-running. Both single-endpoint removals fail with the reported node in the
-other endpoint. The both-endpoints removal has advanced past that time but
-remains unqualified. The original-device Sparse control has failed at
+the reported node moved into the native digital RX. The RX-only MOS-removal
+and original-device Sparse-solver controls have also finished. Both
+single-endpoint removals fail with the reported node in the
+other endpoint. The both-endpoints removal was retired incomplete after the
+original-device channel controls completed; its partial data remains
+unqualified. The original-device Sparse control has failed at
 4.4465 ns on a TX ground terminal; switching linear solvers did not clear the
 collapse. The causal gate holds the tap-endcap physical rebuild.
 An additional channel-model control retains all original devices and tests
 the delayed-line representation, with passive analytic/reflection calibration
 before coupled zero-delay and equivalent zero-loss LTRA diagnostics. Its
-25/50/100 ohm calibrations all pass; the coupled zero-delay/LTRA results remain
-pending and cannot admit the PHY. A verified resource handoff will restore the
-preferred two-resistor receiver after a complete twelve-ns LTRA result, then
-run its own short check before the full 188.049 ns diagnostic. It cannot
+25/50/100 ohm calibrations all pass; both original-device zero-delay/LTRA
+controls numerically complete twelve ns. The equivalent-delay LTRA model
+clears the observed short-run abort while retaining every original device.
+Forwarded/recovered clock activity has not started in this short window, so
+these results cannot admit the PHY. The resource handoff has restored the
+preferred two-resistor receiver in fresh context `02c868108c5b1da1`; its short
+check is running before the gated full 188.049 ns diagnostic. It cannot
 substitute the isolation receiver or short training for final qualification.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |

@@ -182,7 +182,7 @@ TX boundary-decap PFET X12). The both-endpoints case remains live.
 | All original endpoint MOS, raw TX RC | Abort at TX VGND.t436, 4.5465 ns |
 | Remove mapped TX boundary MOS only | Abort at RX VGND.t215, 4.5465 ns |
 | Remove mapped RX boundary MOS only | Abort at TX VGND.t557, 4.5465 ns |
-| Remove mapped boundary MOS at both endpoints | Running; no verdict |
+| Remove mapped boundary MOS at both endpoints | Retired incomplete after original-device channel controls completed; no verdict |
 
 The two single-endpoint removals move the reported trouble node to the
 other endpoint. That supports testing the remaining endpoint MOS/numerical
@@ -190,8 +190,17 @@ conditioning, but does not yet establish that a physical decap change fixes
 convergence. The saved RX-only failure-prefix observation is
 `endpoint_decap_isolation/335f03b43d9dd052/rx_only/failure_prefix_observation/ba7f3c55f74422d1`.
 
-The live both-endpoints prefix has advanced beyond 4.5465 ns but has not
-completed 12 ns. This is not numerical completion or physical admission.
+The both-endpoints run advanced beyond 4.5465 ns but continued with extremely
+small timesteps. After both channel controls completed twelve ns with every
+original device intact, this now-superseded MOS-deletion investigation was
+explicitly stopped. `endpoint_decap_isolation/335f03b43d9dd052/retirement.json`
+binds the verified replacement controls, original device-library equality,
+reconstructed channel fixtures, retained partial files and the stopped owner.
+The wrapper records exit 143 after the requested stop; that is not a circuit
+failure verdict. The incomplete raw file does not pass the normal prefix
+validity check and is retained as-is, unqualified. No numerical or electrical
+pass/fail is assigned to that partial trace. No qualification worker was
+stopped or restarted.
 `rebuild_endpoint_tap_cells.py` is ready for a passing complete result: it
 rebuilds TX and RX sequentially with original source/constraints and explicit
 tap endcaps/well taps, using at most two flow jobs. It requires resolved
@@ -199,7 +208,8 @@ configuration, all boundary placements, powered-cell connections, well taps,
 DRC/LVS, disconnected-pin/power-grid checks, setup/hold signoff and retained
 endpoint-specific functional paths, then fresh extraction and independent RC
 audit. TX and RX retain their respective archive/identity validation formats.
-The twelve-ns causal gate has not passed, so no such physical flow is started.
+No such physical flow is started: the original devices can be retained with
+the calibrated original-delay channel representation.
 
 `rebuild_tx_tap_endcaps.py` implements a conditional isolated physical flow
 using the original RTL/constraints and explicit tap endcaps/well taps. It
@@ -243,11 +253,10 @@ This bounded numerical control does not admit a circuit or replace RC checks.
 
 ## Channel-model isolation
 
-The both-endpoints MOS-removal diagnostic remains live but takes very small
-timesteps around 7.0465 ns: one inspected last-step interval was approximately
-1.58e-20 s. It is not a terminal result and is not restarted. This behavior
-does not establish decap removal as a usable fix. The independent Sparse
-control has failed as recorded above.
+The both-endpoints MOS-removal diagnostic took very small timesteps around
+7.0465 ns: one inspected interval was approximately 1.58e-20 s. It was later
+retired as described above. This behavior does not establish decap removal
+as a usable fix. The independent Sparse control failed as recorded above.
 
 `channel_model_isolation/1eaa65d55aa8616a`, owned by
 `openlvds-channel-model-isolation.service`, now isolates the delayed channel
@@ -285,8 +294,22 @@ T/LTRA disagreement is 5.002e-14 V and maximum LTRA/analytic disagreement is
 2.776e-16 V. The 100 ohm reflective control also completes and passes:
 maximum T/LTRA disagreement is 8.274e-14 V and maximum LTRA/analytic
 disagreement is 0.185185 mV, below the 1 mV limit. All three calibrations pass.
-The coupled zero-delay and original-delay LTRA controls are now running;
-their numerical/electrical results remain pending.
+The coupled zero-delay and original-delay LTRA controls both now complete
+the full twelve ns with finite increasing raw data and return code zero.
+Independent cached remeasurement rechecks all calibration waveforms and both
+full traces. Each coupled library is byte-identical to the original-device
+parent; reconstructing each channel fixture exactly reproduces its saved deck.
+No transistor, extracted wire R/C, supply, package element, termination or
+solver tolerance was changed. The original T-line case aborted around 4.5 ns;
+the calibrated LTRA representation therefore clears that observed short-run
+numerical failure while preserving the intended delay and impedance.
+
+This is startup numerical evidence only. In both complete twelve-ns controls,
+the forwarded digital TX clock and recovered RX clock have zero 0.9 V
+crossings. The TX data output has one crossing; RX data has none in this
+window. No functional transport, payload or timing admission follows from
+this result, and numerical behavior after the clock starts remains to be
+verified in the extended preferred-receiver diagnostic.
 Every actual simulation uses its own P2 lease in the same six-slot
 dispatcher; no healthy simulation was stopped or outer lease added.
 
@@ -295,9 +318,11 @@ dispatcher; no healthy simulation was stopped or outer lease added.
 `restore_baseline_coupled.py` implements the next gated handoff without
 changing the frozen failed producers. Host resource context
 `baseline_coupled_followup/097e558936b80c28`, owned by
-`openlvds-preferred-baseline-coupled-followup.service`, waits for the complete
-calibrated twelve-ns LTRA control. A failed or incomplete control holds it.
-It does not dispatch a zero-delay substitute.
+`openlvds-preferred-baseline-coupled-followup.service`, has admitted the complete
+calibrated twelve-ns LTRA control and prepared
+`baseline_coupled_restoration/02c868108c5b1da1`. It does not dispatch a
+zero-delay substitute. The fresh preferred-receiver short test is running;
+the payload stage remains gated on its numerical completion.
 
 After that prerequisite, the scientific preparer independently rechecks all
 three calibration waveforms, the complete LTRA trace, and all three passing
