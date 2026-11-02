@@ -62,8 +62,9 @@ Current bring-up state (2026-11-02):
   The new source-clock, physical and native
   adapters preserve all admission gates. In `receiver_clamp/873e9ffbc7e55e38`,
   all three source-clock controls now pass 47 checks each without loss or
-  repeats and receive explicit admission. The W32 geometry flow is running;
-  native transport, components and coupled timing remain unproven. A conditional differential gain stage
+  repeats and receive explicit admission. The W32 layout passes DRC/LVS,
+  extraction and independent audit; its two full native replays are running.
+  Native transport, components and coupled timing remain unproven. A conditional differential gain stage
   comparing CO with CL is the next topology fallback, not a selected circuit.
 - **The 16 pF DLL passes all three source-acquisition cases.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
@@ -96,7 +97,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 791 tests**, with no skips. Electrical
+- The last full regression passes **all 801 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -104,6 +105,51 @@ Current bring-up state (2026-11-02):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — audited W32 native model and routing-only comparison:
+
+- Baseline W32 layout `receiver_layout/b526c4c6eac8f676` passes zero-error
+  DRC, LVS, extraction and independent RC audit. It has eighty devices,
+  nine ports and 712.92 × 147.8 µm bounds. Source hash remains
+  `e54332a8bee8845bf767a9b9d4e76bb97686cb67a5639677ce16ed9d1aefd78a`;
+  native model hash is
+  `dcb696efa0f1750a6c53f219e3db7b06c615ba304c5815bc635afa1c0c79639b`.
+  Native replay `receiver_replay/3ee72810a0ed800a` runs both original full
+  80 ns captured/sharp controls at 1 ps maximum step. No native transport
+  verdict exists yet; component and coupled-link continuations remain gated.
+- Read-only topology receipt
+  `b526c4c6eac8f676/wire_capacitance_observation/38be874b2fffe5d9/summary.json`
+  verifies exact audited models and physical input-finger counts. Explicit
+  wire-capacitor boundary sums rise from P8/N8 to W32: CO 34.622→63.434 fF,
+  CL 31.088→64.677 fF, CT 34.411→88.365 fF, PP 134.254→153.966 fF and
+  PN 134.363→156.406 fF. These are wire-component incidence sums, not
+  effective input capacitance, device capacitance, poles or timing proofs.
+- `receiver_below_row_geometry.py` and its isolated layout/native adapters
+  retain all eighty device instances, source bytes, PCell placements,
+  public pins and bounds while moving CT/CO/CL/PP/PN buses into the existing
+  gap below the critical row. Physical context
+  `receiver_local_routing_followup/4645512382ec60e9` completes successfully;
+  layout `receiver_layout/7a5ef5af6fa761c4` passes DRC/LVS, extraction and
+  independent RC audit, and actual schematic/placement/public-bound equality
+  checks. Native model hash is
+  `c5f6578e0b8698abdfca85e764fd5a2b9e1aa5add13dc90596436b355e9948ef`.
+- Its three-model wire observation is
+  `7a5ef5af6fa761c4/wire_capacitance_observation/6be2146e78c630d0/summary.json`.
+  Five lower buses yield CO 56.755 fF, CL 63.237 fF and CT 69.929 fF,
+  but raise PP to 172.700 fF and PN to 164.450 fF. This mixed result does
+  not justify assuming faster native transport. No additional SPICE or
+  electrical admission is issued for this physical-only experiment.
+- The refinement `receiver_three_bus_geometry.py` keeps PP/PN in their
+  original upper channels and moves only CT/CO/CL below the row, at 1.6 µm
+  pitch rather than 0.8 µm. Source, devices, placements, public pins and
+  bounds remain constrained identically. Its isolated physical build/audit
+  is running under `receiver_local_routing_followup/beadd25f824623cf`.
+  Routing candidates require their own native and downstream admissions;
+  the original two W32 native simulations continue with untouched models.
+- All **801 regression tests pass without skips**. New routing tests verify
+  identical ordered device schematics, placements and public geometry, only
+  the intended internal labels moving, all existing critical classifications
+  retained, and distinct native profiles with complete restoration on errors.
 
 2026-11-02 — complete W32 source-clock admission and physical handoff:
 

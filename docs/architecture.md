@@ -77,7 +77,11 @@ cases. Its source-clock context completes all three full 80 ns controls
 with 47 checks each, zero missing/repeated edges and explicit positive
 source-clock admission. The fresh captured and sharp candidate traces pass;
 the matched P8/N8 reference is reused with its explicit identical-fixture
-receipt. Geometry is advancing; native transport admission remains required.
+receipt. The new eighty-device layout passes DRC/LVS, extraction and RC
+audit; both full native replays are running. Native transport admission
+remains required. Physical-only routing alternatives preserve the source
+and devices while testing shorter internal bus access; they have no native
+or component admission.
 A completed, byte-identical P8/N8 captured reference can be reused with an
 explicit receipt; each modified candidate still needs fresh captured and sharp
 source clocks, its own GDS/extraction audit and both full native replays.
