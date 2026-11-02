@@ -56,11 +56,32 @@ source DC/current/observed-stress cases. Their fresh admission explicitly
 uses a completed matched 1 ps maximum-step SF/40 retry; the other fourteen
 fixtures retain 50 ps. Both also pass all three full source-clock controls,
 47 checks each, without missing/repeated edges. Both new layouts pass DRC/LVS,
-extraction and independent RC audit. Their captured and sharp native replays
-are running independently under the six actual shared SPICE slots; native
-transport, components and coupled timing remain unproven.
+extraction and independent RC audit. Their full native replays fail: N4 misses eighteen captured-clock edges and
+N8 misses sixteen; both sharp controls lose zero. Neither receives native
+transport admission, so components and coupled timing remain held.
 The earlier LVT-restorer-only
 failure used a different frontend and is retained as separate evidence.
+
+The next matched experiments separate restoration balance from decision gain.
+Both use the source-qualified two-unit frontend and P8/N8 LVT restorer as
+control. One reduces only the first-restorer PMOS from W8 to W4. The other
+widens only both LVT decision inputs from W8 to W32, retaining the W16 tail
+and W8 PMOS mirror. These are sizing changes within the existing topology;
+actual currents and stress are measured again. All six initial DC pilots
+pass for both candidates, and the fifteen-corner source matrix is running.
+A completed, byte-identical P8/N8 captured reference can be reused with an
+explicit receipt; each modified candidate still needs fresh captured and sharp
+source clocks, its own GDS/extraction audit and both full native replays.
+
+A topology change is included as the next fallback if these bounded changes
+cannot pass native transport. The proposed experiment adds a differential
+gain stage sensing CO against CL before logic restoration. The source DC
+observations show useful polarity separation between CO and CL despite large
+absolute common-mode changes, which motivates this comparison. This stage
+has not been implemented or qualified. Its device headroom, output polarity,
+loading of both decision nodes, current, stress, startup and extracted timing
+must be established with matched controls before it can replace the existing
+restorer path. No ideal comparator can stand in for the final analog circuit.
 
 The OTA DLL correction increases nominal CTRL storage from 4 pF to 16 pF by
 adding twelve MIM capacitors while preserving every original device. The

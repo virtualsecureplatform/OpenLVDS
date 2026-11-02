@@ -3,7 +3,7 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
-Current bring-up state (2026-11-01):
+Current bring-up state (2026-11-02):
 
 - **Both weaker receiver corrections pass all fifteen source DC cases.**
   `receiver_soft_common_mode_matrix/d3271555fcb702b9` retains every original
@@ -36,8 +36,9 @@ Current bring-up state (2026-11-01):
   P8 PMOS, decision/frontend/bias and later restorers. Six pilot corners
   gate bulk work; each intervention needs its own fifteen-case pass. A
   resource-only continuation waits for complete DC evidence before preparing
-  original full-duration source-clock controls. Neither candidate has native
-  transport or PHY admission yet. Control and both LVT widths
+  original full-duration source-clock controls. Both candidates now fail their full native captured-clock tests: N4
+  misses eighteen edges and N8 sixteen; both sharp controls lose none.
+  Neither has native transport or PHY admission. Control and both LVT widths
   pass all fifteen cases with independent admissions. Fresh source-clock and
   physical/component/coupled continuations bind this recovery matrix. New
   source-clock contexts each pass all three original 80 ns controls, with
@@ -52,6 +53,13 @@ Current bring-up state (2026-11-01):
   inodes remain unchanged. Resource recovery completed the untouched corners
   and fresh explicit fifteen-case admission. The original partial matrix
   remains incomplete; no electrical failure is inferred from its slowdown.
+- **Separate receiver gain/balance experiments are running.** Matrix
+  `receiver_gain_balance_matrix/f6d247d3b64483af` compares the exact P8/N8
+  control with first-restorer P4/N8 and decision-input-pair W32 alternatives.
+  All three pass all six initial DC pilots; ten of fifteen full PVT cases
+  are complete at this observation. The new source-clock, physical and native
+  adapters preserve all admission gates. A conditional differential gain stage
+  comparing CO with CL is the next topology fallback, not a selected circuit.
 - **The 16 pF DLL passes SS/0 and TT/25 source acquisition.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
   10.690 ps quarter-phase error and 0.745 mV control ripple, versus
@@ -67,12 +75,18 @@ Current bring-up state (2026-11-01):
   1.219–1.266 V; its separate loaded-eye minimum is 264.227 mV at SF/40.
   Exact-resistor SF/40 and FF/0 comparisons also pass. No active model or
   catalog is replaced, and coupled-link/PHY qualification remains open.
+- **The fresh current-driver RC comparison passes.** Context
+  `driver_rc_comparison/a0cec6d01291f958` completes both original full 2560 ns
+  traces. Maximum differential crossing error is 0.409331 ps; differential
+  plateau and common-mode errors are 0.426267 mV and 0.476026 mV, within the
+  original 20 ps/20 mV limits. Independent read-only remeasurement agrees.
+  This is one driver case; delay, DLL, receiver, RX and TX certificates remain.
 - Both earlier matched driver/source-receiver links were verified numerically
   stalled, archived and retired with original hashes and all slot inodes
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 746 tests**, with no skips. Electrical
+- The last full regression passes **all 779 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -80,6 +94,63 @@ Current bring-up state (2026-11-01):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — native failure diagnosis and next receiver experiments:
+
+- Full native N4 context `receiver_replay/973c68eea433361d` fails with eighteen
+  captured misses; N8 `receiver_replay/3bb1e40442433109` fails with sixteen.
+  Both complete sharp controls with zero misses. Component and coupled-link
+  followups finish without dispatching tests for these rejected candidates.
+- Read-only full-trace restoration observations are
+  `973c68eea433361d/restoration_observations/35ec7a0fa895bbc2` and
+  `3bb1e40442433109/restoration_observations/439793b8dde5e963`.
+  All eight N8 missing falling-edge windows lack a first-restorer 0.9 V
+  falling crossing; their CO maxima span 0.667805–0.823033 V and first-restorer
+  minima 0.983952–1.704971 V. Eight of nine N4 missing falling-edge windows
+  lack that crossing; a crossing alone therefore does not establish transport.
+  The remaining N4 miss at 56.447186 ns has a first-restorer crossing only
+  after 916.783 ps, despite a 590.328 ps input pulse. Its next-restorer peak
+  is just 0.354280 V and output remains above 1.789801 V.
+- `receiver_gain_balance.py` and `matrix_receiver_gain_balance.py` implement
+  two independent changes against the exact source-qualified P8/N8 control:
+  only first-restorer PMOS W8→W4, or only both LVT decision inputs W8→W32.
+  The tail remains W16 and mirror W8. This pair-only gain intervention differs
+  from the previously rejected uniformly scaled decision stage. Control and
+  P4/N8 flatten to 74 devices; the W32 pair produces 80 through extra fingers.
+  All added pull-up segments and pair fingers remain in the local signal row.
+- The new matrix uses the original full 144 ns/twelve-point DC fixtures,
+  fixed supplies, original sensitivities and current/stress limits with an
+  explicitly uniform 1 ps maximum step. SS/40, FS/40, SF/0, FS/0, TT/25 and
+  SF/25 pilots all pass for both interventions and their control. The other
+  nine cases are running; each candidate needs all fifteen independently.
+- `receiver_gain_balance_clock.py` requires complete passing DC evidence for
+  candidate and control. It adopts only the completed byte-identical P8/N8
+  captured reference from `receiver_clamp/7cf3e0668ce610ec`, validating source,
+  library, aliases, full waveform/report and deck equality beyond the include
+  path. Its unchanged scientific runner remeasures the adopted reference.
+  Modified captured and sharp tasks always require fresh full 80 ns traces.
+- `layout_receiver_gain_balance.py` and `probe_receiver_gain_balance.py`
+  require the exact full source-clock admission before GDS, DRC/LVS,
+  extraction/RC audit and the original two full native 1 ps controls. There
+  is no component, coupled-link or selected-PHY admission from these adapters.
+- Clock followup `f6d247d3b64483af/clock_followup` and physical handoff
+  `receiver_physical_followup/e0fd4ab9ad39d586` are live and waiting for
+  their exact upstream owners. Each admitted variant advances independently;
+  only actual simulations lease from the same six global slots. New selectors
+  `qualify_receiver_gain_balance.py` and
+  `probe_corrected_driver_gain_balance.py` require both completed, passing
+  native controls before preparing the original sixty component cases or the
+  corrected 110:1 driver coupled-link diagnostic. Their resource followers
+  are waiting under the physical context. No new component or link simulation
+  has been admitted at this observation.
+- Fresh driver RC evidence is `driver_rc_comparison/a0cec6d01291f958`;
+  independent receipt is `comparison_observation/3b1fc04541221fef/summary.json`
+  beneath that context. Both native and quick-node models retain the same
+  shared bias. All 32 differential crossings are preserved, with errors
+  0.409331 ps / 0.426267 mV differential and 0.476026 mV common mode. The
+  quick-node reduction changes 54,491→10,629 resistors and 4,165→953
+  capacitors while preserving every non-wire-R/C statement. This proves the
+  driver case only, with `complete_suite=false` and `qualified_phy=false`.
 
 Two-unit native transport failure and controlled restoration experiment:
 
