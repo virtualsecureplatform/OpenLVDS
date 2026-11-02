@@ -40,6 +40,14 @@ native wide-DC cases remain, with sixty components and the receiver RC
 comparison queued behind their complete admission. This cannot
 substitute the isolation receiver or short training for final qualification.
 
+A new read-only observation of all thirty completed corrected-driver traces
+finds substantial common-mode movement during transitions: 326–500 mVpp
+schematic and 770–1047 mVpp native. Existing DC and center-eye results remain
+valid within their scope; they do not establish dynamic generator waveform
+compliance. The [waveform observation](chain-restoration.md#remaining-closure)
+records the measurement and the next isolation questions. The recovered
+coupled payload diagnostic is running; no TX architecture change is selected.
+
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
 | Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |

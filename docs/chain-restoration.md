@@ -47,8 +47,8 @@ the unique ordered sixteen-word payload.
 | 410 | 1092.841 / 1110.182 | 601.762 / 601.468 |
 
 These raw distances do not subtract measured aperture, and the short
-training is not qualified. The thirty wide-static cases remain required;
-schematic TT/0, TT/25, TT/40, FF/0 and FF/25 pass and subsequent cases are running.
+training is not qualified. All fifteen schematic wide-static cases pass;
+the fifteen native wide-static cases remain in progress.
 The baseline remains preferred; there is no evidence yet requiring either
 later-buffer alternative on these representative inputs.
 
@@ -382,6 +382,37 @@ PHY release gates remain required.
 
 ## Remaining closure
 
+Read-only driver waveform observation
+`driver_waveform_observation/eb6972c489141165` now remeasures all thirty
+completed corrected-driver component traces. `observe_driver_waveform.py`
+checks complete campaign coverage and binds every original fixture, result
+and waveform before measuring the full state-to-state 20–80% transition and
+the complete common-mode excursion during the alternating 800 Mb/s segment.
+The existing component pass flags remain unchanged: their loaded eye checks
+sample near interval centers, whereas this observation includes transitions.
+
+Across the fifteen schematic cases, observed transition times span
+155.844–199.790 ps and common-mode ripple spans 326.427–499.602 mVpp.
+Across the fifteen native cases, these ranges are 274.735–638.370 ps and
+770.214–1047.442 mVpp. Each case has 392 measured transitions. All measured
+20–80% intervals are monotonic. No case stays within the 260–375 ps
+reference range over all measured transitions, and none meets the
+150 mVpp common-mode reference.
+At native TT25, common mode ranges from 0.451550 to 1.441748 V; a valid
+center eye does not establish dynamic output balance.
+
+The reference comparisons come from TIA-644-A sections 4.1.4–4.1.5
+([source](https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/138/7380.eia_5F00_tia_5F00_644_2D00_a_5F00_lvds.pdf)).
+These saved 100 ohm/2 pF-per-pin component fixtures have not been separately
+qualified as the standard generator tests. This is a diagnostic finding,
+not a new compliance verdict or a rewrite of existing component results.
+Generator waveform qualification remains open. Before selecting a TX
+architecture change, correlate the loaded common-mode excursions with the
+coupled payload trace and separate complementary-gate timing, steering-current
+continuity and common-mode feedback response in bounded source experiments.
+Changing the feedback bandwidth or adding output capacitance alone cannot
+be assumed to fix the observed transition and common-mode behavior together.
+
 Release still requires at least 256 training cycles, all forty-five link
 conditions, 4096 nominal/512 corner payload bits, at least 200 ps margin after
 measured aperture subtraction, the sixty RX and thirty driver component
@@ -389,6 +420,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1088 tests, no skips**. Actual
+The full pinned regression suite passes **1093 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
