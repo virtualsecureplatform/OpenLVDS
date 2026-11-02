@@ -10,7 +10,7 @@ Current bring-up state (2026-11-02):
 | Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
 | Matched smaller amplifier | 15/15 | 3/3 | Pass, 87 devices | Fail: 16 captured edges missing, 0 sharp |
 | Matched larger amplifier | 15/15 | 3/3 | Pass, 90 devices | In progress |
-| Feedback inverter, two resistor units | 15/15 | In progress | Gated | Gated |
+| Feedback inverter, two resistor units | 15/15 | 3/3 | Building | Gated |
 | Feedback inverter, four resistor units | 15/15 | 3/3 | Pass, 79 devices | In progress |
 
 DC covers all fifteen fixed-supply PVT cases. Source clocks are the three
@@ -226,7 +226,10 @@ qualification. Detailed evidence follows.
   and PHY admissions remain open. Both feedback values now pass both initial corners and all six pilot PVT conditions.
   Full fifteen-corner campaign `receiver_tia_matrix/33a571a155c3a105`
   completes with 15/15 for control, `tia_r2` and `tia_r4`.
-  Both feedback values advance to their own source-clock fixtures. `tia_r4`
+  Both feedback values now pass their own source-clock fixtures. `tia_r2`
+  completes all three original controls in `receiver_clamp/69a61a443f60c1e6`,
+  with 47 periods each and zero missing/repeated crossings; its independent
+  source admission is true and its geometry handoff is running. `tia_r4`
   now passes all three full controls in `receiver_clamp/3d6c5bf54bb3eaff`, with
   47 checks each and no missing/repeated edges. Its 79-device, nine-port layout
   `receiver_layout/c196040b40845390` passes zero-error DRC, LVS, extraction
@@ -330,6 +333,10 @@ qualification. Detailed evidence follows.
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
+- `make test-full` now checks NumPy/SciPy versions against the pinned
+  `scripts/exact_rc_requirements.txt` and runs the full suite in the local
+  analysis environment with ngspice. The base-image `make test` remains
+  available; it can skip the sparse-math witness when SciPy is absent.
 - The last full regression passes **all 982 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,

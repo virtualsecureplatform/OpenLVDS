@@ -226,8 +226,10 @@ the first upper channels; all feedback resistors remain local. The unused
 trip reference is folded with the diagnostic cells. Physical work requires
 all fifteen source cases and all three original source-clock controls to pass.
 Full native replays preserve their original 80 ns fixtures and 1 ps maximum
-step, adding probes for every feedback intermediate node. The four-unit
-variant passes all three source-clock controls. Its 79-device layout
+step, adding probes for every feedback intermediate node. Both feedback values
+pass all three source-clock controls. The two-unit variant's physical handoff
+is building its own layout after source-clock admission in
+`receiver_clamp/69a61a443f60c1e6`. The four-unit variant's 79-device layout
 `receiver_layout/c196040b40845390` passes DRC/LVS, extraction and independent
 RC audit; fresh full native captured/sharp replay
 `receiver_replay/f03923bf25510f9a` is running. Native transport remains unproven.
