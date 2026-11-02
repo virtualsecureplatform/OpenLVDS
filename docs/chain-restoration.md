@@ -359,8 +359,9 @@ short observation carries no electrical verdict or PHY admission.
 ## Receiver component and RC continuation
 
 The specification campaign has completed all fifteen schematic wide-DC
-cases and the three native 390/400/410 MHz rate cases: **18/33 pass**, with
-the fifteen native wide-DC cases pending. The verified component handoff
+cases, the three native 390/400/410 MHz rate cases and native TT0/TT25
+wide-DC cases: **20/33 pass**, with thirteen native wide-DC cases pending.
+The verified component handoff
 still requires all 33 screen cases before dispatching the original sixty
 component conditions. A read-only preflight confirms that all sixty original
 reference fixtures remain current and passing; this does not replace testing
@@ -413,6 +414,27 @@ continuity and common-mode feedback response in bounded source experiments.
 Changing the feedback bandwidth or adding output capacitance alone cannot
 be assumed to fix the observed transition and common-mode behavior together.
 
+`isolate_driver_balance.py` implements that first bounded source experiment
+in `driver_balance_isolation/dddcd0dc2e9d5d96`, owned by
+`openlvds-driver-balance-isolation.service`. Three sequential TT25 controls
+retain the same corrected 110:1 bridge, common-mode feedback, fixed supplies,
+35 uA reference and 100 ohm/2 pF-per-pin load. An 80 ns fixture with a 1 ps
+maximum step compares the original converter against ideal complementary
+3.3 V gate drives with 100 ps and 400 ps full-ramp transitions. Only the
+converter instance is replaced in the two ideal-drive controls; all other
+source statements remain identical. These ideal voltage sources cannot be
+selected as hardware or qualify gate loading, extracted timing or the PHY.
+
+The controls save both gate voltages, TOP, BOT and SINK. Measurements include
+common-mode range, gate-sum error, output edge count and internal voltages at
+common-mode extrema over 20–75 ns. If ideal complementary gates suppress
+the ripple, level-converter timing is a supported lead; if ripple persists,
+bridge current continuity and CMFB behavior remain necessary investigations.
+Slower complementary gates distinguish overlap-time sensitivity. All cases
+use individual P2 leases within the existing six slots, with no outer lease
+and no retry of partial outputs. The coupled payload diagnostic continues
+independently; no architecture is selected from these diagnostic controls.
+
 Release still requires at least 256 training cycles, all forty-five link
 conditions, 4096 nominal/512 corner payload bits, at least 200 ps margin after
 measured aperture subtraction, the sixty RX and thirty driver component
@@ -420,6 +442,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1093 tests, no skips**. Actual
+The full pinned regression suite passes **1098 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
