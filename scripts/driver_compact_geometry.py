@@ -8,6 +8,27 @@ from probe_driver_finger_pcells import key
 from build_driver_inverter_tiles import inverter_pairs
 
 
+def physical_info(out, cell):
+    """Include child boxes: capacitor plates can extend beyond wrapper wires."""
+    path = out/(cell+'.mag')
+    info = pcell_info(path)
+    boxes = [info['bbox']]
+    transform = None
+    for line in path.read_text().splitlines():
+        if line.startswith('use '): transform = None
+        elif line.startswith('transform '): transform = list(map(int,line.split()[1:]))
+        elif line.startswith('box ') and transform is not None:
+            a,b,c,d,e,f = transform
+            x0,y0,x1,y1 = map(int,line.split()[1:])
+            corners = [(GRID*(a*x+b*y+c),GRID*(d*x+e*y+f))
+                       for x in [x0,x1] for y in [y0,y1]]
+            boxes.append([min(x for x,y in corners),min(y for x,y in corners),
+                          max(x for x,y in corners),max(y for x,y in corners)])
+    info['bbox'] = [min(b[0] for b in boxes),min(b[1] for b in boxes),
+                    max(b[2] for b in boxes),max(b[3] for b in boxes)]
+    return info
+
+
 def save(out, name, g, uses, ports):
     lines = ['magic', 'tech sky130A', 'magscale 1 2', 'timestamp 0']
     for layer, rects in g.layers.items():
@@ -45,7 +66,7 @@ def passive(out, name, cell, device):
         g.pad('metal3',ex,y,.6)
         public[pin] = dict(layer='metal3', x_um=ex, y_um=y)
     save(out,name,g,[(cell,'I0',0.,0.,bb)],public)
-    return dict(name=name, info=pcell_info(out/(name+'.mag')))
+    return dict(name=name, info=physical_info(out,name))
 
 
 def via45(g,x,y):
@@ -64,7 +85,7 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
     used_tracks = set()
 
     def place(cell, nodes, pin_order, cursor, cy, members, row):
-        info = pcell_info(out/(cell+'.mag'))
+        info = physical_info(out,cell)
         bb = info['bbox']
         x = round((cursor-bb[0])/GRID)*GRID
         cy = round(cy/GRID)*GRID
@@ -117,7 +138,7 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
         # bridge devices and output MIM in the same local branch channel.
         device(named('__XCDP' if branch==0 else '__XCDN'),cursor-25.,cy+45.,row)
         for fragment in (['__XPR_', '__XNR_'] if branch==0 else ['__XPL_', '__XNL_']):
-            cursor = device(named(fragment),cursor,cy,row)
+            cursor = device(named(top+fragment),cursor,cy,row)
         device(named('__XCOUTN' if branch==0 else '__XCOUTP'),cursor,cy,row)
 
     # Quiet bias/CMFB/current-mirror devices occupy separate rows, keeping
@@ -132,6 +153,12 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
     members = [n for p in placements for n in p['members']]
     if sorted(members) != sorted(d['name'] for d in original):
         raise ValueError('Original finger identity changed during placement')
+    for i,a in enumerate(placements):
+        for b in placements[i+1:]:
+            x0,y0,x1,y1 = a['bbox_um']
+            u0,v0,u1,v1 = b['bbox_um']
+            if min(x1,u1)>max(x0,u0) and min(y1,v1)>max(y0,v0):
+                raise ValueError('Overlapping physical children: '+a['instance']+' '+b['instance'])
 
     routes = []
     for net in sorted(direct):
