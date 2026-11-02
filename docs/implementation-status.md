@@ -56,11 +56,12 @@ Current bring-up state (2026-11-02):
 - **Separate receiver gain/balance experiments are running.** Matrix
   `receiver_gain_balance_matrix/f6d247d3b64483af` compares the exact P8/N8
   control with first-restorer P4/N8 and decision-input-pair W32 alternatives.
-  All three pass all six initial DC pilots; fourteen of fifteen full PVT cases
-  are complete at this observation. P4/N8 fails one FF/40 DC sample and is
-  rejected before source clocks; the W32 pair passes all completed corners.
+  All three pass all six initial DC pilots. The complete fifteen-case matrix
+  admits control and W32 at 15/15 each. P4/N8 fails one FF/40 DC sample
+  and is rejected at 14/15 before source clocks.
   The new source-clock, physical and native
-  adapters preserve all admission gates. A conditional differential gain stage
+  adapters preserve all admission gates; the fresh W32 captured-clock
+  simulation is running in `receiver_clamp/873e9ffbc7e55e38`. A conditional differential gain stage
   comparing CO with CL is the next topology fallback, not a selected circuit.
 - **The 16 pF DLL passes all three source-acquisition cases.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
@@ -101,6 +102,29 @@ Current bring-up state (2026-11-02):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — complete W32 source DC admission and clock preparation:
+
+- Matrix `receiver_gain_balance_matrix/f6d247d3b64483af` completes all
+  fifteen original full 144 ns/twelve-point source cases. Control and W32
+  each pass fifteen; P4/N8 passes fourteen and remains rejected. The exact
+  W32 admission binds matrix manifest
+  `d7f7b612b91f788886e0c2793c7a4c06054b40bd9d2d21e62f291e25af0eedd8`,
+  report `802d34cfe289c9751e4ab8ae910ab4c7beb1cdde9ffe7a4fb55fc622a51e2036`
+  and candidate `e54332a8bee8845bf767a9b9d4e76bb97686cb67a5639677ce16ed9d1aefd78a`.
+- The continuation selects W32 only and prepares source-clock context
+  `receiver_clamp/873e9ffbc7e55e38`. It verifies and adopts only the exact
+  completed P8/N8 captured reference from `7cf3e0668ce610ec/clamped_captured`.
+  Its new reference summary has 47 periods and zero misses; this is reference
+  evidence, not a W32 clock pass. Candidate captured/sharp tasks require
+  fresh full 80 ns simulations with original 1 ps maximum / 5 ps output steps.
+- The source-clock producer completes its full cached DC remeasurement and
+  starts the fresh W32 captured-clock simulation after acquiring an actual
+  shared simulation slot. Those cached invocations can
+  temporarily rewrite matrix state counts while preserving identical final
+  scientific reports and admissions; they do not restart DC simulations.
+  Geometry, extraction, native transport, components and coupled-link work
+  remain held until their respective original gates pass.
 
 2026-11-02 — P4/N8 rejected by FF/40 low-common-mode sensitivity:
 

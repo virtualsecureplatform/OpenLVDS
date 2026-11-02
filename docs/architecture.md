@@ -72,7 +72,9 @@ pass for both candidates. The expanded matrix rejects P4/N8 at FF/40:
 +100 mV at the lowest common mode produces only 10.6 mV at Q. Its CO is
 unchanged from control, but the weaker PMOS pulls the first-restorer output
 too low for the following stages to recognize the intended state. The W32
-pair passes every completed corner; the fifteen-corner matrix is still running.
+pair completes and passes all fifteen original source DC/current/stress
+cases. Its fresh source-clock context is prepared; the modified candidate
+has no clock or native transport admission yet.
 A completed, byte-identical P8/N8 captured reference can be reused with an
 explicit receipt; each modified candidate still needs fresh captured and sharp
 source clocks, its own GDS/extraction audit and both full native replays.
