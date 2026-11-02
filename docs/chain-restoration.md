@@ -400,6 +400,26 @@ owner and queues RC work only after a bound sixty-case pass. Unit
 This comparison covers one RC case; the joint six-case certificate and all
 PHY release gates remain required.
 
+## Capture-input slew domain
+
+The original 480-condition aperture campaign remains unchanged at 20/200 ps
+clock and data input slews. Its final table cannot admit out-of-domain link
+slews. Fixed startup snapshot `capture_slew_observation/662f6a651c2cd6d3`
+captures the current preferred-receiver coupled raw prefix and measures only
+20–25 ns. RX clock 10–90% slews span 145.313–219.231 ps; RXDATA slews span
+128.033–197.647 ps. The clock observation already exceeds the old 200 ps
+upper endpoint. The raw snapshot, source manifest hash, measurement code
+hashes and unfinalized-prefix description are retained for remeasurement.
+
+This is startup-domain planning evidence only, not an aperture or payload
+verdict. Earlier fast-edge observations alone must not determine the added
+aperture points for the current receiver. Choose added slow/fast endpoints
+from the completed current payload's full scoring window and retain the
+original PVT, edge/polarity, setup/hold, guarded-witness and capture-core
+requirements. Do not extrapolate the old table or widen its declared range
+without new measurements. No additional aperture campaign is launched from
+this short startup snapshot.
+
 ## Remaining closure
 
 Read-only driver waveform observation
