@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "scope": "Fixed-supply laboratory OpenLVDS; receiver screening does not qualify a PHY",
+  "static_threshold_v": 0.1,
+  "static_common_mode_v": [0.05, 0.2, 0.6, 1.2, 1.8, 2.35],
+  "wide_static_differential_v": 0.6,
+  "wide_static_common_mode_v": [0.3, 1.2, 2.1],
+  "pin_range_v": [0.0, 2.4],
+  "native_screen": {
+    "process": "ss",
+    "temperature_c": 40,
+    "clock_mhz": [390, 400, 410],
+    "clock_duty": 0.5,
+    "differential_v": 0.25,
+    "common_mode_v": 1.2,
+    "transition_20_80_ps": 260,
+    "stop_ns": 80,
+    "observation_ns": [20, 75],
+    "minimum_valid_pulse_ps": 400,
+    "payload_first_word": 8,
+    "payload_words": 16,
+    "maximum_step_ps": 1
+  },
+  "legacy_captured_replay": "Preserved stress diagnostic; its result is not a new admission gate",
+  "dynamic_acceptance": "Compliant corrected TX/channel/native RX loopback at required rate; no separate full-rate 100 mV demand at every common mode",
+  "release_requires": {
+    "minimum_training_cycles": 256,
+    "factorized_link_cases": 45,
+    "nominal_payload_bits": 4096,
+    "corner_payload_bits": 512,
+    "minimum_sampling_margin_ps": 200,
+    "receiver_component_cases": 60,
+    "driver_component_cases": 30,
+    "other_gates": "LVDS TX waveform/levels, selected-slew aperture brackets, DLL 336 cases and all 15 stability/recovery/readiness/OTA cases, current OpenPLL contract and six RC certificates"
+  },
+  "reference": "https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/138/7380.eia_5F00_tia_5F00_644_2D00_a_5F00_lvds.pdf"
+}
