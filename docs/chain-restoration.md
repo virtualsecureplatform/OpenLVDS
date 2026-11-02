@@ -48,7 +48,7 @@ the unique ordered sixteen-word payload.
 
 These raw distances do not subtract measured aperture, and the short
 training is not qualified. The thirty wide-static cases remain required;
-schematic TT/0, TT/25, TT/40 and FF/0 pass and subsequent cases are running.
+schematic TT/0, TT/25, TT/40, FF/0 and FF/25 pass and subsequent cases are running.
 The baseline remains preferred; there is no evidence yet requiring either
 later-buffer alternative on these representative inputs.
 
@@ -219,14 +219,17 @@ remain low; the recovered RX clock peaks at only 0.805 mV. The supplied first
 clock edge starts at 5 ns, so these aborts precede functional clock activity.
 These are observations of incomplete numerical traces, not electrical passes.
 
-One independent original-model control is running:
+The independent original-model control is complete and fails:
 `tx_sparse_isolation/b05c673bfe98d862`, owned by
 `openlvds-original-coupled-sparse-isolation.service`. It changes only linear
 solver selection to Sparse 1.3, retaining every original device and all raw
 TX RC, stimuli, tolerances, iteration budget, and 1 ps maximum step. The
-actual solver must be verified in the ngspice log before numerical completion
-can be recorded. Its live log now explicitly confirms `Using SPARSE 1.3 as
-Direct Linear Solver`; full completion is still pending. Both solvers are documented in the
+actual solver is verified in the ngspice log: `Using SPARSE 1.3 as Direct
+Linear Solver`. It aborts at 4.4465 ns, attempted step 1.25e-24 s, reporting
+`xtx.vgnd.t557`. Thus changing the linear solver does not clear the original
+coupled collapse. The terminal raw prefix is separately preserved at
+`tx_sparse_isolation/b05c673bfe98d862/failure_prefix_observation/00f8c7a4620e368a`.
+Both solvers are documented in the
 [ngspice manual](https://ngspice.sourceforge.io/docs/ngspice-manual.pdf).
 This bounded numerical control does not admit a circuit or replace RC checks.
 
@@ -236,7 +239,7 @@ The both-endpoints MOS-removal diagnostic remains live but takes very small
 timesteps around 7.0465 ns: one inspected last-step interval was approximately
 1.58e-20 s. It is not a terminal result and is not restarted. This behavior
 does not establish decap removal as a usable fix. The independent Sparse
-control also remains live.
+control has failed as recorded above.
 
 `channel_model_isolation/1eaa65d55aa8616a`, owned by
 `openlvds-channel-model-isolation.service`, now isolates the delayed channel
@@ -267,8 +270,11 @@ The ngspice manual explicitly notes that a zero-loss LTRA element may be
 more accurate than the T element because of implementation details
 ([sections 6.1–6.2](https://ngspice.sourceforge.io/docs/ngspice-46-manual.pdf)).
 This is a documented representation control, not a claim that the T element
-caused the observed collapse. The calibration and coupled results remain
-pending. Every actual simulation uses its own P2 lease in the same six-slot
+caused the observed collapse. The 25 ohm reflective calibration now completes
+and passes: maximum T/LTRA disagreement is 2.041e-13 V; maximum LTRA/analytic
+disagreement is 1.076e-13 V. The 50/100 ohm controls and coupled results remain
+pending, and all three calibration cases are still required before coupling.
+Every actual simulation uses its own P2 lease in the same six-slot
 dispatcher; no healthy simulation was stopped or outer lease added.
 
 ## Remaining closure

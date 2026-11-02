@@ -19,10 +19,13 @@ the reported node moved into the native digital RX. Mapped RX-only/both-end
 MOS-removal diagnostics and an original-device Sparse-solver control are
 running. Both single-endpoint removals fail with the reported node in the
 other endpoint. The both-endpoints removal has advanced past that time but
-remains unqualified. The causal gate holds the tap-endcap physical rebuild.
+remains unqualified. The original-device Sparse control has failed at
+4.4465 ns on a TX ground terminal; switching linear solvers did not clear the
+collapse. The causal gate holds the tap-endcap physical rebuild.
 An additional channel-model control retains all original devices and tests
 the delayed-line representation, with passive analytic/reflection calibration
 before coupled zero-delay and equivalent zero-loss LTRA diagnostics. Its
+25 ohm reflection calibration passes; the remaining calibrations and coupled
 results remain pending and cannot admit the PHY.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
