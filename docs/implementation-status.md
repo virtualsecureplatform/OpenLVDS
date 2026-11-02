@@ -5,6 +5,15 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-02):
 
+The preferred receiver now passes the complete **33/33** specification
+screen. Its verified handoff has started the sixty original components in
+`receiver_components/24ea17b76d61a8e3`. The stronger gate taper with unchanged
+30 um output capacitors passes both TT25 and FF0 pilot pairs: 61.6–63.4 and
+135.7–136.5 mVpp common-mode movement, respectively, with calibrated
+263.7–273.1 ps transitions across the two points. The full thirty-case source
+matrix `driver_shape_source/b016a1113b51cd82` is now queued. TT25 and SS0 DLL
+stability pass; FF0 continues. These are bring-up results, not PHY release.
+
 The shaped-driver source matrix now exposes fast-corner common-mode failures:
 FF0/FF25 measure 182–186 mVpp versus the 150 mVpp reference, while TT pairs
 pass. A bounded stronger-taper/same-capacitor pilot is queued at TT25 and
@@ -43,9 +52,9 @@ preferred two-resistor receiver in fresh context `02c868108c5b1da1`; its short
 check completed twelve ns, followed by a wrapper missing-import error.
 Recovery context `678e1b24d0305732` verifies its complete raw/export evidence
 and queues only the full 188.049 ns diagnostic, preserving the original
-producer and outputs. The specification screen has passed 32/33 cases;
-native wide-DC cases remain, with sixty components and the receiver RC
-comparison queued behind their complete admission. This cannot
+producer and outputs. The specification screen has passed all 33 cases;
+the sixty components are running, with the receiver RC comparison queued
+behind their complete admission. This cannot
 substitute the isolation receiver or short training for final qualification.
 An immutable 25–40 ns snapshot of the running coupled test now decodes all
 six observed public words as the expected training `01`, with RX clock and

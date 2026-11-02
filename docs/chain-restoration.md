@@ -47,8 +47,8 @@ the unique ordered sixteen-word payload.
 | 410 | 1092.841 / 1110.182 | 601.762 / 601.468 |
 
 These raw distances do not subtract measured aperture, and the short
-training is not qualified. All fifteen schematic wide-static cases pass;
-the fifteen native wide-static cases remain in progress.
+training is not qualified. All fifteen schematic and fifteen native
+wide-static cases now pass; the complete screen passes all 33 cases.
 The baseline remains preferred; there is no evidence yet requiring either
 later-buffer alternative on these representative inputs.
 
@@ -402,8 +402,7 @@ pulse widths, payload correctness, aperture-subtracted margin or release.
 
 The specification campaign has completed all fifteen schematic wide-DC
 cases, the three native 390/400/410 MHz rate cases and all twelve native
-TT/FF/SS/FS wide-DC cases and native SF0/SF25: **32/33 pass**, with native
-SF40 running.
+TT/FF/SS/FS/SF wide-DC cases: **33/33 pass**, including native SF40.
 The verified component handoff
 still requires all 33 screen cases before dispatching the original sixty
 component conditions. A read-only preflight confirms that all sixty original
@@ -683,7 +682,7 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1127 tests, no skips**. Actual
+The full pinned regression suite passes **1132 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
 
@@ -792,3 +791,61 @@ performance experiment: reproducing a failing payload cannot qualify it.
 The TT25 C16 DLL corner stability run has now completed and passed its full
 3300 ns screen. SS0 and FF0 continue; all three passing corner screens are
 still required before the queued full campaign advances.
+
+## Stronger pilot pass and complete PVT handoff
+
+The stronger-cap30 pilot `stronger_driver_shape/1b35b6d74efed383` has now
+completed all four cases and passes both freshly calibrated PVT points:
+
+| PVT | Negative / positive common mode, mVpp | Combined 20–80% transition range, ps |
+| --- | --- | --- |
+| TT25 | 63.356 / 61.647 | 263.940–266.576 |
+| FF0 | 136.480 / 135.659 | 263.689–273.087 |
+
+Each trace has 44 monotonic calibrated transitions and 22 rising output
+edges. Compared with the failed weaker taper at FF0, the stronger taper
+reduces common-mode movement from 181.697–183.177 to 135.659–136.480 mVpp
+with the same capacitors. IO/digital supply-power observations across these
+four cases are 29.203–29.259 / 1.124–1.210 mW; the maximum observed
+added-device terminal difference is 4.067 V. These observations do not close
+the required power/stress or native physical review. Minimum edge time still
+has only about 3.7 ps headroom to the 260 ps reference in these pilots.
+
+`qualify_stronger_driver_shape.py` independently remeasures all four pilot
+cases, both DC polarities and both complete corner reports before preparing
+any full matrix. The accepted handoff prepared
+`driver_shape_source/b016a1113b51cd82`, owned by
+`openlvds-stronger-driver-source-pvt.service`. It contains all thirty source
+cases, five processes × 0/25/40 C × both initial logic polarities, with the
+same 80 ns/1 ps fixtures and fixed circuit/rails/load. Its two P1 workers
+use the existing dispatcher without an outer lease.
+
+The adapter reuses the frozen source runner and verification checks. A
+process-local analysis adapter supplies the actual stronger taper's 1/4/8
+parallel-unit counts; the adapter code is bound in the new campaign identity,
+and the original helper is restored afterward. Frozen files, waveform
+limits and other campaigns are unchanged. Five tests cover incomplete
+pilot rejection, wrong-variant rejection, correct measurement routing and
+restoration after exceptions, and two-worker full-matrix dispatch.
+
+Only after all thirty source cases pass, remeasure the full matrix with
+its matching analysis adapter:
+
+```sh
+scripts/env.sh --ngspice /usr/bin/python3 scripts/qualify_stronger_driver_shape.py verify \
+  /work/OpenLVDS/build/diagnostics/driver_shape_source/b016a1113b51cd82
+```
+
+No physical candidate is dispatched from this pilot pass. The source matrix,
+power/stress review, compact routing, native PVT and coupled timing remain
+required. The original weaker-taper PVT matrix continues independently and
+retains its failed fast-corner results.
+
+Receiver screen `receiver_spec_screen/b7cdfb62ea5040ac` has also completed
+all 33 cases with a bound passing aggregate. Its verified continuation
+remeasured the complete screen and started the original sixty components in
+`receiver_components/24ea17b76d61a8e3`; the new specification-admission
+receipt is retained there. The RC continuation still waits for all sixty.
+The C16 DLL SS0 stability screen has now completed and passed its full
+3300 ns run as well. TT25 and SS0 pass; FF0 is still running and remains
+required before the full DLL handoff advances.
