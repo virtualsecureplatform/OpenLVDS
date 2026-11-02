@@ -152,6 +152,11 @@ physical/native, sixty-component, corrected-driver coupling and RC adapters
 preserve the original fixtures and admission gates. They cannot substitute
 old-family qualification for this source-model correction.
 
+Both matched-amplifier sizes pass all three original full source-clock controls.
+Their own 87- and 90-device layouts pass DRC/LVS, extraction and independent
+RC audit. Both native captured/sharp replays are running; the source-model
+matching correction is not a native transport or PHY result.
+
 A separate three-bus W32 routing experiment moves only CT, CO and CL below
 the critical row. Layout `receiver_layout/677ed99567c83bfb` passes DRC/LVS,
 extraction and independent RC audit. Explicit boundary wire capacitance falls
@@ -209,6 +214,13 @@ flowchart LR
   BUF --> Q[Q]
   REST -- Series poly feedback --> CO
 ```
+
+A further exact resistor-only reduction is available as a diagnostic candidate
+for the original larger-amplifier layout. It preserves all devices,
+capacitors, ports and eighteen native probe vertices, reducing 16,661 wire
+resistors to 5,365. Four sparse boundary-current witnesses pass. The live
+native model is unchanged; transient equivalence and throughput remain
+unmeasured. This reduction cannot substitute for receiver qualification.
 
 The OTA DLL correction increases nominal CTRL storage from 4 pF to 16 pF by
 adding twelve MIM capacitors while preserving every original device. The

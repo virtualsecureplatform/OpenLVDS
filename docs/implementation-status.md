@@ -5,6 +5,18 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-02):
 
+| Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
+| --- | --- | --- | --- | --- |
+| Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | In progress |
+| Matched smaller amplifier | 15/15 | 3/3 | Pass, 87 devices | In progress |
+| Matched larger amplifier | 15/15 | 3/3 | Pass, 90 devices | In progress |
+| Feedback inverter, two resistor units | 15/15 | In progress | Gated | Gated |
+| Feedback inverter, four resistor units | 15/15 | 3/3 | Building | Gated |
+
+DC covers all fifteen fixed-supply PVT cases. Source clocks are the three
+original full 80 ns controls; this table does not establish component or PHY
+qualification. Detailed evidence follows.
+
 - **Both weaker receiver corrections pass all fifteen source DC cases.**
   `receiver_soft_common_mode_matrix/d3271555fcb702b9` retains every original
   144 ns/twelve-point fixture, fixed supply, measured current and observed
@@ -125,6 +137,22 @@ Current bring-up state (2026-11-02):
   110:1-driver coupling and full-versus-quick RC adapters are implemented behind
   complete native and component admissions; no downstream simulation is
   admitted yet.
+- Both matched-amplifier source-clock admissions now pass all three controls,
+  with 47 checks each and no missing/repeated crossings. Layouts
+  `receiver_layout/89dae2ee0593cbce` (87 devices, 881.58 by 129.20 micrometres)
+  and `866d09bdfac98b69` (90 devices, 903.26 by 129.20 micrometres) each pass
+  zero-error DRC, LVS, extraction and independent RC audit, with nine ports.
+  Fresh native contexts are `receiver_replay/5d6ec09cc0b5e515` and
+  `7e767d28755ed462`. Both full captured/sharp controls are in progress;
+  no native/component/PHY admission exists yet.
+- Exact receiver reduction observation
+  `receiver_layout/fe64cc74ba1efc50/exact_reduction_observation/e7268fd5ddd266ee`
+  retains every capacitor/device/port and all eighteen native observation
+  nodes. Further resistor-only algebraic elimination reduces 16,661 resistors
+  to 5,365 and removes 4,209 algebraic nodes. Four independent sparse
+  boundary-current witnesses pass; maximum current disagreement is
+  6.661338e-15 A at 1,525 boundary nodes. This candidate has no transient
+  comparison or speed result and is not used by live native simulations.
 - **The three-bus W32 route passes physical checks.** Layout
   `receiver_layout/677ed99567c83bfb` passes DRC/LVS, extraction and independent
   audit. Read-only wire observation `wire_capacitance_observation/d1be9c61c7463050`
@@ -139,17 +167,19 @@ Current bring-up state (2026-11-02):
   The associated frontend observation records the weak, late PP-minus-PN
   excursion at the difficult W8/N8 period. New amplifier native behavior
   remains unproven; passive routing alone has not closed transport.
-- **Feedback-inverter source pilots are running.** Separate factory and screen
+- **Both feedback-inverter variants pass all fifteen source DC cases.** Separate factory and screen
   retain the W8 decision pair and add two/four series original poly units from
   RESTORE0 to CO around a standard first inverter. The aim is lower decision
   node swing through negative feedback and faster current-to-voltage conversion. No extra differential amplifier or functional trip reference
   is used. Full SS/40 `receiver_tia_static/e00432100ec8ebad` and SF/0
   `receiver_tia_static/49580e6e4b65d68f` compare both feedback values to the exact
-  control at fixed supplies and uniform 1 ps maximum step. No source or native
-  admission exists. Both feedback values now pass both initial corners and all six pilot PVT conditions.
-  Full fifteen-corner campaign `receiver_tia_matrix/33a571a155c3a105` is running
-  and now completes with 15/15 for control, `tia_r2` and `tia_r4`.
-  Both feedback values advance to their own source-clock fixtures.
+  control at fixed supplies and uniform 1 ps maximum step. Native, component
+  and PHY admissions remain open. Both feedback values now pass both initial corners and all six pilot PVT conditions.
+  Full fifteen-corner campaign `receiver_tia_matrix/33a571a155c3a105`
+  completes with 15/15 for control, `tia_r2` and `tia_r4`.
+  Both feedback values advance to their own source-clock fixtures. `tia_r4`
+  now passes all three full controls in `receiver_clamp/3d6c5bf54bb3eaff`, with
+  47 checks each and no missing/repeated edges; its geometry handoff is running.
   Source-clock and physical/native handoffs are implemented;
   physical context `receiver_physical_followup/ed30d5877c629f40` waits for each
   candidate's own complete source admissions. Geometry keeps four local buses
@@ -204,6 +234,15 @@ Current bring-up state (2026-11-02):
   quarter-phase error 44.848933 ps, observed CTRL ripple 1.143592 mV and
   maximum storage-plate ripple 1.970868 mV. TT/25 is running; FF/0 loop,
   fresh measured stability and the complete qualification remain required.
+- Full corrected-DLL continuation
+  `dll_storage_full_followup/cf1fbfc6d3d44fec` is live and waiting for the exact
+  measured-stability screen owner. Only passing three-corner measured margins
+  and step validation can dispatch the original full 336-case qualification.
+  All 336 cases and captured full/fast comparisons must pass before measuring
+  all fifteen stability corners. The controller holds no outer lease;
+  original scientific fixtures, 60-degree/6-dB margin gates, 390/410 MHz step
+  validation and the six actual slots are retained. Recovery, readiness, OTA,
+  RC and complete PHY gates remain required afterward.
 - **The corrected 110:1 driver passes all thirty component cases.** All
   fifteen source and fifteen native original full 2540 ns fixtures pass
   across five process corners and 0/25/40 °C. Native settled 100-ohm DC
@@ -224,7 +263,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 960 tests**, with no skips. Electrical
+- The last full regression passes **all 967 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
