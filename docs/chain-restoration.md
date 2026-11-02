@@ -378,8 +378,8 @@ short observation carries no electrical verdict or PHY admission.
 ## Receiver component and RC continuation
 
 The specification campaign has completed all fifteen schematic wide-DC
-cases, the three native 390/400/410 MHz rate cases and native TT0/TT25
-wide-DC cases: **20/33 pass**, with thirteen native wide-DC cases pending.
+cases, the three native 390/400/410 MHz rate cases and native TT0/TT25/TT40
+and FF0 wide-DC cases: **22/33 pass**, with eleven native wide-DC cases pending.
 The verified component handoff
 still requires all 33 screen cases before dispatching the original sixty
 component conditions. A read-only preflight confirms that all sixty original
@@ -453,6 +453,15 @@ Slower complementary gates distinguish overlap-time sensitivity. All cases
 use individual P2 leases within the existing six slots, with no outer lease
 and no retry of partial outputs. The coupled payload diagnostic continues
 independently; no architecture is selected from these diagnostic controls.
+
+The baseline control now completes all 80 ns with return code zero and
+22 rising output edges in the 20–75 ns observation window. It reproduces
+478.881 mVpp common-mode movement. The maximum error in `DP + DN = 3.3 V`
+is 2.24537 V during switching, establishing substantial non-complementary
+gate activity in this source fixture. That correlation does not establish
+causality: the ideal 100 ps and 400 ps controls remain pending, and their
+comparison is needed before selecting a converter or bridge/CMFB change.
+The original coupled payload continues independently, with no restart.
 
 Release still requires at least 256 training cycles, all forty-five link
 conditions, 4096 nominal/512 corner payload bits, at least 200 ps margin after
