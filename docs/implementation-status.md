@@ -9,8 +9,8 @@ Current bring-up state (2026-11-02):
 | --- | --- | --- | --- | --- |
 | Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
 | Matched smaller amplifier | 15/15 | 3/3 | Pass, 87 devices | Fail: 16 captured edges missing, 0 sharp |
-| Matched larger amplifier | 15/15 | 3/3 | Pass, 90 devices | In progress |
-| Feedback inverter, two resistor units | 15/15 | 3/3 | Building | Gated |
+| Matched larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
+| Feedback inverter, two resistor units | 15/15 | 3/3 | Pass, 77 devices | Preparing |
 | Feedback inverter, four resistor units | 15/15 | 3/3 | Pass, 79 devices | In progress |
 
 DC covers all fifteen fixed-supply PVT cases. Source clocks are the three
@@ -167,8 +167,10 @@ qualification. Detailed evidence follows.
   Fresh native contexts are `receiver_replay/5d6ec09cc0b5e515` and
   `7e767d28755ed462`. The smaller matched amplifier completes and fails:
   sixteen captured transitions missing, zero sharp-control transitions
-  missing. The larger matched amplifier remains in progress. Neither has
-  native/component/PHY admission.
+  missing. The larger matched amplifier also completes and fails: eighteen captured
+  transitions missing, zero sharp-control transitions missing. Neither has
+  native/component/PHY admission. All matched-family downstream handoffs
+  retain both variants without dispatching component/coupled/RC simulations.
 - Complete smaller matched-amplifier stage observation is
   `receiver_replay/5d6ec09cc0b5e515/amplifier_transport_observations/c00a01def73f960f`.
   Eight falling periods are lost: one without positive CO-minus-CL, three
@@ -180,6 +182,12 @@ qualification. Detailed evidence follows.
   numerical policies and shared bias/digital load across W8/N8, original
   larger amplifier and matched smaller amplifier. The source-reference fix
   restores fifteen-corner source sensitivity but does not close native timing.
+- Complete larger matched-amplifier stage observation is
+  `receiver_replay/7e767d28755ed462/amplifier_transport_observations/8401139597154c88`.
+  Nine falling periods are lost: one without positive CO-minus-CL, seven
+  without positive AMP_OUT-minus-loaded-reference, eight without RESTORE0
+  crossing and one despite that crossing. The matching correction does not
+  solve the weak-pulse restoration and frontend-polarity failures.
 - Exact receiver reduction observation
   `receiver_layout/fe64cc74ba1efc50/exact_reduction_observation/e7268fd5ddd266ee`
   retains every capacitor/device/port and all eighteen native observation
@@ -189,7 +197,7 @@ qualification. Detailed evidence follows.
   6.661338e-15 A at 1,525 boundary nodes. This candidate has no transient
   comparison or speed result and is not used by live native simulations.
 - Exact receiver transient benchmark
-  `receiver_exact_benchmark/a585e2b3b0a99eaa` is queued as
+  `receiver_exact_benchmark/a585e2b3b0a99eaa` is running as
   `openlvds-receiver-exact-benchmark.service`. It retains both completed
   original amplifier 80 ns fixtures, 1 ps maximum step and all eighteen native
   probe vertices. All twenty-five printed voltage signals are compared across
@@ -229,13 +237,19 @@ qualification. Detailed evidence follows.
   Both feedback values now pass their own source-clock fixtures. `tia_r2`
   completes all three original controls in `receiver_clamp/69a61a443f60c1e6`,
   with 47 periods each and zero missing/repeated crossings; its independent
-  source admission is true and its geometry handoff is running. `tia_r4`
+  source admission is true. Its 77-device, nine-port layout
+  `receiver_layout/0f9f54a7549bccf1` passes zero-error DRC, LVS, extraction
+  and independent RC audit. Dimensions are 713.27 by 149.60 micrometres;
+  its actual native network has 13,905 resistors and 1,437 capacitors.
+  Native preparation is running. `tia_r4`
   now passes all three full controls in `receiver_clamp/3d6c5bf54bb3eaff`, with
   47 checks each and no missing/repeated edges. Its 79-device, nine-port layout
   `receiver_layout/c196040b40845390` passes zero-error DRC, LVS, extraction
   and independent RC audit. Dimensions are 749.17 by 153.20 micrometres;
   the native model contains 14,246 resistors and 1,445 capacitors. Fresh
-  captured/sharp replay is `receiver_replay/f03923bf25510f9a`, in progress.
+  captured/sharp replay is `receiver_replay/f03923bf25510f9a`. Its complete
+  sharp control passes all 47 periods without missing/repeated crossings;
+  the captured waveform remains in progress and has no admission.
   Source-clock and physical/native handoffs are implemented;
   physical context `receiver_physical_followup/ed30d5877c629f40` waits for each
   candidate's own complete source admissions. Geometry keeps four local buses
@@ -243,6 +257,21 @@ qualification. Detailed evidence follows.
   Preparation recovered from a concurrent cached-reference lock without a
   simulation retry or scientific-code change: only completed reference reads
   are serialized, and every non-lock scientific error remains fatal.
+- A separate bounded frontend-settling experiment is now live in
+  `receiver_tia_fast_matrix/85f2c240b81596f8` under
+  `openlvds-receiver-tia-fast-dc-matrix.service`. New factory
+  `receiver_tia_fast_frontend.py` duplicates all fourteen PP/PN load and
+  two-unit boost resistor segments in parallel. This preserves unloaded bias
+  ratios and halves resistive Thevenin impedance; original MOS, helpers,
+  feedback values, ports and external bias remain unchanged. Real resistor
+  capacitance remains and doubles with the duplicated cells, so any speed
+  benefit must be measured. Lower DC gain is the tradeoff. Both feedback
+  values are tested against the exact N8 control with original full 144 ns,
+  twelve-point fixed-supply fixtures, uniform 1 ps maximum step, current
+  measurements and fourteen-device stress screen. Six original PVT pilots
+  gate bulk DC; all fifteen cases must pass independently before any new
+  clock/native admission. No result is available yet. The original TIA native
+  simulations continue to completion; no partial result is promoted.
 - Original differential-amplifier downstream handoffs have completed and held both candidates:
   `receiver_differential_downstream/d8b7381526a27796` (components),
   `1e1493bac7dd6581` (corrected-driver diagnostic) and `3496874a53a16f66` (RC).
@@ -337,7 +366,7 @@ qualification. Detailed evidence follows.
   `scripts/exact_rc_requirements.txt` and runs the full suite in the local
   analysis environment with ngspice. The base-image `make test` remains
   available; it can skip the sparse-math witness when SciPy is absent.
-- The last full regression passes **all 982 tests**, with no skips. Electrical
+- The last full regression passes **all 986 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.

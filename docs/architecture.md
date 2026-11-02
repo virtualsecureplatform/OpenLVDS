@@ -178,8 +178,11 @@ sixteen captured transitions missing and zero sharp-control transitions
 missing. Stage observation `amplifier_transport_observations/c00a01def73f960f`
 inside its replay finds eight lost falling periods: one without positive
 CO-minus-CL, three without positive AMP_OUT-minus-loaded-reference and seven
-without a first-restorer crossing. The larger matched amplifier is still
-running. Source-model matching alone has not closed native transport.
+without a first-restorer crossing. The larger matched amplifier also completes and fails, with eighteen
+captured transitions missing and none missing in its sharp control. Its own
+complete stage observation has the same nine lost falling periods, seven
+without positive amplifier-reference difference and eight without a first-
+restorer crossing. Source-model matching alone has not closed native transport.
 
 A separate three-bus W32 routing experiment moves only CT, CO and CL below
 the critical row. Layout `receiver_layout/677ed99567c83bfb` passes DRC/LVS,
@@ -227,12 +230,23 @@ trip reference is folded with the diagnostic cells. Physical work requires
 all fifteen source cases and all three original source-clock controls to pass.
 Full native replays preserve their original 80 ns fixtures and 1 ps maximum
 step, adding probes for every feedback intermediate node. Both feedback values
-pass all three source-clock controls. The two-unit variant's physical handoff
-is building its own layout after source-clock admission in
-`receiver_clamp/69a61a443f60c1e6`. The four-unit variant's 79-device layout
+pass all three source-clock controls. The two-unit variant passes source-clock admission in
+`receiver_clamp/69a61a443f60c1e6`; its 77-device layout
+`receiver_layout/0f9f54a7549bccf1` passes DRC/LVS, extraction and independent
+RC audit. Native preparation follows those gates. The four-unit variant's 79-device layout
 `receiver_layout/c196040b40845390` passes DRC/LVS, extraction and independent
 RC audit; fresh full native captured/sharp replay
 `receiver_replay/f03923bf25510f9a` is running. Native transport remains unproven.
+
+A separate frontend experiment, `receiver_tia_fast_frontend.py`, doubles
+all fourteen original PP/PN load and boost resistor branches in parallel.
+The unloaded bias ratios are preserved and resistive Thevenin impedance
+halves. Original input/decision MOS, reference, restoring stages and two/four-
+unit inverter feedback remain unchanged. The intended benefit is faster
+frontend settling; lower DC gain and the extra real resistor capacitance
+are tradeoffs. It starts with the original source sensitivity/current/stress
+fixtures and PVT gates in `receiver_tia_fast_matrix/85f2c240b81596f8`.
+No source, native or PHY qualification is established for this intervention.
 
 ```mermaid
 flowchart LR
