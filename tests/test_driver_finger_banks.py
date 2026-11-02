@@ -56,6 +56,9 @@ class CompactPhysicalFingerBanks(unittest.TestCase):
         p = banks.pcell_parameters(bank)
         self.assertEqual((p['w'], p['l'], p['nf']), ('8', '.5', 2))
         self.assertEqual((p['conn_gates'], p['guard'], p['m'], p['doports']), (0, 1, 1, 1))
+        self.assertEqual((p['topc'], p['botc']), (1, 1))
+        single = banks.group([self.finger()])[0]
+        self.assertEqual(banks.pcell_parameters(single)['botc'], 0)
         for changed in [dict(bank, nf=1), dict(bank, nf=True), dict(bank, members=['M0', 'M0'])]:
             with self.assertRaises(ValueError):
                 banks.pcell_parameters(changed)

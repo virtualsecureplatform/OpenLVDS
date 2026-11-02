@@ -59,8 +59,10 @@ def pcell_parameters(bank):
     if (not isinstance(nf, int) or isinstance(nf, bool) or nf < 1 or
             len(bank.get('members', [])) != nf or len(set(bank['members'])) != nf):
         raise ValueError('Invalid physical bank membership/count')
+    # Short-channel arrays interleave top/bottom gate access. Suppressing
+    # bottom-side access omits alternating gates from their port interface.
     return dict(bank['params'], nf=nf, m=1, conn_gates=0, guard=1,
-                botc=0, full_metal=1, doports=1)
+                topc=1, botc=1 if nf > 1 else 0, full_metal=1, doports=1)
 
 
 def terminal_groups(ports, nf):
