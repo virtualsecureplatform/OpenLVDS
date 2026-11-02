@@ -67,20 +67,27 @@ Current bring-up state (2026-11-02):
   captured loses eighteen edges and sharp loses none. This layout is rejected.
   Full-wave restoration observation `receiver_replay/3ee72810a0ed800a/`
   `restoration_observations/f31ecf1057a06e55` preserves the diagnosis.
-- **The differential-restoration architecture is implemented and its DC pilots
-  are running.** Separate factory/screen commits preserve the W8 decision pair
+- **The differential-restoration architecture passes both initial DC corners.** Separate factory/screen commits preserve the W8 decision pair
   and add a CO-versus-CL amplifier, seven-unit parallel resistor load to the
   matched trip replica, and a standard first inverter. SS/40 context
   `receiver_differential_restore_static/8241f18c7d38aac2` and FF/40 context
   `receiver_differential_restore_static/0cc939bfc9650aa0` each compare the exact
   control and two amplifier sizes in the full original 144 ns fixture with
-  uniform 1 ps maximum step. No new-topology source or native admission exists.
+  uniform 1 ps maximum step. All three variants pass at both corners.
+  Full fifteen-corner matrix `receiver_differential_restore_matrix/88044ecb1112ef84`
+  is now running with two workers; six pilot corners gate bulk dispatch.
+  `receiver_differential_restore_clock.py` requires the selected candidate and
+  control to pass all fifteen source cases before preparing the original three
+  full source-clock fixtures. Only the exact unchanged reference can be reused;
+  modified captured/sharp cases require fresh simulations. No new-topology
+  source-clock or native admission exists.
 - **The three-bus W32 route passes physical checks.** Layout
   `receiver_layout/677ed99567c83bfb` passes DRC/LVS, extraction and independent
   audit. Read-only wire observation `wire_capacitance_observation/d1be9c61c7463050`
   finds lower boundary wire capacitance on all five PP/PN/CO/CL/CT nets than
   the original W32 route. This does not establish timing improvement. Its own
-  full native captured/sharp replay is being prepared.
+  full native captured/sharp replay `receiver_replay/96ae8fcd14f244e4` is
+  running in its own persistent service.
 - **The 16 pF DLL passes all three source-acquisition cases.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
   10.690 ps quarter-phase error and 0.745 mV control ripple, versus
@@ -112,7 +119,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 812 tests**, with no skips. Electrical
+- The last full regression passes **all 824 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.

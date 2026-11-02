@@ -112,7 +112,11 @@ compare an unchanged matched control with both amplifier sizes using the
 original 144 ns/twelve-point sensitivity fixture, fixed supplies and uniform
 1 ps maximum step. Fourteen control or nineteen modified MOS devices are
 observed, including the now functional trip reference and amplifier tail.
-All fifteen source corners, source clocks, new geometry/LVS/RC audit, native
+Both amplifier sizes pass the complete SS/40 and FF/40 pilots. The
+fifteen-corner matrix is running; its six pilot corners gate bulk dispatch.
+A separate source-clock adapter enforces complete fifteen-corner admission
+and fresh modified captured/sharp clocks. All fifteen source corners,
+source clocks, new geometry/LVS/RC audit, native
 transport, component conditions and coupled timing remain required before
 selection. No ideal comparator substitutes for the transistor circuit.
 
