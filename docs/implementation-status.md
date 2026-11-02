@@ -10,7 +10,7 @@ Current bring-up state (2026-11-02):
 | Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
 | Matched smaller amplifier | 15/15 | 3/3 | Pass, 87 devices | Fail: 16 captured edges missing, 0 sharp |
 | Matched larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
-| Feedback inverter, two resistor units | 15/15 | 3/3 | Pass, 77 devices | In progress |
+| Feedback inverter, two resistor units | 15/15 | 3/3 | Pass, 77 devices | Fail: 14 captured edges missing, 0 sharp |
 | Feedback inverter, four resistor units | 15/15 | 3/3 | Pass, 79 devices | Fail: 16 captured edges missing, 0 sharp |
 
 DC covers all fifteen fixed-supply PVT cases. Source clocks are the three
@@ -249,7 +249,8 @@ qualification. Detailed evidence follows.
   and independent RC audit. Dimensions are 713.27 by 149.60 micrometres;
   its actual native network has 13,905 resistors and 1,437 capacitors.
   Fresh native captured/sharp replay is
-  `receiver_replay/54143ddc298c5037`, in progress. `tia_r4`
+  `receiver_replay/54143ddc298c5037`, complete and rejected: fourteen
+  captured transitions missing, zero sharp-control transitions missing. `tia_r4`
   now passes all three full controls in `receiver_clamp/3d6c5bf54bb3eaff`, with
   47 checks each and no missing/repeated edges. Its 79-device, nine-port layout
   `receiver_layout/c196040b40845390` passes zero-error DRC, LVS, extraction
@@ -276,8 +277,37 @@ qualification. Detailed evidence follows.
   CO-minus-CL is positive somewhere in each lost feedback window, but feedback
   changes its operating-point role: this bus sign must not be interpreted as
   restored frontend current polarity or a gain/transport pass. The observed
-  weak analog pulses still fail the digital restoring chain. The two-unit
-  native test and faster-frontend experiments remain independent and running.
+  weak analog pulses still fail the digital restoring chain. The two-unit test now also completes and fails; faster-frontend experiments
+  remain independent and running.
+- Complete two-unit feedback replay `receiver_replay/54143ddc298c5037`
+  loses fourteen transitions (seven rising/seven falling), while its sharp
+  control loses none. Comparison `receiver_decision_comparison/81ca7d79b9b19806`
+  shows all seven missing falling windows do cross RESTORE0 at 0.9 V.
+  Three also reach RESTORE1 above 0.9 V, but Q never falls below 1.4917 V
+  in any of the seven lost windows. The 41.823952 ns falling response lost
+  by the four-unit version is recovered. The remaining losses have moved
+  deeper into the restoring chain; stronger negative feedback has not yet
+  produced complete native transport. Both original feedback variants remain
+  held by the unchanged native/component admission gates.
+- Read-only input audit
+  `receiver_replay/f03923bf25510f9a/input_contract_observations/28d9763c435501a6`
+  verifies the exact original link-to-pin PWL translation. All pins remain
+  within 0–2.4 V, but three falling pulses never reach 100 mV differential.
+  The other five lost falling responses have only 86.393–214.709 ps of
+  uninterrupted support beyond 100 mV. These are descriptive pulse
+  observations, not a newly invented dynamic acceptance limit or an excuse
+  for all losses. The legacy source uses 60 ns/24.6 cycles of training, so
+  it does not establish the required 256-cycle startup behavior. Original
+  native admissions remain false; no gate or waveform is replaced.
+- Separate corrected-driver interoperability diagnostics are live:
+  `receiver_feedback_link_diagnostic/ffaef202466488a5` (four-unit feedback) and
+  `b7f2e3dfc5f4ef78` (two-unit). They retain the fully remeasured false legacy
+  verdict and use the audited current 110:1 driver, physical receiver, channel,
+  shared bias/digital RX, original 188.049 ns/32-bit payload, 60 ns training
+  and ideal 410 MHz phase. Maximum step is tightened to 1 ps. Each simulator
+  leases one of the same six actual slots at priority two. These separate
+  diagnostics cannot supply native, component, startup, DLL, aperture, full
+  PVT/payload or release admission; all original qualification gates remain.
 - A separate bounded frontend-settling experiment is now live in
   `receiver_tia_fast_matrix/85f2c240b81596f8` under
   `openlvds-receiver-tia-fast-dc-matrix.service`. New factory
@@ -291,9 +321,9 @@ qualification. Detailed evidence follows.
   twelve-point fixed-supply fixtures, uniform 1 ps maximum step, current
   measurements and fourteen-device stress screen. Six original PVT pilots
   gate bulk DC; all fifteen cases must pass independently before any new
-  clock/native admission. Both modified candidates now pass the complete
-  SS/40, FS/40, SF/0 and FF/40 pilots. The pilot batch
-  remains incomplete. The original TIA native
+  clock/native admission. Both modified candidates now pass all six complete
+  SS/40, FS/40, SF/0, FF/40, TT/25 and SF/25 pilots and advance to the
+  remaining nine original DC corners. The full matrix remains incomplete. The original TIA native
   simulations continue to completion; no partial result is promoted.
 - Faster-frontend source-clock adapter
   `receiver_tia_fast_frontend_clock.py` and resource continuation
@@ -360,14 +390,17 @@ qualification. Detailed evidence follows.
   remeasurement agrees. New DRC/LVS/extraction/RC audit pass, and native
   screen `dll_qualification/1a29b2389cee3d01` is running. Fresh measured
   stability and the full qualification remain gated.
-- The corrected DLL native screen now has 22/24 passes and no failures.
+- The corrected DLL native screen now has 23/24 passes and no failures.
   The complete SS/0 closed-loop fixture is 1700 ns, with its original
   1200–1500 ns metric window and 1600 ns marker. Independent observation
   `dll_qualification/1a29b2389cee3d01/completed_native_ss0_observation` agrees
   exactly with the original evaluator: feedback error 20.534656 ps,
   quarter-phase error 44.848933 ps, observed CTRL ripple 1.143592 mV and
-  maximum storage-plate ripple 1.970868 mV. TT/25 is running; FF/0 loop,
-  fresh measured stability and the complete qualification remain required.
+  maximum storage-plate ripple 1.970868 mV. TT/25 now completes and passes
+  its full 1700 ns fixture: feedback error 10.227319 ps, quarter error
+  36.002342 ps, CTRL ripple 0.288201 mV and maximum storage-plate ripple
+  0.967246 mV. FF/0 is running. Fresh measured stability and the complete
+  qualification remain required.
 - Full corrected-DLL continuation
   `dll_storage_full_followup/cf1fbfc6d3d44fec` is live and waiting for the exact
   measured-stability screen owner. Only passing three-corner measured margins
@@ -413,7 +446,7 @@ qualification. Detailed evidence follows.
   `scripts/exact_rc_requirements.txt` and runs the full suite in the local
   analysis environment with ngspice. The base-image `make test` remains
   available; it can skip the sparse-math witness when SciPy is absent.
-- The last full regression passes **all 1012 tests**, with no skips. Electrical
+- The last full regression passes **all 1021 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.

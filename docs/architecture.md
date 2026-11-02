@@ -234,7 +234,11 @@ pass all three source-clock controls. The two-unit variant passes source-clock a
 `receiver_clamp/69a61a443f60c1e6`; its 77-device layout
 `receiver_layout/0f9f54a7549bccf1` passes DRC/LVS, extraction and independent
 RC audit. Its own full native replay
-`receiver_replay/54143ddc298c5037` is running after those gates. The four-unit variant's 79-device layout
+`receiver_replay/54143ddc298c5037` completes after those gates and fails:
+fourteen captured transitions missing, none missing in the sharp control.
+All seven lost falling response windows cross RESTORE0 at 0.9 V; three
+also reach RESTORE1 above 0.9 V, but none produces a Q crossing. Complete
+comparison is `receiver_decision_comparison/81ca7d79b9b19806`. The four-unit variant's 79-device layout
 `receiver_layout/c196040b40845390` passes DRC/LVS, extraction and independent
 RC audit; fresh full native captured/sharp replay
 `receiver_replay/f03923bf25510f9a` completes and fails: sixteen captured
@@ -253,11 +257,22 @@ unit inverter feedback remain unchanged. The intended benefit is faster
 frontend settling; lower DC gain and the extra real resistor capacitance
 are tradeoffs. It starts with the original source sensitivity/current/stress
 fixtures and PVT gates in `receiver_tia_fast_matrix/85f2c240b81596f8`.
-Both candidates pass full SS/40, FS/40, SF/0 and FF/40 source pilots.
-The pilot batch and full DC matrix remain incomplete.
+Both candidates pass all six full source pilots, including TT/25 and SF/25,
+and advance to the remaining nine DC corners. The full matrix remains incomplete.
 The separate source-clock handoff waits for all fifteen DC corners and retains
 the original three full source-clock fixtures. No full source, native or PHY
 qualification is established for this intervention.
+
+The legacy captured-pin fixture remains a diagnostic challenge. Exact
+source-translation audit `input_contract_observations/28d9763c435501a6` within
+the four-unit replay finds three falling pulses below the 100 mV sensitivity
+threshold; five other lost falls exceed 100 mV for only 86–215 ps continuously.
+Its 60 ns training spans 24.6 cycles, below the required 256-cycle startup.
+These facts limit interpretation without changing its recorded failures or
+qualification gates. Separate corrected 110:1 driver/physical feedback-RX
+diagnostics retain those false verdicts and test actual interoperability at
+1 ps maximum step. Their 32-bit, short-training, ideal-phase scope cannot
+establish component, startup, aperture, DLL or full PHY qualification.
 
 The faster-frontend layout adapter stacks every duplicated resistor above
 its matching original, preserving the signal-row width in placement tests.
