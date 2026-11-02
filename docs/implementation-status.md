@@ -93,8 +93,12 @@ Current bring-up state (2026-11-02):
   exact parallel first-inverter units. Total widths and flattened physical
   device/connectivity multisets remain unchanged. Separate full SF/0
   `receiver_matched_trip_static/4815725ab130e6ee` and SS/40 `48704bf4e6b7438d`
-  pilots are running. Their source, clock, native and component admissions
-  remain open; no old evidence is relabelled as their qualification.
+  pilots now pass for control and both amplifier sizes. At SF/0's formerly
+  failed 142 ns point, the smaller matched candidate gives AMP_OUT 720.154 mV,
+  RESTORE0 1.012324 V and Q 1.8 V; CO minus CL remains -87.602 mV.
+  Its full fifteen-corner campaign is `receiver_matched_trip_matrix/9847fc526899414a`.
+  Source, clock, native and component admissions remain open; no old evidence
+  is relabelled as qualification.
 - Local differential layout and native adapters plus persistent resource
   handoffs are implemented. The amplifier, loaded reference and shunt resistors
   remain in the critical row in stage order; functional AMP nodes and CO_TRACK
@@ -102,6 +106,14 @@ Current bring-up state (2026-11-02):
   `receiver_physical_followup/647205f281a50843` waits for the exact source-clock
   owner and each candidate's own complete source admissions. Scientific jobs
   retain the existing six actual slots, with no outer controller lease.
+- Matched-unit source-clock and physical/native adapters now have their own
+  family/profile gates and persistent handoffs. Physical followup
+  `receiver_physical_followup/55c1bd46e4282c4b` waits for the exact matched-trip
+  source-clock owner. Its source matrix waits for both original pilot owners
+  to release their scientific locks before proceeding. Component, corrected
+  110:1-driver coupling and full-versus-quick RC adapters are implemented behind
+  complete native and component admissions; no downstream simulation is
+  admitted yet.
 - **The three-bus W32 route passes physical checks.** Layout
   `receiver_layout/677ed99567c83bfb` passes DRC/LVS, extraction and independent
   audit. Read-only wire observation `wire_capacitance_observation/d1be9c61c7463050`
@@ -140,7 +152,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 840 tests**, with no skips. Electrical
+- The last full regression passes **all 872 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.

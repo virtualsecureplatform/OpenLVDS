@@ -140,9 +140,13 @@ each P16/N8, preserving total width and reference strength. The flattened
 physical device/connectivity multiset is unchanged, with 87 or 90 devices for
 the two amplifier sizes. This does not transfer qualification: the new family
 has separate source fixtures and requires its own admissions. Full SF/0 and
-SS/40 DC pilots are running in `receiver_matched_trip_static/4815725ab130e6ee`
+SS/40 DC pilots pass for control and both amplifier sizes in `receiver_matched_trip_static/4815725ab130e6ee`
 and `48704bf4e6b7438d`. Prior source factories, reports and campaigns remain
-unchanged.
+unchanged. The matched-unit fifteen-corner campaign is running at
+`receiver_matched_trip_matrix/9847fc526899414a`. Its own source-clock,
+physical/native, sixty-component, corrected-driver coupling and RC adapters
+preserve the original fixtures and admission gates. They cannot substitute
+old-family qualification for this source-model correction.
 
 A separate three-bus W32 routing experiment moves only CT, CO and CL below
 the critical row. Layout `receiver_layout/677ed99567c83bfb` passes DRC/LVS,
