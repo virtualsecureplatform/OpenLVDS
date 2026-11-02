@@ -62,7 +62,8 @@ def pcell_parameters(bank):
     # Short-channel arrays interleave top/bottom gate access. Suppressing
     # bottom-side access omits alternating gates from their port interface.
     return dict(bank['params'], nf=nf, m=1, conn_gates=0, guard=1,
-                topc=1, botc=1 if nf > 1 else 0, full_metal=1, doports=1)
+                topc=1, botc=1 if nf > 1 else 0, doverlap=0, poverlap=0,
+                full_metal=1, doports=1)
 
 
 def terminal_groups(ports, nf):
@@ -79,8 +80,7 @@ def terminal_groups(ports, nf):
                 (match[2] and not 0 <= int(match[2]) < nf)):
             raise ValueError('Unexpected physical PCell terminal: ' + name)
         roles[match[1]].append(name)
-    expected_gates = {'G'} if nf == 1 else {f'G{i}' for i in range(nf)}
-    if (set(roles['G']) != expected_gates or len(roles['B']) != 1 or
-            not roles['D'] or not roles['S']):
+    expected = {role: {role} if nf == 1 else {f'{role}{i}' for i in range(nf)} for role in ['D', 'G', 'S']}
+    if any(set(roles[role]) != names for role, names in expected.items()) or len(roles['B']) != 1:
         raise ValueError('Missing separate gate, drain, source or bulk contacts')
     return {role: sorted(names) for role, names in roles.items()}

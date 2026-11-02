@@ -62,7 +62,8 @@ def build(receipt):
         scope='Post-source-gate PCell interface probe only. Same original physical '
               'finger widths/lengths/terminal groups, guarded one-row arrays and separate '
               'gate contacts. No macro routing, DRC/LVS, extraction, native, power/stress '
-              'or PHY admission. Shared diffusion parasitics still require native checks.')
+              'or PHY admission. Separate diffusions are retained; array/guard '
+              'parasitics still require native checks.')
     out = ROOT / 'build/diagnostics/driver_finger_pcells' / hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()[:16]
     out.mkdir(parents=True, exist_ok=True)
 
