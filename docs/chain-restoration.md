@@ -614,6 +614,30 @@ These estimates remain uncalibrated until the queued `positive_op` case
 completes. The two-polarity source checks and PVT margin remain unproven;
 the narrow nominal timing/common-mode margins cannot select the candidate.
 
+`qualify_driver_output_shape_source.py` implements the next required source
+matrix: all five process corners × 0/25/40 C × both initial logic polarities,
+for thirty distinct cases and fifteen PVT points. Each keeps the exact
+shaped circuit, fixed rails/reference, 100 ohm/2 pF-per-pin load and original
+80 ns/1 ps stimulus. Each PVT point receives its own fresh two-polarity DC
+calibration before transition, monotonicity and common-mode reference checks.
+Actual supply currents and added-MOS voltages remain observations; this
+matrix does not itself admit power/stress, physical layout or the PHY.
+
+Host continuation `driver_shape_source_followup/a5e76aa1dd959a0e`, owned by
+`openlvds-driver-shape-source-followup-v2.service`, waits for the original
+shaping producer's complete terminal receipt. Only a bound nominal pass can
+call the scientific preparer, which remeasures both saved waveforms, DC
+points and calibrated transition results before preparing any new case.
+Missing, failed or changed evidence holds the handoff. The source matrix
+uses at most two workers, each with one P1 lease in the existing six-slot
+dispatcher; the host waiter holds no SPICE lease. No physical dispatch is
+automatic, even after a source waveform pass.
+
+The initial childless resource waiter `d7c392bc3bd8201a` was stopped before
+any source matrix was prepared to correct handling of an empty successful
+scientific run log. Its producer/owner and replacement receipt are retained.
+No science worker, source waveform or parent pilot was stopped or rewritten.
+
 Release still requires at least 256 training cycles, all forty-five link
 conditions, 4096 nominal/512 corner payload bits, at least 200 ps margin after
 measured aperture subtraction, the sixty RX and thirty driver component
@@ -621,6 +645,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1108 tests, no skips**. Actual
+The full pinned regression suite passes **1116 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.

@@ -81,6 +81,10 @@ lower reference limit; neither TT25 success nor PVT margin is assumed.
 The negative-initial-state case has completed at 140 mVpp, with estimated
 265–270 ps edges. The positive-initial-state case is still queued, so its
 fresh two-polarity calibration and source reference checks remain incomplete.
+A gated continuation now prepares all thirty shaped-driver source cases
+across the fifteen PVT points only after that complete nominal pass. It
+remeasures the nominal proof before dispatch and retains the fixed-supply
+scope. Source waveform success cannot automatically select a physical macro.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
