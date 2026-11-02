@@ -113,7 +113,9 @@ original 144 ns/twelve-point sensitivity fixture, fixed supplies and uniform
 1 ps maximum step. Fourteen control or nineteen modified MOS devices are
 observed, including the now functional trip reference and amplifier tail.
 Both amplifier sizes pass the complete SS/40 and FF/40 pilots. The
-fifteen-corner matrix is running; its six pilot corners gate bulk dispatch.
+fifteen-corner matrix completes with 15/15 for the larger amplifier and 14/15
+for the smaller one. Only the larger original amplifier advances to source
+clocks. The matched-unit reference family has a separate running matrix.
 A separate source-clock adapter enforces complete fifteen-corner admission
 and fresh modified captured/sharp clocks. All fifteen source corners,
 source clocks, new geometry/LVS/RC audit, native
@@ -182,6 +184,16 @@ trip replica is added; the original unloaded reference remains diagnostic.
 This is an unproven circuit hypothesis with full source pilots running at
 SS/40 (`receiver_tia_static/e00432100ec8ebad`) and SF/0 (`49580e6e4b65d68f`).
 All fourteen observed MOS devices retain the original project stress screen.
+Both feedback values pass both pilots; full matrix
+`receiver_tia_matrix/33a571a155c3a105` is running. Its layout flow orders the
+frontend loads, W8 decision stage, first-inverter feedback loop and later
+buffers along the critical row. CT, CO, CL and RESTORE0 use four 0.4 micrometre
+buses at 1.2 micrometre pitch below that row. Feedback intermediate nodes use
+the first upper channels; all feedback resistors remain local. The unused
+trip reference is folded with the diagnostic cells. Physical work requires
+all fifteen source cases and all three original source-clock controls to pass.
+Full native replays preserve their original 80 ns fixtures and 1 ps maximum
+step, adding probes for every feedback intermediate node.
 
 ```mermaid
 flowchart LR

@@ -67,15 +67,17 @@ Current bring-up state (2026-11-02):
   captured loses eighteen edges and sharp loses none. This layout is rejected.
   Full-wave restoration observation `receiver_replay/3ee72810a0ed800a/`
   `restoration_observations/f31ecf1057a06e55` preserves the diagnosis.
-- **The differential-restoration architecture passes both initial DC corners.** Separate factory/screen commits preserve the W8 decision pair
+- **The original larger differential amplifier passes all fifteen source cases.** Separate factory/screen commits preserve the W8 decision pair
   and add a CO-versus-CL amplifier, seven-unit parallel resistor load to the
   matched trip replica, and a standard first inverter. SS/40 context
   `receiver_differential_restore_static/8241f18c7d38aac2` and FF/40 context
   `receiver_differential_restore_static/0cc939bfc9650aa0` each compare the exact
   control and two amplifier sizes in the full original 144 ns fixture with
-  uniform 1 ps maximum step. All three variants pass at both corners.
+  uniform 1 ps maximum step. All three variants pass at both initial corners.
   Full fifteen-corner matrix `receiver_differential_restore_matrix/88044ecb1112ef84`
-  is now running with two workers; six pilot corners gate bulk dispatch.
+  completes: control and `track_t16_r7` pass 15/15, while `track_t8_r7` is rejected
+  at 14/15 because of its SF/0 failure. The source-clock handoff dispatches only
+  the larger admitted amplifier in `receiver_clamp/60f22049d7c05297`.
   `receiver_differential_restore_clock.py` requires the selected candidate and
   control to pass all fifteen source cases before preparing the original three
   full source-clock fixtures. Only the exact unchanged reference can be reused;
@@ -135,7 +137,15 @@ Current bring-up state (2026-11-02):
   is used. Full SS/40 `receiver_tia_static/e00432100ec8ebad` and SF/0
   `receiver_tia_static/49580e6e4b65d68f` compare both feedback values to the exact
   control at fixed supplies and uniform 1 ps maximum step. No source or native
-  admission exists.
+  admission exists. Both feedback values now pass both initial corners.
+  Full fifteen-corner campaign `receiver_tia_matrix/33a571a155c3a105` is running
+  with two workers. Source-clock and physical/native handoffs are implemented;
+  physical context `receiver_physical_followup/ed30d5877c629f40` waits for each
+  candidate's own complete source admissions. Geometry keeps four local buses
+  (CT/CO/CL/RESTORE0) below the critical row and folds the unused trip reference.
+  Preparation recovered from a concurrent cached-reference lock without a
+  simulation retry or scientific-code change: only completed reference reads
+  are serialized, and every non-lock scientific error remains fatal.
 - Matched-unit downstream resource handoffs are now live and waiting:
   `receiver_matched_downstream/39758258f2f754b9` (components),
   `d9de4e75f3501c61` (corrected-driver diagnostic) and `39650feb10a68c33` (RC).
@@ -154,6 +164,14 @@ Current bring-up state (2026-11-02):
   remeasurement agrees. New DRC/LVS/extraction/RC audit pass, and native
   screen `dll_qualification/1a29b2389cee3d01` is running. Fresh measured
   stability and the full qualification remain gated.
+- The corrected DLL native screen now has 22/24 passes and no failures.
+  The complete SS/0 closed-loop fixture is 1700 ns, with its original
+  1200–1500 ns metric window and 1600 ns marker. Independent observation
+  `dll_qualification/1a29b2389cee3d01/completed_native_ss0_observation` agrees
+  exactly with the original evaluator: feedback error 20.534656 ps,
+  quarter-phase error 44.848933 ps, observed CTRL ripple 1.143592 mV and
+  maximum storage-plate ripple 1.970868 mV. TT/25 is running; FF/0 loop,
+  fresh measured stability and the complete qualification remain required.
 - **The corrected 110:1 driver passes all thirty component cases.** All
   fifteen source and fifteen native original full 2540 ns fixtures pass
   across five process corners and 0/25/40 °C. Native settled 100-ohm DC
@@ -174,7 +192,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 886 tests**, with no skips. Electrical
+- The last full regression passes **all 908 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
