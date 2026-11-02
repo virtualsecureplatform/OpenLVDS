@@ -95,7 +95,10 @@ at `xtx.vgnd.t393`. This is another extracted decap-shaped NFET terminal
 run also fails, at 4.5465 ns and `xtx.vgnd.t436`, attempted step 1.25e-24 s.
 Final observation `raw_completion_observation/89aaa118374b97c3` records all
 four terminal cases: both TX-only cases complete, both coupled cases fail.
-RC reduction is therefore not necessary to reproduce the collapse.
+TX RC reduction is therefore not necessary to reproduce the collapse.
+The RX digital block retains its original reduced RC in both cases, so this
+comparison does not rule out RX reduction or a whole-network conditioning
+problem.
 Changing the output interval for the short fixture can change the numerical
 trajectory; neither the time nor the terminal is identical to the long parent.
 The observer reads only terminal cases and records pending cases as unknown.
