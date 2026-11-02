@@ -60,14 +60,17 @@ Current bring-up state (2026-11-02):
   are complete at this observation. The new source-clock, physical and native
   adapters preserve all admission gates. A conditional differential gain stage
   comparing CO with CL is the next topology fallback, not a selected circuit.
-- **The 16 pF DLL passes SS/0 and TT/25 source acquisition.** The full SS/0
+- **The 16 pF DLL passes all three source-acquisition cases.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
   10.690 ps quarter-phase error and 0.745 mV control ripple, versus
   2.576 mV ripple for the matched 4 pF source control. Full TT/25 gives
   7.758 ps feedback error, 10.296 ps quarter-phase error and 0.861 mV
-  ripple versus 3.014 mV for its matched 4 pF control. FF/0 acquisition
-  remains required. New DRC/LVS/extraction/RC audit pass; native
-  screening, fresh measured stability and the full qualification remain gated.
+  ripple versus 3.014 mV for its matched 4 pF control. Full FF/0 passes with
+  6.375 ps feedback error, 10.268 ps quarter-phase error and 0.907 mV
+  ripple versus 3.163 mV for its matched 4 pF control. Independent full-wave
+  remeasurement agrees. New DRC/LVS/extraction/RC audit pass, and native
+  screen `dll_qualification/1a29b2389cee3d01` is running. Fresh measured
+  stability and the full qualification remain gated.
 - **The corrected 110:1 driver passes all thirty component cases.** All
   fifteen source and fifteen native original full 2540 ns fixtures pass
   across five process corners and 0/25/40 °C. Native settled 100-ohm DC
@@ -94,6 +97,25 @@ Current bring-up state (2026-11-02):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — complete 16 pF source acquisition and native-screen handoff:
+
+- `dll_architecture/368259f7b02c5fdc` now completes and passes all three
+  original 1500 ns source-acquisition cases, including FF/0. The source owner
+  exits successfully. Read-only matched FF/0 receipt
+  `completed_source_ff0_observation/summary.json` independently remeasures
+  both full C4 and C16 traces with unchanged original metrics and input hashes.
+- C16 FF/0 feedback error is 6.375279 ps, quarter-phase error 10.267562 ps,
+  CTRL mean 0.731615 V and ripple 0.907130 mV. Matched C4 values are
+  6.492792 ps, 8.012954 ps, 0.731602 V and 3.162580 mV. These source results
+  do not establish native phase margin.
+- The exact-owner continuation prepares fresh native qualification
+  `dll_qualification/1a29b2389cee3d01` with explicit
+  `storage_source_admission.json`. Its original 24-case screen runs with
+  three fair actual SPICE leases at most; all other fixtures remain held for
+  stability. The separate stability continuation waits for the complete screen.
+  Native margins, transient steps/recovery/readiness, OTA operating points,
+  the full 336-case matrix and final RC/PHY qualification remain unproven.
 
 2026-11-02 — native failure diagnosis and next receiver experiments:
 

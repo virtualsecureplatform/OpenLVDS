@@ -2177,3 +2177,19 @@ Together with SS/0 and all 21 selected static offsets this yields 23 passing
 native screen cases. FF/0 acquisition is queued under the shared six-slot
 budget. The measured three-corner native model, remaining 312 fixtures and
 all required native stability/PHY gates stay held until the full screen passes.
+
+
+## 2026-11-02: 16 pF source acquisition complete
+
+The three full 1500 ns SS/0, TT/25 and FF/0 source cases in
+`dll_architecture/368259f7b02c5fdc` now all pass. Independent FF/0 receipt
+`completed_source_ff0_observation/summary.json` remeasures both matched C4/C16
+waveforms and reproduces the original metrics. C16 gives 6.375279 ps maximum
+feedback error, 10.267562 ps quarter-phase error and 0.907130 mV control ripple;
+the corresponding C4 values are 6.492792 ps, 8.012954 ps and 3.162580 mV.
+
+The completed source admission unlocks fresh native context
+`dll_qualification/1a29b2389cee3d01`. The original 24-case native screen is
+running with three actual shared-slot leases at most. Remaining fixtures stay
+held for fresh native stability evidence. No full native DLL or PHY admission
+is implied by this source result.
