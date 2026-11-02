@@ -37,6 +37,15 @@ crossing per input clock event, and high/low pulses valid beyond 1.44/below
 claiming aperture-subtracted margin. A 0.9 V crossing alone cannot pass.
 These short synthetic screens do not establish long-training or PHY release.
 
+The completed 390 and 400 MHz native cases both pass, including the unique
+ordered sixteen-word payload. At 390 MHz, minimum valid clock high/low widths
+are 1155.625/1172.511 ps and raw setup/hold minima are 634.688/632.799 ps.
+At 400 MHz they are 1123.452/1140.564 ps and 617.845/616.747 ps. These raw
+distances do not subtract measured aperture, and the short training is not
+qualified. The 410 MHz case and the thirty wide-static cases remain required.
+The baseline remains preferred; there is no evidence yet requiring either
+later-buffer alternative on these representative inputs.
+
 `openlvds-receiver-spec-baseline.service` owns this campaign. Host continuation
 `receiver_spec_followup/ab6d392c598ac24d`, owned by
 `openlvds-receiver-spec-components-followup.service`, binds that exact owner
@@ -125,10 +134,55 @@ the expected rail topology, and requires exactly one N/P pair in each of the
 Fresh `tx_decap_isolation/26137b054eba3c5f` removes only those 112 mapped MOS
 statements from the raw TX in the otherwise unchanged coupled 12 ns fixture.
 Every extracted resistor/capacitor statement and every unrelated device is
-retained. It is queued under `openlvds-tx-mapped-decap-isolation.service`,
-using one P2 slot and no outer lease. It has no electrical or physical verdict.
-Its result will determine whether a fresh legal tap-endcap physical build is
-justified; it cannot itself qualify a decap-free TX.
+retained. This diagnostic has now failed at 4.5465 ns, attempted step
+1.25e-24 s, with the reported node shifted to `xrx.vgnd.t215`. Removing the
+TX boundary MOS alone therefore does not clear the coupled collapse. It has
+no electrical or physical verdict and cannot qualify a decap-free TX.
+
+The RX terminal maps to X4 in the original native DDR receiver,
+`rx_early_physical_v1`, specifically `PHY_EDGE_ROW_4_Left_32` at
+(5.915, 21.995) µm. The same checked coordinate/PDK/rail mapping uniquely
+identifies all 112 RX boundary MOS devices. Fresh two-case context
+`endpoint_decap_isolation/335f03b43d9dd052` tests RX-only removal and removal
+at both digital endpoints. It preserves every wire R/C and every unrelated
+device. `openlvds-endpoint-mapped-decap-isolation.service` owns the two-worker,
+individual-P2-lease campaign. Its results remain pending.
+
+`rebuild_tx_tap_endcaps.py` implements a conditional isolated physical flow
+using the original RTL/constraints and explicit tap endcaps/well taps. It
+checks resolved config, all 56 legal boundary placements, well taps, powered
+cell connections, DRC/LVS, disconnected pins, power-grid errors, setup/hold
+timing, retained functional paths, and fresh extraction/independent RC audit.
+The flow is held: TX-only MOS removal did not establish the causal completion
+required by its gate. No new physical build or model promotion is launched.
+
+## Numerical control with original devices
+
+`observe_failure_prefix.py` inspects complete binary frames from terminal
+abort files without making them acceptable to the normal waveform reader.
+The failed ngspice files declare zero finalized points; the observer records
+that fact, available frame count and trailing bytes, and always marks them
+unqualified. Immutable observations are:
+
+- Original raw coupled case:
+  `tx_convergence_isolation/6d6efde953a550ab/coupled_raw/failure_prefix_observation/2368d6b24c4f7e89`.
+- TX-MOS-removal case:
+  `tx_decap_isolation/26137b054eba3c5f/failure_prefix_observation/b82e940dfbb4e730`.
+
+Both prefixes reach 4.5465 ns with finite increasing time. Both source clocks
+remain low; the recovered RX clock peaks at only 0.805 mV. The supplied first
+clock edge starts at 5 ns, so these aborts precede functional clock activity.
+These are observations of incomplete numerical traces, not electrical passes.
+
+One independent original-model control is queued:
+`tx_sparse_isolation/b05c673bfe98d862`, owned by
+`openlvds-original-coupled-sparse-isolation.service`. It changes only linear
+solver selection to Sparse 1.3, retaining every original device and all raw
+TX RC, stimuli, tolerances, iteration budget, and 1 ps maximum step. The
+actual solver must be verified in the ngspice log before numerical completion
+can be recorded. Both solvers are documented in the
+[ngspice manual](https://ngspice.sourceforge.io/docs/ngspice-manual.pdf).
+This bounded numerical control does not admit a circuit or replace RC checks.
 
 ## Remaining closure
 
@@ -139,6 +193,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1046 tests, no skips**. Actual
+The full pinned regression suite passes **1057 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.

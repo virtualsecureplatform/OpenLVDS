@@ -12,6 +12,13 @@ the earlier captured replay remains a stress diagnostic. Its failures below
 are preserved and do not serve as the new specification admission gate.
 No new RX or PHY admission has passed yet.
 
+The new loaded native RX screens at 390 and 400 MHz both pass ordered DDR
+payload and valid pulse checks; 410 MHz and the wide-static PVT cases remain
+in progress. TX-only boundary MOS removal fails at the same 4.5465 ns with
+the reported node moved into the native digital RX. Mapped RX-only/both-end
+MOS-removal diagnostics and an original-device Sparse-solver control are
+queued/running. The causal gate holds the tap-endcap physical rebuild.
+
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
 | Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
