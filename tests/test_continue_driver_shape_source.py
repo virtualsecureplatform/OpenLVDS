@@ -37,5 +37,22 @@ class SourcePvtResourceHandoff(unittest.TestCase):
             with patch.object(followup,'owner',return_value=dict(owner,MainPID='43',InvocationID='second')):
                 with self.assertRaisesRegex(ValueError,'Live prerequisite'):followup.run(out)
 
+    def test_successful_source_run_may_have_an_empty_log(self):
+        with tempfile.TemporaryDirectory() as tmp,patch.object(followup,'ROOT',Path(tmp)):
+            root=Path(tmp);source,out,_=self.prepared(root)
+            (source/'summary.json').write_text(json.dumps(dict(diagnostic_complete=True,source_pilot_reference_checks_passed=True,manifest_sha256=followup.sha(source/'manifest.json'))))
+            matrix=root/'build/diagnostics/driver_shape_source/test'
+            def command(args,**kwargs):
+                if 'prepare' in args:
+                    matrix.mkdir(parents=True);(matrix/'manifest.json').write_text('{}')
+                    kwargs['stdout'].write('/work/OpenLVDS/build/diagnostics/driver_shape_source/test\n')
+                else:
+                    (matrix/'summary.json').write_text(json.dumps(dict(source_waveform_matrix_passed=True,required_cases=30,required_pvt=15,passed_pvt=15,manifest_sha256=followup.sha(matrix/'manifest.json'))))
+                return followup.subprocess.CompletedProcess(args,0)
+            with patch.object(followup,'owner',return_value=dict(MainPID='0',ActiveState='inactive')),patch.object(followup.subprocess,'run',side_effect=command):
+                followup.run(out)
+            self.assertEqual((out/'run.log').read_text(),'')
+            self.assertTrue(json.loads((out/'summary.json').read_text())['source_waveform_matrix_passed'])
+
 
 if __name__=='__main__':unittest.main()

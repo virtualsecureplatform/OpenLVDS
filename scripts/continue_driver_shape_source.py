@@ -51,7 +51,8 @@ def run(out):
         unchanged()
         with (out/(label+'.log')).open('x') as log:
             p=subprocess.run([str(ROOT/'scripts/env.sh'),'--ngspice','/usr/bin/python3','scripts/qualify_driver_output_shape_source.py']+args,cwd=ROOT,stdout=log,stderr=subprocess.STDOUT)
-        p.check_returncode();unchanged();return (out/(label+'.log')).read_text().strip().splitlines()[-1]
+        p.check_returncode();unchanged();lines=(out/(label+'.log')).read_text().strip().splitlines()
+        return lines[-1] if lines else ''
     with (out/'.execution.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);unchanged()
         if (out/'state.json').exists():raise ValueError('Prior source PVT handoff retained')
