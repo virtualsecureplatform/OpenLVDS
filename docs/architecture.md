@@ -187,7 +187,9 @@ This is an unproven circuit hypothesis with full source pilots running at
 SS/40 (`receiver_tia_static/e00432100ec8ebad`) and SF/0 (`49580e6e4b65d68f`).
 All fourteen observed MOS devices retain the original project stress screen.
 Both feedback values pass both pilots; full matrix
-`receiver_tia_matrix/33a571a155c3a105` is running. Its layout flow orders the
+`receiver_tia_matrix/33a571a155c3a105` completes with 15/15 for control and
+both feedback values. Both candidates advance to the original full source-clock
+controls with their own admissions. Its layout flow orders the
 frontend loads, W8 decision stage, first-inverter feedback loop and later
 buffers along the critical row. CT, CO, CL and RESTORE0 use four 0.4 micrometre
 buses at 1.2 micrometre pitch below that row. Feedback intermediate nodes use

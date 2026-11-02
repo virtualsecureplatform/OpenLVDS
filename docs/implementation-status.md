@@ -88,7 +88,8 @@ Current bring-up state (2026-11-02):
   `receiver_layout/fe64cc74ba1efc50` passes DRC/LVS, extraction and independent
   RC audit. Dimensions are 903.26 by 129.20 micrometres. Native model SHA is
   `00dfa063eaa8c4bdd030e9e04d8bcd75c2b14b7cf425431e657f651bf091c636`;
-  its original full native captured/sharp replay is being prepared.
+  its original full native captured/sharp replay `receiver_replay/80ceda71c5337d7a`
+  is running. No native transport admission exists yet.
 - The original differential factory's smaller amplifier now fails SF/0 at
   the final high-common-mode sensitivity point; the larger amplifier passes.
   All observed-device stress checks pass. The unchanged control retains the
@@ -147,13 +148,21 @@ Current bring-up state (2026-11-02):
   control at fixed supplies and uniform 1 ps maximum step. No source or native
   admission exists. Both feedback values now pass both initial corners and all six pilot PVT conditions.
   Full fifteen-corner campaign `receiver_tia_matrix/33a571a155c3a105` is running
-  with two workers. Source-clock and physical/native handoffs are implemented;
+  and now completes with 15/15 for control, `tia_r2` and `tia_r4`.
+  Both feedback values advance to their own source-clock fixtures.
+  Source-clock and physical/native handoffs are implemented;
   physical context `receiver_physical_followup/ed30d5877c629f40` waits for each
   candidate's own complete source admissions. Geometry keeps four local buses
   (CT/CO/CL/RESTORE0) below the critical row and folds the unused trip reference.
   Preparation recovered from a concurrent cached-reference lock without a
   simulation retry or scientific-code change: only completed reference reads
   are serialized, and every non-lock scientific error remains fatal.
+- Original differential-amplifier downstream handoffs are now live and waiting:
+  `receiver_differential_downstream/d8b7381526a27796` (components),
+  `1e1493bac7dd6581` (corrected-driver diagnostic) and `3496874a53a16f66` (RC).
+  Only candidates with their own full native transport admission can dispatch
+  component or coupled simulations. All sixty component passes are additionally
+  required before RC. The rejected smaller original amplifier cannot advance.
 - Feedback-inverter downstream handoffs are now live and waiting:
   `receiver_tia_downstream/469fe88f6e83a36f` (sixty component cases),
   `82ff9c871fa9d9ef` (corrected-driver diagnostic) and `81515c914e0baf1c` (RC).
@@ -215,7 +224,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 937 tests**, with no skips. Electrical
+- The last full regression passes **all 960 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
