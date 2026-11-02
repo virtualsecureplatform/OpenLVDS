@@ -35,7 +35,7 @@ preferred two-resistor receiver in fresh context `02c868108c5b1da1`; its short
 check completed twelve ns, followed by a wrapper missing-import error.
 Recovery context `678e1b24d0305732` verifies its complete raw/export evidence
 and queues only the full 188.049 ns diagnostic, preserving the original
-producer and outputs. The specification screen has passed 22/33 cases;
+producer and outputs. The specification screen has passed 24/33 cases;
 native wide-DC cases remain, with sixty components and the receiver RC
 comparison queued behind their complete admission. This cannot
 substitute the isolation receiver or short training for final qualification.
@@ -51,9 +51,12 @@ Three TT25 source controls are queued to isolate this finding: original
 converter and ideal complementary gates with 100 ps/400 ps transitions.
 Their bridge, CMFB, supplies and output load are held fixed; they are
 diagnostic controls and cannot be selected as hardware.
-The original-converter control has completed and reproduces 479 mVpp
-common-mode movement, with up to 2.25 V error in the complementary gate
-sum. The ideal-gate comparisons remain pending; causality is not yet isolated.
+The original-converter control reproduces 479 mVpp common-mode movement,
+with up to 2.25 V error in the complementary gate sum. Ideal 100 ps
+complementary gates reduce movement to 96 mVpp while retaining all 22 expected
+rising output edges. This supports the gate-drive path as a major contributor;
+the slower ideal-gate control is pending, and no real converter or TX
+architecture change has been selected.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |

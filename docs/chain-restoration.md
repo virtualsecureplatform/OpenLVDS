@@ -378,8 +378,8 @@ short observation carries no electrical verdict or PHY admission.
 ## Receiver component and RC continuation
 
 The specification campaign has completed all fifteen schematic wide-DC
-cases, the three native 390/400/410 MHz rate cases and native TT0/TT25/TT40
-and FF0 wide-DC cases: **22/33 pass**, with eleven native wide-DC cases pending.
+cases, the three native 390/400/410 MHz rate cases and all six native TT/FF
+wide-DC cases: **24/33 pass**, with nine native wide-DC cases pending.
 The verified component handoff
 still requires all 33 screen cases before dispatching the original sixty
 component conditions. A read-only preflight confirms that all sixty original
@@ -478,9 +478,15 @@ The baseline control now completes all 80 ns with return code zero and
 22 rising output edges in the 20–75 ns observation window. It reproduces
 478.881 mVpp common-mode movement. The maximum error in `DP + DN = 3.3 V`
 is 2.24537 V during switching, establishing substantial non-complementary
-gate activity in this source fixture. That correlation does not establish
-causality: the ideal 100 ps and 400 ps controls remain pending, and their
-comparison is needed before selecting a converter or bridge/CMFB change.
+gate activity in this source fixture. The ideal 100 ps control also now
+completes all 80 ns with return code zero and 22 rising output edges.
+Common-mode movement falls to 95.5864 mVpp (1.184353–1.279940 V), with
+gate-sum error below 9e-16 V. This supports the gate-drive path as a major
+contributor while the bridge, CMFB and output load remain fixed. Ideal drive
+changes both complementarity and transition shape; the 400 ps control remains
+pending to distinguish those effects. It does not establish a real converter
+implementation or generator compliance. Prioritize balanced gate drive and
+its extracted loading before assuming that a CMFB-only redesign is necessary.
 The original coupled payload continues independently, with no restart.
 
 Historical matched native-driver observation
