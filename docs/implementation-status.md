@@ -7,11 +7,11 @@ Current bring-up state (2026-11-02):
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |
-| Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | In progress |
+| Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
 | Matched smaller amplifier | 15/15 | 3/3 | Pass, 87 devices | In progress |
 | Matched larger amplifier | 15/15 | 3/3 | Pass, 90 devices | In progress |
 | Feedback inverter, two resistor units | 15/15 | In progress | Gated | Gated |
-| Feedback inverter, four resistor units | 15/15 | 3/3 | Building | Gated |
+| Feedback inverter, four resistor units | 15/15 | 3/3 | Pass, 79 devices | In progress |
 
 DC covers all fifteen fixed-supply PVT cases. Source clocks are the three
 original full 80 ns controls; this table does not establish component or PHY
@@ -101,7 +101,16 @@ qualification. Detailed evidence follows.
   RC audit. Dimensions are 903.26 by 129.20 micrometres. Native model SHA is
   `00dfa063eaa8c4bdd030e9e04d8bcd75c2b14b7cf425431e657f651bf091c636`;
   its original full native captured/sharp replay `receiver_replay/80ceda71c5337d7a`
-  is running. No native transport admission exists yet.
+  completes and fails: eighteen captured-clock edges missing, zero sharp-control
+  edges missing. No native transport admission exists. Read-only complete
+  comparison `receiver_decision_comparison/11ec5ff01c16e3a2` remeasures the
+  original W8/N8 receiver and this amplifier with identical stimuli, numeric
+  policies and shared bias/digital load. Nine falling response periods are
+  lost, eight without a RESTORE0 falling crossing and one without positive
+  CO-minus-CL throughout its period. At the additional 56.447186 ns missed
+  period, RESTORE0 does cross 0.9 V, so that case needs later-chain/pulse-width
+  analysis; the other eight remain first-restoration failures. Added output
+  gain has not repaired native transport.
 - The original differential factory's smaller amplifier now fails SF/0 at
   the final high-common-mode sensitivity point; the larger amplifier passes.
   All observed-device stress checks pass. The unchanged control retains the
@@ -120,8 +129,8 @@ qualification. Detailed evidence follows.
   Its full fifteen-corner campaign is `receiver_matched_trip_matrix/9847fc526899414a`.
   Control and both matched amplifier sizes now pass all fifteen cases and
   receive their own source DC admissions. Both variants have advanced to the
-  original source-clock fixtures. Clock, native and component admissions remain
-  open; no old evidence is relabelled as qualification.
+  original source-clock fixtures. Both source-clock admissions now pass; native
+  and component admissions remain open; no old evidence is relabelled as qualification.
 - Local differential layout and native adapters plus persistent resource
   handoffs are implemented. The amplifier, loaded reference and shunt resistors
   remain in the critical row in stage order; functional AMP nodes and CO_TRACK
@@ -165,8 +174,8 @@ qualification. Detailed evidence follows.
   shows one W8/N8 missed response period without positive CO-minus-CL polarity;
   original W32 and three-bus W32 have seven and six such missed periods.
   The associated frontend observation records the weak, late PP-minus-PN
-  excursion at the difficult W8/N8 period. New amplifier native behavior
-  remains unproven; passive routing alone has not closed transport.
+  excursion at the difficult W8/N8 period. The original larger amplifier also fails native transport; matched-unit
+  amplifiers remain under test. Passive routing alone has not closed transport.
 - **Both feedback-inverter variants pass all fifteen source DC cases.** Separate factory and screen
   retain the W8 decision pair and add two/four series original poly units from
   RESTORE0 to CO around a standard first inverter. The aim is lower decision
@@ -179,7 +188,11 @@ qualification. Detailed evidence follows.
   completes with 15/15 for control, `tia_r2` and `tia_r4`.
   Both feedback values advance to their own source-clock fixtures. `tia_r4`
   now passes all three full controls in `receiver_clamp/3d6c5bf54bb3eaff`, with
-  47 checks each and no missing/repeated edges; its geometry handoff is running.
+  47 checks each and no missing/repeated edges. Its 79-device, nine-port layout
+  `receiver_layout/c196040b40845390` passes zero-error DRC, LVS, extraction
+  and independent RC audit. Dimensions are 749.17 by 153.20 micrometres;
+  the native model contains 14,246 resistors and 1,445 capacitors. Fresh
+  captured/sharp replay is `receiver_replay/f03923bf25510f9a`, in progress.
   Source-clock and physical/native handoffs are implemented;
   physical context `receiver_physical_followup/ed30d5877c629f40` waits for each
   candidate's own complete source admissions. Geometry keeps four local buses
@@ -187,12 +200,14 @@ qualification. Detailed evidence follows.
   Preparation recovered from a concurrent cached-reference lock without a
   simulation retry or scientific-code change: only completed reference reads
   are serialized, and every non-lock scientific error remains fatal.
-- Original differential-amplifier downstream handoffs are now live and waiting:
+- Original differential-amplifier downstream handoffs have completed and held both candidates:
   `receiver_differential_downstream/d8b7381526a27796` (components),
   `1e1493bac7dd6581` (corrected-driver diagnostic) and `3496874a53a16f66` (RC).
   Only candidates with their own full native transport admission can dispatch
   component or coupled simulations. All sixty component passes are additionally
-  required before RC. The rejected smaller original amplifier cannot advance.
+  required before RC. Neither original amplifier advances: the smaller failed
+  source DC and the larger failed native transport. The controllers dispatched
+  no component, coupled or RC simulation for either rejected candidate.
 - Feedback-inverter downstream handoffs are now live and waiting:
   `receiver_tia_downstream/469fe88f6e83a36f` (sixty component cases),
   `82ff9c871fa9d9ef` (corrected-driver diagnostic) and `81515c914e0baf1c` (RC).
@@ -243,6 +258,18 @@ qualification. Detailed evidence follows.
   original scientific fixtures, 60-degree/6-dB margin gates, 390/410 MHz step
   validation and the six actual slots are retained. Recovery, readiness, OTA,
   RC and complete PHY gates remain required afterward.
+- Corrected-DLL recovery/readiness/OTA continuation
+  `dll_storage_signoff_followup/e5c1ab37cc91e2b2` is live behind the exact full
+  native/all-PVT stability owner. It runs the original limiting-corner
+  frequency-step/clock-loss recovery, RTL readiness replay including fresh
+  4700 ns late-loss fixtures, then guarded OTA gm/offset/terminal-stress
+  characterization. Variant profiling preserves the captured native identity;
+  each actual SPICE call uses the same fair priority-one six-slot dispatcher.
+  Existing output scopes and partial numerical evidence are retained, with
+  no automatic overwrite/retry. Seven adapter tests exercise evidence
+  binding, producer failures, partial retention, resource restoration and
+  terminated owners. These gates have not run yet; RC and full PHY
+  qualification remain independent requirements.
 - **The corrected 110:1 driver passes all thirty component cases.** All
   fifteen source and fifteen native original full 2540 ns fixtures pass
   across five process corners and 0/25/40 °C. Native settled 100-ohm DC
@@ -263,7 +290,7 @@ qualification. Detailed evidence follows.
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 967 tests**, with no skips. Electrical
+- The last full regression passes **all 974 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.

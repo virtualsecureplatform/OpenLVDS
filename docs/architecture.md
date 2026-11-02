@@ -115,12 +115,22 @@ observed, including the now functional trip reference and amplifier tail.
 Both amplifier sizes pass the complete SS/40 and FF/40 pilots. The
 fifteen-corner matrix completes with 15/15 for the larger amplifier and 14/15
 for the smaller one. Only the larger original amplifier advances to source
-clocks. The matched-unit reference family has a separate running matrix.
+clocks. The matched-unit reference family separately passes all fifteen source cases.
 A separate source-clock adapter enforces complete fifteen-corner admission
 and fresh modified captured/sharp clocks. All fifteen source corners,
 source clocks, new geometry/LVS/RC audit, native
 transport, component conditions and coupled timing remain required before
 selection. No ideal comparator substitutes for the transistor circuit.
+
+The original larger amplifier completes both full extracted controls in
+`receiver_replay/80ceda71c5337d7a`: eighteen captured-clock transitions are
+missing, while the sharp control loses none. Complete read-only comparison
+`receiver_decision_comparison/11ec5ff01c16e3a2` finds nine missing falling
+response periods, eight without the first restoring inverter crossing 0.9 V.
+One still has no positive CO-minus-CL excursion throughout its response
+period. The extra amplifier does not close native transport and receives no
+component or PHY admission. Matched-unit variants retain their own ongoing
+native tests.
 
 The first differential factory's smaller amplifier fails SF/0 at the highest
 input common mode, while its larger amplifier passes. At the 142 ns sample,
@@ -188,7 +198,7 @@ Its intended role is a current-to-voltage amplifier: decision current changes
 RESTORE0 while CO remains closer to the inverter's operating point. The next
 two restoring stages are unchanged. No extra differential pair or functional
 trip replica is added; the original unloaded reference remains diagnostic.
-This is an unproven circuit hypothesis with full source pilots running at
+The source hypothesis is tested with full pilots at
 SS/40 (`receiver_tia_static/e00432100ec8ebad`) and SF/0 (`49580e6e4b65d68f`).
 All fourteen observed MOS devices retain the original project stress screen.
 Both feedback values pass both pilots; full matrix
@@ -202,7 +212,11 @@ the first upper channels; all feedback resistors remain local. The unused
 trip reference is folded with the diagnostic cells. Physical work requires
 all fifteen source cases and all three original source-clock controls to pass.
 Full native replays preserve their original 80 ns fixtures and 1 ps maximum
-step, adding probes for every feedback intermediate node.
+step, adding probes for every feedback intermediate node. The four-unit
+variant passes all three source-clock controls. Its 79-device layout
+`receiver_layout/c196040b40845390` passes DRC/LVS, extraction and independent
+RC audit; fresh full native captured/sharp replay
+`receiver_replay/f03923bf25510f9a` is running. Native transport remains unproven.
 
 ```mermaid
 flowchart LR
