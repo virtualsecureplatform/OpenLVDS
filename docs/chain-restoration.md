@@ -682,7 +682,7 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1132 tests, no skips**. Actual
+The full pinned regression suite passes **1135 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
 
@@ -849,3 +849,63 @@ receipt is retained there. The RC continuation still waits for all sixty.
 The C16 DLL SS0 stability screen has now completed and passed its full
 3300 ns run as well. TT25 and SS0 pass; FF0 is still running and remains
 required before the full DLL handoff advances.
+
+## Complete weaker matrix and the stronger taper's SS failure
+
+The weaker 1/2/4-cap30 matrix `driver_shape_source/40b882e177324c81` is
+complete, with **6/15 PVT points passing**. TT and SF pass at all three
+temperatures. FF fails common mode at 183.177–187.422 mVpp; FS fails at
+155.261–166.676 mVpp. SS has acceptable common mode but minimum calibrated
+edges of 256.585–256.734 ps, below 260 ps. The complete failed result is
+retained; the producer has exited normally with a held source-matrix receipt.
+
+The stronger 1/4/8-cap30 matrix `b016a1113b51cd82` passes all six completed
+TT/FF points, but its SS results invalidate source selection. SS0 measures
+176.374/175.403 mVpp common-mode movement in negative/positive cases, and
+the SS25 negative case reaches 187.753 mVpp. Fresh two-polarity SS0
+calibration measures 250.628–261.127 ps for the negative case and
+250.688–259.971 ps for the positive case, with 44 monotonic transitions each.
+Both common-mode movement and minimum transition time need correction.
+Neither taper has full source admission, and no new physical build starts.
+
+The pinned `sky130.lib.spice` includes the same
+`r+c/res_typical__cap_typical.spice` and
+`r+c/res_typical__cap_typical__lin.spice` files in TT/FF/SS/FS/SF. The
+transistor-corner tests therefore do not select different MIM parameter
+corners. The observed SS speed difference cannot be attributed to such
+a capacitor-corner selection.
+
+A read-only branch-zero timing comparison uses the median delay from each
+1.65 V input crossing to the following opposite output crossing during
+20–74 ns of the complete negative-initial-state traces:
+
+| Taper / corner | L → G0 rise/fall, ps | G0 → G1 rise/fall, ps | G1 → DP rise/fall, ps |
+| --- | --- | --- | --- |
+| 1/2/4 SS0 | 103.45 / 135.62 | 97.30 / 119.70 | 71.38 / 85.98 |
+| 1/4/8 SS0 | 156.47 / 217.96 | 114.03 / 146.71 | 53.40 / 74.78 |
+| 1/2/4 FF0 | 72.61 / 79.11 | 64.77 / 78.28 | 50.29 / 51.98 |
+| 1/4/8 FF0 | 112.91 / 132.64 | 73.95 / 95.65 | 35.73 / 43.54 |
+
+These are diagnostic threshold delays, not aperture measurements. The
+stronger taper doubles the first unit's gate load while leaving its drive
+unchanged. Its larger and less balanced SS first-stage delays support
+isolating that fanout before assuming that stronger final gates solve PVT.
+
+`driver_stage0_balance.py` changes only the first stage's unit count from
+one to two in both branches: **2/4/8**, retaining the 30 um capacitors.
+`probe_driver_stage0_balance.py` binds and remeasures the actual failing
+SS25 and passing FF40 source references, then prepares the same two
+negative-initial-state 80 ns/1 ps controls. Artifact
+`driver_stage0_balance/6458be492f296656`, owned by
+`openlvds-driver-stage0-balance.service`, uses at most two P2 workers in
+the existing dispatcher. It measures common mode, actual rail power,
+negative initial DC stability and added-device voltages with the correct
+2/4/8 counts. Three tests verify the two-unit-only change, retained caps,
+and rejection without the required source failure/control evidence.
+
+These two controls cannot supply fresh positive DC calibration or complete
+transition/PVT admission. If they fix common mode without breaking FF,
+fresh both-polarity calibration must determine whether an additional fixed
+output-capacitor increase is still needed for the SS minimum edge time.
+There is no capacitor sweep or voltage sweep. The running 1/4/8 source
+matrix and all receiver, DLL and coupled jobs continue unchanged.

@@ -5,6 +5,14 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-02):
 
+The stronger 1/4/8 gate taper fixes the measured FF common-mode failure but
+now fails SS: 175–188 mVpp common-mode movement and SS0 edges as fast as
+250.6 ps. A two-case 2/4/8 first-buffer control is queued at SS25 and FF40
+with the capacitors and remaining circuit held fixed. The weaker 1/2/4
+matrix is complete: TT/SF pass, FF/FS fail common mode, and SS fails minimum
+edge time. Neither taper is selected for physical implementation. See
+[the SS analysis and control](chain-restoration.md#complete-weaker-matrix-and-the-stronger-tapers-ss-failure).
+
 The preferred receiver now passes the complete **33/33** specification
 screen. Its verified handoff has started the sixty original components in
 `receiver_components/24ea17b76d61a8e3`. The stronger gate taper with unchanged
