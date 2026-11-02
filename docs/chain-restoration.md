@@ -94,6 +94,14 @@ capacitor statements must match between raw and reduced TX. Additional
 probes observe the failing ground/gate cluster. At most two workers acquire
 individual P2 leases in the existing six-slot dispatcher.
 
+The coupled isolation/channel controls retain the original four-resistor TIA
+receiver from `receiver_feedback_link_diagnostic/ffaef202466488a5` so that
+the failed fixture stays fixed while one cause is varied. They do not select
+that receiver over the preferred two-resistor baseline. Once the channel/
+numerical cause is resolved, restore the two-resistor receiver and recheck its
+short native coupled fixture before the full 188.049 ns diagnostic and long
+training. A passing isolation control cannot replace baseline-specific evidence.
+
 Both TX-only native engine runs reach 12 ns with finite, increasing raw data.
 Their exporter returns an error because the new fixture requested `V(0)`.
 The original adapter consequently records `numerically_completed=false`.
@@ -272,8 +280,10 @@ more accurate than the T element because of implementation details
 This is a documented representation control, not a claim that the T element
 caused the observed collapse. The 25 ohm reflective calibration now completes
 and passes: maximum T/LTRA disagreement is 2.041e-13 V; maximum LTRA/analytic
-disagreement is 1.076e-13 V. The 50/100 ohm controls and coupled results remain
-pending, and all three calibration cases are still required before coupling.
+disagreement is 1.076e-13 V. The matched 50 ohm control also passes: maximum
+T/LTRA disagreement is 5.002e-14 V and maximum LTRA/analytic disagreement is
+2.776e-16 V. The 100 ohm reflective control and coupled results remain pending;
+all three calibration cases are still required before coupling.
 Every actual simulation uses its own P2 lease in the same six-slot
 dispatcher; no healthy simulation was stopped or outer lease added.
 
