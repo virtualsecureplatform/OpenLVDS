@@ -5,6 +5,14 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-02):
 
+Receiver bring-up has passed **33/33 screens, 60/60 components and the new
+specification-admitted RC comparison**. All three C16 DLL stability screens
+pass, and full 336-case native qualification is active. The 2/4/8 driver
+control fixes SS common mode but breaks FF, so it is held. A calculated
+1/3/8 taper with fixed 36 um caps now has six fresh source pilots queued
+at TT25/SS25/FF40. Neither a physical driver nor the PHY is admitted. See
+[the latest driver experiment and completed RX gates](chain-restoration.md#first-buffer-tradeoff-and-calculated-next-candidate).
+
 The stronger 1/4/8 gate taper fixes the measured FF common-mode failure but
 now fails SS: 175–188 mVpp common-mode movement and SS0 edges as fast as
 250.6 ps. A two-case 2/4/8 first-buffer control is queued at SS25 and FF40

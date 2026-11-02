@@ -682,7 +682,7 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1135 tests, no skips**. Actual
+The full pinned regression suite passes **1141 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
 
@@ -909,3 +909,77 @@ fresh both-polarity calibration must determine whether an additional fixed
 output-capacitor increase is still needed for the SS minimum edge time.
 There is no capacitor sweep or voltage sweep. The running 1/4/8 source
 matrix and all receiver, DLL and coupled jobs continue unchanged.
+
+## First-buffer tradeoff and calculated next candidate
+
+The two 2/4/8-cap30 controls are complete. SS25 common-mode movement improves
+from 187.753 to **50.471 mVpp**, but FF40 worsens from 132.480 to
+**217.693 mVpp**. Both retain 22 rising output edges, solved stable negative
+DC levels within the original ranges, and their actual power/stress
+observations. The combined control fails and does not admit this taper.
+Simply increasing the first buffer is therefore not a uniform PVT fix.
+
+The completed 1/4/8-cap30 matrix passes **9/15** points: TT, FF and FS at
+all three temperatures. SS fails common mode and minimum edge time; its
+largest common-mode movement is 191.770 mVpp, with the fastest calibrated
+edge approximately 250.151 ps. SF also fails minimum edge time
+(255.106–256.355 ps), despite passing common mode. These failed results
+remain unchanged.
+
+`driver_geometric_shape.py` defines one calculated candidate: **1/3/8**
+parallel gate units and **36×36 um** output MIMs. The first buffer's load
+on the CML converter stays at one unit. The two interstage load factors
+become 3 and 8/3, near the equal-fanout value sqrt(8), rather than 4 and 2.
+This tests a timing compromise while retaining the final strong gates.
+Increasing the fixed capacitors separately addresses the measured fast-edge
+failure. All remaining circuit statements, original device bins, mirror,
+bridge, CMFB, supplies/reference and loads are retained.
+
+The pinned nominal MIM formula gives 1.819782 pF at 30 um and 2.615742 pF
+at 36 um per capacitor. With the unchanged external 2 pF per pin, the total
+capacitance ratio is approximately 1.2084. Pure capacitive scaling of the
+completed 250.151–273.087 ps source range predicts approximately 302–330 ps.
+That is an estimate, not admission: the gate-taper change and nonlinear
+current waveforms must be measured. Only this one calculated capacitor
+choice is introduced; there is no sweep or source-PVT limit relaxation.
+
+`probe_geometric_driver.py` remeasures and binds both completed first-buffer
+controls and the completed stronger-matrix reference cases before preparing
+`driver_source_pilot/2dc8b9a5062d0dc9`. Unit
+`openlvds-geometric-driver-pilot.service` owns six fresh 80 ns/1 ps cases:
+TT25, SS25 and FF40, each with negative and positive initial logic states.
+Every pair receives its own fresh DC calibration before the unchanged
+20–80%, monotonicity, common-mode and DC checks. Two P2 workers use the
+existing dispatcher. The factory's two tests check exact circuit scope and
+reject changed or repeated source transformations.
+
+Reusable `driver_source_campaign.py` binds the recipe/runner hashes,
+identical case circuits and declared coverage. It rejects partial/nonfinite
+or shortened traces, retains every failed output, and never retries a
+partially run case. Its four tests cover full 80 ns completion, undeletable
+full-PVT coverage, incomplete-admission rejection and no partial retry.
+Verification remeasures all saved cases and recomputes the complete report.
+The next full thirty-case matrix can be prepared only after all six pilot
+cases pass this remeasurement:
+
+```sh
+scripts/env.sh --ngspice /usr/bin/python3 scripts/probe_geometric_driver.py prepare-full \
+  /work/OpenLVDS/build/diagnostics/driver_source_pilot/2dc8b9a5062d0dc9
+```
+
+The full stage requires all fifteen process/temperature points with both
+polarities, uses two P1 workers, and still cannot admit physical work without
+complete passing evidence and power/stress review. No new physical model,
+selected PHY or release claim follows from preparing this pilot.
+
+The preferred receiver has now passed all **sixty components** in
+`receiver_components/24ea17b76d61a8e3`. Its specification-admitted RC
+comparison `receiver_spec_rc/b2ba11aa2ef77c6f` also completes and passes;
+the RC resource handoff has finished. This is one receiver comparison, not
+the final joint six-case RC certificate or aperture/coupled qualification.
+
+All three C16 measured stability screens (TT25, SS0, FF0) complete and pass.
+The live full-DLL continuation has advanced to `running_full_336_native_cases`.
+Its scientific child runs the original full qualification, followed by all
+fifteen stability corners only on a full native pass. Recovery, readiness,
+OTA, RC and actual coupled DLL timing remain required afterward.
