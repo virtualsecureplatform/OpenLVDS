@@ -46,6 +46,16 @@ long training and timing qualification remain unproven. A separate saved
 20–60 ns clock-transport observation finds 31 matched events and zero missing
 edges, under the diagnostic 0.9 V matching rule.
 
+The subsequent immutable 60–95 ns payload observation finds four lost
+negative clock pulses and their four following rising responses. The pulses
+reach the receiver but are distorted; the first restoration node stays above
+1.10 V on the lost negative pulses. Available payload words disagree, and
+one recovered low pulse is only 50.6 ps at the diagnostic crossing. This
+does not support changing the later buffers. The full reference run remains
+active; the shaped source driver is not part of this native chain. See the
+[payload analysis](chain-restoration.md#payload-clock-loss-after-restored-startup)
+for measured input support and the next causal checks.
+
 A new read-only observation of all thirty completed corrected-driver traces
 finds substantial common-mode movement during transitions: 326–500 mVpp
 schematic and 770–1047 mVpp native. Existing DC and center-eye results remain

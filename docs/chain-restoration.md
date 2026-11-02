@@ -659,3 +659,45 @@ stability and full qualification continue independently.
 The full pinned regression suite passes **1116 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
+
+## Payload clock loss after restored startup
+
+`observe_payload_clock.py` freezes a copy of the available raw bytes, binds
+the original recovery inputs and producer hashes, and measures only a fully
+available fixed interval. Observation `payload_clock_observation/fee62e0eec5b4b89`
+covers 60–95 ns of the still-running 188.049 ns diagnostic. An independent
+read of its saved snapshot reproduces the complete report. This chain uses
+the original native 110:1 driver and preferred two-resistor receiver; the
+new shaped source driver is **not** present.
+
+Startup transport was intact over 20–60 ns, but the payload interval loses
+four falling responses and the four following rising responses under the
+same diagnostic period-matching rule (eight missing events of twenty-six
+complete input periods). TX digital and differential clocks continue, and
+the pulses reach the receiver pins. The four lost negative pulses start
+at 69.804, 72.213, 74.643 and 89.282 ns. Their peaks are 180, 152, 139 and
+144 mV; their longest support beyond -100 mV is 313, 306, 336 and 339 ps.
+The receiver's first restoration node never falls below 1.107–1.189 V in
+these respective pulse windows. Thus there is no low decision for the last
+two buffers to restore. A separate recovered low pulse lasts only 50.6 ps
+at the diagnostic 0.9 V crossing, reinforcing why crossings alone do not
+establish capture validity. Available public payload words also disagree
+with the expected sequence; the full-run terminal verdict is still pending.
+
+Negative differential pulse widths are already distorted at the TX output:
+511–1029 ps there and 533–1025 ps at the RX input, compared with 863–1067 ps
+digital low pulses. These observations locate the loss before the final
+receiver buffers but do not separate driver distortion, shared-bias effects
+and early receiver response. Static sensitivity is not a guaranteed dynamic
+response to every short pulse that briefly exceeds 100 mV. No new minimum
+pin-pulse acceptance limit is introduced by this report.
+
+Continue the unchanged reference run and shaped-driver source PVT matrix.
+Do not select a later-buffer change from this failure. If the source matrix
+passes, review power/device stress and use compact physical placement for
+the fast gate stages and local output capacitors before native checks. The
+existing generic driver is a 4.09 mm horizontal strip, so its RC cannot be
+assumed to preserve the source improvement. Then compare the compliant native
+driver/channel against this same preferred receiver. An early receiver
+architecture change requires failures on that representative input, with
+stage and shared-bias observations sufficient to isolate the cause.
