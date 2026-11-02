@@ -14,7 +14,7 @@ class ConnectedFingerBankGeometry(unittest.TestCase):
         g = Geometry()
         geometry.via12(g, .123456, -.411111)
         geometry.via23(g, .123456, -.411111)
-        for layer, size in [('via1', .15), ('via2', .20)]:
+        for layer, size in [('via1', .26), ('via2', .28)]:
             rect = g.layers[layer][0]
             self.assertEqual((rect[2] - rect[0], rect[3] - rect[1]), (round(size / GRID), round(size / GRID)))
 

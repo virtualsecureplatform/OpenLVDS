@@ -5,19 +5,15 @@ from layout import Geometry, GRID
 
 
 def via12(g, x, y):
-    # Dense thin-oxide D/S contacts cannot accommodate the generic 0.4 um
-    # M1 landing. Keep a legal small-cut landing inside each narrow column.
+    # Magic via layers include the cut plus its surrounding rule margin.
+    # Use the pinned technology's 0.26 um via1 drawing, not a bare 0.15 cut.
     x, y = [round(v / GRID) * GRID for v in [x, y]]
-    g.pad('metal1', x, y, .29)
-    g.pad('via1', x, y, .15)
-    g.pad('metal2', x, y, .29)
+    g.via12(x, y)
 
 
 def via23(g, x, y):
     x, y = [round(v / GRID) * GRID for v in [x, y]]
-    g.pad('metal2', x, y, .31)
-    g.pad('via2', x, y, .20)
-    g.pad('metal3', x, y, .4)
+    g.via23(x, y)
 
 
 def write(out, name, cell, info, parameters):
@@ -40,13 +36,13 @@ def write(out, name, cell, info, parameters):
         for n in roles[role]:
             layer, x, y = p[n]
             xs.append(x)
-            half = max(0., (float(parameters['w']) - .6) / 2)
-            offsets = [0.] if half < .4 else [(-half + i * (2 * half) / max(1, int(2 * half / .4)))
-                                             for i in range(max(1, int(2 * half / .4)) + 1)]
-            for offset in offsets:
-                via12(g, x, y + offset)
-            low, high = min(y-half, stripe[role]), max(y+half, stripe[role])
-            g.wire('metal2', x, low, x, high, .29)
+            # Stagger opposite-terminal landings. Adjacent thin-oxide D/S
+            # columns are only 0.44 um apart: two aligned 0.4 um pads fail
+            # spacing, while one pad beside a 0.14 um collector is legal.
+            landing = y + (1 if role == 'D' else -1) * min(1., float(parameters['w']) / 4)
+            g.wire('metal1', x, y, x, landing, .17)
+            via12(g, x, landing)
+            g.wire('metal2', x, landing, x, stripe[role], .14)
             via23(g, x, stripe[role])
         g.wire('metal3', min(xs) - .4, stripe[role], right, stripe[role], 2.)
         public[role] = ('metal3', right, stripe[role])
@@ -83,6 +79,7 @@ def write(out, name, cell, info, parameters):
     via12(g, bx, body_y)
     g.wire('metal2', bulk_x, body_y, bx, body_y, .4)
     g.via23(bulk_x, body_y)
+    g.pad('metal3', bulk_x, body_y, .6)
     public['B'] = ('metal3', bulk_x, body_y)
 
     lines = ['magic', 'tech sky130A', 'magscale 1 2', 'timestamp 0']
