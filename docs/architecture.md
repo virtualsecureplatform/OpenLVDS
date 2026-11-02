@@ -274,6 +274,14 @@ diagnostics retain those false verdicts and test actual interoperability at
 1 ps maximum step. Their 32-bit, short-training, ideal-phase scope cannot
 establish component, startup, aperture, DLL or full PHY qualification.
 
+Both initial corrected-driver diagnostics stop numerically at 4.5465 ns,
+reporting the same `xtx.vgnd.t436` node and a 1.25e-24 s attempted step.
+They provide no completed electrical result. A separate four-unit context,
+`receiver_feedback_link_diagnostic/9bb548490222cab1`, tests a transient Newton
+iteration limit of 100 with all circuit, stimulus and accuracy settings kept.
+Original failed data remain preserved; the numerical experiment cannot grant
+qualification or supply a result for an incomplete waveform.
+
 The faster-frontend layout adapter stacks every duplicated resistor above
 its matching original, preserving the signal-row width in placement tests.
 CT, CO, CL and RESTORE0 keep their four below-row buses. Every additional

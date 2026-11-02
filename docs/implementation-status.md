@@ -299,7 +299,7 @@ qualification. Detailed evidence follows.
   for all losses. The legacy source uses 60 ns/24.6 cycles of training, so
   it does not establish the required 256-cycle startup behavior. Original
   native admissions remain false; no gate or waveform is replaced.
-- Separate corrected-driver interoperability diagnostics are live:
+- Separate corrected-driver interoperability diagnostics were prepared and run:
   `receiver_feedback_link_diagnostic/ffaef202466488a5` (four-unit feedback) and
   `b7f2e3dfc5f4ef78` (two-unit). They retain the fully remeasured false legacy
   verdict and use the audited current 110:1 driver, physical receiver, channel,
@@ -308,6 +308,22 @@ qualification. Detailed evidence follows.
   leases one of the same six actual slots at priority two. These separate
   diagnostics cannot supply native, component, startup, DLL, aperture, full
   PVT/payload or release admission; all original qualification gates remain.
+- Both original corrected-driver interoperability diagnostics terminate
+  numerically at 4.5465 ns with a 1.25e-24 s attempted timestep, reporting
+  `xtx.vgnd.t436`. Neither reaches its required 188.049 ns duration or
+  supplies an electrical verdict. Their immutable terminal observations are
+  `ffaef202466488a5/terminal_observation/b5a892d5d35eb61a` and
+  `b7f2e3dfc5f4ef78/terminal_observation/b6ca51e41ffa257a`, within the
+  interoperability namespace. Original raw/deck/library/log files remain.
+  One fresh four-unit numerical experiment,
+  `receiver_feedback_link_diagnostic/9bb548490222cab1`, increases only the
+  transient Newton iteration limit to 100. Circuit bytes, fixed supplies,
+  initial conditions, stimuli, 188.049 ns duration, 1 ps maximum step and
+  accuracy tolerances are unchanged. Preparation requires the exact terminal
+  failed owner and recorded timestep collapse; it cannot derive another
+  numerical attempt from an already modified budget. Host preparation keeps
+  container include paths. The original failed contexts are never overwritten
+  or automatically restarted. This experiment has no result yet.
 - A separate bounded frontend-settling experiment is now live in
   `receiver_tia_fast_matrix/85f2c240b81596f8` under
   `openlvds-receiver-tia-fast-dc-matrix.service`. New factory
@@ -446,7 +462,7 @@ qualification. Detailed evidence follows.
   `scripts/exact_rc_requirements.txt` and runs the full suite in the local
   analysis environment with ngspice. The base-image `make test` remains
   available; it can skip the sparse-math witness when SciPy is absent.
-- The last full regression passes **all 1021 tests**, with no skips. Electrical
+- The last full regression passes **all 1026 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
