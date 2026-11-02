@@ -13,7 +13,11 @@ and the complete compact driver now pass zero-error DRC and strict LVS.
 The 790 x 577 um routed driver retains all original 320 devices. Fresh
 GDS RC extraction and independent connectivity audit pass; six native
 TT25/SS25/FF40 output pilots are dispatched with both initial polarities.
-Complete native PVT/stress and coupled qualification remain open. The original raw-TX/r2/LTRA run also
+The pilot-gated thirty-case native-output runner and automatic handoff are
+implemented; full native PVT/stress and coupled qualification remain open.
+These output campaigns retain the source bias circuit. Original long
+component fixtures and integration with audited native shared bias remain
+separate gates. The original raw-TX/r2/LTRA run also
 completes all 188.049 ns numerically, while retaining its failed payload and
 ten lost clock responses. See [the full source and physical preparation
 results](chain-restoration.md#full-source-pass-completed-raw-reference-and-physical-interface-preparation).

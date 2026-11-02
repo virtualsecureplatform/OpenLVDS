@@ -1186,3 +1186,37 @@ verifier remeasures complete cached traces and never retries partial runs.
 
 The full regression passes **1,155 tests without skips** after the complete
 physical/extraction flow and native pilot adapter were added.
+
+
+## Native output matrix handoff
+
+`qualify_driver_compact_native.py` implements the subsequent thirty native
+output cases: all five processes, 0/25/40 C, and both initial polarities.
+Preparation independently verifies and remeasures all six native pilots
+before accepting a passing three-point result. The full stage retains the
+original 80 ns / 1 ps fixtures and load, measures fresh DC and calibrated
+output edges at every point, and has a separate read-only verifier. Missing,
+duplicate or partial PVT coverage cannot qualify the stage.
+
+Resource handoff `driver_compact_native_followup/05ce6abd9e74383e`, owned by
+`openlvds-compact-driver-native-full-followup.service`, waits for the exact
+bound pilot service invocation. It requires the owner to finish and produce
+a bound terminal receipt before checking its verdict. A failed pilot holds
+the full stage; a passing pilot goes through scientific remeasurement before
+full preparation. Full execution has two individual P1 leases within the
+existing six-engine limit, followed by independent remeasurement if all
+fifteen points pass. No incomplete run is restarted.
+
+These campaigns exercise the extracted **driver core** with the existing
+source bias circuit and public output observations. They do not replace the
+original thirty long-duration source/native component fixtures, integration
+with the audited native shared-bias circuit, native internal MOS-stress
+observations, coupled restoration, joint RC certification or final PHY
+qualification. The full-stage manifest explicitly keeps those gates open.
+
+The first two TT25 native pilots remain live. Partial prefixes show initial
+DC near +/-318.91 mV and 1.24844 V common mode, and the first completed
+20–80 crossings around 323–333 ps. Common-mode movement observed so far is
+47–49 mVpp. These incomplete-prefix readings are diagnostics only; the full
+80 ns, both-polarity calibrated result remains pending. No pilot is admitted
+from these prefixes. The full regression passes **1,159 tests without skips**.
