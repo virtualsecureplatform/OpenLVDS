@@ -1132,3 +1132,57 @@ The complete regression passes **1,152 tests without skips**. Complete-driver
 compact routing, GDS RC extraction/audit, native waveform qualification and
 the restored coupled link remain required. The existing six-slot simulation
 campaigns continue without restart or changed accuracy settings.
+
+
+## Compact complete driver passes DRC, LVS and native RC audit
+
+The five distinct source-matched CMOS inverter tiles in
+`driver_inverter_tiles/68dc41fb1597cada` all pass **zero-error DRC and strict
+LVS**. They cover all nine original inverter instances. The complete
+physical trial `driver_compact_layout/65385b4549fed34b` also passes
+**DRC=0 and LVS**, retaining all **320 original devices, including 302
+independent MOS fingers**. The layout uses forty-one child placements.
+
+Each mirrored branch places its CML stage, three inverter tiles, bridge
+transistors and output capacitor locally. The four inter-stage connections
+use direct metal3 routes of **54 um** each. Quiet bias/CMFB/current-mirror
+circuits occupy two separate rows. Metal4 buses and metal5 drops join the
+remaining nets, with shared columns only for the same electrical net.
+The actual routed bounding box is x=-17.4..772.4 um and
+y=-324.7..252.5 um: **789.8 x 577.2 um**. This replaces the earlier
+4.088 mm-wide strip with a compact routed driver; it does not itself
+establish an electrical advantage.
+
+The first complete trial `c39572bba628c0f3` retained ten MiM/via3 spacing
+errors and failed LVS because greedy access tracks crossed neighboring
+capacitor plates. Earlier assembly contexts `78db8453bfc4b41b` and
+`64e36979c6c52179` stopped on ambiguous bridge selection and overlapping
+resistor bounds. `b8d7cc326779abbe` stopped at the new unsafe-access guard.
+All remain retained. The successful implementation includes transformed
+child boxes when calculating bounds, rejects overlapping children, checks
+horizontal access corridors and matches safe tracks globally before
+routing. It shares mirrored supply columns without joining different nets.
+
+`driver_compact_extraction/d72cbc423b52f949` extracts distributed RC from
+the qualified GDS and passes independent wire-collapsed LVS. The network
+contains **40,160 resistors and 4,045 capacitors** before the existing exact
+positive-conductance degree-four elimination, and **30,110 resistors**
+afterward. No MOS device or capacitor is removed. All nine public terminals
+retain their source order. This is an RC connectivity milestone, not native
+electrical admission.
+
+Six fresh native-output pilots are prepared in
+`driver_compact_native_pilot/7542c9e673372ad7`, owned by
+`openlvds-compact-driver-native-pilot.service`. They cover TT25, SS25 and
+FF40 with both initial polarities, using the original full **80 ns / 1 ps**
+stimulus, fixed supplies/reference, 100 ohm differential load and 2 pF per
+pin. The two workers acquire individual P2 leases under the existing
+six-engine global limit; there is no outer lease or existing-run restart.
+They measure fresh DC, calibrated 20–80 transitions, common-mode movement,
+output edge count and actual supply power, with exact raw/export voltage
+agreement. Internal MOS stress, complete fifteen-point native qualification,
+restored coupled tests and PHY admission remain separate work. The pilot
+verifier remeasures complete cached traces and never retries partial runs.
+
+The full regression passes **1,155 tests without skips** after the complete
+physical/extraction flow and native pilot adapter were added.

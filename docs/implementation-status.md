@@ -8,12 +8,12 @@ Current bring-up state (2026-11-02):
 The geometric-cap36 driver now passes the complete source matrix:
 **30/30 cases, 15/15 PVT points**, independently remeasured. Common-mode
 movement is 37.4–142.3 mVpp and calibrated transitions are 306.6–330.3 ps.
-Compact multi-finger preparation retains all 302 MOS fingers and eighteen
-passives; a real nineteen-recipe PCell interface probe passes after fixing
-alternating short-channel gate access. All nineteen connected MOS-bank
-recipes now pass zero-error DRC and strict LVS, and the five distinct
-inverter tiles are undergoing their own physical checks. Complete-driver
-routing, DRC/LVS, extraction and native qualification remain open. The original raw-TX/r2/LTRA run also
+All nineteen connected MOS-bank recipes, all five distinct inverter tiles
+and the complete compact driver now pass zero-error DRC and strict LVS.
+The 790 x 577 um routed driver retains all original 320 devices. Fresh
+GDS RC extraction and independent connectivity audit pass; six native
+TT25/SS25/FF40 output pilots are dispatched with both initial polarities.
+Complete native PVT/stress and coupled qualification remain open. The original raw-TX/r2/LTRA run also
 completes all 188.049 ns numerically, while retaining its failed payload and
 ten lost clock responses. See [the full source and physical preparation
 results](chain-restoration.md#full-source-pass-completed-raw-reference-and-physical-interface-preparation).
