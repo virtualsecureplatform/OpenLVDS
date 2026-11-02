@@ -682,7 +682,7 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1141 tests, no skips**. Actual
+The full pinned regression suite passes **1148 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
 
@@ -1028,3 +1028,73 @@ scripts/env.sh --ngspice /usr/bin/python3 scripts/probe_geometric_driver.py veri
 That receipt still sets physical admission and PHY qualification false.
 Power/stress review, a compact physical driver, native PVT, coupled timing,
 the final current apertures and all release gates remain required.
+
+## Full source pass, completed raw reference and physical interface preparation
+
+The geometric-cap36 matrix `driver_shape_source/b1325bf847630063` completes
+all thirty cases and passes **15/15** process/temperature points. Complete
+read-only remeasurement produced readiness receipt
+`driver_shape_source_verification/49d28e2c45badad9/summary.json`. Across the
+full source matrix:
+
+- Common-mode movement is 37.444–142.327 mVpp.
+- Calibrated transitions are 306.637–330.278 ps.
+- Solved differential DC magnitude is 323.866–345.938 mV.
+- IO/digital power observations are 28.201–29.081 / 1.124–1.295 mW per driver.
+- Maximum observed added-MOS terminal difference is 4.161 V.
+
+All thirty saved traces and DC/pair reports were checked again against their
+bound inputs, code and output hashes. These source results enable physical
+experiments; they do not admit a native driver or the PHY. Signed voltages,
+real native loading and power/device behavior still require physical checks.
+
+The original-device raw-TX/r2/LTRA reference
+`baseline_payload_recovery/678e1b24d0305732` also completes **188.049 ns**
+with return code zero and no numerical failure. An independent reread
+verifies all 190,038 raw/export samples and reproduces both terminal metrics.
+Payload fails with no correctly ordered preamble, and the complete 60–120 ns
+transport observation loses five falling and five rising responses. This
+closes the numerical restoration milestone while retaining the old driver's
+electrical failure. No original MOS device, capacitor or rail was removed.
+The matched exact-TX benchmark remains running; its transient-equivalence
+result is still pending.
+
+`driver_finger_banks.py` prepares compact physical groups from the exact
+flattened source fingers. The candidate contains **320 devices, including
+302 MOS fingers**. Equal model, terminal order, width and length allow those
+fingers to form **32 MOS banks**; the eighteen passive devices stay separate,
+giving fifty placements. Every original finger identity is tracked, all
+widths remain at most 8 um on the 5 nm grid, and unsupported MOS parameters,
+duplicate identities and repeat grouping are rejected. This is placement
+preparation, not a claim of identical extracted parasitics or reduced device
+physics.
+
+The pinned Magic PCells support `nf` and separate gate contacts. The physical
+recipe uses one guarded row, independent diffusions/poly and individually
+accessible G/D/S contacts. Multi-finger cells enable both top and bottom
+access because the short-channel arrays interleave their gate contacts.
+Single fingers retain top-only gate access.
+
+The first real interface probe `driver_finger_pcells/c879157e8fce9932`
+rejected missing alternating gate labels on thin 1.8 V arrays when bottom
+access was disabled. Its geometry, logs, failure receipt and original helper
+snapshot are retained. The corrected source-gated probe
+`driver_finger_pcells/6f91f0001837f0af` generates **nineteen unique MOS
+PCell recipes**, passes all terminal-interface checks and verifies all saved
+file hashes. Every finger exposes G/D/S explicitly; no incomplete interface
+is silently accepted. Actual gate contacts on the 1.8 V four-finger cell
+alternate between y=-4.275 and +4.275 um. Routing must accommodate both sides,
+including outward gate-contact escape, rather than reuse the old top-only
+fanout assumption.
+
+The probe uses the full source readiness receipt before any PCell generation,
+and binds the pinned technology scripts and helper code. It records the
+source current/voltage observations alongside its physical-interface scope.
+Its two tests reject partial source admission and cache-key reuse across
+different finger counts; five bank tests cover connectivity, terminal access,
+parameter/grid restrictions and unchanged passives.
+
+These are unconnected primitive interfaces: a complete driver still needs
+connected banks/inverter tiles, compact fast-node routing and power delivery,
+DRC/LVS, fresh RC extraction/audit and native electrical qualification. No
+GDS or interface-only result is promoted as a usable driver.

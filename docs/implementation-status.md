@@ -5,6 +5,17 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-02):
 
+The geometric-cap36 driver now passes the complete source matrix:
+**30/30 cases, 15/15 PVT points**, independently remeasured. Common-mode
+movement is 37.4–142.3 mVpp and calibrated transitions are 306.6–330.3 ps.
+Compact multi-finger preparation retains all 302 MOS fingers and eighteen
+passives; a real nineteen-recipe PCell interface probe passes after fixing
+alternating short-channel gate access. Driver routing, DRC/LVS, extraction
+and native qualification remain open. The original raw-TX/r2/LTRA run also
+completes all 188.049 ns numerically, while retaining its failed payload and
+ten lost clock responses. See [the full source and physical preparation
+results](chain-restoration.md#full-source-pass-completed-raw-reference-and-physical-interface-preparation).
+
 The calculated **1/3/8-cap36** driver now passes all six fresh TT25/SS25/FF40
 pilot cases. Calibrated transitions span 307.0–329.7 ps, and common-mode
 movement spans 88.8–142.2 mVpp. The complete pilot was independently
