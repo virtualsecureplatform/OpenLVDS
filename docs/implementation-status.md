@@ -57,6 +57,11 @@ complementary gates reduce movement to 96 mVpp while retaining all 22 expected
 rising output edges. This supports the gate-drive path as a major contributor;
 the slower ideal-gate control is pending, and no real converter or TX
 architecture change has been selected.
+Two real-MOS three-stage gate-restoration tapers are now implemented and
+queued as TT25 source pilots, with supply-current and added-device voltage
+observations. They retain the current bridge, mirror and CMFB. Their purpose
+is to test a practical gate-drive fix; no improvement, PVT admission or
+physical selection is claimed before their results.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |

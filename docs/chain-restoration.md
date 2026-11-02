@@ -503,6 +503,35 @@ source controls or generator test. The initial observational receipt
 `26b3b7f8d2cdb765`, whose scope incorrectly described both cases as 100:1,
 is explicitly superseded; its waveform measurements are unchanged.
 
+`driver_gate_taper.py` now provides two bounded real-MOS candidates supported
+by the ideal-gate result. Each replaces the two final restoration inverters
+with three-stage parallel-unit tapers, preserving each branch's inversion:
+P16/N8 → P32/N16 → P64/N32, or P16/N8 → P64/N32 → P128/N64. All added devices
+use the existing thick-oxide 3.3 V model families with 0.5 um channel length.
+The current-mode converter frontend, eleven mirror fingers, bridge, CMFB,
+output capacitors and public terminals remain unchanged. The smaller first
+stage is intended to reduce converter loading; stronger later stages are
+intended to restore the loaded bridge gates. These are hypotheses requiring
+measurement, not claimed improvements or selected hardware.
+
+`probe_driver_gate_taper.py` prepares source context
+`driver_gate_taper/64ffaad7ac4e4e20`, owned by
+`openlvds-driver-gate-taper.service`. It independently remeasures the complete
+baseline and ideal 100 ps evidence before preparing the two cases. The
+baseline itself is not rerun. Both use the original fixed-supply TT25
+80 ns/1 ps fixture. Additional observations record converter/restoration
+nodes, all added MOS terminal-voltage differences, and actual IO/digital
+supply branch currents for average power over 20–75 ns. Missing or nonfinite
+current traces fail the observation rather than silently reporting power.
+
+The two cases acquire separate P2 leases within the unchanged six-slot
+budget. The slower ideal control and raw coupled payload remain independent
+and unmodified. No source PVT, physical or native candidate is selected by
+these pilots. Any promising taper still needs all fifteen source conditions,
+DC and waveform checks, power/stress review, local balanced placement,
+fresh physical/extraction audits, the full component matrix and corrected
+coupled loopback before it can replace the current driver.
+
 Release still requires at least 256 training cycles, all forty-five link
 conditions, 4096 nominal/512 corner payload bits, at least 200 ps margin after
 measured aperture subtraction, the sixty RX and thirty driver component
@@ -510,6 +539,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1098 tests, no skips**. Actual
+The full pinned regression suite passes **1104 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
