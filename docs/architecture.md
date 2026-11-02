@@ -68,7 +68,11 @@ control. One reduces only the first-restorer PMOS from W8 to W4. The other
 widens only both LVT decision inputs from W8 to W32, retaining the W16 tail
 and W8 PMOS mirror. These are sizing changes within the existing topology;
 actual currents and stress are measured again. All six initial DC pilots
-pass for both candidates, and the fifteen-corner source matrix is running.
+pass for both candidates. The expanded matrix rejects P4/N8 at FF/40:
++100 mV at the lowest common mode produces only 10.6 mV at Q. Its CO is
+unchanged from control, but the weaker PMOS pulls the first-restorer output
+too low for the following stages to recognize the intended state. The W32
+pair passes every completed corner; the fifteen-corner matrix is still running.
 A completed, byte-identical P8/N8 captured reference can be reused with an
 explicit receipt; each modified candidate still needs fresh captured and sharp
 source clocks, its own GDS/extraction audit and both full native replays.

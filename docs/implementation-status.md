@@ -56,8 +56,10 @@ Current bring-up state (2026-11-02):
 - **Separate receiver gain/balance experiments are running.** Matrix
   `receiver_gain_balance_matrix/f6d247d3b64483af` compares the exact P8/N8
   control with first-restorer P4/N8 and decision-input-pair W32 alternatives.
-  All three pass all six initial DC pilots; thirteen of fifteen full PVT cases
-  are complete at this observation. The new source-clock, physical and native
+  All three pass all six initial DC pilots; fourteen of fifteen full PVT cases
+  are complete at this observation. P4/N8 fails one FF/40 DC sample and is
+  rejected before source clocks; the W32 pair passes all completed corners.
+  The new source-clock, physical and native
   adapters preserve all admission gates. A conditional differential gain stage
   comparing CO with CL is the next topology fallback, not a selected circuit.
 - **The 16 pF DLL passes all three source-acquisition cases.** The full SS/0
@@ -99,6 +101,27 @@ Current bring-up state (2026-11-02):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — P4/N8 rejected by FF/40 low-common-mode sensitivity:
+
+- Full 144 ns child `receiver_gain_balance/eabe63b7dc2615a5` completes all
+  three variants. Independent cached invocation of its unchanged producer
+  reproduces the failure. At 22 ns, P=0.1 V and N=0 V require Q high.
+  Control and W32 pass; P4/N8 produces Q=0.010607 V and fails the original
+  DC threshold. Its observed twelve-device stress screen still passes.
+- Control and P4/N8 both have CO=0.656583 V, CL=0.941750 V and tail current
+  304.204 µA at that point. Changing only the first PMOS to W4 lowers
+  RESTORE0 from 1.256321 V to 0.810161 V, raises RESTORE1 from 0.007490 V
+  to 1.225346 V and changes the final output from 1.8 V to 0.010607 V.
+  The intended lower restorer threshold therefore sacrifices the opposite
+  polarity's DC sensitivity. This is a circuit failure, not a timeout or
+  a failed stress/current-meter guard.
+- The matched W32 pair instead gives CO=0.610138 V, RESTORE0=1.519668 V,
+  RESTORE1=0.000187 V and Q=1.8 V, with tail current 320.759 µA.
+  It retains the original P8/N8 restorer. Its other completed corners also
+  pass, but the complete fifteen-case gate and fresh dynamic/native evidence
+  remain required. P4/N8 cannot receive source-clock admission or trigger
+  geometry, native replay, components or coupled-link simulations.
 
 2026-11-02 — matched pilot current observations and current digital RC evidence:
 
