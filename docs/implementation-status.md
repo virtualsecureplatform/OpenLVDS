@@ -32,7 +32,12 @@ clears the observed short-run abort while retaining every original device.
 Forwarded/recovered clock activity has not started in this short window, so
 these results cannot admit the PHY. The resource handoff has restored the
 preferred two-resistor receiver in fresh context `02c868108c5b1da1`; its short
-check is running before the gated full 188.049 ns diagnostic. It cannot
+check completed twelve ns, followed by a wrapper missing-import error.
+Recovery context `678e1b24d0305732` verifies its complete raw/export evidence
+and queues only the full 188.049 ns diagnostic, preserving the original
+producer and outputs. The specification screen has passed 18/33 cases;
+native wide-DC cases remain, with sixty components and the receiver RC
+comparison queued behind their complete admission. This cannot
 substitute the isolation receiver or short training for final qualification.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |

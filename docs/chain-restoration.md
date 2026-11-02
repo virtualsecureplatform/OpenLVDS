@@ -321,8 +321,11 @@ changing the frozen failed producers. Host resource context
 `openlvds-preferred-baseline-coupled-followup.service`, has admitted the complete
 calibrated twelve-ns LTRA control and prepared
 `baseline_coupled_restoration/02c868108c5b1da1`. It does not dispatch a
-zero-delay substitute. The fresh preferred-receiver short test is running;
-the payload stage remains gated on its numerical completion.
+zero-delay substitute. The fresh preferred-receiver short test completed
+twelve ns, but its wrapper then raised `NameError: read_raw is not defined`
+before recording the result or dispatching the payload. This is a producer
+error, not a numerical failure. The frozen producer and all original outputs
+remain unchanged.
 
 After that prerequisite, the scientific preparer independently rechecks all
 three calibration waveforms, the complete LTRA trace, and all three passing
@@ -341,6 +344,42 @@ retained rather than retried. These remain diagnostic results: sixty receiver
 components, 256-cycle training, long payloads, measured aperture, real DLL
 phase/startup, all corners and release checks remain required.
 
+`recover_baseline_payload.py` independently verifies the complete original
+raw trace and exact agreement of every exported voltage, time and sample
+index. The saved short trace has 12,089 finite, increasing samples ending at
+12 ns. Recovery context `baseline_payload_recovery/678e1b24d0305732` binds
+that evidence and all original fixture/model hashes. Its fresh payload deck
+changes only the library include path, retains the full 188.049 ns fixture,
+and runs through one fair P2 lease. Unit
+`openlvds-preferred-baseline-payload-recovery.service` queues that payload;
+it does not rerun the completed short test. The original failed service and
+its stale `running_short` state are preserved for provenance. A recovered
+short observation carries no electrical verdict or PHY admission.
+
+## Receiver component and RC continuation
+
+The specification campaign has completed all fifteen schematic wide-DC
+cases and the three native 390/400/410 MHz rate cases: **18/33 pass**, with
+the fifteen native wide-DC cases pending. The verified component handoff
+still requires all 33 screen cases before dispatching the original sixty
+component conditions. A read-only preflight confirms that all sixty original
+reference fixtures remain current and passing; this does not replace testing
+the selected receiver in those conditions.
+
+`validate_receiver_spec_rc.py` admits the receiver RC comparison through the
+new specification evidence and all sixty completed component proofs. It
+remeasures cached results, rejects missing or changed outputs before any
+dispatch, and retains the original physical audit, exact shared bias,
+60 ns TT25 comparison fixture, and 20 ps/20 mV comparison limits. The legacy
+failed replay is neither rewritten nor used as the new admission gate.
+
+`continue_receiver_spec_rc.py`, resource context
+`receiver_spec_rc_followup/2b7a21efb78ad376`, follows the verified component
+owner and queues RC work only after a bound sixty-case pass. Unit
+`openlvds-receiver-spec-rc-followup.service` holds no outer SPICE lease.
+This comparison covers one RC case; the joint six-case certificate and all
+PHY release gates remain required.
+
 ## Remaining closure
 
 Release still requires at least 256 training cycles, all forty-five link
@@ -350,6 +389,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1075 tests, no skips**. Actual
+The full pinned regression suite passes **1088 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
