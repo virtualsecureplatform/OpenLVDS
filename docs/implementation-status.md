@@ -35,14 +35,16 @@ preferred two-resistor receiver in fresh context `02c868108c5b1da1`; its short
 check completed twelve ns, followed by a wrapper missing-import error.
 Recovery context `678e1b24d0305732` verifies its complete raw/export evidence
 and queues only the full 188.049 ns diagnostic, preserving the original
-producer and outputs. The specification screen has passed 26/33 cases;
+producer and outputs. The specification screen has passed 28/33 cases;
 native wide-DC cases remain, with sixty components and the receiver RC
 comparison queued behind their complete admission. This cannot
 substitute the isolation receiver or short training for final qualification.
 An immutable 25–40 ns snapshot of the running coupled test now decodes all
 six observed public words as the expected training `01`, with RX clock and
 RXVALID active. This supports startup chain restoration; the full payload,
-long training and timing qualification remain unproven.
+long training and timing qualification remain unproven. A separate saved
+20–60 ns clock-transport observation finds 31 matched events and zero missing
+edges, under the diagnostic 0.9 V matching rule.
 
 A new read-only observation of all thirty completed corrected-driver traces
 finds substantial common-mode movement during transitions: 326–500 mVpp
@@ -68,13 +70,17 @@ observations. They retain the current bridge, mirror and CMFB. Their purpose
 is to test a practical gate-drive fix. The first completes at 170 mVpp,
 improving on the baseline but remaining above the 150 mVpp reference. Its
 measured IO/digital powers are 26.0/1.21 mW and its largest added-device
-terminal difference is 4.04 V. The stronger taper remains queued. No PVT
-admission or physical selection is claimed.
+terminal difference is 4.04 V. The stronger taper now completes at 81 mVpp
+and 29.25/1.21 mW, with all 22 expected rising output edges. No PVT admission
+or physical selection is claimed.
 An additional fixed MIM-size pilot is queued on the first taper to separate
 fast gate drive from output edge shaping. It changes only the two existing
 MIMs from 10×10 to 30×30 um and measures both initial DC polarities for fresh
 transition calibration. Its calculated nominal edge times are near the
 lower reference limit; neither TT25 success nor PVT margin is assumed.
+The negative-initial-state case has completed at 140 mVpp, with estimated
+265–270 ps edges. The positive-initial-state case is still queued, so its
+fresh two-polarity calibration and source reference checks remain incomplete.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |

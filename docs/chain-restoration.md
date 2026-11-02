@@ -390,12 +390,20 @@ sampling aperture/margin, PVT or release. The full 188.049 ns diagnostic
 continues without restart; its original complete-trace analysis remains
 required before proceeding to longer training and payloads.
 
+Fixed-window snapshot `startup_clock_observation/aef05be3c3a9a6c4` also
+remeasures the complete 20–60 ns clock-transport interval. Its 31 inspected
+input events each have one same-polarity recovered output crossing within
+the next input period, with zero missing rising or falling output edges.
+The saved raw prefix independently reproduces the existing diagnostic
+matching result. This uses 0.9 V crossings; it does not establish full valid
+pulse widths, payload correctness, aperture-subtracted margin or release.
+
 ## Receiver component and RC continuation
 
 The specification campaign has completed all fifteen schematic wide-DC
-cases, the three native 390/400/410 MHz rate cases, all six native TT/FF
-wide-DC cases and native SS0/SS25: **26/33 pass**, with seven native wide-DC
-cases pending.
+cases, the three native 390/400/410 MHz rate cases, all nine native TT/FF/SS
+wide-DC cases and native FS0: **28/33 pass**, with five native wide-DC cases
+pending.
 The verified component handoff
 still requires all 33 screen cases before dispatching the original sixty
 component conditions. A read-only preflight confirms that all sixty original
@@ -559,10 +567,14 @@ movement to 170.213 mVpp (1.143361–1.313574 V), versus the baseline's
 reference. Mean measured IO/digital supply powers are 25.998/1.210 mW.
 The maximum absolute terminal-voltage difference among the added devices
 is 4.04222 V. These are source TT25 measurements only, not PVT stress/power
-qualification or a hardware selection. The stronger `taper_16_64_128` remains
-queued. All three causal controls and this completed pilot have independent
-cached waveform remeasurement; no unfinished producer was invoked to obtain
-these observations.
+qualification or a hardware selection. The stronger `taper_16_64_128` now
+also completes all 80 ns with 22 rising output edges and 81.0217 mVpp
+common-mode movement. Its measured IO/digital powers are 29.248/1.210 mW,
+and its largest added-device terminal difference is 4.04209 V. It clears
+the common-mode reference in this source pilot, but no complete waveform,
+PVT or hardware admission follows. All three causal controls and both real
+pilots have independent cached waveform remeasurement; no unfinished producer
+was invoked to obtain these observations.
 
 The completed first taper also has estimated differential 20–80% transition
 times of 151.740–158.267 ps over 44 edges. This estimate infers the positive
@@ -592,6 +604,15 @@ voltage observations, checks monotonic 20–80% transitions against the
 and DC reference comparisons. These are source pilot checks, not generator
 compliance or hardware selection. Both cases use individual fair P2 leases;
 no supply sweep, original-model replacement or healthy-job restart occurs.
+
+The shaping candidate's `negative_op` case has completed with return code
+zero, 22 rising output edges and 139.842 mVpp common-mode movement. Its
+solved initial DC point is -339.728 mV differential at 1.248092 V common mode,
+with less than 5e-12 V variation over 0–8 ns. With a *temporarily assumed*
+symmetric positive DC level, 44 monotonic edges estimate 265.371–269.952 ps.
+These estimates remain uncalibrated until the queued `positive_op` case
+completes. The two-polarity source checks and PVT margin remain unproven;
+the narrow nominal timing/common-mode margins cannot select the candidate.
 
 Release still requires at least 256 training cycles, all forty-five link
 conditions, 4096 nominal/512 corner payload bits, at least 200 ps margin after
