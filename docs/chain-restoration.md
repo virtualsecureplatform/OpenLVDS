@@ -483,6 +483,20 @@ causality: the ideal 100 ps and 400 ps controls remain pending, and their
 comparison is needed before selecting a converter or bridge/CMFB change.
 The original coupled payload continues independently, with no restart.
 
+Historical matched native-driver observation
+`driver_restore_balance_observation/597ab334ac14bf77` remeasures the older
+loaded link over 60–120 ns and independently rechecks both physical models.
+Its `source_control` is P48/N40 with ten mirror fingers (100:1), while the
+legacy task name `restore_64_24` actually identifies P64/N24 with eleven
+fingers (110:1). The comparison changes both sizing and current ratio; it
+cannot isolate either change. In that fixture, clock common-mode ripple is
+639.923 versus 320.038 mVpp, and maximum gate-sum error is 2.16602 versus
+0.964358 V. Both still show dynamic movement. These numbers use the old
+loaded link and 20 ps maximum step, and cannot substitute for the current
+source controls or generator test. The initial observational receipt
+`26b3b7f8d2cdb765`, whose scope incorrectly described both cases as 100:1,
+is explicitly superseded; its waveform measurements are unchanged.
+
 Release still requires at least 256 training cycles, all forty-five link
 conditions, 4096 nominal/512 corner payload bits, at least 200 ps margin after
 measured aperture subtraction, the sixty RX and thirty driver component
