@@ -344,6 +344,25 @@ retained rather than retried. These remain diagnostic results: sixty receiver
 components, 256-cycle training, long payloads, measured aperture, real DLL
 phase/startup, all corners and release checks remain required.
 
+The current payload retains raw TX RC as a numerical reference. Read-only
+observation `tx_exact_current_witness/d0a2d429776b333c` independently checks
+the existing canonical TX reduction: 22,909 resistors become 5,757 through
+exact resistor-only elimination. The non-resistor statement signature and
+protected-node set are identical. Four deterministic terminal-voltage
+witnesses across 3,103 resistor boundary nodes pass the existing 1 nA plus
+1e-8 relative current limits. Maximum absolute current difference is
+3.3591e-10 A; reference/reduced sparse solve residuals are 5.14e-16/1.28e-16.
+The pinned NumPy/SciPy runtime and both netlist hashes are captured.
+
+This is supporting algebraic evidence for using the smaller canonical
+network in future runs. It is not a coupled waveform comparison or a measured
+speed improvement, and does not change the live raw-TX payload model. The
+existing passing digital RC observation compares canonical exact RC against
+TICER RC; it does not itself compare raw RC against canonical exact RC in
+this coupled fixture. A matched calibrated-LTRA comparison must precede any
+claim that the smaller network accelerates this chain without changing its
+measured waveforms. No capacitor or MOS removal is involved.
+
 `recover_baseline_payload.py` independently verifies the complete original
 raw trace and exact agreement of every exported voltage, time and sample
 index. The saved short trace has 12,089 finite, increasing samples ending at
