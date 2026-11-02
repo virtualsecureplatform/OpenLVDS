@@ -3,6 +3,7 @@
 from collections import Counter
 from copy import deepcopy
 from decimal import Decimal
+import re
 
 
 def mos(device):
@@ -47,3 +48,37 @@ def group(devices):
     if actual != expected or sorted(n for b in output for n in b['members']) != sorted(d['name'] for d in devices):
         raise ValueError('Physical bank changed a terminal, model, finger or device identity')
     return output
+
+
+def pcell_parameters(bank):
+    """Pinned Magic MOS recipe: separate gate contacts, one guarded row."""
+    if not mos(bank):
+        raise ValueError('Use a MOS bank for the multi-finger PCell recipe')
+    signature(bank)
+    nf = bank.get('nf')
+    if (not isinstance(nf, int) or isinstance(nf, bool) or nf < 1 or
+            len(bank.get('members', [])) != nf or len(set(bank['members'])) != nf):
+        raise ValueError('Invalid physical bank membership/count')
+    return dict(bank['params'], nf=nf, m=1, conn_gates=0, guard=1,
+                botc=0, full_metal=1, doports=1)
+
+
+def terminal_groups(ports, nf):
+    """Require every separately exposed gate; leave D/S contacts distinct."""
+    if not isinstance(nf, int) or isinstance(nf, bool) or nf < 1:
+        raise ValueError('Invalid PCell finger count')
+    roles = {name: [] for name in ['D', 'G', 'S', 'B']}
+    for name in ports:
+        if name == 'B':
+            roles['B'].append(name)
+            continue
+        match = re.fullmatch(r'([DGS])(\d*)', name)
+        if (match is None or (not match[2] and nf != 1) or
+                (match[2] and not 0 <= int(match[2]) < nf)):
+            raise ValueError('Unexpected physical PCell terminal: ' + name)
+        roles[match[1]].append(name)
+    expected_gates = {'G'} if nf == 1 else {f'G{i}' for i in range(nf)}
+    if (set(roles['G']) != expected_gates or len(roles['B']) != 1 or
+            not roles['D'] or not roles['S']):
+        raise ValueError('Missing separate gate, drain, source or bulk contacts')
+    return {role: sorted(names) for role, names in roles.items()}

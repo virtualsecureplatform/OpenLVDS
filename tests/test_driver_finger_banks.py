@@ -51,6 +51,24 @@ class CompactPhysicalFingerBanks(unittest.TestCase):
         with self.assertRaises(ValueError):
             banks.group([self.finger(), self.finger()])
 
+    def test_pcell_recipe_exposes_each_gate_and_retains_finger_width(self):
+        bank = banks.group([self.finger('M0'), self.finger('M1')])[0]
+        p = banks.pcell_parameters(bank)
+        self.assertEqual((p['w'], p['l'], p['nf']), ('8', '.5', 2))
+        self.assertEqual((p['conn_gates'], p['guard'], p['m'], p['doports']), (0, 1, 1, 1))
+        for changed in [dict(bank, nf=1), dict(bank, nf=True), dict(bank, members=['M0', 'M0'])]:
+            with self.assertRaises(ValueError):
+                banks.pcell_parameters(changed)
+
+    def test_port_roles_do_not_guess_missing_or_merged_gate_contacts(self):
+        roles = banks.terminal_groups(['D0', 'D1', 'G0', 'G1', 'S1', 'B'], 2)
+        self.assertEqual(roles, dict(D=['D0', 'D1'], G=['G0', 'G1'], S=['S1'], B=['B']))
+        self.assertEqual(banks.terminal_groups(['D', 'G', 'S', 'B'], 1)['G'], ['G'])
+        for ports in [['D0', 'D1', 'G', 'S1', 'B'], ['D0', 'G0', 'G2', 'S1', 'B'],
+                      ['D0', 'G0', 'G1', 'S1'], ['D0', 'G0', 'G1', 'S1', 'B', 'OTHER']]:
+            with self.assertRaises(ValueError):
+                banks.terminal_groups(ports, 2)
+
 
 if __name__ == '__main__':
     unittest.main()
