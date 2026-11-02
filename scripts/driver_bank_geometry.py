@@ -8,7 +8,9 @@ def via12(g, x, y):
     # Magic via layers include the cut plus its surrounding rule margin.
     # Use the pinned technology's 0.26 um via1 drawing, not a bare 0.15 cut.
     x, y = [round(v / GRID) * GRID for v in [x, y]]
-    g.via12(x, y)
+    g.pad('metal1', x, y, .37)
+    g.pad('via1', x, y, .26)
+    g.pad('metal2', x, y, .37)
 
 
 def via23(g, x, y):
