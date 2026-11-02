@@ -10,7 +10,7 @@ Current bring-up state (2026-11-02):
 | Original larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
 | Matched smaller amplifier | 15/15 | 3/3 | Pass, 87 devices | Fail: 16 captured edges missing, 0 sharp |
 | Matched larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
-| Feedback inverter, two resistor units | 15/15 | 3/3 | Pass, 77 devices | Preparing |
+| Feedback inverter, two resistor units | 15/15 | 3/3 | Pass, 77 devices | In progress |
 | Feedback inverter, four resistor units | 15/15 | 3/3 | Pass, 79 devices | In progress |
 
 DC covers all fifteen fixed-supply PVT cases. Source clocks are the three
@@ -241,7 +241,8 @@ qualification. Detailed evidence follows.
   `receiver_layout/0f9f54a7549bccf1` passes zero-error DRC, LVS, extraction
   and independent RC audit. Dimensions are 713.27 by 149.60 micrometres;
   its actual native network has 13,905 resistors and 1,437 capacitors.
-  Native preparation is running. `tia_r4`
+  Fresh native captured/sharp replay is
+  `receiver_replay/54143ddc298c5037`, in progress. `tia_r4`
   now passes all three full controls in `receiver_clamp/3d6c5bf54bb3eaff`, with
   47 checks each and no missing/repeated edges. Its 79-device, nine-port layout
   `receiver_layout/c196040b40845390` passes zero-error DRC, LVS, extraction
@@ -270,8 +271,21 @@ qualification. Detailed evidence follows.
   twelve-point fixed-supply fixtures, uniform 1 ps maximum step, current
   measurements and fourteen-device stress screen. Six original PVT pilots
   gate bulk DC; all fifteen cases must pass independently before any new
-  clock/native admission. No result is available yet. The original TIA native
+  clock/native admission. Both modified candidates now pass the complete
+  SS/40 pilot; the two-resistor candidate also passes FS/40. The pilot batch
+  remains incomplete. The original TIA native
   simulations continue to completion; no partial result is promoted.
+- Faster-frontend source-clock adapter
+  `receiver_tia_fast_frontend_clock.py` and resource continuation
+  `receiver_tia_fast_clock_followup/e04d75ba25739f64` are implemented and live.
+  The continuation waits for the exact DC producer and admits each variant
+  only after its own complete fifteen-corner pass and a passing N8 control.
+  Original three full 80 ns/47-period fixtures and uniform 1 ps maximum step
+  are retained. Only the attested byte-identical unchanged reference can be
+  adopted; modified captures and sharp controls require new simulations.
+  Failed/partial DC evidence cannot dispatch clocks. Existing six SPICE slots,
+  separate variant workers and original scientific gates remain in force;
+  no outer lease, geometry, native or PHY admission is supplied by this handoff.
 - Original differential-amplifier downstream handoffs have completed and held both candidates:
   `receiver_differential_downstream/d8b7381526a27796` (components),
   `1e1493bac7dd6581` (corrected-driver diagnostic) and `3496874a53a16f66` (RC).
@@ -366,7 +380,7 @@ qualification. Detailed evidence follows.
   `scripts/exact_rc_requirements.txt` and runs the full suite in the local
   analysis environment with ngspice. The base-image `make test` remains
   available; it can skip the sparse-math witness when SciPy is absent.
-- The last full regression passes **all 986 tests**, with no skips. Electrical
+- The last full regression passes **all 999 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
