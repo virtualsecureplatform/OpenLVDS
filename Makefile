@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-.PHONY: setup ngspice tools rtl rtl-smoke analog analog-corners dll-clocks layout digital-physical extract fast-rc compare-rc link regression characterize openpll test release release-current release-library
+.PHONY: setup ngspice tools rtl rtl-smoke analog analog-corners dll-clocks layout digital-physical extract fast-rc compare-rc link regression characterize openpll test test-full release release-current release-library
 setup:
 	./scripts/setup.sh
 ngspice:
@@ -38,6 +38,10 @@ openpll:
 	./scripts/env.sh python3 scripts/openpll_clock.py
 test:
 	./scripts/env.sh python3 -m unittest discover -s tests
+test-full:
+	@test -x build/tools/exact-rc-venv/bin/python || { echo 'Prepare build/tools/exact-rc-venv using scripts/exact_rc_requirements.txt; see docs/dll-experiments.md.' >&2; exit 1; }
+	./scripts/env.sh --ngspice build/tools/exact-rc-venv/bin/python -c 'from importlib.metadata import version; from pathlib import Path; pins=[line.split("==") for line in Path("scripts/exact_rc_requirements.txt").read_text().splitlines() if line.strip()]; assert all(version(name)==expected for name,expected in pins), "Install the pinned scripts/exact_rc_requirements.txt in build/tools/exact-rc-venv"'
+	./scripts/env.sh --ngspice build/tools/exact-rc-venv/bin/python -m unittest discover -s tests
 release:
 	./scripts/env.sh python3 scripts/check_release.py
 release-current:

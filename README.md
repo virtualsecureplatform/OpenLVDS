@@ -73,6 +73,19 @@ only simulator directives and hierarchical probe syntax, and exports ordered
 waveform columns for the same analyzers. Results identify the actual simulator;
 RC certificates cannot be reused across simulators.
 
+For the complete software regression, including the sparse-math witnesses,
+prepare the [pinned NumPy/SciPy environment](docs/dll-experiments.md#further-exact-resistor-elimination)
+inside `build/tools/exact-rc-venv`, install the ngspice runtime, and run:
+
+```sh
+make test-full
+```
+
+This runs the suite with the pinned analysis environment and ngspice adapter.
+The base-image `make test` can skip the sparse-math test when SciPy is absent.
+Passing the software suite does not establish electrical qualification; current
+simulation results and outstanding gates are in the implementation status.
+
 Full RC simulations can be expensive. An optional TICER approximation retains
 positive R/C elements and exact DC behavior, but approximates transient behavior:
 
