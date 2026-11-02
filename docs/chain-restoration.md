@@ -83,20 +83,23 @@ TX or electrical pass follows from it.
 The reduced coupled run now fails at 4.4465 ns, attempted step 1.25e-24 s,
 at `xtx.vgnd.t393`. This is another extracted decap-shaped NFET terminal
 (raw X15, W0.55/L0.59), rather than the original X7 terminal. The raw coupled
-run remains pending. Observation `raw_completion_observation/e706f109c070a93a`
-records these three terminal cases and the pending raw case separately.
+run also fails, at 4.5465 ns and `xtx.vgnd.t436`, attempted step 1.25e-24 s.
+Final observation `raw_completion_observation/89aaa118374b97c3` records all
+four terminal cases: both TX-only cases complete, both coupled cases fail.
+RC reduction is therefore not necessary to reproduce the collapse.
 Changing the output interval for the short fixture can change the numerical
 trajectory; neither the time nor the terminal is identical to the long parent.
 The observer reads only terminal cases and records pending cases as unknown.
-Re-run it after completion to obtain a new immutable observation:
+It can be invoked without dispatching another simulation:
 
 ```sh
 scripts/env.sh --ngspice /usr/bin/python3 scripts/observe_tx_isolation.py \
   build/diagnostics/tx_convergence_isolation/6d6efde953a550ab
 ```
 
-The raw/reduced coupled outcomes decide the next isolation experiment.
-Do not remove rail RC or decap devices from a qualifying model. A decap-free
+These outcomes direct the next experiment toward coupling/initialization
+and the decap rail network. Do not remove rail RC or decap devices from a
+qualifying model. A decap-free
 physical experiment requires positive cell/device mapping, legal tap endcaps,
 resolved configuration checks, power connectivity, DRC/LVS/STA and fresh
 extraction. After numerical isolation, extend through the full 188.049 ns
@@ -105,9 +108,27 @@ diagnostic, then the required long-training corrected loopback.
 For future fresh experiments, `prepare_tx_isolation.py` removes only the
 constant-ground print vector and derives a new immutable identity. Prepared
 context `tx_convergence_isolation/dd0062114779a180` validates all four new
-fixtures. It is not launched: the first campaign's valid raw data and live
-coupled run are retained, avoiding duplicate simulations. The original
-producer remains frozen while those jobs finish.
+fixtures. It is not launched: the first campaign's valid raw data and failed
+coupled traces are retained, avoiding duplicate simulations.
+
+`isolate_tx_decap.py` positively maps every extracted decap transistor to its
+placed boundary cell. It registers extraction coordinates against the DEF
+pin geometry, checks the PDK LEF boundary and MOS model/dimensions, requires
+the expected rail topology, and requires exactly one N/P pair in each of the
+56 cells. All 112 devices map uniquely. In particular:
+
+| Flat MOS | Failed terminal | Placed cell | Extracted position, µm |
+| --- | --- | --- | --- |
+| X7 | VGND.t436 | PHY_EDGE_ROW_4_Left_32 | 5.915, 21.995 |
+| X15 | VGND.t393 | PHY_EDGE_ROW_13_Right_13 | 93.315, 48.175 |
+
+Fresh `tx_decap_isolation/26137b054eba3c5f` removes only those 112 mapped MOS
+statements from the raw TX in the otherwise unchanged coupled 12 ns fixture.
+Every extracted resistor/capacitor statement and every unrelated device is
+retained. It is queued under `openlvds-tx-mapped-decap-isolation.service`,
+using one P2 slot and no outer lease. It has no electrical or physical verdict.
+Its result will determine whether a fresh legal tap-endcap physical build is
+justified; it cannot itself qualify a decap-free TX.
 
 ## Remaining closure
 
@@ -118,6 +139,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1043 tests, no skips**. Actual
+The full pinned regression suite passes **1046 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
