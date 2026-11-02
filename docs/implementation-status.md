@@ -61,9 +61,9 @@ Current bring-up state (2026-11-02):
   and is rejected at 14/15 before source clocks.
   The new source-clock, physical and native
   adapters preserve all admission gates. In `receiver_clamp/873e9ffbc7e55e38`,
-  the fresh W32 captured-clock control passes all 47 checks without loss or
-  repeats; the sharp-clock control is running. Joint source-clock admission
-  and all native/timing gates remain unproven. A conditional differential gain stage
+  all three source-clock controls now pass 47 checks each without loss or
+  repeats and receive explicit admission. The W32 geometry flow is running;
+  native transport, components and coupled timing remain unproven. A conditional differential gain stage
   comparing CO with CL is the next topology fallback, not a selected circuit.
 - **The 16 pF DLL passes all three source-acquisition cases.** The full SS/0
   original 1500 ns trace gives 10.039 ps maximum feedback error,
@@ -104,6 +104,31 @@ Current bring-up state (2026-11-02):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — complete W32 source-clock admission and physical handoff:
+
+- `receiver_clamp/873e9ffbc7e55e38` completes all three original full 80 ns
+  source controls: 47 checks each, zero missing edges, zero repeats. Both
+  modified W32 captured/sharp cases are fresh simulations; the exact P8/N8
+  reference retains its explicit adoption receipt and original-producer
+  remeasurement. The source-clock owner completes successfully.
+- Positive source admission binds manifest
+  `c500ea63e4d6ae4f92a14628cf389092e88e774a9d12350e3f6ed40e8b2ca4dc`
+  and report `32fc505564edca730735d251288325290a24040264c8c1068be706169e9a1339`.
+  Resource `receiver_physical_followup/e0fd4ab9ad39d586` validates that exact
+  W32 receipt and starts the geometry flow. DRC/LVS, extraction, independent
+  RC audit and both full native transport controls remain required before
+  components or corrected-driver coupling can be admitted.
+- Independent completed-capture receipt
+  `873e9ffbc7e55e38/completed_captured_comparison/42747bdbd3192eb6/summary.json`
+  remeasures both full source captures with the unchanged 15–75 ns transport
+  algorithm and checks identical stimulus/numerical policy and bias/digital-RX
+  circuit closures. All 47 paired edges are preserved. Relative to P8/N8,
+  W32 adds 53.134–69.293 ps latency on 24 rising edges and 42.157–50.112 ps
+  on 23 falling edges. Its absolute source latency ranges are
+  427.426–443.805 ps rising and 338.625–390.493 ps falling. This is a source
+  timing tradeoff, not native sampling margin or PHY qualification; final
+  coupled data/clock behavior must still meet the original 200 ps margin.
 
 2026-11-02 — receiver RC comparison adapter and strict component handoff:
 

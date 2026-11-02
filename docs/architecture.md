@@ -73,10 +73,11 @@ pass for both candidates. The expanded matrix rejects P4/N8 at FF/40:
 unchanged from control, but the weaker PMOS pulls the first-restorer output
 too low for the following stages to recognize the intended state. The W32
 pair completes and passes all fifteen original source DC/current/stress
-cases. Its fresh source-clock context is prepared; the modified candidate
-passes all 47 captured-clock checks in the full 80 ns source fixture. The
-sharp-clock control is running; joint clock and native transport admissions
-remain required.
+cases. Its source-clock context completes all three full 80 ns controls
+with 47 checks each, zero missing/repeated edges and explicit positive
+source-clock admission. The fresh captured and sharp candidate traces pass;
+the matched P8/N8 reference is reused with its explicit identical-fixture
+receipt. Geometry is advancing; native transport admission remains required.
 A completed, byte-identical P8/N8 captured reference can be reused with an
 explicit receipt; each modified candidate still needs fresh captured and sharp
 source clocks, its own GDS/extraction audit and both full native replays.
