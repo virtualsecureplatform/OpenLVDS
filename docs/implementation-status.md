@@ -25,8 +25,11 @@ collapse. The causal gate holds the tap-endcap physical rebuild.
 An additional channel-model control retains all original devices and tests
 the delayed-line representation, with passive analytic/reflection calibration
 before coupled zero-delay and equivalent zero-loss LTRA diagnostics. Its
-25 ohm reflection calibration passes; the remaining calibrations and coupled
-results remain pending and cannot admit the PHY.
+25/50/100 ohm calibrations all pass; the coupled zero-delay/LTRA results remain
+pending and cannot admit the PHY. A verified resource handoff will restore the
+preferred two-resistor receiver after a complete twelve-ns LTRA result, then
+run its own short check before the full 188.049 ns diagnostic. It cannot
+substitute the isolation receiver or short training for final qualification.
 
 | Receiver candidate | Source DC | Source clocks | Physical/extraction audit | Native clock transport |
 | --- | --- | --- | --- | --- |

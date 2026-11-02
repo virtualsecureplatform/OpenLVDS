@@ -282,10 +282,39 @@ caused the observed collapse. The 25 ohm reflective calibration now completes
 and passes: maximum T/LTRA disagreement is 2.041e-13 V; maximum LTRA/analytic
 disagreement is 1.076e-13 V. The matched 50 ohm control also passes: maximum
 T/LTRA disagreement is 5.002e-14 V and maximum LTRA/analytic disagreement is
-2.776e-16 V. The 100 ohm reflective control and coupled results remain pending;
-all three calibration cases are still required before coupling.
+2.776e-16 V. The 100 ohm reflective control also completes and passes:
+maximum T/LTRA disagreement is 8.274e-14 V and maximum LTRA/analytic
+disagreement is 0.185185 mV, below the 1 mV limit. All three calibrations pass.
+The coupled zero-delay and original-delay LTRA controls are now running;
+their numerical/electrical results remain pending.
 Every actual simulation uses its own P2 lease in the same six-slot
 dispatcher; no healthy simulation was stopped or outer lease added.
+
+## Preferred-receiver coupled handoff
+
+`restore_baseline_coupled.py` implements the next gated handoff without
+changing the frozen failed producers. Host resource context
+`baseline_coupled_followup/097e558936b80c28`, owned by
+`openlvds-preferred-baseline-coupled-followup.service`, waits for the complete
+calibrated twelve-ns LTRA control. A failed or incomplete control holds it.
+It does not dispatch a zero-delay substitute.
+
+After that prerequisite, the scientific preparer independently rechecks all
+three calibration waveforms, the complete LTRA trace, and all three passing
+native rate screens. It restores the audited original TIA r2 model, preserving
+the native bias, corrected driver, raw TX and native digital RX closures, and
+rebinds the fourteen receiver observations to actual extracted nodes. Public
+terminal order is checked before assembly. It then runs a fresh twelve-ns
+baseline check. Only numerical completion of that check dispatches the full
+original 188.049 ns/32-bit/60 ns training diagnostic. That trace is decoded
+and its recovered clock transport measured with the original analyzers.
+
+The handoff holds no outer SPICE lease; each actual run acquires one P2 slot.
+It accepts a bound terminal LTRA receipt even if the transient owner unloads;
+the preparer revalidates the scientific evidence. Prior partial outputs are
+retained rather than retried. These remain diagnostic results: sixty receiver
+components, 256-cycle training, long payloads, measured aperture, real DLL
+phase/startup, all corners and release checks remain required.
 
 ## Remaining closure
 
@@ -296,6 +325,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1070 tests, no skips**. Actual
+The full pinned regression suite passes **1075 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
