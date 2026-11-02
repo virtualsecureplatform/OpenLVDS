@@ -149,7 +149,22 @@ identifies all 112 RX boundary MOS devices. Fresh two-case context
 `endpoint_decap_isolation/335f03b43d9dd052` tests RX-only removal and removal
 at both digital endpoints. It preserves every wire R/C and every unrelated
 device. `openlvds-endpoint-mapped-decap-isolation.service` owns the two-worker,
-individual-P2-lease campaign. Its results remain pending.
+individual-P2-lease campaign. RX-only removal now fails at 4.5465 ns,
+attempted step 1.25e-24 s, at `xtx.vgnd.t557` (the gate of the original
+TX boundary-decap PFET X12). The both-endpoints case remains live.
+
+| Native coupled control | Numerical result |
+| --- | --- |
+| All original endpoint MOS, raw TX RC | Abort at TX VGND.t436, 4.5465 ns |
+| Remove mapped TX boundary MOS only | Abort at RX VGND.t215, 4.5465 ns |
+| Remove mapped RX boundary MOS only | Abort at TX VGND.t557, 4.5465 ns |
+| Remove mapped boundary MOS at both endpoints | Running; no verdict |
+
+The two single-endpoint removals move the reported trouble node to the
+other endpoint. That supports testing the remaining endpoint MOS/numerical
+conditioning, but does not yet establish that a physical decap change fixes
+convergence. The saved RX-only failure-prefix observation is
+`endpoint_decap_isolation/335f03b43d9dd052/rx_only/failure_prefix_observation/ba7f3c55f74422d1`.
 
 `rebuild_tx_tap_endcaps.py` implements a conditional isolated physical flow
 using the original RTL/constraints and explicit tap endcaps/well taps. It
