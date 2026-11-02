@@ -11,7 +11,7 @@ Current bring-up state (2026-11-02):
 | Matched smaller amplifier | 15/15 | 3/3 | Pass, 87 devices | Fail: 16 captured edges missing, 0 sharp |
 | Matched larger amplifier | 15/15 | 3/3 | Pass, 90 devices | Fail: 18 captured edges missing, 0 sharp |
 | Feedback inverter, two resistor units | 15/15 | 3/3 | Pass, 77 devices | In progress |
-| Feedback inverter, four resistor units | 15/15 | 3/3 | Pass, 79 devices | In progress |
+| Feedback inverter, four resistor units | 15/15 | 3/3 | Pass, 79 devices | Fail: 16 captured edges missing, 0 sharp |
 
 DC covers all fifteen fixed-supply PVT cases. Source clocks are the three
 original full 80 ns controls; this table does not establish component or PHY
@@ -194,8 +194,9 @@ qualification. Detailed evidence follows.
   nodes. Further resistor-only algebraic elimination reduces 16,661 resistors
   to 5,365 and removes 4,209 algebraic nodes. Four independent sparse
   boundary-current witnesses pass; maximum current disagreement is
-  6.661338e-15 A at 1,525 boundary nodes. This candidate has no transient
-  comparison or speed result and is not used by live native simulations.
+  6.661338e-15 A at 1,525 boundary nodes. The subsequent diagnostic benchmark
+  below now supplies one complete transient comparison; native qualification
+  models remain unchanged.
 - Exact receiver transient benchmark
   `receiver_exact_benchmark/a585e2b3b0a99eaa` is running as
   `openlvds-receiver-exact-benchmark.service`. It retains both completed
@@ -205,11 +206,17 @@ qualification. Detailed evidence follows.
   digital crossing polarities use a 20 ps limit and all original 47-period
   transport counts must agree. A failed baseline can agree and remain failed.
   The completed-trace self-check preserves all eighteen baseline losses and
-  gives zero error across all twenty-five voltages. Actual candidate
+  gives zero error across all twenty-five voltages. The captured-control
+  comparison now passes: the candidate preserves all
+  eighteen original losses, all twenty-five voltages agree within
+  6.315633e-9 V and the largest digital crossing error is 1.795181e-7 ps.
+  Complete simulator elapsed observations are 2672.279 seconds for the
+  reference and 1565.810 seconds for this candidate under their respective
+  workloads. The sharp-control comparison remains pending. Candidate
   simulations run serially at priority two through the existing six slots;
   partial output is retained. Captured complete simulator elapsed times are
-  recorded as workload-dependent observations. No transient agreement or
-  speedup is established yet, and the live native models are unchanged.
+  recorded as workload-dependent observations. Complete two-control agreement
+  and a general speedup remain unproven; qualification models are unchanged.
 - **The three-bus W32 route passes physical checks.** Layout
   `receiver_layout/677ed99567c83bfb` passes DRC/LVS, extraction and independent
   audit. Read-only wire observation `wire_capacitance_observation/d1be9c61c7463050`
@@ -250,7 +257,8 @@ qualification. Detailed evidence follows.
   the native model contains 14,246 resistors and 1,445 capacitors. Fresh
   captured/sharp replay is `receiver_replay/f03923bf25510f9a`. Its complete
   sharp control passes all 47 periods without missing/repeated crossings;
-  the captured waveform remains in progress and has no admission.
+  the captured waveform now completes and fails with sixteen missing
+  transitions. This four-unit candidate has no native/component/PHY admission.
   Source-clock and physical/native handoffs are implemented;
   physical context `receiver_physical_followup/ed30d5877c629f40` waits for each
   candidate's own complete source admissions. Geometry keeps four local buses
@@ -258,6 +266,18 @@ qualification. Detailed evidence follows.
   Preparation recovered from a concurrent cached-reference lock without a
   simulation retry or scientific-code change: only completed reference reads
   are serialized, and every non-lock scientific error remains fatal.
+- Complete native feedback-receiver comparison
+  `receiver_decision_comparison/f305aa33f9695aaa` remeasures the original N8
+  receiver and four-unit feedback candidate with identical original stimuli,
+  numerical policies and shared bias/digital load. The feedback candidate
+  loses eight falling response periods. Four have no RESTORE0 0.9 V falling
+  crossing; the other four do cross there, but RESTORE1 never reaches 0.9 V
+  in any of the eight lost response windows (largest peak 0.8356 V).
+  CO-minus-CL is positive somewhere in each lost feedback window, but feedback
+  changes its operating-point role: this bus sign must not be interpreted as
+  restored frontend current polarity or a gain/transport pass. The observed
+  weak analog pulses still fail the digital restoring chain. The two-unit
+  native test and faster-frontend experiments remain independent and running.
 - A separate bounded frontend-settling experiment is now live in
   `receiver_tia_fast_matrix/85f2c240b81596f8` under
   `openlvds-receiver-tia-fast-dc-matrix.service`. New factory
@@ -272,7 +292,7 @@ qualification. Detailed evidence follows.
   measurements and fourteen-device stress screen. Six original PVT pilots
   gate bulk DC; all fifteen cases must pass independently before any new
   clock/native admission. Both modified candidates now pass the complete
-  SS/40 pilot; the two-resistor candidate also passes FS/40. The pilot batch
+  SS/40, FS/40, SF/0 and FF/40 pilots. The pilot batch
   remains incomplete. The original TIA native
   simulations continue to completion; no partial result is promoted.
 - Faster-frontend source-clock adapter
@@ -286,6 +306,19 @@ qualification. Detailed evidence follows.
   Failed/partial DC evidence cannot dispatch clocks. Existing six SPICE slots,
   separate variant workers and original scientific gates remain in force;
   no outer lease, geometry, native or PHY admission is supplied by this handoff.
+- Gated faster-frontend physical and native adapters are implemented.
+  `receiver_tia_fast_geometry.py` puts each duplicated load/boost resistor
+  directly above its matching original in a second local row. Placement tests
+  preserve all 91/93 flattened devices and nine ports without extending the
+  original signal-row width. CT/CO/CL/RESTORE0 retain four below-row buses;
+  real added resistor capacitance and upper routing remain in extraction.
+  Native replay additionally probes all six frontend load/boost intermediate
+  nodes and every feedback intermediate node. Each candidate must first pass
+  its fifteen-corner DC and all three full source-clock controls. Live physical
+  continuation `receiver_physical_followup/ec096a781a4cd3a7` waits for the exact
+  source-clock owner, then independently builds DRC/LVS/extraction/RC audit
+  and original two full 80 ns native controls. Its placement tests do not
+  constitute actual new GDS, physical validation or positive native admission.
 - Original differential-amplifier downstream handoffs have completed and held both candidates:
   `receiver_differential_downstream/d8b7381526a27796` (components),
   `1e1493bac7dd6581` (corrected-driver diagnostic) and `3496874a53a16f66` (RC).
@@ -380,7 +413,7 @@ qualification. Detailed evidence follows.
   `scripts/exact_rc_requirements.txt` and runs the full suite in the local
   analysis environment with ngspice. The base-image `make test` remains
   available; it can skip the sparse-math witness when SciPy is absent.
-- The last full regression passes **all 999 tests**, with no skips. Electrical
+- The last full regression passes **all 1012 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.

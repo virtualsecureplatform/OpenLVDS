@@ -237,7 +237,13 @@ RC audit. Its own full native replay
 `receiver_replay/54143ddc298c5037` is running after those gates. The four-unit variant's 79-device layout
 `receiver_layout/c196040b40845390` passes DRC/LVS, extraction and independent
 RC audit; fresh full native captured/sharp replay
-`receiver_replay/f03923bf25510f9a` is running. Native transport remains unproven.
+`receiver_replay/f03923bf25510f9a` completes and fails: sixteen captured
+transitions missing, none missing in the sharp control. In its eight lost
+falling response windows, four never cross RESTORE0 at 0.9 V and four do;
+RESTORE1 never reaches 0.9 V in any of the eight (largest peak 0.8356 V).
+Complete comparison is `receiver_decision_comparison/f305aa33f9695aaa`.
+CO-minus-CL bus signs have a changed operating-point role under feedback
+and cannot establish restored input-current polarity. Native transport fails.
 
 A separate frontend experiment, `receiver_tia_fast_frontend.py`, doubles
 all fourteen original PP/PN load and boost resistor branches in parallel.
@@ -247,11 +253,21 @@ unit inverter feedback remain unchanged. The intended benefit is faster
 frontend settling; lower DC gain and the extra real resistor capacitance
 are tradeoffs. It starts with the original source sensitivity/current/stress
 fixtures and PVT gates in `receiver_tia_fast_matrix/85f2c240b81596f8`.
-Both candidates pass the full SS/40 source pilot and the two-unit candidate
-also passes FS/40; the pilot batch and full DC matrix remain incomplete.
+Both candidates pass full SS/40, FS/40, SF/0 and FF/40 source pilots.
+The pilot batch and full DC matrix remain incomplete.
 The separate source-clock handoff waits for all fifteen DC corners and retains
 the original three full source-clock fixtures. No full source, native or PHY
 qualification is established for this intervention.
+
+The faster-frontend layout adapter stacks every duplicated resistor above
+its matching original, preserving the signal-row width in placement tests.
+CT, CO, CL and RESTORE0 keep their four below-row buses. Every additional
+resistor and its real capacitance remains in the physical source and extraction;
+native replay also observes every load/boost intermediate node. DC and source-
+clock gates precede actual geometry, DRC/LVS, extraction and independent RC
+audit, then full captured/sharp native replay. The resource continuation is
+`receiver_physical_followup/ec096a781a4cd3a7`; no new GDS or native admission
+exists yet for these faster-frontend candidates.
 
 ```mermaid
 flowchart LR
