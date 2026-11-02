@@ -80,9 +80,15 @@ two traces. This establishes only bounded startup completion: the forwarded
 clock has not begun toggling by the end of this short fixture. No functional
 TX or electrical pass follows from it.
 
-Both coupled runs are still pending in this snapshot. The observer reads
-only terminal cases and records pending cases as unknown. Re-run it after
-completion to obtain a new immutable observation:
+The reduced coupled run now fails at 4.4465 ns, attempted step 1.25e-24 s,
+at `xtx.vgnd.t393`. This is another extracted decap-shaped NFET terminal
+(raw X15, W0.55/L0.59), rather than the original X7 terminal. The raw coupled
+run remains pending. Observation `raw_completion_observation/e706f109c070a93a`
+records these three terminal cases and the pending raw case separately.
+Changing the output interval for the short fixture can change the numerical
+trajectory; neither the time nor the terminal is identical to the long parent.
+The observer reads only terminal cases and records pending cases as unknown.
+Re-run it after completion to obtain a new immutable observation:
 
 ```sh
 scripts/env.sh --ngspice /usr/bin/python3 scripts/observe_tx_isolation.py \
@@ -96,6 +102,13 @@ resolved configuration checks, power connectivity, DRC/LVS/STA and fresh
 extraction. After numerical isolation, extend through the full 188.049 ns
 diagnostic, then the required long-training corrected loopback.
 
+For future fresh experiments, `prepare_tx_isolation.py` removes only the
+constant-ground print vector and derives a new immutable identity. Prepared
+context `tx_convergence_isolation/dd0062114779a180` validates all four new
+fixtures. It is not launched: the first campaign's valid raw data and live
+coupled run are retained, avoiding duplicate simulations. The original
+producer remains frozen while those jobs finish.
+
 ## Remaining closure
 
 Release still requires at least 256 training cycles, all forty-five link
@@ -105,7 +118,6 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1041 tests, no skips**. Six actual
-SPICE processes were verified running at this snapshot: three DLL stability
-steps, two coupled isolation cases and one RX native rate screen. Other
-workers wait through the shared dispatcher.
+The full pinned regression suite passes **1043 tests, no skips**. Actual
+SPICE workers use the existing six-slot dispatcher, alongside the DLL
+stability campaign. No outer handoff lease is held while another worker waits.
