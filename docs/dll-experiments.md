@@ -2193,3 +2193,20 @@ The completed source admission unlocks fresh native context
 running with three actual shared-slot leases at most. Remaining fixtures stay
 held for fresh native stability evidence. No full native DLL or PHY admission
 is implied by this source result.
+
+
+## 2026-11-02: corrected DLL RC comparison ready
+
+`validate_dll_storage_rc.py` requires all twenty-four completed passing native
+screen cases before preparing a full/fast comparison. It uses the exact C16
+DLL/PFD libraries and shared bias from the native qualification, preserving
+all non-wire statements. Both views use the original full 1500 ns TT/25
+fixture and original 20 ps edge / 20 mV plateau limits. Partial or unattested
+traces are retained; actual simulations use one fair shared-slot lease at a
+time with no outer lease. A comparison result covers the DLL RC case only.
+
+The exact-owner resource continuation is
+`dll_qualification/1a29b2389cee3d01/rc_followup`. It is waiting for the complete
+native screen; six cases pass at this observation. Stability, full native
+qualification, the joint six-case RC certificate and PHY admission remain
+required. All 785 regression tests pass without skips.

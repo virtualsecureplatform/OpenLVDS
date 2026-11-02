@@ -94,7 +94,7 @@ Current bring-up state (2026-11-02):
   preserved. Their partial results remain inconclusive. The original
   frontend-local native receiver loses 22 edges even with corrected-driver
   recorded pins; this motivates the new bias correction, not a relaxed gate.
-- The last full regression passes **all 779 tests**, with no skips. Electrical
+- The last full regression passes **all 785 tests**, with no skips. Electrical
   closure still requires new receiver clock/native/component/link results,
   full driver and DLL evidence, aperture, long-payload/real-clock link cases,
   exact RC certificates and final artifact/release validation.
@@ -102,6 +102,29 @@ Current bring-up state (2026-11-02):
 The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
+
+2026-11-02 — corrected DLL RC comparison adapter and native-screen handoff:
+
+- `validate_dll_storage_rc.py` adds the remaining corrected-DLL full/fast
+  RC comparison path. It requires exactly all twenty-four completed passing
+  native screen cases before invoking any cached prerequisite producer. The
+  original source/native admission checks remeasure the existing evidence;
+  no missing prerequisite can be dispatched by this comparison adapter.
+- The comparison uses the qualification's exact captured C16 DLL/PFD views,
+  preserving the exact shared bias and every non-wire device, port and
+  directive. It retains the original full 1500 ns TT/25 fixture, 100 ps
+  maximum / 20 ps output steps, and original 20 ps edge / 20 mV plateau
+  comparison limits. Existing partial or unattested traces are retained.
+  Only one actual fair priority-one SPICE lease is held at a time.
+- Resource `dll_qualification/1a29b2389cee3d01/rc_followup` is live and waits
+  for its exact native-screen owner to complete all twenty-four cases. Six
+  native screen cases pass at this observation. No DLL RC simulation has
+  been admitted yet. Fresh stability and full 336-case native qualification
+  remain separate prerequisites for final DLL/PHY admission.
+- The focused gate/model-protection tests and full regression pass:
+  **785 tests, no skips**. Independent live-model checking also confirms
+  that both captured libraries have identical non-wire statements and bias
+  and satisfy the original fixture's named-node probes.
 
 2026-11-02 — complete W32 source DC admission and clock preparation:
 
