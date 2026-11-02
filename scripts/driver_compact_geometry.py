@@ -129,7 +129,7 @@ def write(out, top, ports, original, grouped, bank_library, tile_library, passiv
         cursor = device(cml,branch_x,cy,row)
         for i in range(2):
             r = named(f'__XR{"L" if branch==0 else "R"}{i}')
-            device(r,branch_x+i*18.,cy+25.,row)
+            device(r,branch_x+i*25.,cy+25.,row)
         for stage in range(3):
             pair = pair_by_name[named(f'__XB{branch}_S{stage}_0__XP_')['name']]
             cursor = tile(pair,cursor,cy,row)
