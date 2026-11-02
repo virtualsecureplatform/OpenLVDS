@@ -103,6 +103,27 @@ The entries below preserve the laboratory history. Earlier running states and
 candidate pilots describe their observation time; the summary above reflects
 the current branch. Detailed immutable receipts appear in the dated entries.
 
+2026-11-02 — current behavioral evidence independently checked:
+
+- Read-only receipt `current_behavioral_observation/a6b4087918c430c5/summary.json`
+  validates the current canonical `build/rtl/summary.json` source fingerprint,
+  full exact 390/400/410 MHz × 45/50/55 percent duty × -100/0/+100 ps skew
+  coverage, all fifty-four completed case PASS logs and controller/functional
+  assembly PASS logs. RTL and native-TX functional modes each check 1,186,794
+  bits, exceeding the original million-bit requirement. Its native mode
+  retains generic RX, as declared by the original producer.
+- The same observation validates all source/requirements hashes, fifty-four
+  case logs and per-mode totals for current early-RX behavioral context
+  `rx_buffered_rtl/3fc750281ff3b4bb`. Generic and native-RX modes each check
+  1,186,794 bits. Its early RX source/reset bytes match the independently
+  checked `rx_early_physical_v1` input archive and retained physical policy.
+  This separate regression uses generic TX.
+- These current baseline/component results do not establish the final
+  combined C16 DLL/native-TX/native-RX behavioral assembly or any electrical
+  timing, aperture, PVT, extracted long-payload or PHY admission. The final
+  selected assembly still requires its own captured validation. No simulator,
+  existing producer report or active artifact pointer is changed by this audit.
+
 2026-11-02 — corrected DLL RC comparison adapter and native-screen handoff:
 
 - `validate_dll_storage_rc.py` adds the remaining corrected-DLL full/fast
