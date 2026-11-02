@@ -402,7 +402,8 @@ pulse widths, payload correctness, aperture-subtracted margin or release.
 
 The specification campaign has completed all fifteen schematic wide-DC
 cases, the three native 390/400/410 MHz rate cases and all twelve native
-TT/FF/SS/FS wide-DC cases: **30/33 pass**, with native SF0/SF25/SF40 pending.
+TT/FF/SS/FS wide-DC cases and native SF0/SF25: **32/33 pass**, with native
+SF40 running.
 The verified component handoff
 still requires all 33 screen cases before dispatching the original sixty
 component conditions. A read-only preflight confirms that all sixty original
@@ -640,9 +641,35 @@ automatic, even after a source waveform pass.
 
 The nominal handoff has now independently remeasured both completed cases
 and prepared `driver_shape_source/40b882e177324c81`, containing all thirty
-source fixtures. Its two workers are queued through P1 leases. There is no
-source PVT result yet; no source circuit or physical selection is promoted
-from the nominal pass.
+source fixtures. Its two workers use P1 leases. Four source cases have now
+completed, covering TT0 and TT25 in both polarities. Independent pair
+remeasurement passes TT0 with 264.869–270.810 ps transitions and
+142.640–143.431 mVpp common-mode movement. The entire fifteen-point matrix
+is still required; no source circuit or physical selection is promoted from
+these first results.
+
+`verify_driver_shape_source.py` implements the read-only full-matrix handoff
+check. It requires all thirty terminal case receipts and a bound aggregate,
+checks fixture/output hashes and identical source circuits, then remeasures
+every waveform and both DC calibration polarities at all fifteen points.
+It compares the complete remeasurement with the original aggregate and
+captures all evidence hashes. Missing, changed, failed or incomplete evidence
+rejects the handoff without running SPICE or changing the original results.
+Its receipt reports supply-power ranges and the maximum added-device
+terminal difference, with physical admission and PHY qualification explicitly
+false. Four tests cover complete remeasurement, partial output, tampering,
+changed analysis and a failed case hidden by an aggregate pass claim.
+
+After the complete source matrix passes, run:
+
+```sh
+scripts/env.sh --ngspice /usr/bin/python3 scripts/verify_driver_shape_source.py \
+  /work/OpenLVDS/build/diagnostics/driver_shape_source/40b882e177324c81
+```
+
+The current incomplete campaign correctly rejects this command. This check
+does not dispatch physical work or replace the required device-stress,
+power, layout or native-waveform review.
 
 The initial childless resource waiter `d7c392bc3bd8201a` was stopped before
 any source matrix was prepared to correct handling of an empty successful
@@ -656,7 +683,7 @@ cases, compliant TX levels/waveforms, current OpenPLL evidence, all DLL gates
 and six RC certificates. The C16 DLL has passed its 24-case native screen;
 stability and full qualification continue independently.
 
-The full pinned regression suite passes **1116 tests, no skips**. Actual
+The full pinned regression suite passes **1120 tests, no skips**. Actual
 SPICE workers use the existing six-slot dispatcher, alongside the DLL
 stability campaign. No outer handoff lease is held while another worker waits.
 
