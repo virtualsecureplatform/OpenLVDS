@@ -553,3 +553,43 @@ input slews, the measured median differential rising delivery delays are
 Faster output transitions alone have not removed the input-slew timing
 bias. Remaining NOR4 results are still required before the conditional
 analog fallback begins. The coupled payload continues running separately.
+
+## Fresh extracted-native reset/disable campaign
+
+`qualify_native_slew_controls.py` closes the control-check gap between the
+source prototype and the changed routed/extracted circuit. Preparation
+requires the complete eighteen-case native pilot and restoration of both
+historical false-BAD cases. Independent control verification rechecks that
+pilot admission. Old source controls and the retained native baseline do
+not count as electrical results for the repaired physical PFD.
+
+Each selected model receives reset/disable tests at all fifteen PVT points
+at 400 MHz and at 390/410 MHz at TT25, SS40 and the measured source worst
+corner, using matched and both unequal clock slews. Deduplication gives 57
+or 63 cases. Fixtures retain the complete native model, one endpoint bias
+reference, fixed supplies, original 160 ns/5 ps/20 ps timing and recovered
+120-160 ns scoring window. The actual four receiving MOS gate probes are
+bound to the selected assembly's extraction; they must keep switching with
+valid levels while both UP/DN outputs clear under reset/disable. Original
+phase health and native clock transport must recover after release.
+
+Preparation/regeneration binds every deck, alias, producer archive, parent
+pilot result and full native model. Two workers use individual P1 leases;
+existing partial output cannot retry. `prepare NATIVE_PILOT`, `run ARTIFACT`
+and `verify ARTIFACT` are scientific-environment actions, for example via
+`scripts/env.sh --ngspice /usr/bin/python3 scripts/qualify_native_slew_controls.py`.
+No campaign is prepared or dispatched before a physical repair and passing
+native pilot exist.
+
+Baseline-only preflight `native_slew_controls_preflight/26753998275a83d5`
+compiles all 63 fixtures against the retained complete extracted model,
+checking all PVT/frequency directives, actual receiving-gate observations,
+explicit observed controls and single shared bias. It runs no transient
+and selects no repaired candidate. This control campaign does not replace
+expanded native phase/zero-balance coverage, acquisition, measured
+stability, recovery/readiness, operating-point stress or PHY qualification.
+
+The complete regression passes 1,370 tests without skips
+(`build/native-slew-controls-tests.log`), including rejection of failed
+pilot admission, independent clearance/recovery failures, incomplete or
+duplicated case results and partial-output retries.
