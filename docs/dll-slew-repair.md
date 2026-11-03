@@ -968,3 +968,35 @@ ordered first, followed by the three -50 ps / 200-20 ps cases. The first
 two forward cases are currently running at this checkpoint. Their partial
 progress is not electrical admission. Full-PVT/source controls, physical
 implementation and all native closed-loop/stability/PHY gates remain open.
+
+## Analog source expansion implementation
+
+`expand_dll_analog_frontend.py` implements the next source stage without
+changing any producer bound to the running screen. Preparation locks and
+independently verifies the complete corrected-circuit screen. The default
+selection is its first ranked survivor; an explicit selection must also be
+a complete survivor. No passing screen means no expansion artifact. A DC
+survivor or one passing timing case cannot satisfy this gate.
+
+Each selected circuit receives 1,215 cases: all five processes, 0/25/40 C,
+390/400/410 MHz, 100/100 ps and both 20/200 ps directions, and nine offsets
+from -300 to +300 ps including +/-20 ps. The native PFD/bias/analog loading,
+four actual receiving MOS clock gates, all 125 frontend MOS stresses,
+reference tolerance, scoring windows and numerical checks are retained.
+Each of the 135 offset curves must be strictly monotonic and bracket its
+zero between -20 and +20 ps. Every case must pass its original electrical
+checks. Worst zero offset identifies the downstream worst PVT; source
+expansion never grants physical, controls, loop, stability or PHY admission.
+
+The runner retains two individual P2 leases, the shared six-engine budget,
+immutable parent/deck/model/producer hashes and independent raw-waveform
+remeasurement. Existing output prevents a retry. One profile surrounds the
+entire worker pool so workers cannot race while restoring process-global
+measurement policy. The `preflight` action compiles fixtures in memory
+without requiring or claiming a successful timing screen; it cannot dispatch
+simulations or create a qualification artifact.
+
+Nine focused checks cover full coverage, admission failures, selection,
+missing/foreign/duplicate results, individual electrical failures, curve
+failures, retained fixture loading and profile cleanup. The full regression
+passes 1,426 tests without skips (`build/dll-analog-expansion-full-tests.log`).
