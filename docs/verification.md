@@ -1,5 +1,48 @@
 # Validation map
 
+## Extended native capture aperture
+
+`scripts/extend_rx_aperture.py` extends the unchanged extracted capture model
+from 20/200 ps to a 20/200/250 ps grid on both clock and data. The wider grid
+contains 1,080 conditions across all five processes, 0/25/40 C, both clock
+edges, both data polarities and setup/hold. It simulates only the 600 new
+conditions. The original 480 conditions are reused only after independent
+verification of their complete passing table and original endpoint seeds.
+The fixed 1.8 V supply, 410 MHz stimulus, 20 fF public loads, published-pair
+checks, 5 ps search resolution and 20 ps guard remain unchanged.
+
+This extension addresses the restored coupled trace's 216.889 ps clock
+slew. Capture closure hashes match between that trace and the ongoing
+original aperture campaign; the extension does not substitute another RX
+capture circuit. `prepare` may capture the immutable original model while
+its campaign runs. That permits independent new simulations, but grants no
+reuse or aperture admission from partial original results.
+
+Each uncached point uses one individual P2 dispatcher lease. Two workers
+share the existing six-engine budget, with no outer lease. Existing partial
+outputs cannot be restarted. A failed boundary holds remaining work for
+diagnosis. `assemble` requires all 600 new boundaries and the independently
+verified original 480 before producing a table. It rechecks every failing,
+passing and guarded witness, the entire original deck including supply,
+load and maximum step, complete finite binary waveforms and exact exported
+samples. The combined receipt binds witness paths and hashes from both
+artifacts. `verify` regenerates the complete table; a pass flag, changed
+model, missing original matrix or edited witness cannot admit the table.
+
+The explicit `extend_rx_aperture.read_table` consumer returns a 20–250 ps
+aperture receipt only after that verification. Existing consumers and
+running producers retain their original 20–200 ps rules. Integrating the new
+receipt with a later selected PHY/link profile remains a separate step;
+neither table preparation nor a passing aperture alone qualifies a PHY.
+
+Nine focused checks cover exact coverage/reuse, retained native fixture,
+raw/export mismatch, altered supply/load/step, guarded boundaries, complete
+parent admission, combined witness locations, foreign/edited receipts and
+retry rejection. The full regression passes 1,446 tests without skips
+(`build/rx-aperture-extension-full-tests.log`).
+
+## Existing validation flows
+
 Every runner archives decks, tool logs and JSON results under `build/`. Read
 the current manifests instead of inferring success from an artifact's existence.
 Digital hardening excludes intentional clock-delay cells from general buffering.
