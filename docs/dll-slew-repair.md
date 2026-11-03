@@ -466,3 +466,35 @@ phase health recovers with BAD below 1.22e-8 V in the scoring window.
 This verifies the protocol and retained matched-slew circuit at SS40 only.
 It does not admit any new frontend or replace its required PVT/control
 qualification.
+
+## Source-survivor reset/disable qualification
+
+`qualify_slew_frontend_controls.py` consumes the independently verified
+native source expansion and passing reset/disable baseline. Every source
+survivor receives all fifteen process/temperature points at 400 MHz and
+390/410 MHz at TT25, SS40 and its measured worst source corner. Each point
+includes matched 100/100 ps and both 20/200, 200/20 ps clock slews. After
+deduplication this is 57 or 63 new control cases per candidate. Supplies
+remain fixed; the temperature set remains 0, 25 and 40 degrees Celsius.
+
+The protocol retains the native PFD, bias and complete analog loading.
+During each disable/reset hold, clocks must continue at both pads, both
+conditioner outputs and all four actual receiving MOS gates. Released
+controls must recover original phase health and receiving-gate transport.
+The recovered UF-DF value must remain inside that same source candidate's
+measured -20/+20 ps bracket. A control failure filters the candidate from
+the original measured source ranking; it cannot reorder survivors or
+widen timing/BAD limits.
+
+Preparation and independent verification regenerate every fixture and
+observation from bound donors. Producer/model/deck hashes are checked at
+dispatch and completion. Two workers use individual P2 leases; partial
+output cannot retry. No new control campaign is prepared while source
+selection remains pending.
+
+Fixture-only preflight `slew_controls_fixture_preflight/81d2f14a014a09b5`
+compiled all twelve combinations of four source frontends and three slew
+pairs against the retained complete native library. The four receiving
+gate observations resolve in every fixture, with explicit observed
+RST/ENABLE and the original timing. This preflight ran no transient and
+provides no candidate electrical admission.
