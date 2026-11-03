@@ -414,3 +414,43 @@ without any transient run. The full regression passes 1,346 tests without
 skips (`build/dll-native-pilot-tests.log`). The bounded source screen has
 now reproduced both false-BAD failures in `clkbuf_4`, in addition to its
 failed zero bracket; other frontend results remain required.
+
+## Reset/disable protocol baseline
+
+`pfd_control_protocol.py` adds a versioned `pfd-reset-enable-v1` protocol
+to the complete loaded 160 ns phase fixture. Both clocks continue while
+PD_ENABLE is initially low, is asserted and disabled again, and while
+RESET_N is asserted and released dynamically. Digital control transitions
+do not change the fixed 3.3/1.8 V supplies. Observed control-pin edges must
+match within 5 ps. After a half-period clearance allowance, both actual
+UP/DN outputs must stay below 0.36 V in the disabled/reset windows, while
+each observed clock still has rising/falling events and valid levels.
+Both controls must be released in the unchanged 120-160 ns phase window.
+Ordinary phase-health recovery and receiving-gate transport are checked
+separately; a passing clearance check cannot replace them.
+
+`probe_native_pfd_controls.py` prepares one new matched-slew SS40/400 MHz
+baseline using the retained, unchanged native DLL/PFD/bias model. It binds
+the actual GDS/LEF gate observations, donor fixture, normalized protocol
+stimulus, aliases and producer archive. The phase fixture retains its 5 ps
+print and 20 ps maximum step. This is a new control protocol experiment,
+not a repeated original phase case or an admission of a repaired frontend.
+The prepared artifact is `pfd_controls_baseline/b851f13d37380489`, running
+under `openlvds-pfd-reset-enable-baseline.service` with one individual P2
+lease and retained service ownership. Partial output cannot retry.
+
+The protocol and baseline adapter pass the complete 1,353-test regression
+without skips (`build/pfd-controls-baseline-tests.log`). The real baseline
+simulation remains required. Source-survivor all-PVT control coverage and
+its physical-source admission gate still need to consume this protocol;
+reset/disable behavior is not yet qualified for any new frontend.
+
+The bounded source screen has 24/56 complete cases without numerical
+errors at this checkpoint. Both `clkbuf_4` and `clkbuf_8` fail the zero
+bracket and false-BAD requirements, so drive strength alone is not an
+adequate repair. The NOR/inverter candidates remain queued. Separately,
+the compensated coupled restoration
+`compensated_coupled_restoration/40f1b82bf02b80fb` completed its strict
+12 ns/1 ps numerical screen with return code zero and verified complete
+raw/export data. Its original 188.049 ns payload run is now running; no
+payload-restoration or final PHY success is inferred from the short run.
