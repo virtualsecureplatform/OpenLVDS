@@ -145,3 +145,37 @@ decks against the actual native library and PDK, including probe existence,
 corner/temperature directives and absence of duplicate subcircuits; this
 performed no new electrical simulations. The complete regression passes
 1,299 tests without skips (`build/dll-slew-expansion-tests.log`).
+
+## Preserved PFD frontend source and connectivity policy
+
+`pfd_slew_policy.py` generates each of the four bounded frontend topologies
+around the unchanged fast-reset core. REF and FB use identical named cells,
+with keep/dont_touch attributes and kept intermediate wires. Public ports,
+flip-flops, output drivers and the single-AOI reset equation are retained.
+The new checker verifies both source and final flat netlists: exact cell
+types and tied NOR inputs, exactly the intended loads on every clock net,
+and no bypass, cross-coupling, added logic, declaration initializer or
+behavioral primitive. It accepts physical fill/tap cells and split tie
+cells, and rejects incorrect power-pin connections. The original policy
+files remain unchanged.
+
+`prepare_slew_pfd.py` independently verifies the completed native expansion
+before generating the ranked winner's physical source. It captures the
+source, required extra blackbox, existing PFD blackboxes and constraints,
+along with the measured worst-PVT coverage recipe and complete source
+evidence hashes. It refuses no-survivor/partial evidence and changed
+generated files. No winner artifact has been prepared while screening is
+pending. This helper prepares source only; matched placement/routing, zero
+DRC, strict LVS, fresh extraction and the expanded native qualification
+remain required.
+
+All four source variants successfully elaborate against actual SKY130 TT
+Liberty in Yosys and retain the required topology after elaboration:
+`slew_pfd_elaboration/07cbd666da7f246c`. The policy producer is archived
+there and the generated sources/netlists/logs are hash-bound. An earlier
+preflight using only the legacy explicit blackbox files lacked `dfrtp_4`;
+that failed output is retained under `8875e81b675e3eba`. The successful
+preflight reads the complete PDK Liberty, as the physical synthesis flow
+does. These checks do not perform placement or electrical simulation.
+The complete regression now passes 1,307 tests without skips
+(`build/dll-slew-pfd-policy-tests.log`).
