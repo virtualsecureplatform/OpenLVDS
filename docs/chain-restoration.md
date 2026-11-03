@@ -5,6 +5,46 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The isolated exact-RC benchmark `compensated_driver_exact/8afdf90644b01ae1`
+now completes and passes independent remeasurement. All **1,221 saved
+voltages** agree within **30.867 nV** over the complete 80 ns interval;
+all 28 rising and 28 falling differential crossings retain their counts,
+with maximum measured displacement below 0.000001 ps. Initial DC
+differential differs by 1.061 nV. Ngspice reports **884.895 s elapsed**
+versus **1,143.184 s** for the completed original reference, about 23% less
+elapsed time on the shared machine. Mathematical witnesses and this single
+matched transient support further isolated use; they do not select the
+candidate, replace the running degree-four models, provide an all-PVT or
+joint RC certificate, or release the PHY.
+
+`preflight_compensated_dll.py` adds a read-only compatibility check for the
+later DLL-based link work. The corrected DLL qualification must be validated
+under `qualify_dll_storage.profile()`: its manifest binds the extra storage
+producer files. Calling the generic validator outside that profile rejects
+the context even though the original worker remains healthy. The profile
+is restored on both success and failure; active campaign code is unchanged.
+
+An actual-model in-memory preflight passes with the compensated native
+driver, preferred r2 receiver, exact TX/capture and corrected DLL. All sixteen
+DLL wrapper ports retain their order, all 38 existing probes resolve and
+the native bias, driver, receiver, TX and capture closures remain protected.
+The original ideal-phase diagnostic still contains exactly two endpoint
+bias references. The DLL is not instantiated in that fixture, so this is
+library compatibility, not verification of a combined DLL/TX bias network
+or actual phase replay. The new adapter additionally remeasures completed
+native pilots, exact-TX comparison and admitted receiver evidence. It writes
+no selected library and grants no native-matrix, DLL-electrical or PHY
+admission. The existing selected-PHY producer still selects the older analog
+circuits; the later qualified selection must explicitly use the new models
+and matching DLL validation profile. The full reproducible preflight now
+passes in `build/compensated-dll-preflight.json`, binding seventeen context
+files after remeasurement; its report SHA256 is
+`4cd3bc3d18f90e70458b82b8fae6e5725ff7097b77cf07092c355d504c7848e8`.
+Seven new tests cover source evidence,
+port/receiver/dependency preservation, profile restoration and clean JSON
+output despite cached-validator progress messages. The complete pinned
+regression passes **1,256 tests without skips**.
+
 The second completed **2.54 us native component**, TT0, also passes.
 Independent manifest/output-hash checks and complete raw/export/metric
 remeasurement succeed. It retains 392 monotonic transitions at
@@ -48,12 +88,15 @@ passing single-condition benchmark changes the running models, coupled
 handoff, selected PHY or PVT admission. Seven focused integrity/comparison
 tests pass; the full pinned regression passes **1,249 tests without skips**.
 
-The first two full-native PVT pairs, TT0 and TT25, complete and pass in
+The first three full-native PVT pairs, TT0, TT25 and TT40, complete and pass in
 `driver_compact_native/7e50cdcac4ffb5e1`. Negative/positive initial states
 at TT0 measure 97.577/92.445 mVpp common-mode movement, with monotonic
 calibrated transitions at 326.923–337.305 ps. TT25 measures 96.753/91.508
-mVpp and monotonic 327.029–338.073 ps transitions. These are two of fifteen
-required PVT points. Neither full driver campaign is complete.
+mVpp and monotonic 327.029–338.073 ps transitions. TT40 independently
+remeasures as passing at 96.170/90.868 mVpp, with monotonic calibrated
+327.189–338.491 ps transitions. These are three of fifteen required PVT
+points: all three TT temperatures, with the other process corners still
+required. Neither full driver campaign is complete.
 
 `continue_compensated_coupled.py` now owns the joined handoff, artifact
 `compensated_coupled_followup/66383e7eb14f5ddc`, service

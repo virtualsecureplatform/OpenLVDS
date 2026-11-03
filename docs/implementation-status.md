@@ -5,6 +5,14 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-03):
 
+The read-only `preflight_compensated_dll.py` checks compatibility of the new
+driver/preferred receiver with the storage-corrected DLL using its matching
+validation profile. The actual-model in-memory overlay preserves the
+sixteen-port DLL wrapper, 38 probes and unrelated circuit closures. This
+does not instantiate the DLL or qualify a combined DLL/TX bias network,
+phase replay, full link or selected PHY. Existing running models and the
+coupled restoration handoff remain unchanged.
+
 The compensated driver passes all six native TT25/SS25/FF40 pilots,
 independently verified: 88.5–129.4 mVpp common-mode movement and
 310.7–341.7 ps monotonic calibrated transitions. The full thirty-case
@@ -15,6 +23,9 @@ is implemented but requires both complete campaigns to pass first.
 The full-native TT0 pair passes at 92.4–97.6 mVpp with monotonic
 326.9–337.3 ps transitions. TT25 also passes both polarities at
 91.5–96.8 mVpp with monotonic 327.0–338.1 ps transitions.
+TT40 independently passes both polarities at 90.9–96.2 mVpp and monotonic
+327.2–338.5 ps transitions. All three TT temperatures now pass; twelve
+other process/temperature points remain required.
 The joined coupled handoff is live and waiting on both complete,
 independently verified qualification results before dispatching a link test.
 
@@ -34,9 +45,11 @@ current witnesses pass below 1 pA while reducing resistors from 29,915 to
 20,888. One matched 80 ns/1 ps transient comparison is prepared against
 completed native TT25 data in `compensated_driver_exact/8afdf90644b01ae1`,
 owned by `openlvds-compensated-driver-exact-benchmark.service`.
-It has acquired a dispatcher slot and is running its single simulation.
-No runtime improvement, waveform equivalence
-or model promotion is inferred from the mathematical check. Running
+It now completes and independently verifies waveform agreement across all
+1,221 saved voltages within 30.9 nV, with unchanged output crossing counts.
+Observed ngspice elapsed time is 884.9 s versus the original 1,143.2 s,
+about 23% lower on the shared machine. This is one matched condition;
+no all-PVT or joint RC certification or model promotion is inferred. Running
 qualification models and the joined coupled handoff remain unchanged.
 
 The preceding routing-only revision remains held:
@@ -104,7 +117,7 @@ The matched long-component handoff also passes its prerequisite checks and
 is running the original thirty 2.54 us fixtures alongside the full native
 output matrix under the same six-slot dispatcher.
 
-The complete pinned `make test-full` regression passes **1249 tests**.
+The complete pinned `make test-full` regression passes **1256 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:
 saved voltages agree within 13.3 nV and edge counts agree. Both retain
 the original failed payload, so this admits a numerical optimization
