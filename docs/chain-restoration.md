@@ -5,6 +5,36 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The compensated native SS25 pair now completes and passes the unchanged
+output checks. Negative/positive initial polarities measure
+88.499/93.086 mVpp common-mode movement; all calibrated transitions are
+monotonic at 310.664–320.227 ps. Together with the completed passing TT25
+pair, this establishes two of the three pilot PVT points. FF40 and the
+full native matrix remain open.
+
+`continue_driver_cmfb_lead_components.py` now owns the matched long-component
+handoff, artifact `driver_cmfb_lead_component_followup/a0e504ed72d27628`,
+service `openlvds-driver-cmfb-lead-components-followup.service`. It binds
+the exact live physical/native owner, native pilot and assembly. It waits
+for that owner's independently prepared full-native matrix receipt, which
+can be created only after the native pilot worker exits and all six cases
+pass independent verification. The receipt must bind this pilot's manifest
+and complete summary. A live owner or a progress state alone cannot open
+the gate. The long-component scientific preparer independently verifies the
+same pilot and assembly again before creating the new thirty-case campaign.
+
+This permits the original 2.54 us component fixtures to run alongside the
+full 80 ns native output matrix. Each campaign keeps its two individually
+leased P1 workers under the existing six-engine limit; the controller takes
+no outer lease. A failed native prerequisite stops dispatch, including when
+its failure receipt appears just before the owner exits. Changed ownership,
+changed matrix receipts and partial pilot coverage cannot admit components.
+All thirty component cases must pass independent verification before the
+controller reports completion. Neither branch releases the coupled PHY.
+Eight new handoff/ownership/failure tests bring the complete pinned regression
+to **1222 passing tests**. The component handoff is currently waiting and
+has dispatched no component simulation.
+
 The completed compensated native TT25 captures also support actual MOS
 terminal characterization. Before measuring, the native manifest/input
 bindings, both complete case receipts and waveform hashes are checked;
