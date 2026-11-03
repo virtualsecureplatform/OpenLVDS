@@ -29,15 +29,13 @@ other process/temperature points remain required.
 The joined coupled handoff is live and waiting on both complete,
 independently verified qualification results before dispatching a link test.
 
-The first long native component, TT25, now independently remeasures as
-passing: **91.1 mVpp** common-mode movement and **326.6–337.3 ps** monotonic
-edges across the original 2.54 us fixture. Native supply power is about
-32.0 mW IO plus 2.10 mW digital. Three schematic long cases also pass;
-the complete thirty-case campaign remains pending.
-Native TT0 now also independently remeasures as passing: **92.0 mVpp**
-common-mode movement, **326.5–336.3 ps** monotonic edges and **32.10/2.09 mW**
-IO/digital supply power. Five long cases have passed in total, with both
-native cases retaining all 305 MOS terminal observations.
+All three TT long native components independently pass the original 2.54 us
+fixtures: **91.1–92.0 mVpp** common-mode movement and **326.5–337.7 ps**
+monotonic edges. Mean native supply power spans **31.92–32.10 mW IO** plus
+**2.09–2.11 mW digital**, with all 305 actual MOS devices observed. Schematic
+TT0, TT25, TT40 and FF0 also pass; FF0 independently remeasures at 52.2 mVpp
+and monotonic 318.3–329.7 ps transitions. Seven of thirty long cases pass;
+the other process/temperature conditions remain pending.
 
 A separate exact resistor-reduction benchmark preserves all capacitors,
 PDK devices, native bias and saved internal conductors. Mathematical

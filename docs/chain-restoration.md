@@ -45,26 +45,23 @@ port/receiver/dependency preservation, profile restoration and clean JSON
 output despite cached-validator progress messages. The complete pinned
 regression passes **1,256 tests without skips**.
 
-The second completed **2.54 us native component**, TT0, also passes.
-Independent manifest/output-hash checks and complete raw/export/metric
-remeasurement succeed. It retains 392 monotonic transitions at
-**326.481–336.253 ps**, with **91.955 mVpp** common-mode movement; original
-DC and loaded-eye checks pass. Mean IO/digital power is **32.102/2.094 mW**,
-with all 305 actual MOS devices observed. Together with native TT25 and
-the three schematic TT cases, five of the thirty long cases have passed.
-The qualification owner continues with the original remaining fixtures.
-The isolated exact-RC benchmark has acquired a dispatcher slot and started
-its single matched simulation; complete transient comparison remains pending.
+All three TT **2.54 us native components** independently pass in
+`driver_compact_components/605c95726124145d`. Manifest/output-hash checks
+and complete raw/export/metric remeasurement succeed. Each retains 392
+monotonic transitions, the original DC and loaded-eye checks, and all 305
+actual MOS terminal observations.
 
-The first completed **2.54 us native component**, TT25, passes in
-`driver_compact_components/605c95726124145d`. Independent checking of its
-manifest, output hashes, raw/export data and all measured metrics succeeds.
-The long waveform has 392 monotonic transitions at **326.627–337.254 ps**
-and **91.068 mVpp** common-mode movement. Original DC and loaded-eye checks
-also pass. Mean IO/digital supply power is **31.995/2.105 mW**, with all
-305 actual native MOS terminal observations retained. Schematic TT0, TT25
-and TT40 also pass. This is four completed cases of thirty; the remaining
-native/source cases and separate 1 ps native matrix remain required.
+| Temperature | Common-mode movement | Calibrated transitions | Mean IO/digital power |
+| --- | --- | --- | --- |
+| 0 C | 91.955 mVpp | 326.481–336.253 ps | 32.102/2.094 mW |
+| 25 C | 91.068 mVpp | 326.627–337.254 ps | 31.995/2.105 mW |
+| 40 C | 91.547 mVpp | 326.815–337.749 ps | 31.920/2.112 mW |
+
+Schematic TT0, TT25, TT40 and FF0 also pass. Independent remeasurement of
+schematic FF0 confirms 52.235 mVpp movement and monotonic 318.289–329.722 ps
+transitions. Seven of thirty long cases have passed. Remaining source/native
+process/temperature points and the separate full 1 ps native matrix remain
+required; the original qualification owner continues unchanged.
 
 `benchmark_compensated_driver_exact.py` implements a separate performance
 experiment against the completed negative TT25 native pilot. Degree-eight
@@ -76,8 +73,9 @@ nodes**, reducing the existing exact degree-four model from **29,915 to
 20,888 resistors** and from 11,380 to 6,225 resistor-network nodes.
 
 Prepared artifact `compensated_driver_exact/8afdf90644b01ae1` is owned by
-`openlvds-compensated-driver-exact-benchmark.service`. The benchmark reuses
-the completed original reference and queues one new
+`openlvds-compensated-driver-exact-benchmark.service`, now terminal with a
+passing comparison. The benchmark reused the completed original reference
+and ran one new
 80 ns/1 ps TT25 negative-polarity simulation under a P2 dispatcher lease.
 It requires complete raw/export agreement, compares every saved voltage
 over the complete interval on a 1 ps grid within 20 mV, and checks both
