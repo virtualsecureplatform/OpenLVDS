@@ -5,6 +5,26 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The compensated actual source matrix is now complete:
+`driver_shape_source/ec61f8a97b10dab9` passes **30/30 cases and 15/15 PVT
+points**. Independent full remeasurement succeeds in
+`driver_cmfb_lead_source_verification/1d753bc32a560831/summary.json`.
+All five process corners, 0/25/40 C and both fresh initial polarities are
+covered, with the original fixed supplies/reference/load and complete
+80 ns/1 ps stimulus. Common-mode movement spans 23.014–71.133 mVpp;
+all calibrated transitions are monotonic at 308.219–327.996 ps. Fresh DC
+differential magnitudes span 323.866–345.938 mV. Observed mean power is
+28.202–29.081 mW on the IO supply and 1.124–1.295 mW on the digital supply.
+These source observations are not native electrical or reliability admission.
+
+The source handoff terminates successfully, and the physical/native
+handoff advances to `building_compensated_layout` using that exact
+source-readiness receipt. The compensated builder independently checks
+the complete source evidence again before creating the new physical
+artifact. DRC/LVS, RC audit, native pilots/full matrix and coupled link
+qualification remain required. The following snapshots retain the
+earlier progression and do not replace this complete source result.
+
 `continue_driver_cmfb_lead_physical.py` now owns the subsequent physical
 and native-output sequence, artifact
 `driver_cmfb_lead_physical_followup/5a35bf0bbe565cb5`, service

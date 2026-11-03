@@ -30,9 +30,12 @@ complete evidence and the original full source matrix, then dispatches
 `driver_source_pilot/12b18f8552d5652e`. All six actual schematic pilot cases
 now pass: 46.9–63.5 mVpp movement and 308.5–327.3 ps monotonic calibrated
 transitions. Independent verification succeeds and the full thirty-case
-actual source matrix `driver_shape_source/ec61f8a97b10dab9` is running.
-Its six TT cases at 0/25/40 C are complete at 45.8–48.2 mVpp; the other
-24 cases and full calibrated PVT checks remain required.
+actual source matrix `driver_shape_source/ec61f8a97b10dab9` now passes
+**30/30 cases and 15/15 PVT points**, independently verified in
+`driver_cmfb_lead_source_verification/1d753bc32a560831`. Common-mode
+movement is 23.0–71.1 mVpp and calibrated monotonic transitions are
+308.2–328.0 ps. The physical builder has started from this complete source
+receipt; compensated DRC/LVS, native RC and electrical results remain open.
 Failed stages stop without retries. Physical/native and full link gates
 remain open. The routing-only native revision also passes its SS25 pair
 at 138.1–142.5 mVpp, but remains held by the TT25 failures above.
@@ -40,13 +43,14 @@ at 138.1–142.5 mVpp, but remains held by the TT25 failures above.
 The compensated physical builder is implemented behind full actual-source
 verification. Read-only checks confirm 321 devices (302 unchanged MOS,
 19 passives) and compatibility with the nineteen existing bank and five
-inverter recipes. No compensated layout has been dispatched yet.
+inverter recipes. The compensated layout build is in progress; no physical
+result is available yet.
 The native pilot preparer is also implemented with explicit compensated
 source selection, audited native bias, all 305 MOS terminal observations
 and a fresh GDS-resolved compensation-node observation. It awaits the
-new circuit's full source pass, complete layout and audited extraction.
-The owned physical/native handoff is waiting on the complete source
-matrix. It will require fresh zero-error DRC/LVS and an independent RC
+new circuit's complete layout and audited extraction.
+The owned physical/native handoff has advanced to the layout-build stage.
+It requires fresh zero-error DRC/LVS and an independent RC
 audit before native pilots, then a complete native pilot pass before
 the thirty-case native output matrix. Failed stages stop dispatch.
 
