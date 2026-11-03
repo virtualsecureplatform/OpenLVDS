@@ -5,6 +5,17 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The second completed **2.54 us native component**, TT0, also passes.
+Independent manifest/output-hash checks and complete raw/export/metric
+remeasurement succeed. It retains 392 monotonic transitions at
+**326.481–336.253 ps**, with **91.955 mVpp** common-mode movement; original
+DC and loaded-eye checks pass. Mean IO/digital power is **32.102/2.094 mW**,
+with all 305 actual MOS devices observed. Together with native TT25 and
+the three schematic TT cases, five of the thirty long cases have passed.
+The qualification owner continues with the original remaining fixtures.
+The isolated exact-RC benchmark has acquired a dispatcher slot and started
+its single matched simulation; complete transient comparison remains pending.
+
 The first completed **2.54 us native component**, TT25, passes in
 `driver_compact_components/605c95726124145d`. Independent checking of its
 manifest, output hashes, raw/export data and all measured metrics succeeds.

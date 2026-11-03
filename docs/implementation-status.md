@@ -23,6 +23,10 @@ passing: **91.1 mVpp** common-mode movement and **326.6–337.3 ps** monotonic
 edges across the original 2.54 us fixture. Native supply power is about
 32.0 mW IO plus 2.10 mW digital. Three schematic long cases also pass;
 the complete thirty-case campaign remains pending.
+Native TT0 now also independently remeasures as passing: **92.0 mVpp**
+common-mode movement, **326.5–336.3 ps** monotonic edges and **32.10/2.09 mW**
+IO/digital supply power. Five long cases have passed in total, with both
+native cases retaining all 305 MOS terminal observations.
 
 A separate exact resistor-reduction benchmark preserves all capacitors,
 PDK devices, native bias and saved internal conductors. Mathematical
@@ -30,6 +34,7 @@ current witnesses pass below 1 pA while reducing resistors from 29,915 to
 20,888. One matched 80 ns/1 ps transient comparison is prepared against
 completed native TT25 data in `compensated_driver_exact/8afdf90644b01ae1`,
 owned by `openlvds-compensated-driver-exact-benchmark.service`.
+It has acquired a dispatcher slot and is running its single simulation.
 No runtime improvement, waveform equivalence
 or model promotion is inferred from the mathematical check. Running
 qualification models and the joined coupled handoff remain unchanged.
