@@ -1029,3 +1029,11 @@ variants clear BAD in the forward fixture but fail reference tolerance:
 `tail140_w40` reaches 0.91215 V and `tail280_w40` spans
 0.88943–0.91207 V. Neither is admitted as a source survivor. Both nine-point
 curves and every remaining original check still determine final admission.
+
+Fixture preflight `analog_source_expansion_preflight/34ea9b189e76b004`
+completed all 1,215 in-memory decks for `tail140_w20`. It retains
+`XP:XPHYS:REF.t0`, `REF.t1`, `FB.t0` and `FB.t1` as the four actual receiving
+gate observations throughout the matrix. Every fixture passes model/probe
+compilation. This is neither a passing source screen nor PVT electrical
+evidence; the ordered expansion handoff still waits for the full running
+54-case screen to finish and pass independently.

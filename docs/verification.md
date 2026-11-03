@@ -41,6 +41,15 @@ parent admission, combined witness locations, foreign/edited receipts and
 retry rejection. The full regression passes 1,446 tests without skips
 (`build/rx-aperture-extension-full-tests.log`).
 
+Artifact `rx_aperture_extended/c10e426d3688987e` is prepared and running
+under `openlvds-rx-aperture-250ps.service`. It begins with the SS40 rising
+setup conditions at 250 ps clock/data slew. Both original -800 ps failing
+and +800 ps passing endpoints complete, and binary boundary searches
+continue. The combined table is not yet admitted. A direct check of an
+original SS40 200/200 ps boundary verifies all three actual raw/export
+witnesses and their unchanged full decks before enabling reuse in the new
+producer. No original producer or artifact is edited.
+
 ## Existing validation flows
 
 Every runner archives decks, tool logs and JSON results under `build/`. Read

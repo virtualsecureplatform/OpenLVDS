@@ -1965,3 +1965,51 @@ edge. The final target must be recalculated using the verified aperture
 extended beyond the observed 216.889 ps clock slew, followed by a new
 coupled transient, actual DLL phase and full link qualification. The DLL
 phase-detector frontend repair remains a separate prerequisite.
+
+## Forwarded-clock topology and duty decomposition
+
+`diagnose_forwarded_clock.py` independently verifies the completed coupled
+payload and checks the selected mapped TX mux topology against its captured
+physical source context. The clock lane captures constant `2'b10` with
+`clk_90`, then selects its registered bits with `clk_400`. Its steady-state
+function is **`forwarded_clock = ~clk_400`**. The intended reference is
+therefore the complemented `CLK0` waveform, not `CLK90`.
+
+Corrected report `forwarded_clock_stages/4bee5cce208ed553` retains the
+mapped netlist, physical input archive, circuit/trace hashes and both-polarity
+causal crossing matches. Mean pulse widths in the 60–120 ns interval are:
+
+| Stage | High (ps) | Low (ps) |
+| --- | ---: | ---: |
+| Intended `~CLK0` | 1,353.963 | 1,080.894 |
+| Native TX digital output | 1,476.847 | 958.011 |
+| TX differential output | 1,488.419 | 947.132 |
+| RX differential input | 1,496.815 | 942.909 |
+| RX digital clock | 1,519.021 | 919.401 |
+
+The mean falling-minus-rising delay is 122.900 ps through the native TX
+digital path, 10.552 ps through the driver, 4.910 ps through the channel and
+22.056 ps through the receiver. Hop windows can contain different endpoint
+cycles, so these delay differences are diagnostic rather than an exact
+sum of the independently windowed pulse means. The TX digital path remains
+the largest measured contributor beyond the intended inverted-clock duty.
+
+Earlier comparison `compensated_clock_stages/31040a7b95cd8515` and its
+producer are retained for reproducibility. That report compares `CLK90`
+with `TXCLOCK`; its first-hop 396.694 ps includes intentional phase/polarity
+relationships and **must not be interpreted as TX-added duty distortion**.
+The corrected topology-bound report supersedes that interpretation. Neither
+report changes a circuit or qualifies a clock correction. Three additional
+checks reject changed select/constant/phase wiring and distinguish intended
+inversion from added distortion. Together with four underlying crossing
+checks, the complete regression passes 1,453 tests without skips
+(`build/forwarded-clock-full-tests.log`).
+
+The next clock-path experiment should target the TX select/mux/output path
+and its rise/fall delay balance, retaining the intended complement of CLK0
+and the data/clock phase relationship. A dedicated forwarding path is an
+architecture option, but removing its current latency would also change
+data/clock alignment and requires new startup/control, physical/RC and
+coupled timing evidence. The 250 ps aperture campaign must supply the final
+setup/hold budget before choosing the phase and duty targets. The separate
+DLL analog-front-end screen continues unchanged.
