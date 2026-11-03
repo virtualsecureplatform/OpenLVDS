@@ -18,6 +18,15 @@ satisfy both 200 ps margins with the diagnostic aperture estimates; separate
 rising/falling shifts have nonempty intervals. Clock duty-cycle restoration
 therefore needs a real circuit experiment after extending aperture coverage.
 
+The native capture aperture has now completed all 480 original conditions,
+with independent remeasurement. SS40 bounds are 270 ps setup and 110 ps
+hold; the domain remains 20–200 ps. The receive-clock buffer handoff also
+verifies the original binary/export witnesses and starts the first two of
+four declared skew-buffer variants in `rx_clock_skew_source/1db2d1392fbf30a2`.
+These new source circuits still need complete timing results; they are not
+physical, PVT, actual-DLL-phase or PHY admission. Native internal TX gate
+observations continue separately.
+
 All four standard-cell DLL frontend candidates failed the complete bounded
 screen without numerical errors. The analog architecture now uses an
 always-biased resistor-loaded NMOS preamp and a PMOS decision stage. Legal

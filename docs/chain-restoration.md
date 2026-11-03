@@ -2097,3 +2097,44 @@ tracking, failed/incomplete tables, observation timeouts and scientific
 environment/path dispatch. The full regression passes 1,472 tests without
 skips (`build/rx-clock-skew-host-handoff-full-tests.log`). The actual source
 screen remains gated on completion of the original aperture campaign.
+
+The original aperture campaign now completes all 480 conditions and passes
+independent remeasurement. The handoff subsequently passes its stronger
+binary/export/full-deck witness checks and prepares
+`rx_clock_skew_source/1db2d1392fbf30a2`. Its first two 120 ns native coupled
+experiments (`n042`, `n065`) are running under individual leases. The
+remaining two remain part of the declared bounded screen. No new buffer
+has completed or passed source timing admission at this checkpoint.
+
+## Native coupled timestep benchmark
+
+The completed 188.049 ns coupled reference records 11,085.7 seconds of
+simulator analysis time and 11,266.617 seconds elapsed in its ngspice log.
+`benchmark_coupled_step.py` prepares a separate comparison at
+`coupled_step_benchmark/ec554763d0204adb`. It preserves every native block,
+stimulus, load, control, print observation and the requested 1 ps output
+increment. Only the maximum integration step changes from 1 to 5 ps, plus
+the new include location. Healthy simulations and production runners retain
+their original settings.
+
+Preparation independently verifies the complete restored reference.
+Comparison requires complete finite raw/export traces, all original
+observations, whole-trace I/O voltage errors no larger than 10 mV,
+identical ordered rising/falling event counts with at most 2.5 ps timing
+error in the payload clock window, legal digital plateau levels and the
+same restored 32-bit payload/clock transport. Setup/hold margin changes
+must each remain within 2.5 ps. A failed payload retains its original
+diagnosis rather than failing on a missing margin field. All waveform
+errors are reported; fast digital switching is assessed by edge timing
+and plateau legality rather than a misleading pointwise voltage test.
+
+The benchmark owns one individual P2 lease and never retries existing
+outputs. Its receipt is numerical evidence for this unchanged SS40 circuit
+only. Different circuits/PVT, downstream timing-error allowance, all link
+and actual-DLL-phase gates require separate evidence. A passing comparison
+does not switch solver settings automatically or grant a PHY release.
+Eight focused checks cover fixture isolation, identical traces, I/O error,
+missing/late edges, incorrect constant logic levels, incomplete/nonfinite
+waveforms, failed payload reporting and admission/retry rejection. The
+complete regression passes 1,487 tests without skips
+(`build/coupled-step-full-tests.log`).
