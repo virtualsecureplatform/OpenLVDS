@@ -712,3 +712,40 @@ checkpoint. NOR4's -20 ps forward-slew point has UF-DF +17.218 mV and its
 zero-offset point +33.453 mV, so it has also missed the required zero
 bracket. Full terminal verification is still required before fallback;
 the remaining standard-cell cases continue unchanged.
+
+## Full-native analog frontend timing screen
+
+`probe_dll_analog_frontend_timing.py` admits only independently verified
+DC survivors. It also verifies that the retained clock-observation baseline
+belongs to exactly the same native PFD/bias/DLL circuit. Clock metadata is
+reused because that core is unchanged; its old electrical passes do not
+count as timing results for the new conditioner.
+
+Every admitted variant receives eighteen fresh SS40/400 MHz cases: both
+20/200 and 200/20 ps input slews, with 0, +/-20, +/-50, +/-150 and +/-300 ps
+phase offsets. The two historical false-BAD cases dispatch first across
+the admitted variants. Fixtures use the complete native DLL/PFD/bias library
+and original analog loading, 160 ns stop, 5 ps print, 20 ps maximum step and
+120-160 ns scoring interval. The analog pair is added outside the retained
+eight-port PFD and receives the same shared PB/VDDIO; exactly one endpoint
+reference remains. No old isolation calibration transfers to this changed
+analog circuit or its additional shared-bias loading.
+
+The original health/fault limits, actual receiving-gate clock transport and
+one-to-one conditioned rising/falling clock transport all remain mandatory.
+Both UF-DF curves must be monotonic and bracket zero within -20/+20 ps.
+The reference must stay within 10 mV of VDDD/2 in the scoring window, and
+all six terminal differences of every frontend MOS are checked over the
+complete waveform, including startup. Every case must pass. Survivors are
+ranked by worst zero offset, then measured rail power and MOS gate-area
+proxy for timing ties within 2 ps. The gate-area proxy is not a routed
+footprint or physical admission; actual physical matching/area remain open.
+
+Two P2 workers use individual fair leases; incomplete output cannot retry.
+Independent verification rechecks all raw/export data, output hashes,
+models, producer archives, canonical fixtures, aliases and DC admission.
+The timing library must remain byte-identical to the admitted DC library.
+Source timing success still requires matched-slew/full-PVT controls and
+timing expansion, fresh physical implementation/RC, native qualification,
+closed-loop/stability/recovery/readiness/stress and the complete PHY gates.
+No analog timing artifact is prepared before DC admission passes.
