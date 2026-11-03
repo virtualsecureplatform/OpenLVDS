@@ -2013,3 +2013,30 @@ data/clock alignment and requires new startup/control, physical/RC and
 coupled timing evidence. The 250 ps aperture campaign must supply the final
 setup/hold budget before choosing the phase and duty targets. The separate
 DLL analog-front-end screen continues unchanged.
+
+`observe_forwarded_clock.py` prepares a new observation-only native coupled
+experiment at `tx_clock_path_observation/91bb61199971d354`. The original
+model is byte-identical, as are sources, loads, controls and the 1 ps maximum
+step. Its explicit stop is 120 ns, covering the entire 32-bit diagnostic and
+the 60–119.99 ns clock-analysis window. Extra probes are derived from actual
+MOS declarations: all four receiving mux-select gate nodes, both receiving
+output-buffer input gate nodes, and every actual terminal bearing the mux's
+constant-data pin labels. Diffusion labels cannot substitute for receiving
+gates, and no `.tN` endpoint is guessed.
+
+Preparation independently verifies the restored parent and mapped clock
+function. The native ProbeNetwork validates all actual hierarchical probes
+before dispatch. Completion requires finite raw/export agreement. The
+measurement checks every original waveform against the completed reference
+prefix within 1 uV, verifies the intended constant-data states, decodes the
+same 32 bits and separately measures select-distribution/buffer, mux/route
+and output-buffer/route delays at every receiving gate combination. Failed
+reproduction or changed constant levels cannot support causal attribution.
+Original/partial outputs cannot be retried, and one individual P2 lease
+participates in the existing six-engine dispatcher.
+
+Six focused checks cover actual gate derivation, rejection of diffusion/
+capacitor stand-ins, observation-only fixture changes, waveform reproduction,
+parent admission and retry rejection. The full regression passes 1,459 tests
+without skips (`build/forwarded-clock-observation-full-tests.log`). This is
+an internal-path diagnostic, not a changed clock circuit or PHY admission.
