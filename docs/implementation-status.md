@@ -5,6 +5,43 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-03):
 
+The compensated driver has independently passed all thirty native output
+cases and all thirty long component cases. Coupled restoration
+`compensated_coupled_restoration/40f1b82bf02b80fb` is complete and independently
+verified: all 32 diagnostic bits decode, with zero word errors and no missing
+clock responses. Its actual capture clock slew reaches 216.889 ps, beyond the
+current 200 ps aperture domain. The decoder's diagnostic setup/hold margins
+are 66.326/328.496 ps. Actual DLL phase, sufficient training, characterized
+aperture-subtracted margins and full-length link qualification remain open.
+Verified per-edge analysis also finds that a common phase shift cannot
+satisfy both 200 ps margins with the diagnostic aperture estimates; separate
+rising/falling shifts have nonempty intervals. Clock duty-cycle restoration
+therefore needs a real circuit experiment after extending aperture coverage.
+
+All four standard-cell DLL frontend candidates failed the complete bounded
+screen without numerical errors. The analog architecture now uses an
+always-biased resistor-loaded NMOS preamp and a PMOS decision stage. Legal
+parallel MOS fingers and a measured preamp-mirror correction produce three
+complete SS40 DC survivors; the fourth is rejected for headroom. The native
+54-case analog timing screen is running. Its narrow 140 uA frontend passes
+the original +50 ps / 20-200 ps false-BAD case, including receiving-gate,
+reference and stress checks. The wide 140 uA frontend clears BAD but fails
+the reference-voltage tolerance. Neither individual case is a full timing
+screen result. Both slew directions and zero-balance curves remain required.
+
+`expand_dll_analog_frontend.py` implements a separately gated 1,215-case
+source expansion for a fully verified survivor across all fifteen PVT and
+390/400/410 MHz. No source survivor has yet been admitted. Source controls,
+fresh analog physical implementation and RC extraction, native qualification,
+closed-loop/stability checks and joint PHY release remain required. Healthy
+experiments continue under the shared six-engine dispatcher.
+
+See [DLL source expansion](dll-slew-repair.md#analog-source-expansion-implementation)
+and [restored coupled payload](chain-restoration.md#compensated-native-coupled-payload-restored).
+
+Earlier bring-up checkpoints follow; their running/queued descriptions are
+historical and are superseded by the state above.
+
 DLL qualification has a completed electrical failure at SS40, +50 ps phase
 and 20/200 ps input slew. The solver completes all 160 ns, but BAD stays high
 for a phase error required to be valid. Saved native controls show overlapping

@@ -1903,3 +1903,65 @@ traces, not an additional acceptance metric. Most of the added common-mode
 movement is slow baseline excursion. Internal feedback/bias observations
 are therefore the next causal check before changing the otherwise passing
 1/3/8 gate taper or selecting a compensation network.
+
+## Compensated native coupled payload restored
+
+The later compensated driver passes all thirty native output cases and all
+thirty long component cases. Coupled restoration
+`compensated_coupled_restoration/40f1b82bf02b80fb` has now completed its
+12 ns short and 188.049 ns payload fixtures. Independent verification
+rechecks complete finite raw/export agreement, fixture/model/producer hashes,
+payload decoding and clock transport. Both simulations return zero.
+
+The diagnostic restores all 32 checked bits with zero word errors and no
+missing clock outputs. Both clock polarities retain at least twenty pulses;
+minimum valid widths are 1,232.5 ps high and 674.8 ps low. The prior ten
+missing responses are absent. This result uses the native compensated core
+and native bias, exact TX reduction, preferred native r2 receiver, original
+LTRA channel, package load and one 35 uA reference per endpoint. Its operating
+point remains SS40/410 MHz, 45% duty, 100 ps skew and 100 ps jitter.
+
+This is restored diagnostic transport, not a qualified PHY. The fixture
+still uses ideal quarter-phase timing, 60 ns training and a short payload.
+Reported setup/hold margins are 66.326/328.496 ps **after subtracting the
+decoder's diagnostic 200/80 ps aperture estimates**. These estimates are
+not the characterized receiver aperture. Capture data slew spans
+126.525–198.898 ps and clock slew 136.051–216.889 ps. The clock exceeds the
+current table's 200 ps limit, so applying that table cannot qualify this
+trace. Measured RX differential amplitude at sampling remains at least
+207.898 mV. Loaded TX eye results remain diagnostic.
+
+Actual DLL phase, sufficient training, extended aperture coverage,
+aperture-subtracted margins of at least 200 ps on both sides, all full-length
+link cases and the joint RC/release gates remain open. The completed trace
+provides a concrete timing budget for the next circuit experiment; a good
+32-bit decode does not waive those gates.
+
+`diagnose_compensated_capture.py` independently verifies the completed
+restoration before calculating per-edge phase-shift budgets. Its capture
+window must reproduce the frozen decoder's 32 edges and both minimum
+margins. Three final captures have no subsequent data transition before
+trace end; their observed hold windows are retained as censored lower
+bounds, without inventing transitions or counting them as measured next
+edges. Seven focused checks cover timing algebra, disjoint intervals,
+missing edges, finite limits, final held data and admission rejection.
+The full regression passes 1,433 tests without skips
+(`build/compensated-capture-full-tests.log`).
+
+Verified diagnostic `compensated_capture_budget/fbe8c6f0e7d2ed63` gives a
+common signed clock-shift interval of **[133.674, 128.496] ps**, which is
+empty. With the decoder's provisional 200/80 ps aperture estimates, a
+common phase change cannot provide the additional 200 ps on both sides.
+Independent rising-edge shifts permit **[133.674, 395.263] ps**, while
+falling edges permit **[-250.903, 128.496] ps**. Their midpoints preserve edge
+order. Raw minimum crossing separations are 266.326 ps setup and 408.496 ps
+hold. These are conditional calculations on the original crossings;
+they do not model a clock shaper, changed loading or publication behavior.
+
+This points to a clock duty-cycle restoration experiment rather than
+relying on a common sampling-phase adjustment alone. A causal experiment
+can delay rising edges within their interval while retaining the falling
+edge. The final target must be recalculated using the verified aperture
+extended beyond the observed 216.889 ps clock slew, followed by a new
+coupled transient, actual DLL phase and full link qualification. The DLL
+phase-detector frontend repair remains a separate prerequisite.
