@@ -772,3 +772,73 @@ circuit-matched DC/clock admission, terminal handoff and partial retention.
 The bounded standard-cell screen has 51/56 completed cases without numerical
 errors at this checkpoint. Both analog services remain waiting; no analog
 circuit artifact or simulation has been prepared before the terminal gate.
+
+## Completed bounded screen and measured analog cutoff
+
+The complete 56-case standard-cell screen
+`dll_slew_screen/10795eedc551acd1` finished with no numerical errors.
+Independent verification confirms no survivor: all four candidates have
+monotonic UF-DF curves but fail the -20/+20 ps zero bracket in both slew
+directions. The retained handoff records terminal report SHA-256
+`f5545a63b833974749effc6a48421bdf62f2959a2ebfae41cfb1c966264928d0`.
+This clears the conditional analog gate without changing the health limits.
+
+The first analog DC grid, `dll_analog_frontend_dc/e85bb7bf92844135`, then
+completed all twenty operating points without numerical errors and was
+independently verified. Seven points pass and thirteen fail; no variant
+passes its complete five-state set. Every low clock input collapses that
+receiver's tail current to approximately 11 pA. Its diode-side input is
+off, the mirrored output load switches off, and the reference-side input
+has no drain-current supply path. Restored output levels and terminal
+stress still pass, so digital levels alone would conceal the bias failure.
+
+| Variant | Local reference (uA) | Tail at 0.9 V input (uA) | Tail headroom (mV) | Midpoint passes |
+| --- | ---: | ---: | ---: | --- |
+| tail140_w20 | 150.215 | 123.138 | 81.528 | yes |
+| tail140_w40 | 150.215 | 125.221 | 99.979 | yes |
+| tail280_w20 | 295.224 | 229.136 | 33.882 | no |
+| tail280_w40 | 295.224 | 236.933 | 54.276 | yes |
+
+The high-current/narrow-input midpoint also misses the unchanged 80% local
+current-matching floor. The DC handoff holds at `held_analog_headroom_failed`
+and the timing handoff at `held_no_analog_dc_survivor`; no transient was
+dispatched. The verified DC terminal report SHA-256 is
+`44f401b1f7b9939b7d545df4aad33940d9e10265a64d399838f618557eda09ef`.
+
+## Always-biased analog revision
+
+`dll_analog_frontend_v2.py` replaces the unsupported drain-current path with
+matched resistor-loaded NMOS input pairs. Each load uses the pinned native
+high-poly 0.35 um resistor with 5 um body length. Three equal 0.5 um resistor
+sections above each tap and one below it provide matched quarter-scale
+drain signals to ground. The 280 uA variants use two identical parallel
+load/tap ladders. This bounds the PMOS decision stage's input common mode
+while preserving a symmetric differential signal. The PMOS decision pair
+has NMOS mirror loads and the original two CMOS restoring stages.
+
+Both clocks share local N and P bias nodes derived from the same endpoint
+reference. NMOS reference/preamp tails use 200/0.3 um geometry; PMOS
+reference/decision tails use 400/0.3 um. Decision input PMOS width is 40 um
+at 0.15 um length. The four original 140/280 uA by 20/40 um input variants
+remain; current targets apply to each stage, so the additional bias/load
+power must be measured. The public DLL interface remains unchanged and
+the private pair is explicitly versioned `lvds_slew_analog_pair_v2`.
+
+`probe_dll_analog_frontend_dc_v2.py` requires the complete, independently
+remeasured failed first grid. It uses the retained DC engine under an
+isolated revision profile, captures the new producers before artifact
+creation and restores the original module profile even on exceptions.
+The failed original circuit and all its evidence remain untouched.
+All four tails and both local references have actual BSIM current/gm/gds/
+vdsat observations. PMOS signs are retained and explicitly converted to
+forward current/saturation magnitudes for headroom checks. The original
+20 mV headroom, 25% target-current, 20% mirror-matching, 0.36/1.44 V level
+and terminal-stress limits remain unchanged. All 28 frontend MOS devices
+must pass; both stages are checked at every rail and midpoint state.
+
+The complete regression passes 1,402 tests without skips
+(`build/dll-analog-frontend-v2-tests.log`). Fresh artifact
+`dll_analog_frontend_dc_v2/238f4fad78f51a8b` is running under retained service
+`openlvds-dll-analog-frontend-dc-v2.service`, with two individual P0 leases
+and no partial retry. No revised DC, timing, physical or PHY pass is yet
+claimed.
