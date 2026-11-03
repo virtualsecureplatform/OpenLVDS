@@ -8,8 +8,10 @@ Current bring-up state (2026-11-03):
 The local CMFB routing revision passes zero-error DRC, strict LVS and fresh
 GDS RC connectivity checks. With native bias, its completed TT25 cases
 measure **153.2–162.2 mVpp**, compared with 178.3–186.3 mVpp for the old
-layout. Both still exceed the 150 mVpp reference; SS25/FF40 are running.
-The routing improvement is useful but has not admitted a native driver.
+layout. Both still exceed the 150 mVpp reference. All six cases now
+complete: SS25 passes at 138.1–142.5 mVpp, while FF40 fails at
+222.2–228.8 mVpp. Only one of three PVT points passes; the full native
+handoff is held. The routing improvement has not admitted a native driver.
 
 Matched extracted-device controls with ideal core wires measure
 120.6–120.9 mVpp at TT25, 60.6–64.5 mVpp at SS25 and
@@ -29,6 +31,8 @@ complete evidence and the original full source matrix, then dispatches
 now pass: 46.9–63.5 mVpp movement and 308.5–327.3 ps monotonic calibrated
 transitions. Independent verification succeeds and the full thirty-case
 actual source matrix `driver_shape_source/ec61f8a97b10dab9` is running.
+Its six TT cases at 0/25/40 C are complete at 45.8–48.2 mVpp; the other
+24 cases and full calibrated PVT checks remain required.
 Failed stages stop without retries. Physical/native and full link gates
 remain open. The routing-only native revision also passes its SS25 pair
 at 138.1–142.5 mVpp, but remains held by the TT25 failures above.
@@ -41,8 +45,12 @@ The native pilot preparer is also implemented with explicit compensated
 source selection, audited native bias, all 305 MOS terminal observations
 and a fresh GDS-resolved compensation-node observation. It awaits the
 new circuit's full source pass, complete layout and audited extraction.
+The owned physical/native handoff is waiting on the complete source
+matrix. It will require fresh zero-error DRC/LVS and an independent RC
+audit before native pilots, then a complete native pilot pass before
+the thirty-case native output matrix. Failed stages stop dispatch.
 
-The complete pinned `make test-full` regression passes **1205 tests**.
+The complete pinned `make test-full` regression passes **1214 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:
 saved voltages agree within 13.3 nV and edge counts agree. Both retain
 the original failed payload, so this admits a numerical optimization

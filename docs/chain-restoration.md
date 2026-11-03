@@ -5,6 +5,34 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+`continue_driver_cmfb_lead_physical.py` now owns the subsequent physical
+and native-output sequence, artifact
+`driver_cmfb_lead_physical_followup/5a35bf0bbe565cb5`, service
+`openlvds-driver-cmfb-lead-physical-followup.service`. It binds the exact
+running source handoff, its selected full source matrix and all producer
+code. After the source owner terminates, all thirty source cases must
+pass and the matching independent source-readiness receipt must exist.
+The new physical builder independently remeasures that complete source
+matrix before any Magic dispatch.
+
+The controller then requires the new complete macro's zero-error DRC and
+strict LVS before extraction, an independent native RC audit before
+assembly, and all six native pilot cases passing before preparation of
+the thirty-case native output matrix. The full native matrix must pass
+independent verification before completion. Each failed gate stops later
+dispatch; there is no retry of partial/failed scientific output. The
+controller holds no SPICE slot. Its scientific children retain individual
+leases under the existing six-engine limit. Long components, reliability,
+coupled link and PHY release remain separate work.
+
+Nine new tests cover exact ownership, complete coverage, source-readiness
+binding, stopping at source/physical/RC/native-pilot/native-matrix failures,
+and the successful final-verification sequence. The full pinned regression
+passes **1214 tests**. The handoff is currently waiting; no new compensated
+layout has been dispatched. Six full-source cases are complete, covering
+both polarities at TT0/TT25/TT40, with 45.823–48.228 mVpp common-mode
+movement. The other 24 cases and complete calibrated PVT checks remain open.
+
 The actual schematic compensation pilot
 `driver_source_pilot/12b18f8552d5652e` is now complete and passes all six
 cases, all three PVT points and both initial polarities:
@@ -66,9 +94,11 @@ before the handoff admits preparation of the full thirty-case actual
 source matrix. No actual-source result or physical/native qualification
 is inferred from the diagnostic pass.
 
-The routing-only native revision also completes both SS25 cases at
-138.082/142.493 mVpp; its TT25 pair still fails, so full native qualification
-remains held regardless of its remaining FF40 results.
+The routing-only native revision now completes all six cases. SS25 passes
+at 138.082/142.493 mVpp, but TT25 fails at 162.181/153.194 mVpp and FF40
+fails at 228.828/222.170 mVpp. The complete result admits only one of three
+PVT points. Its full-native handoff is terminal and held; these failed
+results are preserved while the compensated circuit proceeds separately.
 
 The actual schematic pilot now completes and passes its TT25 pair:
 46.865/47.697 mVpp common-mode movement, 44 monotonic transitions per
