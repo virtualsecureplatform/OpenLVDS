@@ -2,10 +2,12 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Read-only DLL integration preflight; no simulation, staging or PHY admission."""
 import argparse
+from contextlib import redirect_stdout
 import hashlib
 import json
 from pathlib import Path
 import re
+import sys
 
 import benchmark_ltra_exact_tx as benchmark
 import probe_driver_compact_native as pilot
@@ -102,12 +104,20 @@ def check(native_pilot, reference, receiver_rc, qualification):
         'phase replay, startup, timing margin, full PVT, stability, RC certification or PHY release.')
 
 
-if __name__ == '__main__':
+def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('native_pilot', type=Path)
     p.add_argument('reference', type=Path)
     p.add_argument('receiver_rc', type=Path)
     p.add_argument('qualification', type=Path)
-    a = p.parse_args()
-    print(json.dumps(check(*(v.resolve() for v in [a.native_pilot, a.reference,
-        a.receiver_rc, a.qualification])), indent=2), flush=True)
+    a = p.parse_args(argv)
+    # Cached validators may print progress paths. Keep the report a single
+    # JSON document without suppressing those diagnostics.
+    with redirect_stdout(sys.stderr):
+        report = check(*(v.resolve() for v in [a.native_pilot, a.reference,
+            a.receiver_rc, a.qualification]))
+    print(json.dumps(report, indent=2), flush=True)
+
+
+if __name__ == '__main__':
+    main()

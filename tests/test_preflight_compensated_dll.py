@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 import json
+from contextlib import redirect_stdout, redirect_stderr
+import io
 from pathlib import Path
 import sys
 import tempfile
@@ -12,6 +14,16 @@ from spice_scope import closure_hash
 
 
 class CompensatedDLLPreflight(unittest.TestCase):
+    def test_cli_keeps_validator_progress_out_of_json_report(self):
+        def check(*args):
+            print('/cached/summary.json')
+            return {'preflight_passed': True, 'qualified_phy': False}
+        out, err = io.StringIO(), io.StringIO()
+        with patch.object(flow, 'check', side_effect=check), redirect_stdout(out), redirect_stderr(err):
+            flow.main(['pilot', 'reference', 'receiver', 'qualification'])
+        self.assertTrue(json.loads(out.getvalue())['preflight_passed'])
+        self.assertIn('/cached/summary.json', err.getvalue())
+
     def library(self):
         blocks = ['.subckt openlvds_driver_core D P N VR PB NB VA VD VS\nRDR P N 100\n.ends']
         for name in ['lvds_bias', 'openlvds_tx_core', 'openlvds_receiver_core', 'openlvds_ddr_rx']:
