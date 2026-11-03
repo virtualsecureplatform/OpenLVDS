@@ -108,6 +108,27 @@ proposal hash/content checks, preservation of both evidence chains, and
 complete fifteen-point fixture preparation with changed-input rejection.
 The complete pinned regression now passes 1189 tests.
 
+The compensation TT25 pair now completes and passes the calibrated
+waveform checks: common-mode movement is 63.854/62.887 mVpp and monotonic
+20–80% transitions span 319.309–323.706 ps. The first SS25 case measures
+41.745 mVpp; the remaining SS25/FF40 cases are still required.
+
+`continue_driver_cmfb_lead_source.py` now owns the automatic source handoff,
+artifact `driver_cmfb_lead_source_followup/cd2bbb83b7f8ff18`, service
+`openlvds-driver-cmfb-lead-source-followup.service`. It binds the exact
+diagnostic systemd invocation, source matrix receipts and producer code.
+It waits for both a terminal receipt and the original owner to terminate;
+changed live ownership or a missing terminal receipt stops the handoff.
+Only a complete six-case diagnostic pass can call the independent actual
+source preparer. A passing actual source pilot then admits preparation of
+the thirty-case source matrix. A failed stage stops without retries or
+dispatching later stages. A successful full matrix must pass independent
+verification before the handoff reports source readiness. Physical/native
+and coupled qualification remain separate. The controller takes no SPICE
+slot; scientific children retain individual leases under the six-engine
+limit. Six new ownership, stage-ordering and failure-path tests bring the
+complete pinned regression to **1195 passing tests**.
+
 ## Receiver acceptance
 
 `receiver_acceptance.json` records the agreed laboratory policy separately
