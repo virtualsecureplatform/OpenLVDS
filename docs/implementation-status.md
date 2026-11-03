@@ -24,10 +24,11 @@ always-biased resistor-loaded NMOS preamp and a PMOS decision stage. Legal
 parallel MOS fingers and a measured preamp-mirror correction produce three
 complete SS40 DC survivors; the fourth is rejected for headroom. The native
 54-case analog timing screen is running. Its narrow 140 uA frontend passes
-the original +50 ps / 20-200 ps false-BAD case, including receiving-gate,
-reference and stress checks. The wide 140 uA frontend clears BAD but fails
-the reference-voltage tolerance. Neither individual case is a full timing
-screen result. Both slew directions and zero-balance curves remain required.
+both original false-BAD cases: +50 ps / 20-200 ps and -50 ps / 200-20 ps,
+including receiving-gate, reference and stress checks. The wide 140 uA and
+280 uA frontends clear BAD in the forward case but fail reference-voltage
+tolerance. These individual cases are not a full timing screen result;
+both complete offset curves and zero-balance brackets remain required.
 
 `expand_dll_analog_frontend.py` implements a separately gated 1,215-case
 source expansion for a fully verified survivor across all fifteen PVT and

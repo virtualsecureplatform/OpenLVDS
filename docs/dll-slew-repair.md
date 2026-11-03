@@ -1000,3 +1000,32 @@ Nine focused checks cover full coverage, admission failures, selection,
 missing/foreign/duplicate results, individual electrical failures, curve
 failures, retained fixture loading and profile cleanup. The full regression
 passes 1,426 tests without skips (`build/dll-analog-expansion-full-tests.log`).
+
+`continue_dll_analog_expansion.py` implements the terminal handoff. It checks
+the scientific state and independently verifies the entire screen under its
+execution lock. It refuses a running screen, records an explicit hold when
+there is no survivor, and prevents handoff retries. A surviving circuit is
+prepared, dispatched and independently verified through the expansion API;
+any exception is retained for diagnosis. No partial result or DC-only
+success can trigger the expansion.
+
+The handoff unit is ordered after and requires
+`openlvds-dll-analog-frontend-timing-tailtrim.service`. Its oneshot ordering
+waits for the complete screen rather than treating `activating/start` as a
+missing owner. It retains unlimited start timeout and never restarts. The
+queued handoff holds no simulation lease; its child uses only the two
+individual P2 workers described above. Source controls and physical/native
+closed-loop qualification remain subsequent gates.
+
+Four handoff checks cover running and incomplete evidence, terminal failure,
+re-entry rejection and successful prepare/run/verify ordering. The combined
+regression passes 1,437 tests without skips
+(`build/dll-analog-expansion-handoff-full-tests.log`).
+
+At the later four-case checkpoint, `tail140_w20` independently completes
+both historical +/-50 ps false-BAD fixtures with all checks passing.
+Its reference stays within approximately 0.8950–0.9054 V. Both wider
+variants clear BAD in the forward fixture but fail reference tolerance:
+`tail140_w40` reaches 0.91215 V and `tail280_w40` spans
+0.88943–0.91207 V. Neither is admitted as a source survivor. Both nine-point
+curves and every remaining original check still determine final admission.
