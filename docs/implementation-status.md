@@ -35,7 +35,10 @@ actual source matrix `driver_shape_source/ec61f8a97b10dab9` now passes
 `driver_cmfb_lead_source_verification/1d753bc32a560831`. Common-mode
 movement is 23.0–71.1 mVpp and calibrated monotonic transitions are
 308.2–328.0 ps. The physical builder has started from this complete source
-receipt; compensated DRC/LVS, native RC and electrical results remain open.
+receipt. The new compensated macro passes zero-error DRC, strict LVS and
+the independent native RC audit; six native core-plus-bias pilots are now
+running in `driver_compact_native_pilot/9a7d8f21db2f1acc`. Native electrical
+and full link qualification remain open.
 Failed stages stop without retries. Physical/native and full link gates
 remain open. The routing-only native revision also passes its SS25 pair
 at 138.1–142.5 mVpp, but remains held by the TT25 failures above.
@@ -43,16 +46,17 @@ at 138.1–142.5 mVpp, but remains held by the TT25 failures above.
 The compensated physical builder is implemented behind full actual-source
 verification. Read-only checks confirm 321 devices (302 unchanged MOS,
 19 passives) and compatibility with the nineteen existing bank and five
-inverter recipes. The compensated layout build is in progress; no physical
-result is available yet.
+inverter recipes. The completed compensated macro contains 321 devices in
+42 placements. Its reported geometry extent is 937.2 x 697.9 um. Native
+extraction has 40,369 resistors and 3,982 capacitors; exact degree-four
+resistor elimination retains 29,915 resistors with an independent LVS pass.
 The native pilot preparer is also implemented with explicit compensated
 source selection, audited native bias, all 305 MOS terminal observations
-and a fresh GDS-resolved compensation-node observation. It awaits the
-new circuit's complete layout and audited extraction.
-The owned physical/native handoff has advanced to the layout-build stage.
-It requires fresh zero-error DRC/LVS and an independent RC
-audit before native pilots, then a complete native pilot pass before
-the thirty-case native output matrix. Failed stages stop dispatch.
+and a fresh GDS-resolved compensation-node observation. Its model matches
+the audited native assembly exactly, with one reference per endpoint.
+The owned physical/native handoff has advanced to the six-case native
+pilot. It requires every pilot point to pass before the thirty-case
+native output matrix. Failed stages stop dispatch.
 
 The complete pinned `make test-full` regression passes **1214 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:

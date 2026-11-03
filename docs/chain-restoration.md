@@ -5,6 +5,34 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The compensated macro now passes fresh physical and RC gates:
+
+- `driver_compact_layout/25f8a51c4c3f0ee7`: all 321 original-design devices,
+  302 MOS plus nineteen passives, in 42 placements; zero DRC and strict LVS
+  pass. The reported geometry extent is 937.2 x 697.945 um, including the
+  added compensation resistor and routing.
+- `driver_compact_extraction/c2a68ae7f23959f8`: fresh GDS RC extraction and
+  independent wire-collapsed LVS pass. The raw network has 40,369 resistors
+  and 3,982 capacitors; exact positive-conductance degree-four elimination
+  retains 29,915 resistors. The actual native model is
+  `build/extracted/1b0179eb2245dee2/openlvds_driver_core/openlvds_driver_core.reduced.spice`.
+- `driver_compact_native_library/ff40d674d770c9a9`: native core/bias assembly
+  complete, with one reference for the component and one shared reference
+  for a two-core endpoint.
+- `driver_compact_native_pilot/9a7d8f21db2f1acc`: six complete native
+  TT25/SS25/FF40 fixtures dispatched, both initial polarities, 80 ns/1 ps.
+  Every fixture uses an identical model, byte-matched to the audited native
+  assembly and explicitly bound to the full compensated source campaign.
+  All 305 actual MOS terminal descriptors are captured. The source-identified
+  lead-capacitor node resolves to retained conductor `XD:XCORE:I40.C1` in
+  the fresh native network, without an ideal alias.
+
+The physical/native handoff is live in `running_compensated_native_pilot`.
+All six native electrical cases must pass before full native qualification;
+physical/LVS/RC success does not admit this driver electrically or release
+the PHY. Positive source and physical artifacts are now frozen while these
+native simulations run.
+
 The compensated actual source matrix is now complete:
 `driver_shape_source/ec61f8a97b10dab9` passes **30/30 cases and 15/15 PVT
 points**. Independent full remeasurement succeeds in
