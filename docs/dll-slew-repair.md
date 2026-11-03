@@ -523,3 +523,33 @@ strict extracted LVS, RC, native electrical and complete PHY qualification.
 There is no prepared winner or physical run while source screening and
 expansion remain pending. The source/control adapters pass all 1,361 tests
 without skips (`build/slew-frontend-controls-tests.log`).
+
+## Retained control/source handoff
+
+`continue_slew_frontend_controls.py` joins the retained verified expansion
+controller to the new controls and source admission. It binds the upstream
+service invocation, requires retained ownership, checks its independently
+verified expansion receipt and rechecks the passing native protocol
+baseline. It then prepares, runs and independently verifies the complete
+source-control campaign. Only a control-qualified survivor can generate
+physical source; the generated source is independently validated again.
+The controller never holds an outer SPICE lease or starts placement/routing.
+Missing survivors, owner/context changes and partial scientific output
+hold for diagnosis without retry.
+
+Handoff `slew_frontend_controls_followup/42e0cae167bfdd1c` is waiting under
+`openlvds-slew-frontend-controls-followup.service`, with
+`RemainAfterExit=yes`. It follows the healthy
+`dll_slew_verified_expansion_followup/b7020ea7934013b6` invocation; existing
+campaigns and producers remain unchanged. Its coverage and failure-path
+checks pass the complete 1,365-test regression without skips
+(`build/slew-controls-handoff-tests.log`).
+
+At this checkpoint the bounded screen has 36/56 complete cases and no
+numerical errors. NOR3/inverter now also reproduces false BAD at +50 ps
+and fails the +/-20 ps zero bracket. At zero external phase with 20/200 ps
+input slews, the measured median differential rising delivery delays are
+45.09 ps (`clkbuf_4`), 46.13 ps (`clkbuf_8`) and 41.21 ps (`nor3_inv4`).
+Faster output transitions alone have not removed the input-slew timing
+bias. Remaining NOR4 results are still required before the conditional
+analog fallback begins. The coupled payload continues running separately.
