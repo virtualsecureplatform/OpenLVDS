@@ -642,3 +642,49 @@ The complete regression passes 1,376 tests without skips
 (`build/native-slew-phases-tests.log`), including full partition coverage,
 zero-balance/monotonicity failures, invalid reuse, missing/duplicate cases,
 partial-output retention and dispatch of only fresh cases.
+
+## Conditional analog fallback and DC readiness
+
+`dll_analog_frontend.py` implements the approved four-variant source grid:
+approximately 140/280 uA tail current and 20/40 um input width. Each clock
+uses a continuous NMOS differential pair against shared VDDD/2, PMOS
+mirror loads and two CMOS restoring stages. Clock drives the diode-load
+branch; the fixed reference drives the output branch, giving a
+non-inverting restored output. Input length is 0.15 um, PMOS loads are
+8/0.3 um and local NFET reference/tails are 100/0.3 um. Restoring P/N widths
+are 4/2 um then 16/8 um at 0.15 um length.
+
+A 3.3 V PMOS mirror with 4x/8x the endpoint reference geometry derives the
+local tail current from the existing 35 uA bias. The wide 1.8 V tail devices
+use a local 1.8 V diode-connected reference; they are not connected directly
+to the endpoint's high-voltage NB. Identical passive divider resistors
+generate shared VDDD/2 with an approximately 1 pF MIM bypass (22 by 22 um).
+The private eight-port `lvds_slew_analog_pair_v1` explicitly carries PB and
+VDDIO. No public DLL port or retained core has changed.
+
+`probe_dll_analog_frontend_dc.py` cannot create any analog artifact until
+independent verification proves all four standard-cell candidates complete
+and failed, with no numerical errors. A surviving standard-cell candidate,
+partial screen or failed owner cannot authorize the fallback. The first
+experiment is twenty SS40 DC points: each of the four variants at static
+clock pairs 0/0, 0.9/0.9, 1.8/1.8, 0/1.8 and 1.8/0 V. These are signal
+states; supplies remain fixed at 3.3/1.8 V. There is no supply sweep.
+
+The DC fixture uses the retained native endpoint bias and exactly one
+35 uA reference. It measures actual BSIM tail current, gm, gds and vdsat,
+all frontend MOS terminal voltages, shared reference, restored outputs and
+rail power. Tail headroom must exceed vdsat by 20 mV, reference/tail current
+must stay within 25% of its declared target and tails within 20% of their
+local reference. Rail-state outputs retain 0.36/1.44 V limits; the 0.9 V
+input state has no digital-output requirement. Every terminal pair of all
+twenty frontend MOS devices is checked against 1.95 V for native 1.8 V
+devices or 5.5 V for the HV bias mirror. The PDK source confirms the declared
+device ports and internal MOS names used by the operating-point probes.
+
+Two workers obtain individual P0 leases, with no outer lease or partial-run
+retry. Complete single-point finite raw data, every requested model vector,
+canonical fixture/model regeneration and all hashes are required. DC
+readiness does not select a timing winner or admit a source repair: complete
+phase/BAD, zero balance, clock transport, controls, PVT, physical and DLL/PHY
+qualification still follow. No analog artifact or transient has been
+prepared while the standard-cell screen remains incomplete.
