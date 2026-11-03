@@ -212,3 +212,43 @@ The complete regression passes 1,311 tests without skips
 of thirteen cases passing at this checkpoint. Winner selection, the actual
 physical-flow adapter, routed matching/DRC/LVS/RC evidence and all electrical
 qualification gates remain unfinished.
+
+## Gated physical-run adapter
+
+`harden_slew_pfd.py` prepares and runs an isolated LibreLane placement/route
+diagnostic from an admitted `slew_pfd_source` artifact and the retained
+baseline row-grid/configuration evidence. It captures generated source,
+combined frontend/PFD blackboxes, shared models, constraints, the DEF pin
+template, placement targets and tool/Liberty hashes. Producers are archived;
+re-preparation preserves exact bytes. It uses the paired floorplan settings
+above and rechecks the actual final netlist and DEF after the flow.
+
+Passing requires successful flow completion, all final artifacts, exact
+frontend/reset connectivity, paired placement/pin geometry and explicit
+zero final routing/Magic/KLayout DRC counts. Missing DRC metrics cannot pass.
+Independent verification rechecks the input context, output hashes,
+connectivity, geometry and metrics. The input archive also retains the
+existing `digital_candidate_rc.captured_inputs` contract, with the new
+frontend blackbox definitions inside the captured PFD blackbox file.
+
+This is a physical diagnostic, not final physical admission: strict
+extracted LVS, matching of routed RC and the expanded native electrical
+qualification remain required. Existing/partial flow output is never
+restarted. No physical winner artifact is prepared or run while the source
+screen and expansion gates are pending.
+
+Use the pinned `--tools --ngspice python3` environment for this adapter.
+The installed LibreLane Python lacks NumPy, so the adapter uses only the
+standard library and connectivity helpers. Its source-admission validator
+runs with the container's existing `/usr/bin/python3`, with incompatible
+Nix Python paths removed. Runtime preflight confirms both interpreter paths
+load successfully and that missing source evidence is rejected without a
+physical run (`build/dll-slew-physical-tool-context.json` and
+`build/dll-slew-physical-validator-preflight.json`). No frozen scientific
+producer or active simulation was changed to resolve this environment issue.
+
+The complete regression passes 1,318 tests without skips
+(`build/dll-slew-physical-adapter-final-tests.log`). All ten native
+calibration comparisons now pass; the three buffered comparisons remain
+pending at this checkpoint. This reproduces the original failures for
+calibration and does not claim those phase-detector failures are repaired.
