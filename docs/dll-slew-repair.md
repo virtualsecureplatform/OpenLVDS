@@ -931,3 +931,40 @@ The complete regression passes 1,417 tests without skips
 the original headroom limit and require a uniquely captured, fully verified
 current-limited parent; unrelated failures cannot be relabeled as mirror
 current errors. This is SS40 DC readiness only, not a timing repair.
+
+## Corrected-circuit native timing dispatch
+
+`probe_dll_analog_frontend_timing_v2.py` applies the retained full-native
+timing engine to the corrected circuit under an isolated revision profile.
+It switches only the admitted DC namespace, actual circuit policy and
+producer attestation. Original native phase/BAD limits, actual receiving
+gate observations, conditioned-clock integrity, common-mode limits,
+complete-waveform MOS stresses and both zero-balance curves remain
+mandatory. Every actual MOS finger is covered; there are 125 frontend
+devices. The new profile producer is stamped before artifact identity
+creation, and the original DC receipt is never mutated.
+
+The `campaign` action prepares only after complete independent DC admission,
+runs the bounded source cases and independently verifies their terminal
+results. `openlvds-dll-analog-frontend-timing-tailtrim.service` is ordered
+after and requires the retained corrected-DC unit. Both are oneshot units
+with `RemainAfterExit=yes`, `Restart=no` and unlimited start timeout, so
+ordering waits for the DC command to finish and cannot terminate a healthy
+long transient at the default start timeout. A running oneshot unit reports
+`activating/start` with a live MainPID; its start job remains live until
+command completion. An ordered unit may have MainPID zero and a queued job
+while its predecessor runs. These are not terminal/missing-owner states.
+
+DC completion alone cannot authorize timing: scientific admission rechecks
+all twenty raw operating points, their hashes, both ancestor failures,
+producer context and circuit-matched clock observations. No DC survivor
+means no timing artifact or dispatch. Each real timing run still uses an
+individual P2 lease, at most two workers and no outer lease or partial retry.
+
+The corrected DC evidence admitted three variants and prepared fresh timing
+artifact `dll_analog_frontend_timing_tailtrim/3dd7c9fd496dd996`: 54 cases,
+eighteen per survivor. The three historical +50 ps / 20-200 ps cases are
+ordered first, followed by the three -50 ps / 200-20 ps cases. The first
+two forward cases are currently running at this checkpoint. Their partial
+progress is not electrical admission. Full-PVT/source controls, physical
+implementation and all native closed-loop/stability/PHY gates remain open.
