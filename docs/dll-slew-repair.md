@@ -61,4 +61,37 @@ All real simulations use individual six-slot dispatcher leases, with at most
 two diagnostic workers. Partial runs are retained without retries. Commit
 and push meaningful checkpoints; a source experiment is never PHY release.
 
-The full regression at this checkpoint passes 1,277 tests without skips.
+## Bounded screening implementation
+
+`screen_dll_slew_frontends.py` implements the first 56-case SS40 screen:
+four candidates, both unequal-slew directions, and seven phase offsets
+(-150, -50, -20, 0, +20, +50, +150 ps). It requires the terminal calibration
+receipt and independently remeasures numerically completed calibration.
+Passing calibration selects the isolation bench; a failed accuracy/speed
+gate selects the full native DLL/PFD/bias bench. Original native controls
+are reused rather than rerun. Partial calibration cannot create a screen.
+
+Candidate checks retain the original phase/BAD limits, require one-to-one
+rising/falling clock transport and valid delivered levels, and require
+monotonic mean UF-DF with opposite signs at -20 and +20 ps. Survivors are
+ranked by estimated worst zero offset, using power then actual PDK LEF cell
+area to resolve timing ties within 2 ps. Footprints for the two input paths
+are 15.0144, 27.5264, 22.5216 and 25.024 um2 for clkbuf_4, clkbuf_8,
+nor3/inv4 and nor4/inv4 respectively. Independent verification binds every
+output hash and remeasures all results. No source result selects hardware.
+
+`continue_dll_slew_screen.py` binds the exact live calibration invocation
+and immutable manifest before waiting without an outer SPICE lease. The
+prepared handoff is `dll_slew_screen_followup/706a5b0e1efa5458`. A restarted,
+missing or failed owner cannot dispatch; successful owner completion still
+requires the scientific terminal report. It prepares the selected bench,
+runs under individual P2 leases with two workers, and independently verifies
+the completed screen. Partial work is retained without retries. No-survivor
+results hold subsequent promotion rather than claiming successful repair.
+
+The first two calibration controls reproduce both zero-phase health and the
+native +50 ps false-BAD failure with approximately 2.28x engine speedup.
+The other eleven controls remain required. Candidate screening, expanded
+PVT coverage, physical implementation and analog fallback remain unfinished.
+
+The full regression at this checkpoint passes 1,285 tests without skips.
