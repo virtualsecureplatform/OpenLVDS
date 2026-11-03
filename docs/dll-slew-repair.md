@@ -131,9 +131,10 @@ verification rehashes and remeasures every output. Reset/disable checks,
 physical implementation and all loop/release gates remain separate work.
 
 `continue_dll_slew_expansion.py` binds the original bounded-screen owner's
-invocation and terminal receipts. The live handoff is
+invocation and terminal receipts. The original prepared handoff was
 `dll_slew_expansion_followup/c7d283a388cd40e0`, owned by
-`openlvds-dll-slew-expansion-followup.service`. It waits without an outer
+`openlvds-dll-slew-expansion-followup.service`; it is now held after the
+upstream transient-owner failure described below. Its design waits without an outer
 lease, then prepares/runs/verifies admitted expansion with two individual
 P2 workers. No-survivor evidence holds for the approved analog fallback;
 partial output and failed/restarted owners cannot dispatch or retry.
@@ -287,3 +288,37 @@ the successfully completed calibration service; its evidence is preserved.
 The independently admitted 56-case isolation screen is now
 `dll_slew_screen/10795eedc551acd1`, running under the fresh retained service
 `openlvds-dll-slew-screen-calibrated.service`.
+
+## Retained direct-screen handoff recovery
+
+The completed calibration independently verifies all thirteen comparisons
+and its scientific summary passes. The original systemd calibration unit
+had `RemainAfterExit=no`; systemd collected it after successful completion,
+so its original waiter correctly held on `LoadState=not-found`. The chained
+expansion waiter then held on that waiter's failed exit. Both failed handoff
+artifacts and all completed simulations remain unchanged. Recovery used
+the completed scientific calibration gate to prepare the fresh bounded
+screen above; it did not repeat calibration or retry partial SPICE output.
+
+`continue_dll_slew_verified_expansion.py` follows the direct screen under
+`openlvds-dll-slew-screen-calibrated.service`. Preparation explicitly requires
+`RemainAfterExit=yes` and captures the live PID/invocation and manifest.
+Only the same retained invocation, successfully exited with a terminal
+scientific report, can proceed. It independently verifies the entire screen
+before preparing expansion. No survivors hold for the approved analog
+fallback; survivors run under the existing two-worker native expansion and
+are independently verified afterward. No outer SPICE lease is held.
+
+The active recovery handoff is
+`dll_slew_verified_expansion_followup/b7020ea7934013b6`, owned by
+`openlvds-dll-slew-verified-expansion-followup.service`, also retained after
+exit. A real two-second service lifecycle test confirms the invocation ID
+remains available and successful exit is recognized
+(`build/dll-slew-retained-owner-probe.json`); that test service was then
+stopped. The full regression passes 1,329 tests without skips
+(`build/dll-slew-retained-handoff-tests.log`).
+
+The 30/30 long compensated-driver component cases also completed and the
+original followup independently verified the passing report. The native
+driver matrix and its joined payload restoration remain pending; this
+does not admit a complete PHY.
