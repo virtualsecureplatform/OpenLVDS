@@ -322,3 +322,38 @@ The 30/30 long compensated-driver component cases also completed and the
 original followup independently verified the passing report. The native
 driver matrix and its joined payload restoration remain pending; this
 does not admit a complete PHY.
+
+## Receiving-gate observations for native PFD checks
+
+`pfd_native_clock_observations.py` maps delivered clocks to the actual
+receiving flip-flops' MOS gate nodes. The physical conditioner will reside
+inside the PFD macro, so its public REF/FB pads cannot stand in for the
+delivered FF clock after routed RC. The resolver checks the actual DEF
+cell master/bounds against PDK LEF, derives the extraction coordinate scale
+from both public input-pin rectangles, and follows the GDS clock-pin
+equivalences. Matching MOS model/geometry before and after `extresist`
+identifies every separate native gate node, including both CMOS branches.
+
+Each selected gate must remain inside its receiving flip-flop and exist
+as a MOS gate in the exact native model. Missing branches, wrong cells or
+geometry, pad substitutions and cross-clock shorts fail. No ideal alias,
+resistor short or guessed `.tN` terminal is introduced. The probe helper
+requires an explicit instantiated hierarchy prefix; subsequent native
+fixtures must validate these nodes against their actual assembled library.
+This supplies observation provenance, not routed-matching or electrical
+admission.
+
+Baseline-only preflight `pfd_clock_observation_preflight/c9a3fc3fd33af908`
+resolves the retained PFD's actual FF inputs to `REF.t0`/`REF.t1` and
+`FB.t0`/`FB.t1`, with archived producers and bound DEF/LEF/extraction/model
+hashes. These particular nodes are not reusable in a different physical
+frontend. The resolver must run again on the winner's fresh extraction.
+The full regression passes 1,335 tests without skips
+(`build/dll-native-clock-observation-tests.log`).
+
+The bounded source screen currently has four complete `clkbuf_4` cases
+without numerical errors. Their individual health/fault checks pass, but
+UF-DF is +24.042 mV at -20 ps and nearly zero at -50 ps (-0.062 mV), so
+this candidate already violates the required -20/+20 ps zero bracket.
+The complete planned screen remains running; other candidate results and
+physical selection are still required. No BAD threshold was widened.
