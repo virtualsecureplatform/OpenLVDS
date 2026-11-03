@@ -593,3 +593,52 @@ The complete regression passes 1,370 tests without skips
 (`build/native-slew-controls-tests.log`), including rejection of failed
 pilot admission, independent clearance/recovery failures, incomplete or
 duplicated case results and partial-output retries.
+
+## Complete native phase and stuck-fault partition
+
+`qualify_native_slew_phases.py` implements the entire native phase/logic
+partition of `dll-slew-repair-v1`. It retains every original native phase
+signature (217 cases) and all 60 original stuck-UP/DN monitor cases, then
+adds the required native unequal-slew coverage at all fifteen PVT points
+at 400 MHz and frequency extremes at SS40/measured worst PVT. The catalog
+deduplicates by canonical signature, binds a versioned partition hash and
+derives its count from requirements. It contains 465 cases when the worst
+corner is SS40 and 493 otherwise; these numbers are descriptive, not
+admission constants.
+
+Preparation requires the complete passing native pilot and restoration of
+both historical false-BAD cases. All eighteen pilot signatures occur in
+the required partition. Their raw evidence is reused only after proving
+identical circuit bytes, phase signatures, stimulus, scoring windows and
+actual receiving-gate observations. The only allowed deck normalization
+is its model include path. Reused evidence obtains no SPICE lease and no
+new simulation. Every other case requires a fresh transient on the same
+selected extracted native model, shared bias and unchanged analog loading.
+
+Phase cases require the original health/fault limits and receiving-gate
+clock transport. Stuck-fault fixtures retain their original static UP/DN
+stimulus and monitor probes; they do not observe an uninstantiated PFD.
+Each required unequal-slew UF-DF curve must remain monotonic and bracket
+zero between -20/+20 ps. Every case must pass; passing point tests cannot
+hide a biased detector. Preparation and verification regenerate the whole
+catalog, fixtures, probe aliases and pilot equivalence. Complete finite
+raw/export agreement and all output hashes are rechecked independently.
+
+`prepare NATIVE_PILOT`, `run ARTIFACT` and `verify ARTIFACT` run in the
+scientific environment. At most two P1 workers dispatch individual leases;
+partial output cannot retry. No new phase matrix is prepared while the
+physical repair/native pilot remain pending. This partition provides no
+loop, full/fast RC-comparison, reset/disable, stability/recovery/readiness,
+stress or PHY admission; all those requirements remain mandatory.
+
+Baseline-only preflight `native_slew_phases_preflight/776c3b934d7a523c`
+successfully compiled all 493 fixtures (433 phase and 60 logic) against
+the retained complete extracted library. It checks PVT directives,
+original timing, single shared bias and actual receiving-gate probes, and
+proves fixture equivalence for all eighteen reusable pilot signatures.
+Its donor manifest is explicitly a fixture catalog, with no passing-pilot
+receipt or transient data. It provides no repaired-candidate admission.
+The complete regression passes 1,376 tests without skips
+(`build/native-slew-phases-tests.log`), including full partition coverage,
+zero-balance/monotonicity failures, invalid reuse, missing/duplicate cases,
+partial-output retention and dispatch of only fresh cases.
