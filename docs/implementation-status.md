@@ -21,13 +21,15 @@ are dispatched in `driver_source_pilot/347eaadfdb85f913`; their ideal wires
 and source bias make them diagnostics, not native hardware qualification.
 See [the routing and feedback findings](chain-restoration.md#routing-and-feedback-isolation).
 
-Both compensation TT25 cases complete and pass: 62.9–63.9 mVpp with
-319.3–323.7 ps calibrated transitions. The first SS25 case measures
-41.7 mVpp; the remaining SS25/FF40 cases are still required. The actual
-schematic source qualifier has a strict diagnostic-pass gate, six fresh
-source pilots and then all thirty source cases. The owned source handoff
-is waiting for the complete diagnostic pass before dispatching any actual
-source case. Failed stages stop the handoff without retries.
+All six compensation diagnostics now pass at TT25/SS25/FF40, with
+38.7–77.7 mVpp common-mode movement and 307.4–326.8 ps monotonic calibrated
+transitions. The actual schematic preparer independently verifies this
+complete evidence and the original full source matrix, then dispatches
+`driver_source_pilot/12b18f8552d5652e`. This fresh six-case schematic pilot
+must pass before the handoff prepares all thirty actual source cases.
+Failed stages stop without retries. Physical/native and full link gates
+remain open. The routing-only native revision also passes its SS25 pair
+at 138.1–142.5 mVpp, but remains held by the TT25 failures above.
 
 The complete pinned `make test-full` regression passes **1195 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:

@@ -5,6 +5,32 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The complete compensation diagnostic
+`driver_source_pilot/347eaadfdb85f913` now passes all six cases and all three
+PVT pairs. Each pair retains both fresh initial DC calibrations and 44
+monotonic calibrated transitions per polarity:
+
+| PVT | Common-mode movement, negative / positive initial state, mVpp | Calibrated transition range, ps |
+| --- | --- | --- |
+| TT25 | 63.854 / 62.887 | 319.309–323.706 |
+| SS25 | 41.745 / 38.679 | 307.365–314.028 |
+| FF40 | 77.746 / 74.383 | 318.647–326.807 |
+
+This is the matched extracted-device, ideal-core-wire, source-bias
+diagnostic. Its numerical models are not eligible as native hardware.
+The owned handoff independently remeasures it and the original thirty-case
+source matrix, then successfully prepares and starts the actual schematic
+pilot `driver_source_pilot/12b18f8552d5652e`. This model is reconstructed
+from the original hierarchical source and matches the bound design
+proposal exactly. Both pilot polarities at TT25, SS25 and FF40 must pass
+before the handoff admits preparation of the full thirty-case actual
+source matrix. No actual-source result or physical/native qualification
+is inferred from the diagnostic pass.
+
+The routing-only native revision also completes both SS25 cases at
+138.082/142.493 mVpp; its TT25 pair still fails, so full native qualification
+remains held regardless of its remaining FF40 results.
+
 The original long exact-TX benchmark
 (`ltra_exact_tx_benchmark/df68f33bb3275375`) now completes all 188.049 ns.
 Independent comparison with the completed raw reference passes the fixed
