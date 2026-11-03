@@ -111,3 +111,37 @@ The profile does not use a fixed task count as an admission criterion. It
 does not modify or requalify the running original DLL campaign. The selected
 physical frontend's future qualification and staging adapters must consume
 this profile and remeasure their own evidence before promotion.
+
+## Survivor expansion and automatic handoff
+
+`expand_dll_slew_frontends.py` admits only independently remeasured SS40
+survivors. Each survivor receives 1,215 source-frontend experiments: all
+fifteen PVT points, 390/400/410 MHz, 100/100, 20/200 and 200/20 ps slews,
+and offsets 0, +/-20, +/-50, +/-150 and +/-300 ps. The expansion always
+uses the full native PFD, bias and analog DLL loading; SS40 isolation
+calibration does not establish surrogate accuracy at other PVT points.
+Shared immutable libraries avoid copying the native model into every case.
+
+Each complete curve must pass the original health/fault limits and clock
+integrity checks, remain monotonic and bracket zero between -20/+20 ps.
+Ranking uses the worst estimated zero offset across PVT/frequency/slew,
+then measured power and cell area for timing ties within 2 ps. The report
+identifies the actual worst PVT for subsequent physical coverage. Independent
+verification rehashes and remeasures every output. Reset/disable checks,
+physical implementation and all loop/release gates remain separate work.
+
+`continue_dll_slew_expansion.py` binds the original bounded-screen owner's
+invocation and terminal receipts. The live handoff is
+`dll_slew_expansion_followup/c7d283a388cd40e0`, owned by
+`openlvds-dll-slew-expansion-followup.service`. It waits without an outer
+lease, then prepares/runs/verifies admitted expansion with two individual
+P2 workers. No-survivor evidence holds for the approved analog fallback;
+partial output and failed/restarted owners cannot dispatch or retry.
+
+At this checkpoint four of thirteen calibration cases pass, with measured
+speedups of 2.16-2.29x. Calibration and bounded screening remain required
+before expansion dispatch. Preflight checked all 4,860 possible expansion
+decks against the actual native library and PDK, including probe existence,
+corner/temperature directives and absence of duplicate subcircuits; this
+performed no new electrical simulations. The complete regression passes
+1,299 tests without skips (`build/dll-slew-expansion-tests.log`).
