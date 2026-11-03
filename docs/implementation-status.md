@@ -25,13 +25,20 @@ All six compensation diagnostics now pass at TT25/SS25/FF40, with
 38.7–77.7 mVpp common-mode movement and 307.4–326.8 ps monotonic calibrated
 transitions. The actual schematic preparer independently verifies this
 complete evidence and the original full source matrix, then dispatches
-`driver_source_pilot/12b18f8552d5652e`. This fresh six-case schematic pilot
-must pass before the handoff prepares all thirty actual source cases.
+`driver_source_pilot/12b18f8552d5652e`. Its TT25 pair now passes with
+46.9–47.7 mVpp movement and 320.2–323.2 ps calibrated transitions. This
+fresh six-case schematic pilot must pass before the handoff prepares all
+thirty actual source cases.
 Failed stages stop without retries. Physical/native and full link gates
 remain open. The routing-only native revision also passes its SS25 pair
 at 138.1–142.5 mVpp, but remains held by the TT25 failures above.
 
-The complete pinned `make test-full` regression passes **1195 tests**.
+The compensated physical builder is implemented behind full actual-source
+verification. Read-only checks confirm 321 devices (302 unchanged MOS,
+19 passives) and compatibility with the nineteen existing bank and five
+inverter recipes. No compensated layout has been dispatched yet.
+
+The complete pinned `make test-full` regression passes **1200 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:
 saved voltages agree within 13.3 nV and edge counts agree. Both retain
 the original failed payload, so this admits a numerical optimization

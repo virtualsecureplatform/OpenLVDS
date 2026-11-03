@@ -31,6 +31,35 @@ The routing-only native revision also completes both SS25 cases at
 138.082/142.493 mVpp; its TT25 pair still fails, so full native qualification
 remains held regardless of its remaining FF40 results.
 
+The actual schematic pilot now completes and passes its TT25 pair:
+46.865/47.697 mVpp common-mode movement, 44 monotonic transitions per
+polarity and calibrated edge times 320.194–323.246 ps. SS25/FF40 remain
+required before the full source matrix.
+
+`build_driver_cmfb_lead.py` implements the subsequent physical step. It
+requires a complete `driver_cmfb_lead_source_verification` receipt and
+independently recomputes that thirty-case source verification before any
+Magic dispatch. The source must exactly match the one calculated
+compensation transformation of the original source underlying the reusable
+tiles. Flattened checks preserve all 302 original MOS devices and their
+terminal/model/geometry signatures, all eighteen original passives and
+the public interface; exactly one W=0.35/L=1.25 PDK resistor is added.
+The builder independently checks the original tile/bank evidence and
+technology before reusing the recipes, then creates a fresh complete
+layout and strict DRC/LVS against the new 321-device circuit. Existing
+passing layout files are not edited.
+
+Read-only actual-proposal and reusable-library preflights pass: 321 total
+devices, 302 MOS, nineteen passives and 51 grouped placements before
+inverter-tile combination, using nineteen existing MOS-bank recipes and
+five inverter recipes. These checks dispatch no Magic and do not admit a
+new layout. Five tests cover exact source/device preservation, changed
+MOS/passive rejection and preventing pilot/partial source evidence from
+dispatching physical work. The complete pinned regression passes 1200
+tests. A new compensated GDS/RC and native pilot must follow the complete
+source pass; the old native preparer's original geometric-source selector
+must not be used to select the compensated source campaign.
+
 The original long exact-TX benchmark
 (`ltra_exact_tx_benchmark/df68f33bb3275375`) now completes all 188.049 ns.
 Independent comparison with the completed raw reference passes the fixed
