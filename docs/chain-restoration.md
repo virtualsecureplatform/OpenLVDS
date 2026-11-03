@@ -5,6 +5,25 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The completed compensated native TT25 captures also support actual MOS
+terminal characterization. Before measuring, the native manifest/input
+bindings, both complete case receipts and waveform hashes are checked;
+public voltages, fresh DC and power are independently remeasured. Saved
+MOS descriptors must exactly match a fresh traversal of the actual native
+model and fixture. Both 0–80 ns raw captures contain all 305 devices:
+
+| Device models | Devices per capture | Maximum absolute VGS, V | VGD, V | VDS, V | VBS, V |
+| --- | --- | --- | --- | --- | --- |
+| 1.8 V | 27 | 1.828378 | 1.828378 | 1.850025 | 1.845364 |
+| g5, including native bias | 278 | 3.582002 | 3.584509 | 3.499323 | 3.592183 |
+
+The table combines maxima from both initial polarities. Measurements use
+each device's actual four terminal voltages, including local body/supply
+nodes; extracted D/S ordering is retained. These are sampled TT25 terminal
+observations, not an all-PVT stress or reliability verdict. No supply sweep,
+model change, fixture change or additional simulation was needed. Native
+SS25/FF40 and the long-component checks remain open.
+
 The compensated native TT25 pair is complete and passes the unchanged
 output reference checks in `driver_compact_native_pilot/9a7d8f21db2f1acc`.
 Negative/positive initial polarities measure 96.753/91.508 mVpp common-mode
