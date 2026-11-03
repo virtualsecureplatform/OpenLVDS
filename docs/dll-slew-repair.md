@@ -686,5 +686,29 @@ retry. Complete single-point finite raw data, every requested model vector,
 canonical fixture/model regeneration and all hashes are required. DC
 readiness does not select a timing winner or admit a source repair: complete
 phase/BAD, zero balance, clock transport, controls, PVT, physical and DLL/PHY
-qualification still follow. No analog artifact or transient has been
+qualification still follow. No analog circuit artifact or transient has been
 prepared while the standard-cell screen remains incomplete.
+
+`continue_dll_analog_frontend_dc.py` binds the original retained screen
+invocation and waits without an outer lease. Successful service completion
+must still pass independent scientific verification. A standard-cell
+survivor holds the analog path; a complete no-survivor result admits the
+DC producer, which independently enforces the four-candidate failure gate
+again. The controller runs/verifies the twenty DC points and records the
+headroom survivors, without starting any transient or physical flow.
+Restarted/missing owners, changed context or partial work hold without retry.
+
+Handoff `dll_analog_frontend_dc_followup/0b13b39c20a62b11` is active under
+`openlvds-dll-analog-frontend-dc-followup.service` with retained ownership
+(`RemainAfterExit=yes`), currently waiting for the standard screen. The
+complete regression passes 1,385 tests without skips
+(`build/dll-analog-frontend-dc-tests.log`), covering the bounded topology,
+local mirror ratio, five static states, single endpoint bias, actual model
+vector forms, current/headroom/level/stress failures, conditional dispatch
+and preservation of partial/failed evidence.
+
+The screen has 47/56 completed cases without numerical errors at this
+checkpoint. NOR4's -20 ps forward-slew point has UF-DF +17.218 mV and its
+zero-offset point +33.453 mV, so it has also missed the required zero
+bracket. Full terminal verification is still required before fallback;
+the remaining standard-cell cases continue unchanged.
