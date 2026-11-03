@@ -1037,3 +1037,42 @@ gate observations throughout the matrix. Every fixture passes model/probe
 compilation. This is neither a passing source screen nor PVT electrical
 evidence; the ordered expansion handoff still waits for the full running
 54-case screen to finish and pass independently.
+
+## Analog front-end control qualification
+
+`qualify_analog_frontend_controls.py` supplies the previously missing analog
+source reset/disable stage. Preparation independently verifies the entire
+1,215-case source expansion and the original native protocol baseline.
+Neither the running SS40 screen nor a few passing source cases can create
+a control-qualification artifact. Donors must retain the complete source
+matrix and measured -20/+20 ps zero bracket.
+
+Coverage is 57 or 63 cases: all fifteen PVT at 400 MHz, plus 390/410 MHz at
+TT25, SS40 and the measured worst source PVT, for matched and both extreme
+slews. Controls alter only the established reset/enable protocol of the
+zero-offset phase donors. The native PFD/bias/loading, analog front-end,
+all four actual receiving clock-gate probes and all frontend MOS voltage
+observations remain intact. Eight clock observations must keep toggling
+during reset/disable, UP/DN must clear, and released phase must recover
+inside the corresponding measured source +/-20 ps UF/DF bracket. Original
+phase/BAD, conditioned-clock, common-mode and full-transient stress checks
+remain mandatory.
+
+The runner uses two individual P2 leases, immutable inputs and no partial
+retry. One analog policy profile surrounds the full worker pool. Independent
+verification remeasures every complete protocol trace and rechecks all
+bound source evidence. Controls cannot grant physical, closed-loop,
+stability, readiness or PHY admission.
+
+Preflight `analog_controls_preflight/7024c73185d3e047` compiles the maximum
+63 fixtures from the bound current source model. Its explicitly hypothetical
+TT0 worst corner exercises the coverage generator without fabricating a
+measured ranking. All native model/probe checks pass; the receipt explicitly
+denies source/electrical/physical/PHY admission. No control simulations are
+dispatched while the real source qualification is incomplete.
+
+Seven focused checks cover 57/63-case coverage, incomplete/duplicate source
+results, the required zero bracket, admission failure, all eight clocks,
+phase recovery, analog/protocol failures and profile cleanup. The complete
+regression passes 1,479 tests without skips
+(`build/analog-frontend-controls-full-tests.log`).

@@ -50,6 +50,19 @@ original SS40 200/200 ps boundary verifies all three actual raw/export
 witnesses and their unchanged full decks before enabling reuse in the new
 producer. No original producer or artifact is edited.
 
+The original `rx_aperture/20b04dcf527af283` subsequently completes all
+480 conditions with a passing table. Independent consumer remeasurement
+verifies every failing/passing/guarded boundary witness and every corner's
+aggregate. The SS40 bounds are **270 ps setup / 110 ps hold**, including
+the original 20 ps guard. Across the complete table the largest setup bound
+is 280 ps at SS0, and the largest hold bound is 150 ps at SF0. These are
+capture aperture bounds, not additional link margins. The table still
+covers only 20–200 ps input slew, so it cannot qualify the original coupled
+trace's 216.889 ps capture clock edge. The receive-clock-buffer source
+handoff now independently checks the raw/export witnesses before preparing
+its four new circuits; its margin requirement remains an additional 200 ps
+after subtracting this measured aperture.
+
 ## Existing validation flows
 
 Every runner archives decks, tool logs and JSON results under `build/`. Read
