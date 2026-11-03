@@ -5,12 +5,44 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
-The first full-native PVT pair, TT0, now completes and passes in
+The first completed **2.54 us native component**, TT25, passes in
+`driver_compact_components/605c95726124145d`. Independent checking of its
+manifest, output hashes, raw/export data and all measured metrics succeeds.
+The long waveform has 392 monotonic transitions at **326.627–337.254 ps**
+and **91.068 mVpp** common-mode movement. Original DC and loaded-eye checks
+also pass. Mean IO/digital supply power is **31.995/2.105 mW**, with all
+305 actual native MOS terminal observations retained. Schematic TT0, TT25
+and TT40 also pass. This is four completed cases of thirty; the remaining
+native/source cases and separate 1 ps native matrix remain required.
+
+`benchmark_compensated_driver_exact.py` implements a separate performance
+experiment against the completed negative TT25 native pilot. Degree-eight
+resistor-only elimination preserves every capacitor, PDK device statement,
+MOS terminal, port and saved diagnostic conductor, including resistor-only
+probe nodes. Independent sparse clamped-terminal current witnesses pass:
+maximum discrepancy is **9.095e-13 A**. It removes another **5,155 algebraic
+nodes**, reducing the existing exact degree-four model from **29,915 to
+20,888 resistors** and from 11,380 to 6,225 resistor-network nodes.
+
+Prepared artifact `compensated_driver_exact/8afdf90644b01ae1` is owned by
+`openlvds-compensated-driver-exact-benchmark.service`. The benchmark reuses
+the completed original reference and queues one new
+80 ns/1 ps TT25 negative-polarity simulation under a P2 dispatcher lease.
+It requires complete raw/export agreement, compares every saved voltage
+over the complete interval on a 1 ps grid within 20 mV, and checks both
+output crossing polarities within 20 ps with unchanged counts. The actual
+MOS observations and native bias remain unchanged. No speedup or transient
+equivalence is claimed before completion; neither this candidate nor a
+passing single-condition benchmark changes the running models, coupled
+handoff, selected PHY or PVT admission. Seven focused integrity/comparison
+tests pass; the full pinned regression passes **1,249 tests without skips**.
+
+The first two full-native PVT pairs, TT0 and TT25, complete and pass in
 `driver_compact_native/7e50cdcac4ffb5e1`. Negative/positive initial states
-measure 97.577/92.445 mVpp common-mode movement, with monotonic calibrated
-transitions at 326.923–337.305 ps. TT25 is running next. In the matched
-long-component campaign, schematic TT25 and TT0 pass; native TT25/TT0
-continue. Neither full campaign is complete.
+at TT0 measure 97.577/92.445 mVpp common-mode movement, with monotonic
+calibrated transitions at 326.923–337.305 ps. TT25 measures 96.753/91.508
+mVpp and monotonic 327.029–338.073 ps transitions. These are two of fifteen
+required PVT points. Neither full driver campaign is complete.
 
 `continue_compensated_coupled.py` now owns the joined handoff, artifact
 `compensated_coupled_followup/66383e7eb14f5ddc`, service

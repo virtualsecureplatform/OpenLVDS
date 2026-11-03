@@ -13,9 +13,26 @@ thirty-case long components `driver_compact_components/605c95726124145d`
 are now running together under the six-engine limit. Coupled restoration
 is implemented but requires both complete campaigns to pass first.
 The full-native TT0 pair passes at 92.4–97.6 mVpp with monotonic
-326.9–337.3 ps transitions. Two schematic long-component cases also pass.
+326.9–337.3 ps transitions. TT25 also passes both polarities at
+91.5–96.8 mVpp with monotonic 327.0–338.1 ps transitions.
 The joined coupled handoff is live and waiting on both complete,
 independently verified qualification results before dispatching a link test.
+
+The first long native component, TT25, now independently remeasures as
+passing: **91.1 mVpp** common-mode movement and **326.6–337.3 ps** monotonic
+edges across the original 2.54 us fixture. Native supply power is about
+32.0 mW IO plus 2.10 mW digital. Three schematic long cases also pass;
+the complete thirty-case campaign remains pending.
+
+A separate exact resistor-reduction benchmark preserves all capacitors,
+PDK devices, native bias and saved internal conductors. Mathematical
+current witnesses pass below 1 pA while reducing resistors from 29,915 to
+20,888. One matched 80 ns/1 ps transient comparison is prepared against
+completed native TT25 data in `compensated_driver_exact/8afdf90644b01ae1`,
+owned by `openlvds-compensated-driver-exact-benchmark.service`.
+No runtime improvement, waveform equivalence
+or model promotion is inferred from the mathematical check. Running
+qualification models and the joined coupled handoff remain unchanged.
 
 The preceding routing-only revision remains held:
 
@@ -82,7 +99,7 @@ The matched long-component handoff also passes its prerequisite checks and
 is running the original thirty 2.54 us fixtures alongside the full native
 output matrix under the same six-slot dispatcher.
 
-The complete pinned `make test-full` regression passes **1242 tests**.
+The complete pinned `make test-full` regression passes **1249 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:
 saved voltages agree within 13.3 nV and edge counts agree. Both retain
 the original failed payload, so this admits a numerical optimization
