@@ -5,6 +5,32 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The first full-native PVT pair, TT0, now completes and passes in
+`driver_compact_native/7e50cdcac4ffb5e1`. Negative/positive initial states
+measure 97.577/92.445 mVpp common-mode movement, with monotonic calibrated
+transitions at 326.923–337.305 ps. TT25 is running next. In the matched
+long-component campaign, schematic TT25 and TT0 pass; native TT25/TT0
+continue. Neither full campaign is complete.
+
+`continue_compensated_coupled.py` now owns the joined handoff, artifact
+`compensated_coupled_followup/66383e7eb14f5ddc`, service
+`openlvds-compensated-coupled-followup.service`. Preparation binds the
+exact native/component controller invocations and their selected scientific
+manifests, rejecting different native pilots before queueing. The controller
+waits for both original owners to terminate with bound final controller and
+scientific receipts. Both full qualification matrices must pass before the
+coupled preparer independently verifies them again. A live owner, partial
+output, failed matrix or a mismatched report cannot dispatch the experiment.
+
+After those gates, the controller will prepare and run the matched short/
+payload diagnostic, then independently verify complete numerical results
+even when payload transport fails. Incomplete numerical output is retained
+without retries. A successful short diagnostic or failed payload cannot
+release the PHY. The controller holds no SPICE slot, and scientific children
+use the existing six-engine dispatcher. It is currently waiting; no coupled
+experiment has been dispatched. Eight new join/ownership/coverage/failure
+tests bring the full pinned regression to **1242 passing tests**.
+
 The compensated native pilot is now complete:
 `driver_compact_native_pilot/9a7d8f21db2f1acc` passes all six cases and
 all three PVT points. Common-mode movement spans 88.499–129.379 mVpp;
