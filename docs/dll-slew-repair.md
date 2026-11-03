@@ -381,3 +381,36 @@ Baseline-only preflight (`build/dll-slew-native-assembly-preflight.json`)
 confirms the native reference admission, four phase and four loop receiving
 gate probes, and one shared reference. It performs no transient simulation
 and does not prepare a winner artifact while the source screen is pending.
+
+## Native seed pilot
+
+`pilot_native_slew_dll.py` prepares eighteen fresh SS40/400 MHz cases only
+after native model assembly verifies. It dispatches the historical +50 ps
+20/200 ps and -50 ps 200/20 ps false-BAD cases first. Both directions then
+cover 0, +/-20, +/-50, +/-150 and +/-300 ps. The original native analog
+loading, single 35 uA endpoint reference, 160 ns stop, 5 ps print, 20 ps
+maximum step and 120-160 ns scoring window are retained. No old transient
+success is reused as electrical evidence for the new PFD.
+
+Every actual receiving MOS gate must transport exactly one rising and one
+falling event per cycle, with valid levels in every scored cycle. Rising
+and falling delivery delay is measured separately at every native gate.
+The original phase/BAD limits remain mandatory. Both complete UF-DF curves
+must be monotonic and bracket zero between -20/+20 ps; individual point
+success cannot conceal servo bias. Independent verification rechecks full
+raw/export agreement, output hashes, source/probe/fixture regeneration and
+the aggregate. The selected assembled model must match byte for byte.
+
+The pilot uses two individual P1 dispatcher leases and never retries partial
+output. A passing pilot only admits the next native qualification step;
+expanded all-PVT phase coverage, reset/disable controls, acquisition,
+stability/recovery/readiness, stress and PHY gates remain required. No
+pilot has been prepared or dispatched while frontend selection is pending.
+
+Baseline-only fixture preflight
+`native_slew_pilot_preflight/47f12630507ac2bd` validates all eighteen decks,
+including the actual four receiving-gate probes and one shared reference,
+without any transient run. The full regression passes 1,346 tests without
+skips (`build/dll-native-pilot-tests.log`). The bounded source screen has
+now reproduced both false-BAD failures in `clkbuf_4`, in addition to its
+failed zero bracket; other frontend results remain required.
