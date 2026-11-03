@@ -498,3 +498,28 @@ pairs against the retained complete native library. The four receiving
 gate observations resolve in every fixture, with explicit observed
 RST/ENABLE and the original timing. This preflight ran no transient and
 provides no candidate electrical admission.
+
+## Control-qualified physical source
+
+Use `prepare_controlled_slew_pfd.py source CONTROL_ARTIFACT` for the new
+physical source path. It independently verifies the complete controls,
+selects the first surviving candidate in the measured source ranking and
+retains its actual worst-PVT coverage recipe. It generates the same
+preserved named-cell source, blackboxes and constraints as the existing
+source policy, with an additional `source-slew-with-controls-v1` admission
+profile. A phase-only source artifact cannot satisfy this profile.
+
+Use the same adapter's `physical SOURCE_ARTIFACT --baseline BASELINE`,
+`run PHYSICAL_ARTIFACT` and `verify PHYSICAL_ARTIFACT` actions for subsequent
+placement/routing. Each action validates the controlled source before
+delegating to the retained physical implementation. In the physical tools
+environment, scientific validation runs through the container system
+Python with Nix Python paths removed. The physical adapter itself imports
+without NumPy; that behavior passed the actual installed tools preflight.
+Old evidence-bound producers remain unchanged.
+
+Source control success still requires fresh physical matching, zero DRC,
+strict extracted LVS, RC, native electrical and complete PHY qualification.
+There is no prepared winner or physical run while source screening and
+expansion remain pending. The source/control adapters pass all 1,361 tests
+without skips (`build/slew-frontend-controls-tests.log`).
