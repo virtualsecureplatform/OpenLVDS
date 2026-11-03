@@ -5,6 +5,51 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The compensated native pilot is now complete:
+`driver_compact_native_pilot/9a7d8f21db2f1acc` passes all six cases and
+all three PVT points. Common-mode movement spans 88.499–129.379 mVpp;
+all calibrated transitions are monotonic at 310.664–341.688 ps. FF40's
+negative/positive initial states measure 129.379/122.778 mVpp. Independent
+full pilot remeasurement succeeds before the physical handoff prepares
+and starts `driver_compact_native/7e50cdcac4ffb5e1`, the thirty-case native
+output matrix at all fifteen fixed-supply PVT conditions.
+
+The matched component handoff observes the bound independent preparation
+receipt and starts `driver_compact_components/605c95726124145d`, all thirty
+original 2.54 us source/native fixtures. Two schematic cases have passed;
+the native output and long-component matrices remain incomplete. Both
+controllers are live and retain the existing six-engine limit.
+
+`restore_compensated_coupled.py` implements the subsequent matched link
+diagnostic. Preparation independently verifies both complete passing
+driver campaigns and requires their pilot, assembly and actual model
+bytes to match. It rechecks the completed exact-TX comparison, all sixty
+admitted receiver components, and the saved full/fast receiver RC traces.
+Receiver RC comparison is independently recomputed from the saved waves;
+all ten trace-evidence/input files are bound into the new context. A bare
+receiver pass flag cannot admit missing or changed comparison data.
+
+The new coupled library changes only the driver core. Nine-port order,
+exact native bias, one shared 35 uA reference per endpoint, TX/r2/capture
+closures, all 38 probes, clocks, rails, channel, load, skew/jitter and
+original payload remain fixed. A fresh 12 ns/1 ps numerical screen gates
+the complete 188.049 ns/1 ps payload diagnostic. The latter requires the
+ordered payload, one-to-one clock transport, valid high/low pulses and
+legal receiver pins. Independent verification checks complete raw/export
+data and remeasures the final result. Short failure prevents payload
+dispatch; partial output is never retried. Analysis failure after a verified
+complete numerical trace is recorded separately from numerical failure.
+
+This remains the original ideal-quarter-phase, 60 ns-training, 32-bit
+diagnostic. Actual DLL phase, at least 256 training cycles, long payloads,
+aperture-subtracted timing margin, all link conditions and PHY release
+are not inferred. No coupled experiment has been prepared or dispatched
+before the matched driver gates pass. Actual-model read-only substitution
+and both horizon/probe preflights pass. Twelve new tests cover admission,
+scope preservation, valid clock/pin/payload checks, failure ordering,
+data/manifest mutation and independent verification; the complete pinned
+regression passes **1234 tests**.
+
 The compensated native SS25 pair now completes and passes the unchanged
 output checks. Negative/positive initial polarities measure
 88.499/93.086 mVpp common-mode movement; all calibrated transitions are

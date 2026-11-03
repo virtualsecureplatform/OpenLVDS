@@ -5,6 +5,16 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-03):
 
+The compensated driver passes all six native TT25/SS25/FF40 pilots,
+independently verified: 88.5–129.4 mVpp common-mode movement and
+310.7–341.7 ps monotonic calibrated transitions. The full thirty-case
+native output matrix `driver_compact_native/7e50cdcac4ffb5e1` and matched
+thirty-case long components `driver_compact_components/605c95726124145d`
+are now running together under the six-engine limit. Coupled restoration
+is implemented but requires both complete campaigns to pass first.
+
+The preceding routing-only revision remains held:
+
 The local CMFB routing revision passes zero-error DRC, strict LVS and fresh
 GDS RC connectivity checks. With native bias, its completed TT25 cases
 measure **153.2–162.2 mVpp**, compared with 178.3–186.3 mVpp for the old
@@ -37,14 +47,14 @@ movement is 23.0–71.1 mVpp and calibrated monotonic transitions are
 308.2–328.0 ps. The physical builder has started from this complete source
 receipt. The new compensated macro passes zero-error DRC, strict LVS and
 the independent native RC audit; six native core-plus-bias pilots are now
-running in `driver_compact_native_pilot/9a7d8f21db2f1acc`. Native electrical
+complete in `driver_compact_native_pilot/9a7d8f21db2f1acc`. Full native PVT
 and full link qualification remain open.
 Its completed TT25 pair now passes the existing native output checks:
 91.5–96.8 mVpp common-mode movement, 327.0–338.1 ps monotonic calibrated
 transitions and fresh DC levels of +/-322.6 mV at 1.2485 V common mode.
-SS25 now also passes both polarities at 88.5–93.1 mVpp with monotonic
-310.7–320.2 ps calibrated transitions. FF40 and the full native matrix
-remain required.
+SS25 passes both polarities at 88.5–93.1 mVpp with monotonic
+310.7–320.2 ps calibrated transitions. FF40 also passes, at
+122.8–129.4 mVpp. The full native matrix remains required.
 Failed stages stop without retries. Physical/native and full link gates
 remain open. The routing-only native revision also passes its SS25 pair
 at 138.1–142.5 mVpp, but remains held by the TT25 failures above.
@@ -60,15 +70,15 @@ The native pilot preparer is also implemented with explicit compensated
 source selection, audited native bias, all 305 MOS terminal observations
 and a fresh GDS-resolved compensation-node observation. Its model matches
 the audited native assembly exactly, with one reference per endpoint.
-The owned physical/native handoff has advanced to the six-case native
-pilot. It requires every pilot point to pass before the thirty-case
-native output matrix. Failed stages stop dispatch.
+The owned physical/native handoff has advanced to the thirty-case native
+output matrix after independent verification of every pilot point.
+Failed stages stop later dispatch.
 
-The matched long-component handoff is queued behind independent verification
-of all six native pilots. It will run the original thirty 2.54 us fixtures
-alongside the full native output matrix under the same six-slot dispatcher.
+The matched long-component handoff also passes its prerequisite checks and
+is running the original thirty 2.54 us fixtures alongside the full native
+output matrix under the same six-slot dispatcher.
 
-The complete pinned `make test-full` regression passes **1222 tests**.
+The complete pinned `make test-full` regression passes **1234 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:
 saved voltages agree within 13.3 nV and edge counts agree. Both retain
 the original failed payload, so this admits a numerical optimization
