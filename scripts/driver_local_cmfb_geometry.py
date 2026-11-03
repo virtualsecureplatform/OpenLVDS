@@ -33,15 +33,41 @@ def remove_all(rectangles,expected):
     return count
 
 
-def relocate_bus(g,old_y,new_y,placements):
-    """Keep terminal landings and unique M5 columns; replace only their bus end."""
+def bus_stems(g,old_y):
     old=round(old_y/GRID);half=round(.8/GRID)
     stems=[r for r in g.layers['metal5'] if r[2]-r[0]==2*half and r[3]==old+half and r[1]<old-half]
     if not stems: raise ValueError('Require original quiet-net M5 stems')
-    for child in placements:
-        if child['bbox_um'][1]-1.2<new_y<child['bbox_um'][3]+1.2:
-            raise ValueError('Localized CMFB bus crosses child geometry')
     xs=sorted({(r[0]+r[2])*GRID/2 for r in stems})
+    return stems,xs
+
+
+def bus_clear(g,old_y,new_y,placements):
+    _,xs=bus_stems(g,old_y)
+    if any(p['bbox_um'][1]-1.2<new_y<p['bbox_um'][3]+1.2 for p in placements):return False
+    original=Geometry();original.wire('metal4',min(xs)-2.,old_y,max(xs)+2.,old_y,.8)
+    own=list(original.layers['metal4'])
+    for x in xs:
+        pad=Geometry();baseline.via45(pad,x,old_y);own+=pad.layers['metal4']
+    proposed=Geometry();proposed.wire('metal4',min(xs)-2.,new_y,max(xs)+2.,new_y,.8)
+    a=proposed.layers['metal4'][0];margin=round(.3/GRID)
+    for b in g.layers['metal4']:
+        if b in own:continue
+        if min(a[2]+margin,b[2])>max(a[0]-margin,b[0]) and min(a[3]+margin,b[3])>max(a[1]-margin,b[1]):
+            return False
+    return True
+
+
+def clear_bus_y(g,old_y,placements):
+    for shift in [0.,-3.,3.,-6.,6.,-9.,9.,-12.,12.,-15.,15.,-18.,18.]:
+        if bus_clear(g,old_y,old_y+shift,placements):return old_y+shift
+    raise ValueError('No clear local bus corridor')
+
+
+def relocate_bus(g,old_y,new_y,placements):
+    """Keep terminal landings and unique M5 columns; replace only their bus end."""
+    half=round(.8/GRID);stems,xs=bus_stems(g,old_y)
+    if not bus_clear(g,old_y,new_y,placements):
+        raise ValueError('Localized bus crosses child geometry or unrelated parent metal4 landing')
     expected=Geometry();expected.wire('metal4',min(xs)-2.,old_y,max(xs)+2.,old_y,.8)
     remove_all(g.layers['metal4'],expected.layers['metal4'][0])
     for x in xs:
@@ -68,6 +94,16 @@ def write(out,top,ports,original,grouped,bank_library,tile_library,passives):
     if len(first)!=9 or sorted(n for p in first for n in p['members'])!=sorted(n for d in reordered[:9] for n in d['members']):
         raise ValueError('Require the original nine CMFB/sense groups together in the first quiet row')
     path=out/(top+'.mag');g,tail=load_geometry(path)
+    fixes=[]
+    # Placement changes can move a frontend ground-via landing into a branch
+    # bus corridor. The original global track matcher avoids children but
+    # does not check parent bus/landing overlaps. Clear those explicitly.
+    for leaf in ['DP','DN','XLS__L','XLS__R']:
+        route=next(r for r in info['routes'] if r['net']==top+'__'+leaf)
+        old_y=route['bus_y_um'];new_y=clear_bus_y(g,old_y,info['placements'])
+        if new_y!=old_y:
+            changed=relocate_bus(g,old_y,new_y,info['placements'])
+            fixes.append(dict(net=route['net'],**changed));route.update(changed)
     names=[top+'__XCM__L',top+'__XCM__T',top+'__CM',top+'__CMS',top+'__SINK']
     top_y=max(p['bbox_um'][3] for p in quiet)
     local_y=math.ceil(top_y+8.);changes=[]
@@ -82,6 +118,7 @@ def write(out,top,ports,original,grouped,bank_library,tile_library,passives):
         lines += [f'<< {layer} >>']+['rect '+' '.join(map(str,r)) for r in rects]
     path.write_text('\n'.join(lines+tail)+'\n')
     info['local_cmfb_routes']=changes
+    info['parent_landing_clearance_fixes']=fixes
     info['analog_first_groups']=[d['name'] for d in reordered[:9]]
     info['scope']='Identical source, original MOS fingers and PDK passives; local CMFB placement/routing trial only.'
     return info

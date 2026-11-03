@@ -5,7 +5,7 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from driver_local_cmfb_geometry import analog_first,relocate_bus
+from driver_local_cmfb_geometry import analog_first,relocate_bus,clear_bus_y
 from driver_compact_geometry import via45
 from layout import Geometry,GRID
 
@@ -38,6 +38,15 @@ class LocalCMFBGeometry(unittest.TestCase):
         g=self.example();before=deepcopy(g.layers)
         with self.assertRaises(ValueError):relocate_bus(g,200.,-190.,[dict(bbox_um=[-5.,-200.,5.,-180.])])
         self.assertEqual(g.layers,before)
+
+    def test_unrelated_parent_landing_is_avoided_even_outside_all_children(self):
+        g=self.example();g.pad('metal4',5.,200.,1.8)
+        before=deepcopy(g.layers)
+        with self.assertRaises(ValueError):relocate_bus(g,200.,200.,[])
+        self.assertEqual(g.layers,before)
+        new=clear_bus_y(g,200.,[])
+        self.assertEqual(new,197.)
+        relocate_bus(g,200.,new,[])
 
     def test_original_nine_analog_groups_stay_together_without_losing_others(self):
         top='openlvds_driver_core'
