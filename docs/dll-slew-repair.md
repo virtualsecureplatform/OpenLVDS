@@ -876,9 +876,58 @@ decision tails pass. However, no complete variant passes: low-VDS NMOS
 preamp currents still fall below the unchanged 80% mirror-matching floor.
 For example, the 140 uA/20 um low-input tail is 114.07 uA against a
 150.39 uA local reference, with 61.75 mV headroom. The 280 uA/20 um low
-tail is 208.95 uA against 295.61 uA, with 20.22 mV headroom. Matching,+not numerical convergence or restored logic levels, is now limiting.
+tail is 208.95 uA against 295.61 uA, with 20.22 mV headroom. Current matching
+is now limiting; numerical convergence and restored logic levels pass.
 
 The complete regression passes 1,411 tests without skips
 (`build/dll-analog-frontend-fingered-tests.log`), including actual per-finger
 aggregation, missing/opposite/nonuniform finger rejection, profile producer
 capture, unchanged effective limits and invalid-model evidence retention.
+
+## Geometric preamp-current correction
+
+The complete fingered grid independently remeasured with no DC survivors
+(`build/dll-analog-frontend-fingered-verified.json`). All twenty points pass
+reference validity/matching, output levels, common mode, individual finger
+validity/uniformity, decision-tail checks and all MOS terminal stresses.
+All preamp headrooms remain above 20 mV. Only their low-VDS current targets
+or mirror matching fail. This limits the next change to the preamp mirror
+geometry without hiding a different circuit failure.
+
+`dll_analog_frontend_v2_tailtrim.py` changes each preamp tail from ten to
+twelve identical 20 um fingers, preserving the ten-finger local NMOS
+reference and every PMOS decision/reference device. The 240/200 um ratio
+compensates the measured low-VDS current deficit. Both clock paths change
+identically; resistor loads, tap ratios, reference, inputs and restoring
+stages remain unchanged. The private pair is versioned
+`lvds_slew_analog_pair_v2t`. All 125 actual MOS devices and all 376 actual
+reference/tail parameter vectors are required by the measurement profile.
+
+`probe_dll_analog_frontend_dc_tailtrim.py` independently verifies that its
+complete parent failed only preamp current checks. Other headroom, decision,
+reference, level or stress failures cannot admit this correction. The
+original limits are preserved. The new producer captures the complete
+parent grid and the new correction code before creating its immutable
+artifact. Fresh grid `dll_analog_frontend_dc_tailtrim/1f881e7c3b0a90e1` runs
+under `openlvds-dll-analog-frontend-dc-tailtrim.service`, with two individual
+P0 leases and retained ownership. It is a new circuit experiment; no old
+failed or partial context is retried.
+
+The corrected grid completed all twenty operating points without numerical
+errors. Seventeen points pass. Three complete variants pass:
+`tail140_w20`, `tail140_w40` and `tail280_w40`. The narrow 280 uA variant
+is rejected at every state containing a low input: current matching now
+passes, but preamp headroom is only 9.67 mV, below the unchanged 20 mV limit.
+
+| Variant | Low-input preamp current (uA) | Low-input headroom (mV) | Complete five-state set |
+| --- | ---: | ---: | --- |
+| tail140_w20 | 134.77 | 51.04 | pass |
+| tail140_w40 | 138.74 | 72.42 | pass |
+| tail280_w20 | 241.98 | 9.67 | reject |
+| tail280_w40 | 259.28 | 33.87 | pass |
+
+The complete regression passes 1,417 tests without skips
+(`build/dll-analog-frontend-tailtrim-tests.log`). Correction tests retain
+the original headroom limit and require a uniquely captured, fully verified
+current-limited parent; unrelated failures cannot be relabeled as mirror
+current errors. This is SS40 DC readiness only, not a timing repair.
