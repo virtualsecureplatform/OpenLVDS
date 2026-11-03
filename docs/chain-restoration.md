@@ -5,6 +5,27 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+`stage_compensated_phy.py` implements the later explicit eight-block exact-RC
+selection without changing the legacy selected-PHY producer. Preparation
+requires independently verified restored short/payload transport, both full
+driver campaigns, the admitted preferred receiver and all 336 corrected DLL
+cases with their ten full/fast comparisons. It then binds the actual native
+driver/r2/DLL/bias/delay and the exact physical TX/capture views, including
+physical evidence and archived TX inputs. Driver Newton guesses use the
+fresh GDS conductors rather than old schematic-name aliases. The loader
+checks evidence hashes, producer code, block/port metadata and closures;
+approximate views and release flags are rejected.
+
+Six new tests cover incomplete/failed gates, physical node mapping, full block
+coverage, DLL coverage and bundle mutation. Actual-model read-only checks
+confirm the fresh driver guesses and matching exact TX/capture metadata.
+The current incomplete DLL campaign correctly rejects staging; no bundle
+has been prepared. The later full-link runner must still consume this
+selection and its node mappings. DLL signoff, phase replay, training/payload
+lengths, measured-aperture margin, the full link matrix, joint RC certification
+and release remain separate requirements. The pinned full regression passes
+**1,262 tests without skips**.
+
 The isolated exact-RC benchmark `compensated_driver_exact/8afdf90644b01ae1`
 now completes and passes independent remeasurement. All **1,221 saved
 voltages** agree within **30.867 nV** over the complete 80 ns interval;

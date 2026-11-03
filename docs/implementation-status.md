@@ -5,6 +5,15 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-03):
 
+The new `stage_compensated_phy.py` provides explicit, gated staging of the
+compensated driver/preferred receiver/corrected DLL and exact physical
+TX/capture. It requires complete driver and DLL qualification plus restored
+coupled payload, retains fresh physical driver-node guesses, and binds all
+eight model views. Its loader rejects changed evidence, missing blocks and
+approximate or release claims. The actual incomplete DLL correctly rejects
+staging, so no bundle is prepared. Connecting the later full-link runner to
+this selection and completing all electrical/timing/release gates remain open.
+
 The read-only `preflight_compensated_dll.py` checks compatibility of the new
 driver/preferred receiver with the storage-corrected DLL using its matching
 validation profile. The actual-model in-memory overlay preserves the
@@ -115,7 +124,7 @@ The matched long-component handoff also passes its prerequisite checks and
 is running the original thirty 2.54 us fixtures alongside the full native
 output matrix under the same six-slot dispatcher.
 
-The complete pinned `make test-full` regression passes **1256 tests**.
+The complete pinned `make test-full` regression passes **1262 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:
 saved voltages agree within 13.3 nV and edge counts agree. Both retain
 the original failed payload, so this admits a numerical optimization
