@@ -1,7 +1,81 @@
 # Chain restoration and TX convergence isolation
 
-Implementation snapshot, 2026-11-02. OpenLVDS remains in bring-up; no PHY is
+Implementation snapshot, 2026-11-03. OpenLVDS remains in bring-up; no PHY is
 released. All artifacts below are relative to `build/diagnostics/`.
+
+## Routing and feedback isolation
+
+The original long exact-TX benchmark
+(`ltra_exact_tx_benchmark/df68f33bb3275375`) now completes all 188.049 ns.
+Independent comparison with the completed raw reference passes the fixed
+20 mV/20 ps criteria: maximum saved-voltage difference is 13.26 nV,
+maximum measured edge displacement is 2.35e-6 ps, and edge counts and
+diagnostic payload outcomes agree. The failed ordered payload is preserved.
+This supports the exact resistor-only reduction for subsequent coupled
+experiments; it does not qualify the old driver or link.
+
+The original compact layout's six complete native-core/source-bias pilots
+(`driver_compact_native_pilot/7542c9e673372ad7`) fail all three PVT points:
+TT25 common-mode movement is 168.2–176.2 mVpp, SS25 is 198.7–211.0 mVpp
+and FF40 is 257.7–266.2 mVpp. Numerical completion is not electrical success.
+Replacing only the source bias with native bias also fails TT25 at
+178.3–186.3 mVpp (`driver_compact_native_pilot/405df3792dd50361`).
+
+The complete internal observer (`driver_compact_loop_observation/74c6588d66dd1207`)
+reproduces the original public waveform exactly. The extra movement is
+largely a slow feedback excursion. Static closed-loop common-mode impedance
+measurements (`driver_cm_impedance_recovery/b53cd882854ff4be`) find a
+12.59 MHz peak of about 6.13 kOhm with native core/source bias, or 5.50 kOhm
+with native core/native bias. The schematic peak is 2.36 kOhm at 17.78 MHz.
+The passive calibration agrees analytically to 4.3e-16 relative error.
+This is static closed-loop impedance, not loop gain or phase margin. The
+recovery preserves the original parser failure and calibration: the unused
+imaginary frequency field in ngspice complex raw data need not be zero.
+
+The new local routing places the OTA and sense resistors together and
+removes long global feedback buses. `driver_compact_layout/38443b683db2463b`
+passes zero-error DRC and strict LVS with the same 320 devices;
+`driver_compact_extraction/2ce595f0b9926232` passes fresh GDS RC and
+independent connectivity checks. Summed numeric parasitic-cap incidence
+falls from 476.9 to 82.2 fF on the OTA mirror node, 287.9 to 65.8 fF on
+its tail, 251.1 to 107.1 fF on CM, 154.6 to 21.1 fF on CMS and
+1252.6 to 793.1 fF on SINK. These sums exclude intrinsic device and
+intentional MIM capacitance. Area increases from 789.8 x 577.2 um to
+906.9 x 577.2 um. The earlier failed layout is retained: a branch bus
+overlapped a parent ground landing; the corrected generator checks these
+landings as well as child boundaries.
+
+The actual native-core/native-bias pilot
+`driver_compact_native_pilot/02ef18dddf04e4c3` captures all MOS terminal
+voltages and source-identified internal analog nodes. Both TT25 cases
+complete at 162.18 and 153.19 mVpp, still failing the 150 mVpp reference.
+SS25/FF40 continue; full native qualification remains conditional on all
+six passing. No partial waveform admits this revision.
+
+Ideal-wire controls retain all extracted PDK device geometry, including
+diffusion parameters, while removing only numeric core wire R/C. Completed
+TT25 controls (`driver_wire_loading_control/715b940b6e47b755`) measure
+120.86/120.57 mVpp; SS25/FF40 controls
+(`driver_source_pilot/0bb0b26c21a5e1e3`) measure 64.52/60.58 and
+158.06/158.05 mVpp respectively. Routing contributes, but the fast-corner
+ideal-wire failure also calls for a circuit change.
+
+One calculated compensation candidate is dispatched as
+`driver_source_pilot/347eaadfdb85f913`: one of the six original 29 um MIMs
+remains directly on SINK, while five share a series
+`sky130_fd_pr__res_high_po_0p35` resistor, W=0.35 um, L=1.25 um.
+The experiment preserves total MIM geometry and every original MOS and
+intentional passive. It uses matched extracted devices with ideal core
+wires, source bias, full 80 ns traces and a 1 ps maximum step at TT25,
+SS25 and FF40, both initial polarities. A separate transformed original
+design source is saved in `driver_cmfb_lead_design/0fae3c28caefa335`.
+Neither file is an admitted physical model. If the diagnostic passes,
+the actual circuit still requires fresh full source qualification,
+DRC/LVS, native extraction and native electrical qualification before
+coupled link restoration. No supply sweep or relaxed limit is introduced.
+The owned `openlvds-driver-cmfb-lead.service` uses two individually leased
+workers under the existing six-engine limit. The complete pinned regression
+passes 1184 tests, including compensation topology and preservation checks.
 
 ## Receiver acceptance
 

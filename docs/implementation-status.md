@@ -5,6 +5,30 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-03):
 
+The local CMFB routing revision passes zero-error DRC, strict LVS and fresh
+GDS RC connectivity checks. With native bias, its completed TT25 cases
+measure **153.2–162.2 mVpp**, compared with 178.3–186.3 mVpp for the old
+layout. Both still exceed the 150 mVpp reference; SS25/FF40 are running.
+The routing improvement is useful but has not admitted a native driver.
+
+Matched extracted-device controls with ideal core wires measure
+120.6–120.9 mVpp at TT25, 60.6–64.5 mVpp at SS25 and
+158.05–158.06 mVpp at FF40. The remaining ideal-wire FF failure motivates
+one circuit experiment: retain one compensation MIM directly at the CMFB
+output and put the other five behind one PDK poly resistor. Total MIM
+geometry and all MOS devices remain unchanged. Six matched-device tests
+are dispatched in `driver_source_pilot/347eaadfdb85f913`; their ideal wires
+and source bias make them diagnostics, not native hardware qualification.
+See [the routing and feedback findings](chain-restoration.md#routing-and-feedback-isolation).
+
+The complete pinned `make test-full` regression passes **1184 tests**.
+The complete 188.049 ns raw-versus-exact TX comparison also passes:
+saved voltages agree within 13.3 nV and edge counts agree. Both retain
+the original failed payload, so this admits a numerical optimization
+for further experiments rather than an electrical link.
+
+The following entries retain the earlier bring-up history.
+
 The compact native driver completes both TT25 pilots, but fails the
 common-mode movement reference at **168–176 mVpp**. DC output is about
 +/-319 mV, all expected edges remain present, and calibrated edges pass at
