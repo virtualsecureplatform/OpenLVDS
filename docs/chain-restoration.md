@@ -1286,3 +1286,16 @@ such change has been selected from the public trace alone.
 
 The full regression passes **1,168 tests without skips**. All code changes
 are committed separately from scientific receipts and completed failures.
+
+
+A read-only comparison of the completed TT25 schematic/native pairs further
+separates slow baseline movement from switching ripple. Integrating common
+mode over each complete 2.5 ns input-pattern period from 20 to 75 ns gives
+a time-weighted cycle-mean span of **61.952–63.341 mV** in the schematic
+pair and **124.029–131.815 mV** in the native pair. Within-cycle excursions
+span **26.033–28.638 mV** in the schematic pair and **40.174–47.195 mV** in
+the native pair. This is a diagnostic decomposition of the same complete
+traces, not an additional acceptance metric. Most of the added common-mode
+movement is slow baseline excursion. Internal feedback/bias observations
+are therefore the next causal check before changing the otherwise passing
+1/3/8 gate taper or selecting a compensation network.
