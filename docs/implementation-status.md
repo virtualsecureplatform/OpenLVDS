@@ -21,7 +21,14 @@ are dispatched in `driver_source_pilot/347eaadfdb85f913`; their ideal wires
 and source bias make them diagnostics, not native hardware qualification.
 See [the routing and feedback findings](chain-restoration.md#routing-and-feedback-isolation).
 
-The complete pinned `make test-full` regression passes **1184 tests**.
+The first completed compensation case (TT25, positive initial polarity)
+measures 62.9 mVpp against its 120.6 mVpp ideal-wire control. The other
+five cases and complete pair checks remain required. The actual schematic
+source qualifier is implemented with a strict diagnostic-pass gate, six
+fresh source pilots and then all thirty source cases; none is dispatched
+from this single result.
+
+The complete pinned `make test-full` regression passes **1189 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:
 saved voltages agree within 13.3 nV and edge counts agree. Both retain
 the original failed payload, so this admits a numerical optimization

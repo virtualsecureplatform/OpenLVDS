@@ -18,8 +18,9 @@ The original compact layout's six complete native-core/source-bias pilots
 (`driver_compact_native_pilot/7542c9e673372ad7`) fail all three PVT points:
 TT25 common-mode movement is 168.2–176.2 mVpp, SS25 is 198.7–211.0 mVpp
 and FF40 is 257.7–266.2 mVpp. Numerical completion is not electrical success.
-Replacing only the source bias with native bias also fails TT25 at
-178.3–186.3 mVpp (`driver_compact_native_pilot/405df3792dd50361`).
+Replacing only the source bias with native bias also fails all three
+points (`driver_compact_native_pilot/405df3792dd50361`): TT25 is
+178.3–186.3 mVpp, SS25 is 188.2–200.5 mVpp and FF40 is 269.5–277.8 mVpp.
 
 The complete internal observer (`driver_compact_loop_observation/74c6588d66dd1207`)
 reproduces the original public waveform exactly. The extra movement is
@@ -76,6 +77,36 @@ coupled link restoration. No supply sweep or relaxed limit is introduced.
 The owned `openlvds-driver-cmfb-lead.service` uses two individually leased
 workers under the existing six-engine limit. The complete pinned regression
 passes 1184 tests, including compensation topology and preservation checks.
+
+The first completed compensation result is TT25 positive initial polarity:
+62.887 mVpp, compared with 120.568 mVpp for its matched ideal-wire control.
+This is one complete case, not a passing PVT pair or admitted circuit.
+
+`qualify_driver_cmfb_lead_source.py` implements the next source gates.
+`prepare-pilot` independently verifies all six ideal-wire diagnostic cases
+and the original full geometric source matrix, then reconstructs the
+proposal from that original schematic and requires exact agreement with
+the proposal bound to the diagnostic. It cannot substitute the flattened
+ideal-wire core for the actual schematic. `prepare-full` requires the
+fresh six-case actual-source pilot to pass; `verify` requires all thirty
+actual-source cases at the fifteen declared PVT points. Each campaign
+uses the existing runner, fixed supplies and original 80 ns/1 ps fixtures.
+The separate `driver_cmfb_lead_source_verification` receipt explicitly
+excludes physical/native/PHY admission. No actual-source simulation is
+dispatched before the complete diagnostic pass.
+
+After that pass, the first command is:
+
+```sh
+scripts/env.sh --ngspice /usr/bin/python3 scripts/qualify_driver_cmfb_lead_source.py \
+  prepare-pilot /work/OpenLVDS/build/diagnostics/driver_source_pilot/347eaadfdb85f913 \
+  --original /work/OpenLVDS/build/diagnostics/driver_shape_source/b1325bf847630063
+```
+
+Five additional tests cover failed-diagnostic rejection, stage ordering,
+proposal hash/content checks, preservation of both evidence chains, and
+complete fifteen-point fixture preparation with changed-input rejection.
+The complete pinned regression now passes 1189 tests.
 
 ## Receiver acceptance
 
