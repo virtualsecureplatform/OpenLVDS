@@ -252,3 +252,38 @@ The complete regression passes 1,318 tests without skips
 calibration comparisons now pass; the three buffered comparisons remain
 pending at this checkpoint. This reproduces the original failures for
 calibration and does not claim those phase-detector failures are repaired.
+
+## Fresh RC and strict LVS adapter
+
+`extract_slew_pfd.py` creates a separate `slew_pfd_rc` context after the
+physical-run verifier passes. It preserves the routed artifact and copies
+its exact physical receipt/configuration for the existing extractor;
+`strict_summary.json` is the new extraction-stage result. Inputs, producers,
+PDK cells/setup/technology files and extraction tool binaries are bound.
+Existing or partial local/global extraction output is held without retries.
+
+The verifier requires the actual GDS/source binding, all eight named public
+PFD terminals, complete native RC metadata and strict LVS without property
+errors. It regenerates the PDK transistor reference, collapsed-wire model
+and strict setup for comparison. It also independently repeats exact
+degree-four resistor elimination in temporary files and compares the
+complete resulting model and reduction metadata. Every transistor,
+capacitor and public terminal must remain unchanged. Output hashes cover
+the raw/reduced model, extraction records, setup, reference and tool logs.
+Routed matching and native/loop/stability/PHY admission remain false.
+
+Baseline-only preflight `slew_pfd_rc_preflight/cf008b871dc4c96a` rechecks the
+retained fast-reset PFD's actual extracted model and strict LVS evidence,
+with archived producers and bound input/output/tool hashes. It confirms
+the new checker can reproduce the exact reduction in the installed tools
+environment; it does not qualify any repaired frontend. No new physical
+winner or extraction artifact has been prepared yet.
+
+The full regression passes 1,325 tests without skips
+(`build/dll-slew-strict-rc-tests.log`). All thirteen isolation calibration
+comparisons now pass and independently reverify, with 2.16-2.32x engine
+speedup. The original transient-owner handoff held when systemd unloaded
+the successfully completed calibration service; its evidence is preserved.
+The independently admitted 56-case isolation screen is now
+`dll_slew_screen/10795eedc551acd1`, running under the fresh retained service
+`openlvds-dll-slew-screen-calibrated.service`.
