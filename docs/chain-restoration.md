@@ -1220,3 +1220,69 @@ DC near +/-318.91 mV and 1.24844 V common mode, and the first completed
 47–49 mVpp. These incomplete-prefix readings are diagnostics only; the full
 80 ns, both-polarity calibrated result remains pending. No pilot is admitted
 from these prefixes. The full regression passes **1,159 tests without skips**.
+
+
+## Completed native TT25 exposes a slow common-mode excursion
+
+Both TT25 native pilots now complete all 80 ns with exact raw/export
+agreement. Their fresh DC output magnitudes are **318.910 mV**, with common
+mode **1.248438 V**. Both retain twenty-two rising output edges. All calibrated
+20–80 transitions are monotonic and span **321.791–338.629 ps**, within the
+260–375 ps reference interval.
+
+However, complete 20–75 ns common-mode movement is **168.210 mVpp** for the
+negative initial state and **176.183 mVpp** for the positive state, exceeding
+the 150 mVpp reference. The early partial-prefix readings were insufficient
+to reveal this. Negative-state mean common mode is about 1.182 V at 20–30 ns
+and 1.303 V at 60–70 ns; the positive state changes from 1.179 V to 1.305 V.
+The negative-state extrema occur near 26.030 and 64.757 ns, while the
+positive-state extrema occur near 27.280 and 68.507 ns. IO supply power is
+about 31.93 mW and digital power about 2.134 mW per driver. These completed
+TT25 results fail native output admission despite passing geometry, DC,
+edge count and edge duration.
+
+The remaining SS25/FF40 pilot cases continue unchanged. The full native
+matrix handoff and original long-component preparation remain gated; the
+TT25 failure prevents a passing six-case pilot receipt. No healthy run is
+restarted or reclassified from an incomplete prefix.
+
+`driver_compact_native_library/149b832cc73c74b2` prepares the compact core
+with the independently audited native shared-bias macro. A fresh GDS
+extraction resolves thirteen diagnostic conductor labels to retained native
+RC nodes, without inserting ideal aliases or choosing arbitrary split
+transistor terminals. Standalone component and two-core endpoint checks each
+retain exactly one bias-reference generator. This is library preparation,
+not native electrical admission.
+
+`driver_native_stress.py` resolves actual terminal voltages through the
+hierarchy and maps formal supply/ground ports to their real connections.
+The native core/bias library contains **302 core MOS devices plus three bias
+MOS devices**, with **1,195 unique non-ground terminal-voltage observations**;
+all probes validate against the actual library. The helper reports signed
+VGS, VGD, VDS and VBS ranges using each real source terminal, with no fixed
+rail substitution or automatic reliability verdict.
+
+`qualify_driver_compact_components.py` retains all thirty original source/
+native long fixtures, native bias integration, fresh DC/loaded-eye checks,
+long waveform observations, real supply power and all native MOS terminal
+observations. Read-only preparation checks pass for all thirty fixtures.
+The original schematic SF0 fixture already uses a stricter 20 ps maximum
+integration step; that setting is retained alongside the other original
+1 ns settings. The complete 2.54 us stimulus is retained. Dispatch remains
+blocked by the native pilot gate, and the separate 1 ps native output matrix
+is still required.
+
+Observation-only context
+`driver_compact_loop_observation/74c6588d66dd1207`, owned by
+`openlvds-compact-driver-loop-observation.service`, queues one repeat of the
+completed negative TT25 failure under an individual P2 lease. The model,
+original source bias, 80 ns / 1 ps stimulus, load and every MOS/R/C statement
+remain byte-identical. Extra observations include real gate-chain nodes,
+CM/CMS sensing nodes, SINK/TOP/BOT, shared NB and actual MOS terminal
+voltages. The report requires exact reproduction of the original public
+waveform. This is intended to separate feedback response, bias feedthrough
+and gate timing before choosing a compensation or architecture change; no
+such change has been selected from the public trace alone.
+
+The full regression passes **1,168 tests without skips**. All code changes
+are committed separately from scientific receipts and completed failures.

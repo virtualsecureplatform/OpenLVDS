@@ -3,7 +3,16 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
-Current bring-up state (2026-11-02):
+Current bring-up state (2026-11-03):
+
+The compact native driver completes both TT25 pilots, but fails the
+common-mode movement reference at **168–176 mVpp**. DC output is about
++/-319 mV, all expected edges remain present, and calibrated edges pass at
+322–339 ps. A slower common-mode excursion grows after the early prefix;
+internal feedback/bias observations are queued before selecting the fix.
+SS25/FF40 continue, while full native qualification remains gated. The
+native shared-bias library and original long-component runner are prepared.
+See [the completed native findings](chain-restoration.md#completed-native-tt25-exposes-a-slow-common-mode-excursion).
 
 The geometric-cap36 driver now passes the complete source matrix:
 **30/30 cases, 15/15 PVT points**, independently remeasured. Common-mode
