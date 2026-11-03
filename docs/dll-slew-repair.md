@@ -454,3 +454,15 @@ the compensated coupled restoration
 12 ns/1 ps numerical screen with return code zero and verified complete
 raw/export data. Its original 188.049 ns payload run is now running; no
 payload-restoration or final PHY success is inferred from the short run.
+
+The reset/disable baseline subsequently completed and independently
+remeasured as passed (`build/pfd-controls-baseline-verified.json`). The
+worst observed UP/DN maxima are 0.425 mV during initial disable, 5.026 mV
+during dynamic disable and 6.715 mV during dynamic reset, all below the
+unchanged 360 mV low limit. All six observed clocks (two pads and four
+actual receiving MOS gates) continue with valid levels/events in every
+hold window. Control-edge timing and final receiving-gate transport pass;
+phase health recovers with BAD below 1.22e-8 V in the scoring window.
+This verifies the protocol and retained matched-slew circuit at SS40 only.
+It does not admit any new frontend or replace its required PVT/control
+qualification.
