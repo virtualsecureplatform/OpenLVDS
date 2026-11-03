@@ -179,3 +179,36 @@ preflight reads the complete PDK Liberty, as the physical synthesis flow
 does. These checks do not perform placement or electrical simulation.
 The complete regression now passes 1,307 tests without skips
 (`build/dll-slew-pfd-policy-tests.log`).
+
+## Paired placement and final geometry checks
+
+`slew_pfd_floorplan.py` derives paired input-chain placement targets from
+the existing PFD's actual DEF row grid. The REF and FB conditioners,
+restoring inverters where present, flip-flops and output buffers use the
+same orientation and translated locations. The present grid yields a
+21.76 um vertical translation. REF/FB external pin shapes, routing layer,
+orientation and relative row-center locations are also matched in a DEF
+pin template. The reset gates occupy the middle row. The helper refuses
+irregular/narrow grids, differing row orientation and malformed clock pins.
+
+Its configuration uses the installed flow's `MANUAL_GLOBAL_PLACEMENTS`,
+strict `FP_DEF_TEMPLATE` pin matching and `RSZ_DONT_TOUCH_LIST`. Clock tree
+insertion, input/output buffering and post-placement/routing resizer
+repairs are disabled. The final-DEF checker verifies the actual cell
+masters, pair translations/orientations and external pin coordinates and
+shapes. A legalizer move that breaks matching is a failed check, even if
+the requested initial placement was matched. Matching placement does not
+prove matching routed RC; the checker explicitly leaves route matching
+and physical/PHY admission false.
+
+Configuration preflight against the actual baseline DEF and the installed
+LibreLane Classic constructor accepts all four generated configurations:
+`slew_pfd_floorplan_preflight/432b6fbd46d2f329`. The producer is archived,
+and configuration/source/pin-template hashes are captured. This only
+loads configurations; it performs no physical flow. The prior configuration
+loader API failures remain in their original preflight directories.
+The complete regression passes 1,311 tests without skips
+(`build/dll-slew-floorplan-tests.log`). Calibration remains live with seven
+of thirteen cases passing at this checkpoint. Winner selection, the actual
+physical-flow adapter, routed matching/DRC/LVS/RC evidence and all electrical
+qualification gates remain unfinished.
