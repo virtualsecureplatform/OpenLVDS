@@ -5,6 +5,35 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The compensated native TT25 pair is complete and passes the unchanged
+output reference checks in `driver_compact_native_pilot/9a7d8f21db2f1acc`.
+Negative/positive initial polarities measure 96.753/91.508 mVpp common-mode
+movement, with all calibrated transitions monotonic at 327.029–338.073 ps.
+Each trace retains the expected 22 rising output edges in the measurement
+window. Fresh DC differential levels are -322.643/+322.643 mV, with common
+mode 1.248470 V. Observed mean IO/digital power is approximately
+31.98/2.104 mW per driver. These are the actual native core and native
+bias, not the ideal-wire diagnostic or a source-bias hybrid.
+
+The complete TT25 pair therefore clears the previous native common-mode
+failure without relaxing the 150 mVpp or 260–375 ps references. SS25 has
+started; both SS25 and FF40 must also pass before the full thirty-case
+native matrix can be prepared. The TT25 result alone does not admit all
+PVT conditions, long components or the PHY.
+
+Read-only integration preflights also pass. All thirty original long
+component fixtures accept the new schematic/native assembly with their
+original 2.54 us stimulus and maximum-step settings, including schematic
+SF0's 20 ps maximum step. The native fixtures resolve all 305 actual MOS
+terminal descriptors. All thirty original baseline component receipts
+still pass the admission checks required by the long-component preparer.
+Substituting only the new native driver core into the validated exact-TX/
+LTRA coupled fixture preserves all 38 voltage probes, the nine-port driver
+interface and the TX/preferred-r2/capture/native-bias circuit closures.
+The fixture retains one shared 35 uA reference per endpoint. These checks
+write no simulation files and establish compatibility only; actual coupled
+payload, real DLL, long training and final PHY qualification remain open.
+
 The compensated macro now passes fresh physical and RC gates:
 
 - `driver_compact_layout/25f8a51c4c3f0ee7`: all 321 original-design devices,

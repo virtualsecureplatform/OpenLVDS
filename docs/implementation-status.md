@@ -39,6 +39,10 @@ receipt. The new compensated macro passes zero-error DRC, strict LVS and
 the independent native RC audit; six native core-plus-bias pilots are now
 running in `driver_compact_native_pilot/9a7d8f21db2f1acc`. Native electrical
 and full link qualification remain open.
+Its completed TT25 pair now passes the existing native output checks:
+91.5–96.8 mVpp common-mode movement, 327.0–338.1 ps monotonic calibrated
+transitions and fresh DC levels of +/-322.6 mV at 1.2485 V common mode.
+SS25 is running; FF40 and the full native matrix remain required.
 Failed stages stop without retries. Physical/native and full link gates
 remain open. The routing-only native revision also passes its SS25 pair
 at 138.1–142.5 mVpp, but remains held by the TT25 failures above.
