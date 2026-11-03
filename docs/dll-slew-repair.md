@@ -749,3 +749,26 @@ Source timing success still requires matched-slew/full-PVT controls and
 timing expansion, fresh physical implementation/RC, native qualification,
 closed-loop/stability/recovery/readiness/stress and the complete PHY gates.
 No analog timing artifact is prepared before DC admission passes.
+
+`continue_dll_analog_frontend_timing.py` binds the retained conditional DC
+owner and waits without an outer SPICE lease. It validates the complete DC
+terminal receipt and report hash, then lets the timing producer independently
+remeasure DC admission and the native clock baseline. No DC survivor means
+no timing dispatch. The controller runs and independently verifies the
+entire source timing screen; it starts neither physical implementation nor
+PVT expansion. Failed/restarted owners, changed evidence and partial output
+hold without retry.
+
+Handoff `dll_analog_frontend_timing_followup/e55a3dd706f05321` is active under
+`openlvds-dll-analog-frontend-timing-followup.service` with retained ownership
+(`RemainAfterExit=yes`), waiting for analog DC completion. The complete
+regression passes 1,396 tests without skips
+(`build/dll-analog-frontend-timing-tests.log`). Tests cover unchanged native
+loading/interface and bias count, actual gate probes, the complete source
+catalog and known-failure ordering, startup terminal stress, reference
+stability, independent health gates, zero balance/monotonicity/ranking,
+circuit-matched DC/clock admission, terminal handoff and partial retention.
+
+The bounded standard-cell screen has 51/56 completed cases without numerical
+errors at this checkpoint. Both analog services remain waiting; no analog
+circuit artifact or simulation has been prepared before the terminal gate.
