@@ -2040,3 +2040,60 @@ capacitor stand-ins, observation-only fixture changes, waveform reproduction,
 parent admission and retry rejection. The full regression passes 1,459 tests
 without skips (`build/forwarded-clock-observation-full-tests.log`). This is
 an internal-path diagnostic, not a changed clock circuit or PHY admission.
+
+## Receive-clock skew-buffer experiment
+
+`rx_clock_skew.py` defines a separate, bounded source architecture option:
+two CMOS inverters between the existing analog clock receiver and the native
+DDR capture macro. A weak NMOS in the first inverter delays its falling
+internal transition, hence the final clock's rising edge. The stronger
+first PMOS keeps the opposite edge faster. A strong second inverter drives
+the actual native capture clock load. This targets the unequal edge delay
+needed by the measured setup/hold budget without altering the native data,
+TX, driver, channel or capture circuits. It is a static clock-buffer
+experiment; no clock recovery or extra endpoint bias reference is added.
+
+The four declared variants change only the first NMOS width:
+0.42, 0.65, 0.84 and 1.00 um at 0.15 um length. The first PMOS is 4 um and
+the final inverter is 16/8 um PMOS/NMOS. All four devices are explicit
+SKY130 1.8 V models. These dimensions are hypotheses for simulation, not
+measured delays or an extracted layout.
+
+`probe_rx_clock_skew.py` requires the complete passing 480-condition native
+capture aperture before preparing any candidate. It checks that the
+capture closure matches the restored link, independently remeasures every
+boundary's failing/passing/guarded witnesses, verifies the full decks and
+binary/export agreement, and binds those witnesses into the new context.
+It preserves the original SS40/410 MHz, 45% duty, 100 ps skew/jitter,
+channel/load/controls and native blocks. Only the private four-MOS buffer
+is added to the receive-clock connection; the explicit 120 ns / 1 ps
+transient retains all 32 diagnostic payload bits.
+
+A source candidate must decode all 32 bits with zero errors, meet the
+original electrical checks, keep both actual capture input slews in the
+qualified 20–200 ps domain, and retain **at least 200 ps after subtracting
+the measured aperture on both setup and hold**. All four new MOS devices
+must meet the unchanged 1.95 V terminal-difference limit across the entire
+startup/transient. Ranking uses the smaller setup/hold margin. Two
+individual P2 leases share the existing six-engine dispatcher; no original
+or partial output is retried. Source success cannot grant physical, PVT,
+actual-DLL-phase, long-link or PHY admission.
+
+`continue_rx_clock_skew.py` binds the exact currently running original
+aperture owner and waits without a simulation lease. Handoff context
+`rx_clock_skew_followup/97dc3dd45ae6ef4b` records that owner and both immutable
+source manifests. A partial, failing or ownerless result cannot dispatch
+the new candidates. A transient owner-observation failure is re-polled;
+it is never treated as producer termination or grounds for a restart.
+The controller runs on the host for `systemctl`; prepare/run/verify science
+children enter the pinned Apptainer environment through `env.sh`. The base
+container does not supply `systemctl`. No numerical settings or old producer
+are changed to accommodate that environment boundary.
+
+Seven circuit/scoring checks and six handoff checks cover the bounded
+geometry, isolated clock-path substitution, missing/foreign aperture,
+payload/slew/margin/stress failures, ranking, retry rejection, exact-owner
+tracking, failed/incomplete tables, observation timeouts and scientific
+environment/path dispatch. The full regression passes 1,472 tests without
+skips (`build/rx-clock-skew-host-handoff-full-tests.log`). The actual source
+screen remains gated on completion of the original aperture campaign.
