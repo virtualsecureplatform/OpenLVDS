@@ -5,6 +5,45 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The actual schematic compensation pilot
+`driver_source_pilot/12b18f8552d5652e` is now complete and passes all six
+cases, all three PVT points and both initial polarities:
+
+| PVT | Common-mode movement, negative / positive initial state, mVpp | Calibrated transition range, ps |
+| --- | --- | --- |
+| TT25 | 46.865 / 47.697 | 320.194–323.246 |
+| SS25 | 63.060 / 60.613 | 308.529–313.593 |
+| FF40 | 63.514 / 61.182 | 321.225–327.329 |
+
+All measured transitions are monotonic. The owned handoff independently
+verifies the complete pilot before preparing and dispatching
+`driver_shape_source/ec61f8a97b10dab9`: thirty actual schematic cases,
+five processes x 0/25/40 C x both polarities. This full matrix is running;
+its complete independent pass remains the physical-build prerequisite.
+
+`prepare_driver_cmfb_lead_native.py` implements the new circuit's native
+pilot preparation after complete source, layout and RC evidence exists.
+It selects `source_readiness` and `source` explicitly from the compensated
+physical producer, independently revalidates the full actual source
+receipt, and requires the assembled schematic bytes and source hash to
+match that circuit. It does not use the older preparer's original
+geometric-source selector or create an intermediate hybrid-bias pilot.
+The audited assembly supplies both the new native core and native bias,
+with one reference for a component or a two-core endpoint.
+
+The new preparer retains source-identified sensing/mirror/tail observations,
+adds the resistor's capacitor-side plate as `CMFB_LEAD_C`, and resolves
+all these targets to actual retained fresh-GDS RC conductor labels. Every
+actual MOS terminal is also recorded through the existing 305-device
+observer. The six native pilots use the original 80 ns/1 ps fixtures and
+the unchanged native public-output checker. The generic full-native runner
+can then use the correctly selected thirty-case compensated source
+fixtures after all six native cases pass. Native electrical, sampled
+stress/reliability, long component and coupled link gates remain separate.
+Five new source-selection, model-binding, observation and runtime tests
+bring the complete pinned regression to **1205 passing tests**. No new
+compensated GDS or native pilot has been dispatched yet.
+
 The complete compensation diagnostic
 `driver_source_pilot/347eaadfdb85f913` now passes all six cases and all three
 PVT pairs. Each pair retains both fresh initial DC calibrations and 44
