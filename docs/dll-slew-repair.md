@@ -842,3 +842,43 @@ The complete regression passes 1,402 tests without skips
 `openlvds-dll-analog-frontend-dc-v2.service`, with two individual P0 leases
 and no partial retry. No revised DC, timing, physical or PHY pass is yet
 claimed.
+
+## PDK binning and explicit parallel fingers
+
+The direct-width revision hit a deterministic model-bin error at its first
+200 um NMOS instance (`could not find a valid modelname`). The invalid
+campaign was stopped after thirteen identical numerical-error reports;
+its logs and partial/unstarted cases remain retained. It is not a failed
+headroom measurement and is not retried. Its authoritative service state
+is failed/stopped; the interrupted producer state file is not liveness proof.
+
+`dll_analog_frontend_v2_fingered.py` represents every 200/400 um device as
+explicit 20 um parallel fingers. It preserves the intended topology and
+total nominal geometry, with a new private `lvds_slew_analog_pair_v2f`
+interface version. This is a fresh model, not an electrical-equivalence
+claim for the unsupported wide-device deck. There are 121 actual frontend
+MOS devices. Ninety reference/tail fingers have individual id/gm/gds/vdsat
+vectors; all 360 actual parameter vectors must be present and finite.
+
+`probe_dll_analog_frontend_dc_v2_fingered.py` retains each actual finger's
+observations and reports signed current/gm/gds sums and the worst absolute
+saturation voltage for the effective parallel device. These are explicit
+analysis aggregates, not fabricated saved vectors or voltage aliases.
+Individual finger validity, current direction and uniformity remain gates;
+all 121 actual MOS terminal stresses are checked. The original current,
+headroom, level and stress limits remain unchanged. The invalid-width
+evidence and original failed grid are captured as immutable prerequisites.
+
+Fresh grid `dll_analog_frontend_dc_v2_fingered/d1697f497103954d` completed
+all twenty points without numerical errors. The low-input cutoff is gone:
+preamp tails now carry 114-220 uA in the low-input states, and all PMOS
+decision tails pass. However, no complete variant passes: low-VDS NMOS
+preamp currents still fall below the unchanged 80% mirror-matching floor.
+For example, the 140 uA/20 um low-input tail is 114.07 uA against a
+150.39 uA local reference, with 61.75 mV headroom. The 280 uA/20 um low
+tail is 208.95 uA against 295.61 uA, with 20.22 mV headroom. Matching,+not numerical convergence or restored logic levels, is now limiting.
+
+The complete regression passes 1,411 tests without skips
+(`build/dll-analog-frontend-fingered-tests.log`), including actual per-finger
+aggregation, missing/opposite/nonuniform finger rejection, profile producer
+capture, unchanged effective limits and invalid-model evidence retention.
