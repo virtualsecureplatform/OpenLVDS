@@ -357,3 +357,27 @@ UF-DF is +24.042 mV at -20 ps and nearly zero at -50 ps (-0.062 mV), so
 this candidate already violates the required -20/+20 ps zero bracket.
 The complete planned screen remains running; other candidate results and
 physical selection are still required. No BAD threshold was widened.
+
+## Native repaired-DLL model assembly
+
+`assemble_slew_dll.py` consumes the winner's completed strict PFD RC/LVS
+receipt and validates the retained 16 pF native DLL model context. It
+replaces only `lvds_pfd_physical` and its eight-terminal public wrapper,
+using the actual extracted pin order. An exact comparison of all other
+definitions protects the analog DLL, delay line and shared bias. Native
+model/probe evidence, PDK collateral and producers are captured in a fresh
+`dll_slew_native_model` context; the retained qualification remains untouched.
+Its old electrical results do not transfer to the changed circuit.
+
+The assembler resolves receiving MOS gate observations again from the new
+PFD's own DEF/LEF and pre/post-resistance GDS extraction. Both phase-test
+(`XP:XPHYS`) and full-DLL (`XL:XCORE:XPFD:XPHYS`) hierarchy paths must resolve
+against the actual composed model. The existing scientific interpreter
+validates the retained context and confirms exactly one endpoint reference;
+the assembler itself runs in the installed tools environment without NumPy.
+No aliases or active bias generators are added.
+
+Baseline-only preflight (`build/dll-slew-native-assembly-preflight.json`)
+confirms the native reference admission, four phase and four loop receiving
+gate probes, and one shared reference. It performs no transient simulation
+and does not prepare a winner artifact while the source screen is pending.
