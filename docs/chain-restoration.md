@@ -5,6 +5,58 @@ released. All artifacts below are relative to `build/diagnostics/`.
 
 ## Routing and feedback isolation
 
+The corrected DLL full qualification now contains a completed failure:
+`dll_qualification/1a29b2389cee3d01/slew_ss_40_50ps_20_200`.
+At SS40, +50 ps external phase and 20/200 ps reference/feedback slew, the
+160 ns native simulation returns zero and completes normally, but BAD stays
+near 1.8 V in the 120–160 ns scoring window. The unchanged test requires
+BAD below 0.36 V for this valid phase error. Dependent qualification cases
+are skipped by the original producer; independent cases continue. DLL
+signoff and later staging cannot pass this result. This is an electrical
+false-BAD failure, not TX convergence or an incomplete numerical trace.
+
+Independent native-control remeasurement in
+`dll_input_conditioning/b93665ce5ff8f7c9/reference_analysis.json` preserves
+all five completed SS40 controls:
+
+| External phase | Mean UF minus DF | Existing health result |
+| --- | --- | --- |
+| 0 ps | +38.909 mV | Valid, passes |
+| +50 ps | +74.308 mV | False BAD, fails |
+| -50 ps | -0.884 mV | Valid, passes |
+| +150 ps | +140.577 mV | BAD detected, passes |
+| -150 ps | -74.021 mV | BAD detected, passes |
+
+The valid +50 ps and invalid -150 ps cases have overlapping absolute
+filtered-error magnitudes. Simply widening a symmetric detection window
+would risk masking the negative fault. The nonzero zero-phase response is
+consistent with slew-dependent PFD capture offset; an intervention is still
+required to establish the cause and a usable correction.
+
+`probe_dll_input_conditioning.py` prepares three matched source diagnostics:
+the failing +50 ps case and both +/-150 ps fault controls. It appends the
+unchanged PDK `buf_4` source definition and puts identical buffers before
+the two native PFD input ports. The native DLL, PFD, bias, loads, external
+stimuli, fixed supplies and complete 160 ns/5 ps print/20 ps maximum-step
+settings remain unchanged. Both conditioned inputs are saved. Original
+native controls are reused without rerunning or rewriting them; phase and
+BAD thresholds remain unchanged. Exact raw/export comparison and independent
+remeasurement are required. Partial runs are retained without retries.
+
+Service `openlvds-dll-input-conditioning.service` owns the three-case
+diagnostic under individual P2 leases and at most two workers; no outer
+SPICE lease is held. Added buffers have source-model devices and ideal
+routing, so even a passing result requires a new physical PFD implementation
+and native/all-PVT/loop/stability qualification. No active model changes.
+Six focused tests pass; the full pinned regression passes **1,268 tests**.
+
+The separate native-driver FF0 pair independently passes its unchanged
+output checks: negative/positive initial states measure 120.645/113.565 mVpp
+common-mode movement, with monotonic calibrated transitions at
+329.161–341.465 ps. Four of fifteen native PVT points now pass. The original
+full-driver and long-component campaigns continue independently of the DLL
+failure; ideal-phase coupled restoration remains gated on both driver suites.
+
 `stage_compensated_phy.py` implements the later explicit eight-block exact-RC
 selection without changing the legacy selected-PHY producer. Preparation
 requires independently verified restored short/payload transport, both full

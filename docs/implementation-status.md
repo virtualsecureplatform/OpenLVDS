@@ -5,6 +5,16 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current bring-up state (2026-11-03):
 
+DLL qualification has a completed electrical failure at SS40, +50 ps phase
+and 20/200 ps input slew. The solver completes all 160 ns, but BAD stays high
+for a phase error required to be valid. Saved native controls show overlapping
+absolute filtered errors for valid +50 ps and invalid -150 ps, so widening
+a symmetric threshold would risk hiding a fault. Three matched input-buffer
+diagnostics are queued in `dll_input_conditioning/b93665ce5ff8f7c9` to test
+slew conditioning while retaining the +/-150 ps fault checks. Native DLL
+signoff remains held; original failures and running models are preserved.
+See [the failure and controlled experiment](chain-restoration.md#routing-and-feedback-isolation).
+
 The new `stage_compensated_phy.py` provides explicit, gated staging of the
 compensated driver/preferred receiver/corrected DLL and exact physical
 TX/capture. It requires complete driver and DLL qualification plus restored
@@ -35,6 +45,9 @@ The full-native TT0 pair passes at 92.4–97.6 mVpp with monotonic
 TT40 independently passes both polarities at 90.9–96.2 mVpp and monotonic
 327.2–338.5 ps transitions. All three TT temperatures now pass; twelve
 other process/temperature points remain required.
+FF0 also independently passes both polarities at 113.6–120.6 mVpp and
+monotonic 329.2–341.5 ps transitions, bringing native coverage to four of
+fifteen required PVT points.
 The joined coupled handoff is live and waiting on both complete,
 independently verified qualification results before dispatching a link test.
 
@@ -124,7 +137,7 @@ The matched long-component handoff also passes its prerequisite checks and
 is running the original thirty 2.54 us fixtures alongside the full native
 output matrix under the same six-slot dispatcher.
 
-The complete pinned `make test-full` regression passes **1262 tests**.
+The complete pinned `make test-full` regression passes **1268 tests**.
 The complete 188.049 ns raw-versus-exact TX comparison also passes:
 saved voltages agree within 13.3 nV and edge counts agree. Both retain
 the original failed payload, so this admits a numerical optimization
