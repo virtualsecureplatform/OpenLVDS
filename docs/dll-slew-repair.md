@@ -95,3 +95,19 @@ The other eleven controls remain required. Candidate screening, expanded
 PVT coverage, physical implementation and analog fallback remain unfinished.
 
 The full regression at this checkpoint passes 1,285 tests without skips.
+
+## Versioned repaired-DLL coverage
+
+`dll_slew_coverage.py` defines `dll-slew-repair-v1`. Native coverage is the
+union of the complete original signature set (including captured clocks and
+fast/native comparisons) with both unequal-slew directions at every PVT point
+at 400 MHz and offsets -150, -50, -20, 0, +20, +50, +150 ps. It also adds
+390/410 MHz at SS40 and the measured worst screened PVT, deduplicating when
+those corners coincide. Its descriptor binds the version, worst PVT and
+canonical signature-set hash. Verification rejects missing, duplicate or
+unexpected cases and preserves the OTA and stuck-fault requirements.
+
+The profile does not use a fixed task count as an admission criterion. It
+does not modify or requalify the running original DLL campaign. The selected
+physical frontend's future qualification and staging adapters must consume
+this profile and remeasure their own evidence before promotion.
