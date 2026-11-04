@@ -1465,3 +1465,71 @@ The full pinned software suite passes **1,769 tests without skips** in
 `build/buffered-request-phase-release-v2-full-tests.log`. All electrical and
 physical qualification failures remain retained, and no production model is
 admitted by these diagnostic changes.
+
+### Native NAND2B arm setter and physical FF-access evidence
+
+The unbuffered strong-NAND2 release campaign now completes all eight cases.
+Independent receipt `guarded_phase_release_verification_v2/61f35903007a843f`
+regenerates and remeasures every waveform and confirms that neither guard
+profile passes. The larger guards still reach 1.969996 V in the extracted
+feedback NANDs, and the 60%-duty cases fail the low-level arming check. The
+buffered-REQUEST comparison remains running. Its first six completed cases
+remove the NAND stress failures; smaller-guard low-stop FFs still reach
+1.982827 V, while the two larger-guard 40%-duty cases pass the isolated
+counter checks. Completed 60%-duty cases still fail low-level arming.
+
+`guarded_phase_clock_release_v4.py` replaces only the separate CLK inverter
+and arm setter with `openlvds_nand2b_4_pair_v2`: A_N=CLK, B=PREPARE and
+Y=arm_sn. It preserves buffered REQUEST, both guarded source FFs, every
+sticky feedback element and the public release path. This uses the exact
+existing native compound GDS/RC, not a Boolean or ideal timing replacement.
+`phase_release_rc_families_v2.py` requires the four compound physical and
+strict-topology receipts, native source/GDS identities and positive-element RC
+in addition to the retained clock-cell receipts. Its read-only bound check
+uses the exact recorded Magic/Netgen binary paths without rerunning a physical
+job or changing any existing extraction.
+
+Campaign `guarded_phase_clock_release_v4/eb9bf06cd78f4ceb` is running the
+matched eight cases with its independent consumer watching. The first four
+completed cases all pass low-level arming, including 60% duty; public-release
+latency is approximately 536--547 ps. They remain electrical failures: the
+smaller-guard low-stop FFs still exceed 1.95 V, and the new native NAND2B arm
+setter reaches approximately 1.9715 V in high-stop cases. These are producer
+measurements, not a verified all-profile feasibility result. The faster arm
+path therefore addresses one timing mechanism while leaving voltage and
+physical-FF issues open.
+
+Physical access probe `guarded_ff_access_v2/45be9f96a32eec57` retains an
+unsuccessful diffusion-only label attempt. The native FF node `a_761_289#`
+has its coordinate anchor on polysilicon, so that assumption is invalid.
+The separate corrected producer `inspect_guarded_ff_access_v3.py` labels the
+actual native N/P diffusion or polysilicon at each selected coordinate and
+rejects ambiguous crossings. It changes labels/ports only, preserves every
+native mask rectangle and compares the extracted circuit to the exact native
+MOS source with the ten selected private-node ports exposed.
+
+Corrected receipt `guarded_ff_access_v2/31e9072b18035154` passes unique LVS
+and proves all ten selected nodes distinct. Six have surveyed existing LI
+landing rectangles. Four do not: `a_1217_47#`, `a_1270_413#`, `a_639_47#`
+and `a_805_47#`. This is a failed access-admission result under the current
+landing rules, not a proof that no possible new contact or layout can reach
+them. It prevents treating the source-level ten-guard FF as an already
+implementable unchanged-mask cell. Added-contact/layout work or a different
+readiness storage architecture must resolve those nodes before a guarded-FF
+physical RC campaign can qualify this controller. A phase counter built from
+the existing static macros is another architecture to investigate; it must
+retain startup edge ordering, stopped-clock reset and all voltage checks.
+
+The direct-port routed bank also completes and passes independent raw
+regeneration/remeasurement in
+`routed_dcdl_bank_direct_verification_v2/902ae2bfdcf4fde2`. Minimum-code
+quarter-period headroom is at least 154.245 ps at SS/40 C with 100 ps input
+slew, 98.450 ps at 250 ps slew, and 356.790 ps at FF/0 C. Coarse/fine gaps
+remain: SS rise/fall 231.760/206.815 ps and FF rise/fall 46.370/78.897 ps.
+The next-coarse cases fail stress at 2.015353 V (SS) and 1.990872 V (FF).
+Both PVT groups fail sparse feasibility, and no legal-code ROM is admitted.
+
+The full pinned software suite passes **1,774 tests without skips** in
+`build/nand2b-and-guarded-ff-access-v3-full-tests.log`. Native electrical,
+guarded-cell geometry/RC, whole-clock routing and full PHY qualification remain
+open. All failed access attempts and circuit waveforms are retained.
