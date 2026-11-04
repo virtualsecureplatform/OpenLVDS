@@ -1,0 +1,60 @@
+{
+  "schema": "openlvds-digital-clocking-v2.1",
+  "status": "development_unqualified",
+  "qualified_phy": false,
+  "architecture": {
+    "tx": ["openpll", "four_section_digital_dll", "symmetric_rising_event_dcc", "ddr_data_and_dedicated_inverted_ph0_clock", "existing_lvds_drivers"],
+    "rx_clock": ["existing_lvds_receiver", "deskew_dcdl", "single_four_section_digital_dll", "symmetric_rising_event_dcc", "existing_ddr_capture"],
+    "calibration": "startup_then_freeze",
+    "management_clock_mhz": 25,
+    "background_tracking": false,
+    "data_frequency_recovery": false
+  },
+  "search": {
+    "tx_coarse_counts": [16, 32, 64],
+    "rx_coarse_counts": [64, 128, 256],
+    "fine_counts": [16, 32],
+    "fine_step_target_ps": 10,
+    "maximum_legal_gap_ps": 20,
+    "rx_extra_range_ps": 500,
+    "selection_order": ["extracted_area", "measured_power", "configuration_order"]
+  },
+  "timing": {
+    "period_error_ps": 20,
+    "quadrature_error_ps": 50,
+    "mean_half_cycle_error_ps": 50,
+    "detector_zero_bracket_ps": 20,
+    "training_clearance_ps": 250,
+    "payload_margin_ps": 200,
+    "confirmations": 64,
+    "warmup_cycles": 256,
+    "training_frames_per_code": 4,
+    "timeout_management_cycles": 2500000,
+    "clock_loss_management_cycles": 8,
+    "rx_reference_duty_range": [0.30, 0.70],
+    "reference_slew_range_ps": [20, 250]
+  },
+  "training": {
+    "frame_bits": 256,
+    "marker_hex": "ffff0000",
+    "prbs_bits": 224,
+    "prbs_polynomial": "x^7+x^6+1",
+    "prbs_seed_hex": "7f",
+    "bit_order": "msb_first",
+    "end_marker_hex": "0000ffff",
+    "return_lane": false,
+    "controller_holds_training_until_rx_ready": true
+  },
+  "failure_codes": {
+    "none": 0, "clock_loss": 1, "timeout": 2, "range": 3,
+    "ambiguous_epoch": 4, "detector_invalid": 5, "no_eye": 6,
+    "bad_marker": 7, "unqualified_model": 8
+  },
+  "release_gates": [
+    "source_primitive_15pvt", "detector_unequal_slew", "dcc_event_spacing",
+    "calibration_epoch_and_range", "training_all_rotations", "management_cdc_and_faults",
+    "native_drc_lvs_rc", "device_stress", "native_selected_and_boundary_codes",
+    "full_link_45cases", "two_openpll_traces", "million_behavioral_bits",
+    "fresh_joint_rc_and_release"
+  ]
+}
