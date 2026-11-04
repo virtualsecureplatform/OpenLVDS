@@ -333,8 +333,9 @@ Native NAND2 drive-2/8 with actual stack/output MIM shunts now pass DRC, unique
 LVS, fresh RC and independent topology checks. Their isolated extracted-gate
 pilot exposes terminal excursions and heavy-load settling limits: the first
 two fast-slew drive-2 cases reach 1.980/1.956 V and are not admitted. A separate
-larger-output-MIM variant separately passes DRC/LVS and fresh RC/topology;
-its electrical comparison is running. Physical NAND3, inverter, buffer and
+larger-output-MIM variant separately passes DRC/LVS and fresh RC/topology.
+Its first two equivalent electrical cases now pass, with peaks reduced to
+1.931/1.924 V; the rest of its matrix remains running. Physical NAND3, inverter, buffer and
 TG macros, integrated native DCC timing and full-PVT qualification remain open.
 See [the joint-clock evidence](digital-clocking-v2.md#joint-conditioned-dcc-and-native-reset-release).
 

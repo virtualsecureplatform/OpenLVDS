@@ -855,8 +855,10 @@ LVS but fails one MIM/M3 clearance rule per gate. Raising the output escape
 from 10.0 to 10.8 µm produces
 `nand_shunt_physical_v2/54edb7bb83c9c87a`: both gates pass DRC/LVS, and fresh
 RC/topology receipt `nand_shunt_rc_v2/2bfbb5b632ecca00` passes. The new 48-case
-electrical comparison is `nand_shunt_native_v2/85a89de29ccff159`; timing/stress
-results are pending. The shared dispatcher still caps all cohorts at six
+electrical comparison is `nand_shunt_native_v2/85a89de29ccff159`. Its first two
+drive-2 SS40/20 ps/5 fF cases now pass events, full-swing settling and terminal
+screening: peaks fall from 1.980/1.956 V to 1.931/1.924 V. Remaining cases and
+the independent complete-cohort audit are pending. The shared dispatcher still caps all cohorts at six
 active engines, two workers per campaign. Independent native-gate waveform
 verification is queued; passing geometry does not select this variant.
 
