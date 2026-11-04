@@ -383,6 +383,14 @@ producer accidentally placed a scope description in the scope-hash field;
 the separate receipt retains that value and records the actual schematic SHA
 without rewriting the producer or extracted circuit.
 
+The integration LEF in `mim_switch_unit_abstract_v2/e1049520c33a5145`
+restricts public routing access to the five designated M3 rails. Other routing
+rectangles, including contacts and MIM plates, become obstructions; the routing
+geometry multiset, macro origin/size and GDS bytes are preserved. OpenROAD
+OpenDB independently reads the derived LEF and confirms the five signal/power/
+ground pin types and M3-only access. This is an integration view of the same
+DRC/LVS-clean unit, not an array, timing or electrical qualification.
+
 The measured upper bound on interconnect capacitance at NODE is about 3 fF per
 unit. This excludes intentional MIM and intrinsic MOS capacitance and is not a
 transient timing reduction. `dcdl_unit_rc_v2/fd1d622597ea4be3` therefore tests
