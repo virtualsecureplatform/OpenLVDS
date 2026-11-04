@@ -2020,3 +2020,41 @@ child pin order and schematic and check that M4 access restriction retains
 every routing shape while rejecting wrong-layer/absent access. Actual Magic
 DRC, unique Netgen LVS, positive-R/nonnegative-C audit and independent fresh
 RC topology verification provide the physical evidence above.
+
+### Loaded counter experiment with actual routed low-setter pairs
+
+`static_phase_clock_release_v6.py` replaces only the three low-setter
+parallel connections in the positive o1 counter with the new physical
+`openlvds_nand2b_4_o1_stack_guard_pair_v2` RC. All high setters, feedback,
+REQUEST buffer, public output, clock driver and three public DCC input loads
+remain unchanged. This adds the actual shared pair M4/via RC while retaining
+all 488 MOS witnesses in the loaded harness. Inter-macro wiring outside
+each pair remains ideal and still requires whole-controller routing.
+
+`guard_pair_release_rc_families_v2.py` requires the independently verified
+pair GDS/source/passivity/LVS identity and retains the original component
+family checks. Campaign `static_phase_clock_release_v6/d88c3462d0e8e585`
+is queued for four SS/40 C, 410 MHz cases: 40%/60% duty and both stopped
+levels. It binds the complete positive original o1 profile
+`static_phase_profile_verification_v2/c657a2d449809d32`. No old solver,
+fixture or extracted library is changed.
+
+`verify_static_phase_clock_release_v6.py` regenerates every component,
+counter and harness, checks every requested actual MOS terminal and full
+26 ns stop, and independently remeasures all four cases, including any
+reproducible complete-waveform event-count failures. The original alternating
+phase order, two/three clock counts, margin to the following half phase,
+asynchronous clear, stopped-clock reassertion and 1.95 V screen remain.
+It also independently remeasures each exact matching original baseline raw
+and reports prepare/public-release time and terminal-peak changes. No result
+from another temperature, duty or stop level can substitute for a missing
+case.
+
+The pilot and verifier run as
+`openlvds-routed-pair-static-phase-v2-pilot.service` and
+`openlvds-routed-pair-static-phase-v2-verify.service`, using two workers and
+the existing shared six-engine dispatcher. Independent read-only preflight
+regenerates all four decks and their 488 MOS witnesses exactly. Timing,
+actual DCC first event, whole-controller RC, full-PVT and PHY admission are
+still pending. `make test-full` passes **1,799 tests without skips** in
+`build/routed-pair-static-phase-v2-full-tests.log`.
