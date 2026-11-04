@@ -2334,3 +2334,35 @@ witnesses exactly. `make test-full` passes **1,814 tests without skips** in
 overstress, failed keeper discharge and missing DATA-bias coverage, preserve
 the fine source geometry and map actual driver port order. Component repair
 and subsequent full-bank results remain pending.
+
+### Physical root-weighted fine cells
+
+`weighted_fine_unit_v2.py` preserves the five existing root-profile device
+schematics, including the 6/12/24/48/96 square-micron MIM weights, switch
+scales 1/2/2/3/4, keeper transistors and 2x2 ENB capacitors. The physical
+builder generates actual SKY130 PCells and derives placement from their
+native bounds. Each cell exposes NODE, EN, ENB, VDD and VSS on metal3.
+
+The first artifact, `weighted_fine_unit_physical_v2/9a153bea1d4b611f`, is
+retained with its failed largest cell. The first four cells passed DRC/LVS;
+the largest exposed a shared-height CAP/ENB escape short and a bottom-plate
+ground drop crowded against the CLR signal columns. Its sources remain
+unchanged. `build_weighted_fine_units_v3.py` and
+`weighted_fine_unit_layout_v3.py` separate the capacitor escape planes and
+select a compatible existing ground column when the larger plate requires
+one. No transistor or capacitor dimensions change.
+
+Artifact `weighted_fine_unit_physical_v2/59dd66c845aa3f2f` completes all five
+cells with zero Magic DRC errors and successful unique Netgen LVS. Source,
+PDK, tool, GDS and LEF identities were checked again after completion.
+Regression tests preserve the original device connectivity and exercise the
+largest-cell escape clearance and ground-column choice that caused the
+first failure. These are physical component results only: fresh extracted
+RC, timing, full-bank integration and PHY admission remain pending.
+`make test-full` passes 1,817 tests without skips; the log is
+`build/weighted-fine-units-physical-v2-full-tests.log`.
+
+The approved duty amendment remains `clocking_duty_v2_2.json`: input
+endpoints are 40% and 60%; the output mean half-cycle error limit remains
+50 ps. The frozen base descriptor and previous bound experiments are
+retained. No supply sweep is introduced.
