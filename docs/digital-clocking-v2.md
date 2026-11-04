@@ -2121,3 +2121,27 @@ nineteen unique output drivers, preserve complete clock/request/prior-state
 fanout, reject conflicting native source bodies and preserve every routing
 shape when selecting M5 access. The reported DRC evidence is from Magic;
 independent whole-block DRC/antenna checks and physical timing remain open.
+
+### Full-counter passive RC, preserving every native terminal
+
+`extract_static_phase_backend_v2.py` freshly extracts the entire routed
+counter from its GDS, rather than concatenating component RC. Artifact
+`static_phase_backend_rc_v2/9191dc88414e60d0` retains **402 native MOS,
+7,933 positive resistors and 2,141 nonnegative capacitors**, including its
+feedback, clock/request spines, M4 escapes, M5 buses, shared supplies and
+all device body paths. Exact positive-conductance star-mesh reduction of
+unprotected algebraic nodes leaves 5,765 resistors and the same capacitors
+and MOS terminals. No parasitic thresholding, device removal or supply-path
+alias is used to obtain passivity.
+
+`verify_static_phase_backend_rc_v2.py` independently reaudits the flat model,
+checks exact GDS/source/interface hashes and repeats strict topology LVS.
+Receipt `static_phase_backend_rc_verification_v2/2998abbb3942aa22` passes.
+The normalized RC interface order is
+`REQUEST VGND VPWR CLK PREPARE RESET_N`; consumers must map by port name.
+Wire collapse is used only for independent LVS; the electrical RC remains
+intact. This is a whole-counter geometry/connectivity/passivity result,
+without native timing, independent DRC/antenna, actual DCC first-event,
+full-PVT, full-clock backend or PHY admission. Its four-dimension native
+loaded-counter timing cases must be prepared separately and retain the
+approved 40%/60% duty endpoints and all stopped-clock checks.
