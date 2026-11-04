@@ -1131,3 +1131,58 @@ failure, and a three-driver 30% event failure despite 13.346 ps steady mean
 half-cycle error. The approved 40%/60% cohort is separate and remains running.
 These results keep reset release and first-event timing as active native-clock
 work; they do not relax either requirement.
+
+### Routed-bank timing pilot and phase-qualified reset prototype
+
+`routed_dcdl_bank_v2/5dadafbb1d5d8a27` is the first timing campaign using
+the complete clean bank's native RC model. Six cases cover SS/40 C and FF/0 C
+at (coarse, fine) = (0,0), (0,31), (1,0), with 20 fF output load and 100 ps
+input slew. Each static code receives two isolated pulses in separate 10 ns
+windows, retaining absolute rising/falling delay epochs. The independent
+consumer regenerates the decks and all 2,609 MOS witnesses, rereads every raw
+trace, checks minimum quarter-period headroom, and conservatively compares
+both polarities of coarse/fine overlap across the repeated pulses. The
+campaign is running; timing and overlap results are not yet available. These
+six cases do not provide dense fine-code steps, code-update stress, all-PVT
+coverage or a legal-code ROM.
+
+New native runs use `run_native_binary_v2.py` to retain and validate complete
+ngspice binary waveforms without exporting every internal terminal to ASCII.
+It retains the same model, Gear/tolerance/KLU settings and full transient
+duration, checks the pinned runtime, rejects pre-existing outputs, and checks
+all requested vectors, time ordering and finite samples. The memory-mapped
+reader avoids loading duplicate multi-gigabyte arrays. Existing bound runs
+and the shared six-engine dispatcher remain unchanged; both new campaigns
+use at most two workers each. Physical receipt validation still executes under
+its exact recorded tools-Python interpreter before scientific-Python waveform
+work, preserving the original tool identity.
+
+The approved-duty one-driver cases 0/1 in `363a482d0837cc35` now finish.
+At 40%/60% duty they pass terminal stress, two-clock readiness and steady mean
+half-cycle error (10.683/9.448 ps), but fail startup/event integrity: release
+occurs at 34.0885/34.0488 ns, and the first subsequent P0 event produces no
+output transition. The three-driver cases are still running. Narrowing the
+duty range fixes these two cases' failure to release reset, but does not fix
+release-phase alignment; the event analyzer and 50 ps output limit remain
+unchanged.
+
+`native_phase_clock_release_v2.py` retains the native two-register readiness
+chain and replaces its direct output qualifier with low-phase arming followed
+by sticky high-phase release. All added storage clears asynchronously from
+REQUEST, including with a stopped clock. This is 28 real NAND/inverter gates
+per controller, assembled from the existing passive, DRC/LVS/topology-verified
+component RC models. Boolean tests cover late readiness and stopped-clock
+clear; they do not establish native setup/hold or release latency.
+
+Native campaign `native_clock_components_v2/802cabc7d3ad7564` binds both
+retained failed raw/deck identities and tests the new controller at 40%/60%,
+SS/40 C, 410 MHz, 20 fF, with one/three actual clock-driver instances. The
+two variants retain 1,560/1,648 MOS witnesses. It is queued under the shared
+dispatcher, with independent library/deck/MOS regeneration and raw
+verification scheduled. Both the analog conditioner source plus native bias
+RC and ideal inter-component wiring remain explicit limitations. Whole
+clock-backend routing, full-PVT timing and PHY admission remain open.
+
+The complete pinned regression passes **1,739 tests without skips** in
+`build/phase-armed-release-v2-full-tests.log`. This is software verification;
+neither new simulation campaign has supplied a native timing qualification.
