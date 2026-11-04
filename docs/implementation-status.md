@@ -18,7 +18,8 @@ bounded DLL management FSM and training transmitter/receiver RTL. The RTL tests
 exercise 64 confirmations, epoch/range rejection, code freezing, timeout, clock
 loss, asynchronous mailbox backpressure, all 256 frame rotations, both payload
 pair alignments and an independently generated TX frame reference. DLL
-measurement tournament/vote integration, qualified delay-code ROMs, full PHY wrappers, new
+physical measurement paths and offset qualification, qualified delay-code ROMs,
+full PHY wrappers, new
 physical extraction and release integration remain to be built.
 These control tests do not qualify clock timing.
 Low-level measurement hardware now includes isolated tag launch with a
@@ -27,9 +28,14 @@ holding, event-count guards, result tags, timeout and cancellation. Its default
 refuses unadmitted models. Tests use synthetic paths to check the protocol,
 including a full extra period that must remain long. Physical routing,
 conditioners, event observers and settling still require native qualification.
-The isolated-trial implementation checkpoint passes all 1,558 tests without
-skips using `make test-full`; log:
-`build/clocking-v2-tagged-trial-final-full-tests.log`.
+The all-pairs/vote sequencer and its connection to actual isolated phase trials
+are now implemented. It checks six pairs, both signed offsets and both input
+swaps, rejects stale tags and reversed/disagreeing brackets, and bounds retries.
+The real calibration FSM converges in a synthetic transaction test and still
+requires all 64 confirmations before code freeze. Composed pulse/event tests
+and Yosys process/check pass; physical offsets and native convergence remain open.
+The measurement integration checkpoint passes all 1,567 tests without skips
+using `make test-full`; log: `build/dll-measurement-v2-final-full-tests.log`.
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
 errors but failed all 54 SF cases: self-reset release while CLK remained high
@@ -113,8 +119,14 @@ bulk updates, but pass 100/200 ps. The worst fast-update stress is now caused by
 shared-node r0 undershoot below -0.16 V. The four-case
 `dcdl_charge_kick_v2/a802a32a83c0b5ee` compares shared-node MIM capacitance
 against one-bit updates at both bank endpoints. No delay ROM or detector is
-admitted. The first completed high-end single-bit case passes at 1.87948 V;
-the low-end and node-capacitance cases remain running. The complete original
+admitted. All four source repair cases pass; independent receipt:
+`dcdl_charge_kick_verification_v2/702b10e5862a3a2e`. The 4x4 node shunt peaks at
+1.91815 V, compared with 1.94795 V for 2x2 and 1.93223/1.87948 V for single-bit
+updates near the low/high endpoints. Its 150-run all-PVT dense-code/bulk-update
+expansion is active in `dcdl_node_bank_pvt_v2/e307e4f382060f33`, with independent
+verification queued after completion. This explores coarse-count 16 at coarse
+0/1; it does not qualify RX range or select a minimum-area implementation.
+The complete original
 24-run dense reanalysis is retained separately
 in `dcdl_batch_reanalysis_v2/163552785b25d024`, including all eight SS40 stress
 failures and all original producer measurement errors.

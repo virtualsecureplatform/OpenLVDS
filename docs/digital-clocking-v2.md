@@ -211,9 +211,9 @@ reference is 0.905723 V. Independent receipt:
 `clock_repairs_v2_verification/3d4ed08666f410c4`.
 `expand_analog_arbiter_v2.py` expands this exact topology to 180 source cases:
 15 PVT, both input swaps and matched/unequal slews at +/-20 ps. Low-level tagged
-trial control is now implemented as described below. The section tournament,
-characterized tolerance perturbations, repeated votes and physical detector
-still need integration and native qualification.
+trial control and the six-pair/vote sequencer are now implemented as described
+below. Characterized tolerance perturbations, physical routing and detector
+integration still need native qualification.
 
 Dense DCDL reanalysis found real SS40 control-device stress at 1.95726 V,
 above the unchanged 1.95 V limit. Strengthening the complementary-control
@@ -230,13 +230,31 @@ is the switch PMOS r0/body, not its complementary gate. The separate
 against one-bit thermometer updates near both ends of the fine bank. Both
 retain 2x2 complementary-control shunts and 20 ps source slew. No delay ROM is
 admitted; a serialized update policy would require its own controller and
-native all-code/all-PVT proof before selection.
+native all-code/all-PVT proof before selection. All four charge-kick source
+repairs pass, independently remeasured in
+`dcdl_charge_kick_verification_v2/702b10e5862a3a2e`:
+
+| Source repair at SS40, 20 ps control slew | Maximum terminal difference |
+| --- | --- |
+| Single-bit updates near fine 0 | 1.93223 V |
+| Single-bit updates near fine 31 | 1.87948 V |
+| 2x2 MIM at r0, bulk updates | 1.94795 V |
+| 4x4 MIM at r0, bulk updates | 1.91815 V |
+
+`dcdl_node_bank_pvt_v2/e307e4f382060f33` explores the 4x4 node shunt across
+150 source runs: every PVT, coarse 0/1, all 32 fine codes and an additional
+bidirectional bulk-update run at each coarse/PVT. It retains the 2x2 EB shunts,
+coarse-count 16 topology, 20 ps control transitions and unchanged stress limits.
+This is source range/health exploration, not final minimum-area selection.
+RX coarse-count/range and actual periodic pulse transport remain separate.
+The independent consumer keeps repeated/history-dependent delay extrema;
+these observed ranges are not quantified numerical uncertainty or a legal ROM.
 
 Next gates, in dependency order: finish independent source repair matrices;
 select a stress-safe fine bank and characterize a common all-PVT code path;
-complete tagged tournament/vote measurement integration; qualify fresh physical
-clock primitives and startup; connect TX/RX clock islands; then run the native
-full-link and release matrix. Supplies remain fixed throughout.
+qualify tagged measurement paths, offsets and clock primitives physically;
+connect TX/RX clock islands; then run the native full-link and release matrix.
+Supplies remain fixed throughout.
 
 ## Isolated measurement trials
 
@@ -262,6 +280,39 @@ worst path/settling window, and provide frontend readiness. Protocol tests use
 explicit synthetic paths only. They test both input swaps, a 2.4/2.6 ns period
 bracket and a 5.1 ns delay that remains long rather than aliasing at 400 MHz.
 No simulated logic delay is admitted as native timing evidence.
+
+`openlvds_dll_measure_v2` compares all six section pairs at both signed
+threshold offsets, with three valid votes for each input-swap orientation.
+Both normalized swap majorities must agree. A section is eliminated from the
+minimum candidates only when another is faster outside the threshold bracket;
+ties select the lowest eligible index. Thus the chosen section is within the
+characterized bracket of the true minimum, rather than claiming sub-threshold
+ordering. All six pairs must lie inside the bracket to report balance; a chain
+of locally close adjacent pairs cannot hide a wider overall spread.
+
+Period mode uses the same signed bracket with the next-epoch reference. It
+reports short, in-window or long; swapped-input disagreement, a reversed
+bracket, stale sequence or missing/duplicate events reject the measurement.
+Only explicit unresolved-detector decisions can retry, at most three times
+per voting block. Route acknowledgement must carry the current sequence.
+One level request produces one response and then must deassert. The existing
+calibration FSM still requires 64 complete confirmations and freezes codes.
+
+`openlvds_dll_measurement_v2` connects this sequencer to the actual phase-trial
+controller and pulse launcher. The physical wrapper supplies acknowledged
+routes, the two conditioned pre-swap event inputs and retained arbiter outputs.
+Its offset branches must be characterized together with detector bias, bounded
+inside +/-20 ps and checked against legal code steps for convergence. Admission
+defaults closed in both constituent modules. Event observers receive an
+explicit per-trial reset assertion before their synchronized flags are trusted;
+their idle values cannot initialize or certify a measurement.
+
+Tests cover the composed pulse/event path, normalized input swaps, majority
+votes, bounded retries, stale route/result tags and multi-period rejection.
+A separate transaction model drives the real calibration FSM through code
+increments and all 64 confirmations. These synthetic external models prove
+control behavior only. Yosys process/check passes for default and admitted
+configurations do not replace physical/native timing qualification.
 
 Verification follow-ups use `verify_clocking_when_idle_v2.py` for live contexts.
 It retries only contention on the existing execution lock; witness, terminal
