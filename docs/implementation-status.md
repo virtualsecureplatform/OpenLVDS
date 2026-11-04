@@ -75,9 +75,9 @@ delays; it checks 64 confirmations, both warmups and an independently generated
 432-pair training/end-marker/payload stream. Stage-error, deadline and missing
 admission cases pass. This does not qualify physical delay or clock timing.
 
-The native clock/macro checkpoint passes all 1,655 tests
+The conditioned-clock source checkpoint passes all 1,675 tests
 without skips using the `make test-full` environment; log:
-`build/native-clock-physical-checkpoint-v2-full-tests.log`. Yosys process/check with both admissions
+`build/dcc-conditioned-input-checkpoint-v2-full-tests.log`. Yosys process/check with both admissions
 enabled and with defaults closed reports zero problems
 (`build/tx-control-v2-admitted-synthesis-check.log` and
 `build/tx-control-v2-default-synthesis-check.log`).
@@ -307,6 +307,24 @@ checks and fresh RC topology in
 `dcc_toggle_pair_physical_v2/59c37db357dc5b9b`; four native timing/stress tests
 are queued. These are diagnostic candidates; all clock admission defaults stay
 false. See [the native DCC experiments](digital-clocking-v2.md#native-dcc-failure-and-replacement-experiments).
+
+The four native tests of the five-cell candidate now complete and fail timing
+or terminal screens. Static NAND storage and real MIM shunts lead to a new
+buffered transmission-gate combiner. Independent receipt
+`dcc_static_verification_v2/23edcfb662ca029c` confirms startup, output events and
+terminal screening in all 24 SS40/SF40 source cases (peak 1.933721 V). Mean
+half-cycle error still fails in eight cases; there is no production admission.
+The agreed 50 ps criterion remains the descriptor's **mean** error. Individual
+cycle excursions are retained as full-link diagnostics.
+
+A completed eight-device TG width experiment passes N=1/P=3 µm matched cases
+at SS40/SF40, with worst mean error below 37.5 ps. The first six cases of the
+continuous 410 MHz conditioner pilot pass at SS40 and limit phase-spacing
+perturbation to 4.21 ps under the tested fanout and both unequal slew directions. That pilot
+holds the actual DCC in reset; combined run/reset qualification remains open.
+Label-only native layout proofs also identify existing metal access to the
+NAND stack nodes that need shunts. Actual added contacts/MIM routing and native
+RC are still required. See [the static-storage and TG evidence](digital-clocking-v2.md#static-nand-storage-and-isolated-transmission-gates).
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active

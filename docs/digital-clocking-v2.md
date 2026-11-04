@@ -757,3 +757,79 @@ Next admission work must establish symmetric-combiner timing, reset release,
 internal stress and actual permanently loaded clock-conditioning interfaces
 before full-PVT native DCC qualification or integration into TX/RX. Do not
 replace the production backend or assert its admission bits from these pilots.
+
+### Static NAND storage and isolated transmission gates
+
+The routed five-cell diagnostic completes all four tests in
+`dcc_toggle_pair_rc_v2/9cdb701177c3b82b` without numerical errors. At SS40,
+100/100 ps input slew and 20 fF, its mean half-cycle error is about 108.8 ps and
+its worst observed terminal difference is 2.049 V. The 100 fF cases also fail
+event association. The actual RC therefore does not rescue this candidate.
+
+Native-source terminal inspection finds charge kick on private storage nodes,
+not a changing supply. The 1.95 V screen remains in force; the
+[SkyWater device documentation](https://skywater-pdk.readthedocs.io/en/main/rules/device-details.html#v-nmos-fet)
+lists that bound for the 1.8 V NMOS model's operating range. No voltage sweep or
+relaxed device threshold is introduced.
+
+`dcc_nand_latch_v2/f43da8a77c38ea09` replaces the reset FFs with static NAND
+master/slave storage. Internal state initializes through raw clocks while a real
+output NAND holds clock_out HIGH in reset. The first matched SS40 cases preserve
+events and have about 8.6 ps mean error, but an internal NMOS stack node reaches
+roughly -0.40 V. Native 2x2 MIM stack shunts in
+`dcc_nand_mid_shunt_v2/973f16363c3657c6` suppress that peak and expose positive
+excursions on lightly loaded gate outputs. Adding one native output shunt per
+logical net in `dcc_nand_node_shunt_v2/a742d47d1d4db6e6` reduces the first
+peak to 1.957 V but makes some events too late for the next-source-event window.
+All three 24-case cohorts and their failures remain intact.
+
+`dcc_tg_combiner_v2/4d0f303e86443b69` shortens the combiner to two real CMOS
+transmission-gate XOR muxes fed by complementary storage outputs. Direct loading
+prevents SF storage from switching. Four matched native buf8 isolation drivers
+in `dcc_tg_buffered_v2/5d5df5f8b9f6a416` restore startup and event integrity.
+Independent receipt `dcc_static_verification_v2/23edcfb662ca029c` regenerates the
+native libraries and decks and remeasures all binary waveforms: **all 24 cases
+pass startup, event integrity and terminal screening**, with maximum terminal
+difference 1.933721 V. Each of its two TG-size variants still fails the agreed
+mean half-cycle requirement in four of twelve cases. Neither is admitted.
+
+The first verifier's extra 50 ps per-individual-cycle criterion is retained in
+`dcc_static_verification_v2/882f93591267bc4b` as an obsolete stricter diagnostic.
+The frozen descriptor explicitly names `mean_half_cycle_error_ps = 50`.
+Versioned verifiers v3/v4 use that agreed mean criterion and preserve individual
+half-cycle excursions separately for the full-link margin work. A small mean
+does not establish eye margin, and the diagnostic does not add a new release
+requirement. No bound producer or prior receipt was rewritten.
+
+Two targeted experiments accompany the 540-case threshold matrix:
+
+- `dcc_tg_ratio_v2/955c8dbc75673e14` changes only the eight custom TG widths,
+  retaining every native storage/buffer transistor and MIM. Its 12 matched-slew
+  SS40/SF40 cases test P/N ratio headroom and have completed without numerical
+  errors. N=1/P=3 µm passes all four of its cases, with 17.2–17.7 ps mean error
+  at SS40 and a worst SF40 value below 37.5 ps. N=1/P=4 also passes but reaches
+  46.95 ps at SF40; N=0.5/P=2 fails all four mean-error checks. N=1/P=3 is the
+  next joint-source integration candidate, not a full-PVT/physical selection.
+- `continuous_clock_conditioner_v2/c3bbd0dec4ab33a1` tests the exact retained
+  tail140_w20 conditioner and distributed-RC bias continuously at 410 MHz.
+  Real buf8 clock drivers feed the actual buffered DCC input circuitry held in
+  reset, plus permanent buf8 monitor inputs and fixed native 4x4 MIM rails.
+  The first six SS40 cases pass clock integrity, common-mode and terminal
+  screens. Their largest conditioned phase-spacing error is 4.21 ps, including
+  both 20/250 and 250/20 ps raw input slew and both 30%/70% duty. This proves neither DCC run
+  timing nor a complete five-channel conditioner; integration remains required.
+
+Native layout access is now concrete. Inspection
+`nand_stack_native_inspection_v2/bab67e2b837d7a07` preserves actual NAND GDS/MAG
+and extracted device geometry. Label-only proof
+`nand_mid_access_v2/9627a8f5d45d42e4` exposes the drive-2 and drive-8 stack nodes
+as MID ports, obtains unique transistor-level matches, and identifies existing
+local-interconnect landing rectangles on those exact nets. No mask changed;
+MIM contact/routing, DRC/LVS and RC of the modified gate macros are still open.
+
+The next integration must connect the continuous conditioned clocks to the
+chosen buffered DCC with real phase-specific reset release, then qualify the
+combined waveform and all device terminals. Physical shunted gate/buffer/TG
+macros, their native RC, all 15 PVT and 390/400/410 MHz, actual permanent
+measurement loading, and closed-loop DLL/RX/full-link qualification remain
+required. Production control RTL still has its clock-model admissions closed.
