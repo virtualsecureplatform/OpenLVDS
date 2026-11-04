@@ -3067,3 +3067,45 @@ or reused for the larger transmission gate. These are geometry and RC
 proofs only. New settling, terminal-voltage and whole-bank timing results
 remain required. `make test-full` passes 1,856 tests without skips in
 `build/weighted-fine-repair-v2-full-tests.log`.
+
+### Matched native bias pilot for the stronger largest fine switch
+
+`weighted_fine_repair_rc_families_v2.py` consumes both the original complete
+five-cell RC receipt and the independent single-cell repair receipt. It
+requires matching original physical provenance, identical bit-4 public
+port order, clean native DRC/LVS, both raw/reduced passive networks and
+fresh strict topology proof. It replaces exactly bit 4 in the selected
+five-model family; the other four RC models are retained unchanged.
+The repair remains a separate experimental physical variant, and the
+previous successfully placed bank is unchanged.
+
+`probe_weighted_fine_control_v4.py` prepares
+`weighted_fine_control_v4/bf80210dbae10cb1`: four SS/40 C, fixed-1.8 V
+cases crossing guarded/source drivers with DATA=0/1.8 V. The original
+12 ns stop, 20 ps control stimulus, code sequence [0,31,0,16,15,0],
+1.5--1.9 ns settled windows, 0.18 V errors and 1.95 V terminal limits are
+unchanged. Native mapped-device counts remain 205 for guarded and 45 for
+source mode. The changed layout has fourteen resistor-connected bit-4
+plate observation nodes; all are probed, together with all other fine
+plate and native MOS terminal nodes. A direct comparison of the prepared
+old/new RC libraries confirms that only `openlvds_weighted_fine_root_b4_v2`
+changes. No favorable single plate finger or ideal CAP alias is used.
+
+The pilot and independent verifier run persistently under
+`openlvds-weighted-fine-control-v4-pilot.service` and
+`openlvds-weighted-fine-control-v4-verify.service`. Two worker tickets are
+queued through the existing six-engine priority/aging dispatcher; the
+remaining two cases follow within the same two-worker campaign. Healthy
+existing solvers are not stopped or restarted, and the dispatcher or lock
+inodes are not edited. Queue ticket PIDs are container-local; service and
+host process state, not a different container's `/proc`, identify liveness.
+
+The verifier regenerates every selected library, pin order, MOS/plate
+witness and fixture, validates complete raw/deck hashes, and independently
+remeasures all four numerically complete cases. The changed-cell source
+and its results are not production admission. No settling repair, active
+clock, whole-bank range, full-PVT timing, legal-code ROM or PHY pass is
+claimed while these transients are pending. The existing whole-bank gate
+and prior failed measurements remain unchanged. The regression suite
+passes 1,856 tests without skips in
+`build/weighted-fine-repair-v2-full-tests.log`.
