@@ -343,6 +343,58 @@ Independent remeasurement is queued after completion. Static controls in this
 pilot do not qualify route updates, all-PVT thresholds, extracted matching,
 calibration convergence or the PHY.
 
+The first two threshold cases have correct signs and reference ripple, but
+fail the unchanged 1.95 V custom-device limit. The off-branch buf_8 node reaches
+-0.15631 V immediately before its rising edge; the PMOS node/body difference
+is 1.95631 V. This is an electrical failure, not a waived numerical tolerance.
+`phase_threshold_load_v2/f8c2416efc6cd197` changes only the two always-connected
+base MIMs from 2x2 to 4x4. It retains the switched units and control shunts.
+Six matched-slew SS40 cases check -20/0/+20 ps and both threshold selections.
+The first two pass sign, custom-device stress and reference checks; the rest
+remain running. Its parent failure cases were read independently with exact
+binary/export and before/after witness checks while other parent cases continued.
+
+## Physical fine-switch primitive and early RC screening
+
+`mim_switch_unit_v2.py` defines the actual five-port unit: transmission-gate
+NMOS/PMOS, off-state discharge NMOS, a native 2x2 fine MIM and 2x2 control shunt.
+The topology test compares its switch terminals and W/L directly against the
+native fine-bank source. The node-wide base MIM and control inverter remain
+outside the unit. No ideal capacitor or placeholder transistor is used.
+
+The primitive geometry inspection is
+`mim_switch_pcells_v2/62cb2bbcbc49aef2`. Native Magic PCells are placed compactly,
+with M1 fanout/M2 drops and separate M3 rails. MIM top plates escape on M4 before
+descending outside the capacitor. Three failed routing placements remain intact:
+the first two expose the 1.34 um MIM-to-unrelated-M3 rule, and the third a local
+M2 spacing violation. The current source is `build_mim_switch_unit_v3.py` with
+`constraints/v2/mim_switch_unit_legal.json`. Result
+`mim_switch_unit_physical_v2/9ee573b2d67b6ab9` has zero Magic DRC errors and a
+unique independent LVS match. GDS/LEF generation does not qualify a whole bank.
+
+Fresh GDS extraction in `mim_switch_unit_rc_v2/b1438bbf3193eb2f` contains
+199 resistors and 55 parasitic capacitors. Its wire-collapsed audit retains the
+intentional MIM devices and matches the source. Independent receipt
+`mim_switch_unit_verification_v2/e0f493e7d69328f9` reruns that topology audit and
+binds the same exact GDS/netlist bytes. Use its `verified_model`: the original
+producer accidentally placed a scope description in the scope-hash field;
+the separate receipt retains that value and records the actual schematic SHA
+without rewriting the producer or extracted circuit.
+
+The measured upper bound on interconnect capacitance at NODE is about 3 fF per
+unit. This excludes intentional MIM and intrinsic MOS capacitance and is not a
+transient timing reduction. `dcdl_unit_rc_v2/fd1d622597ea4be3` therefore tests
+31 exact extracted unit models in the retained source coarse core at SS40,
+using fine codes 0/31/0. It measures minimum/maximum delay and every extracted
+MOS terminal during code updates. This early diagnostic omits inter-unit and
+coarse-core routing, so it cannot qualify a full physical bank or delay ROM.
+Its result will decide whether the present return driver leaves adequate
+609.8--641.1 ps quarter-period headroom before full-bank routing.
+
+All these artifacts remain component evidence. Full-array extraction, periodic
+pulse transport, native selected/boundary codes, all-PVT models and whole-PHY
+qualification remain required. No active layout/model selection is published.
+
 Verification follow-ups use `verify_clocking_when_idle_v2.py` for live contexts.
 It retries only contention on the existing execution lock; witness, terminal
 state and measurement failures remain errors. Service startup ordering alone

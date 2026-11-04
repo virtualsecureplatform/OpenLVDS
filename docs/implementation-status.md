@@ -34,9 +34,9 @@ swaps, rejects stale tags and reversed/disagreeing brackets, and bounds retries.
 The real calibration FSM converges in a synthetic transaction test and still
 requires all 64 confirmations before code freeze. Composed pulse/event tests
 and Yosys process/check pass; physical offsets and native convergence remain open.
-The threshold/preflight implementation checkpoint passes all 1,575 tests
+The unit-layout/RC integration checkpoint passes all 1,581 tests
 without skips using `make test-full`; log:
-`build/phase-threshold-v2-and-physical-preflight-full-tests.log`.
+`build/mim-switch-unit-v2-and-rc-integration-full-tests.log`.
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
 errors but failed all 54 SF cases: self-reset release while CLK remained high
@@ -119,6 +119,10 @@ conditioning, both threshold selections and raw -20/0/+20 ps under matched
 and unequal slews at SS40. It checks the changed load, native custom-device
 stress and unchanged reference-ripple limit. All-PVT, control-update and
 physical threshold qualification remain open.
+The first two threshold cases fail PMOS stress despite correct signs: the
+off-branch driver node undershoots to -0.156 V. A separate six-case 4x4-base-MIM
+repair is running in `phase_threshold_load_v2/f8c2416efc6cd197`; its first two
+cases pass sign, stress and reference checks. The original producer is retained.
 
 A native 2x2 MIM shunt reduces complementary DCDL control stress to 1.93214 V
 in the first eight SS40 codes; stronger inverter drive instead worsens stress.
@@ -141,6 +145,17 @@ The complete original
 24-run dense reanalysis is retained separately
 in `dcdl_batch_reanalysis_v2/163552785b25d024`, including all eight SS40 stress
 failures and all original producer measurement errors.
+
+A physical five-device fine-switch unit is now built from actual PDK PCells.
+`mim_switch_unit_physical_v2/9ee573b2d67b6ab9` passes zero-error Magic DRC and
+unique independent LVS after three retained failed routing placements. Its
+fresh distributed extraction contains 199 resistors and 55 parasitic capacitors;
+independent topology/model receipt:
+`mim_switch_unit_verification_v2/e0f493e7d69328f9`. This qualifies component
+geometry/connectivity only. It supplies no whole-bank or electrical admission.
+The NODE interconnect bound is about 3 fF/unit. An exact 31-unit RC/source-core
+SS40 timing/stress experiment is running in `dcdl_unit_rc_v2/fd1d622597ea4be3`
+to assess quarter-period headroom before committing to full-bank routing.
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active
