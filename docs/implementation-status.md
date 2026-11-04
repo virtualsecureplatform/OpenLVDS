@@ -121,8 +121,10 @@ stress and unchanged reference-ripple limit. All-PVT, control-update and
 physical threshold qualification remain open.
 The first two threshold cases fail PMOS stress despite correct signs: the
 off-branch driver node undershoots to -0.156 V. A separate six-case 4x4-base-MIM
-repair is running in `phase_threshold_load_v2/f8c2416efc6cd197`; its first two
-cases pass sign, stress and reference checks. The original producer is retained.
+repair completed in `phase_threshold_load_v2/f8c2416efc6cd197`; all six cases
+pass sign, stress and reference checks. Independent receipt:
+`phase_threshold_load_verification_v2/aaa5f22c61533cda`. Unequal slews, PVT and
+physical threshold qualification remain open. The original producer is retained.
 
 A native 2x2 MIM shunt reduces complementary DCDL control stress to 1.93214 V
 in the first eight SS40 codes; stronger inverter drive instead worsens stress.

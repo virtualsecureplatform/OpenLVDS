@@ -350,8 +350,10 @@ is 1.95631 V. This is an electrical failure, not a waived numerical tolerance.
 `phase_threshold_load_v2/f8c2416efc6cd197` changes only the two always-connected
 base MIMs from 2x2 to 4x4. It retains the switched units and control shunts.
 Six matched-slew SS40 cases check -20/0/+20 ps and both threshold selections.
-The first two pass sign, custom-device stress and reference checks; the rest
-remain running. Its parent failure cases were read independently with exact
+All six pass sign, custom-device stress and reference checks, independently
+remeasured in `phase_threshold_load_verification_v2/aaa5f22c61533cda`. Unequal
+slews, all-PVT and physical thresholds remain unqualified. Its parent failure
+cases were read independently with exact
 binary/export and before/after witness checks while other parent cases continued.
 
 ## Physical fine-switch primitive and early RC screening
