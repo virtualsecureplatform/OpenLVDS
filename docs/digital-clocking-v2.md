@@ -483,6 +483,38 @@ conservative rising/falling overlap between coarse 0/fine 31 and coarse 1/fine 0
 This sparse SS40 pilot cannot admit a dense code table, compound-cell layout,
 full-bank routing or all-PVT timing, even if its feasibility checks pass.
 
+The first two terminal `core2` cases recover the required minimum-delay
+headroom: coarse 0/fine 0 rises at 556.41 ps initially and 554.65 ps on repeat.
+However coarse 0/fine 31 is only 832.95 ps, while coarse 1/fine 0 is
+858.19/857.68 ps. Even the most favorable repeat leaves a 24.73 ps rising
+range gap. Device stress passes, but this is not an overlapping legal code
+path. These two completed cases were independently remeasured with exact
+binary/export agreement and before/after witness checks while the other two
+output-drive cases remained live. Their original files are unchanged.
+
+The separate `openlvds_mim_switch_2x3_v2` keeps every MOS and its control shunt
+unchanged, increasing only the switched native MIM from 2x2 to 2x3 um.
+Actual PCell inspection is `mim_switch_2x3_pcells_v2/4a3bbfab8fe0c7b9`;
+the larger MIM has the same width and an additional 1 um total height. Placement
+moves its center upward 0.5 um and raises M4 escapes and upper buses 1 um.
+`mim_switch_2x3_physical_v2/7635bb0cb7abe0c4` passes zero-error Magic DRC and a
+unique LVS match. Fresh GDS extraction
+`mim_switch_2x3_rc_v2/942b90d393388692` has 198 resistors and 55 parasitic
+capacitors; its metadata contains the actual schematic scope hash. Independent
+receipt `mim_switch_2x3_verification_v2/26f440d15e6e9da1` reruns the strict
+wire-collapsed topology check. NODE interconnect is about 2.97 fF/unit; this
+excludes intentional MIM and MOS capacitance. No old 2x2 model is relabeled.
+Its separate M3-only integration view passes actual OpenDB checks in
+`mim_switch_2x3_abstract_v2/d61830e948bc02dd`.
+
+`dcdl_larger_unit_v2/b22eb8e365e6d65a` tests 31 exact extracted larger units
+with the same `core2` coarse hardware and 4x4 shared-node MIM. Six native tasks
+cover SS40, FS40 and FF0, each at coarse 0/1 with fine 0/1/16/31/0. The consumer
+requires both-edge overlap, worst first/repeated minimum-code delay and every
+custom-device stress check independently at each pilot PVT. This experiment
+does not qualify dense steps, common all-PVT ROMs, a physical compound gate,
+inter-unit routing or a full bank. Whole-bank routing remains on hold.
+
 All these artifacts remain component evidence. Full-array extraction, periodic
 pulse transport, native selected/boundary codes, all-PVT models and whole-PHY
 qualification remain required. No active layout/model selection is published.

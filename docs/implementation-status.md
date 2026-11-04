@@ -50,9 +50,9 @@ Tests stop clocks at 80 phases each for 390/400/410 MHz and verify the full boun
 This is digital protocol evidence; native timing and DCC/warmup/PHY integration
 remain open.
 
-The DLL-control integration checkpoint passes all 1,601 tests
+The larger-fine-unit integration checkpoint passes all 1,606 tests
 without skips using `make test-full`; log:
-`build/dll-control-v2-full-tests.log`. Yosys process/check with model admission
+`build/dcdl-larger-unit-v2-full-tests.log`. Yosys process/check with model admission
 enabled reports zero problems (`build/dll-control-v2-admitted-synthesis-check.log`).
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
@@ -198,6 +198,26 @@ compares two output drives and tests coarse codes 0/1 with identical hardware.
 Independent checks use worst first/repeated minimum-code delay and both-edge
 coarse/fine overlap. Dense steps, all-PVT, compound-cell physical proof and
 full-bank RC remain open.
+
+The terminal `core2` coarse pair recovers minimum-delay headroom (556.41 ps first,
+554.65 ps repeated at coarse 0/fine 0), but coarse 0/fine 31 reaches only
+832.95 ps versus coarse 1/fine 0 at 858.19/857.68 ps. Even the best repeat leaves
+a 24.73 ps rising range gap. Independent binary/export remeasurement and
+before/after hashes retain these two case witnesses while other parent cases
+continue. This is a measured range failure, not a numerical error.
+
+A separate larger fine-switch unit changes only its switched MIM from 2x2 to
+2x3 um; MOS geometry and the 2x2 control shunt remain unchanged. Actual PCell
+inspection, fresh layout and unique LVS pass with zero Magic DRC errors in
+`mim_switch_2x3_physical_v2/7635bb0cb7abe0c4`. Fresh GDS extraction and independent
+topology receipt `mim_switch_2x3_verification_v2/26f440d15e6e9da1` pass; its
+198 R/55 parasitic C model has about 2.97 fF NODE interconnect load, excluding
+intentional MIM and MOS capacitance. The M3-only LEF passes OpenDB validation.
+Original 2x2 layouts/models are unchanged. Six native tasks in
+`dcdl_larger_unit_v2/b22eb8e365e6d65a` now test 31 actual extracted larger units
+at SS40/FS40/FF0, coarse 0/1, fine 0/1/16/31/0. Independent overlap, first-edge
+headroom and stress checks are queued. No dense ROM, full-PVT, full-bank or PHY
+admission follows from the component proofs; whole-bank routing remains held.
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active
