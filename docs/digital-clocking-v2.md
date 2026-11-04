@@ -356,6 +356,23 @@ slews, all-PVT and physical thresholds remain unqualified. Its parent failure
 cases were read independently with exact
 binary/export and before/after witness checks while other parent cases continued.
 
+`phase_prefix_v2/52fb82044646fca1` repeats all six passing repair cases with
+only the quiescent simulation prefix shortened from 200 ns to 20 ns. Native
+1 ps precision, supplies, devices, pulse shapes and measurement windows remain
+unchanged. Independent paired receipt
+`phase_prefix_verification_v2/15be3c82462f9f28` passes voltage (10 mV), individual
+edge (0.25 ps), stress-difference (1 mV), sign and health checks. Aggregate native
+runtime improves 3.31 times. This is measured matched-slew SS40 equivalence;
+hardware warmup remains unchanged, and other loads/PVT remain unqualified.
+
+The next cohort, `phase_threshold_slew_v2/1a45576caa4bab48`, uses that simulation
+prefix for the 30 remaining SS40 combinations: matched 100/100 ps with swap 1,
+20/250 and 250/20 ps with both swaps, all -20/0/+20 ps offsets and both threshold
+selections. Its independent consumer keeps the two swap orders separate and
+requires every three-offset bracket and every device/reference health check.
+It runs through the shared six-engine dispatcher with two campaign workers;
+existing healthy long-prefix jobs continue unchanged.
+
 ## Physical fine-switch primitive and early RC screening
 
 `mim_switch_unit_v2.py` defines the actual five-port unit: transmission-gate
