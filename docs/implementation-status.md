@@ -75,9 +75,9 @@ delays; it checks 64 confirmations, both warmups and an independently generated
 432-pair training/end-marker/payload stream. Stage-error, deadline and missing
 admission cases pass. This does not qualify physical delay or clock timing.
 
-The conditioned-clock/native-gate checkpoint passes all 1,688 tests
+The passive native clock-component checkpoint passes all 1,706 tests
 without skips using the `make test-full` environment; log:
-`build/shunted-gate-rc-v2-full-tests.log`. Yosys process/check with both admissions
+`build/passive-native-clock-components-v3-full-tests.log`. Yosys process/check with both admissions
 enabled and with defaults closed reports zero problems
 (`build/tx-control-v2-admitted-synthesis-check.log` and
 `build/tx-control-v2-default-synthesis-check.log`).
@@ -324,8 +324,8 @@ perturbation to 4.21 ps under the tested fanout and both unequal slew directions
 holds the actual DCC in reset. Independent receipt
 `conditioned_clock_verification_v2/94097d668b5de414` confirms exact regenerated
 sources/decks/MOS coverage and raw remeasurement. The running joint source
-pilot connects the DCC and real two-edge reset release; its first six SS40
-N1/P3 cases pass all checks. The first controller's tied-REQUEST terminal-stress
+pilot connects the DCC and real two-edge reset release; all twelve SS40/SF40
+N1/P3 cases pass all checks. N1/P4 remains running. The first controller's tied-REQUEST terminal-stress
 failure is retained separately and fixed by direct first-stage data. Its
 cohort was safely drained after active children finished.
 
@@ -334,10 +334,24 @@ LVS, fresh RC and independent topology checks. Their isolated extracted-gate
 pilot exposes terminal excursions and heavy-load settling limits: the first
 two fast-slew drive-2 cases reach 1.980/1.956 V and are not admitted. A separate
 larger-output-MIM variant separately passes DRC/LVS and fresh RC/topology.
-Its first two equivalent electrical cases now pass, with peaks reduced to
-1.931/1.924 V; the rest of its matrix remains running. Physical NAND3, inverter, buffer and
-TG macros, integrated native DCC timing and full-PVT qualification remain open.
+Its first finite transients reduced peaks to 1.931/1.924 V, but subsequent
+passivity audits invalidate both isolated-gate RC cohorts: negative capacitor
+matrix diagonals make their timing/stress results unsuitable for qualification.
+They are archived incomplete, preserving all diagnostics. Six additional shunted
+NAND3/qualifier/inverter/buffer variants and both guarded TG XOR macros now
+pass DRC and unique LVS. New flat single-pass extraction removes negative
+parasitics; all ten component variants pass positive-element gates and fresh
+comment-aware independent topology LVS. The original joint RC pilot failed near
+17 ps and is archived. Replacement `native_clock_components_v2/fab3576c6ca5b3c8`
+is live with 880 tracked MOS per case; its first two simulations have advanced
+past 4.5 ns. Native timing is unproven; independent raw verification is queued.
+It still uses ideal inter-component wires; routed
+whole-backend RC, integrated native timing and full-PVT qualification remain open.
 See [the joint-clock evidence](digital-clocking-v2.md#joint-conditioned-dcc-and-native-reset-release).
+The [passivity repair record](digital-clocking-v2.md#passivity-repair-before-native-timing-qualification)
+binds failed RC, corrected extraction, strict sign/topology gates, partial
+waveforms and exact process-retirement receipts. The source/threshold campaigns
+and retained passive bias/DCDL compound models are unaffected by this failure.
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active

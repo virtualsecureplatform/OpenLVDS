@@ -839,7 +839,7 @@ geometry `ea63ebb142230ada` remains preserved: it matched schematics but failed
 M1 enclosure and MIM-to-unrelated-M3 clearance rules. The corrected geometry
 passes both checks. These are component results, not DCC admission.
 
-`nand_shunt_native_v2/1ac6dd7fabd5ca7d` is the running 48-case electrical pilot:
+`nand_shunt_native_v2/1ac6dd7fabd5ca7d` is the original 48-case electrical pilot:
 each extracted gate at SS40/SF40/FF0, 410 MHz, both input pin orders, 20/250 ps
 slew and two external loads. A/B clocks offset by a quarter period exercise
 610 ps NAND pulses. It checks actual input/output crossings, full-swing logic
@@ -857,10 +857,11 @@ from 10.0 to 10.8 µm produces
 RC/topology receipt `nand_shunt_rc_v2/2bfbb5b632ecca00` passes. The new 48-case
 electrical comparison is `nand_shunt_native_v2/85a89de29ccff159`. Its first two
 drive-2 SS40/20 ps/5 fF cases now pass events, full-swing settling and terminal
-screening: peaks fall from 1.980/1.956 V to 1.931/1.924 V. Remaining cases and
-the independent complete-cohort audit are pending. The shared dispatcher still caps all cohorts at six
-active engines, two workers per campaign. Independent native-gate waveform
-verification is queued; passing geometry does not select this variant.
+screening: peaks fall from 1.980/1.956 V to 1.931/1.924 V. A subsequent
+passivity audit invalidates these RC models (see below). The finite-transient
+numbers remain diagnostics, not component timing/stress qualification.
+Both isolated-gate cohorts are archived incomplete. Passing geometry does
+not select this variant.
 
 ### Joint conditioned DCC and native reset release
 
@@ -880,9 +881,11 @@ but exceeded the terminal limit inside that controller only. Versioned
 inverter for its complement. Both asynchronous internal clears remain. The
 replacement `conditioned_dcc_v2/96f84f2b4b28c340` tests both TG ratios N1/P3 and
 N1/P4, SS40/SF40, three slew pairs and 30%/70% duty at 410 MHz/20 fF. Its first
-six SS40 N1/P3 cases pass startup, events, actual two-edge reset release,
+twelve N1/P3 cases at SS40/SF40 pass startup, events, actual two-edge reset release,
 common-mode, mean timing and every MOS terminal screen. The first four mean
-half-cycle errors are 16.9–23.1 ps. Remaining cases are running; no full-PVT
+half-cycle errors are 16.9–23.1 ps; the worst across all twelve is 38.93 ps,
+with a 1.9402 V maximum low-voltage MOS terminal difference. N1/P4 cases are
+running; no full-PVT
 selection or native RC timing is claimed. Independent raw verification waits
 for the whole cohort to finish.
 
@@ -894,9 +897,134 @@ were inventoried before coordinator retirement. The original artifact remains
 incomplete and unchanged. Neither running replacement nor threshold campaign
 was restarted. Bound producers and failed geometries remain immutable.
 
+### Native component RC clock assembly
+
+`clock_cell_access_v2/134f0db87cf54b71` proves existing private-node LI access
+against exact native transistor sources for NAND2_4, NAND3_2, INV1, INV8 and
+BUF8. The NAND3's two private stacks remain distinct and both have LI access.
+The inverters need only output shunts; BUF8 also needs its internal inverter
+node shunted. These are label-only proofs with no modified native masks.
+
+Physical family `clock_cell_shunts_physical_v2/5b3cb85905697901` passes zero
+DRC and unique LVS for six variants: NAND2_4/NAND3_2 with 3x3 output MIM,
+INV1 with 2x2, INV8 with 4x4, and BUF8 with either 2x2 or 4x4 output MIM.
+Every private stack/buffer node has its own native 2x2 MIM. The buffer variants
+serve the DCC isolation and the continuously loaded clock/monitor paths.
+The failed first geometry `942016c151757a71` and next `de37deaad4a72bcd`
+remain intact: generic pin/contact placement shorted NAND3 B/Y and A/stack
+nets, then the narrow inverter's output/input escapes. Selecting separated
+native LI contact locations and separating input/output vertical routes fixes
+the actual shorts. The original jobs terminated at the strict LEF interface
+guard; their stale `routing` state files are not evidence of live jobs.
+
+Fresh family RC/topology receipt `clock_cell_shunts_rc_v2/0730f91e2238a256`
+passes all six. Before exact resistor reduction, the respective R/C counts are
+215/100, 174/102, 65/25, 214/88, 275/114 and 274/102. All bulk connections and
+the RC-separated terminal nodes remain present; no body-node alias removes
+the local excursions observed in the first NAND pilot.
+
+The complementary TG pass network now has actual guarded-MOS layouts for
+N1/P3 and N1/P4: `tg_xor_physical_v2/cd7f1e9ec225297f`, both zero DRC/unique
+LVS. They retain exactly the eight source-sized MOS devices and the native
+2x2 XOR-output MIM; storage and buffers are separate components. Their initial
+layouts are about 134 x 37 µm. Fresh RC/topology receipt
+`tg_xor_rc_v2/66a14c9b49abe012` passes both, with 796 R/137 C and 900 R/137 C
+before reduction. This layout is an electrical experiment, not an area or
+interconnect timing claim.
+
+`native_clock_components_v2/5e946e50652708ef` assembles those actual component
+RC models with the larger-output-shunted NAND2_2/NAND2_8 models from
+`nand_shunt_rc_v2/2bfbb5b632ecca00`. The DCC, both native two-edge reset
+controllers and all four clean/monitor buffers are now hierarchical extracted
+components. It retains the analog conditioner source and actual distributed
+bias RC. Every extracted instance maps ports by name. Recursive MOS coverage
+retains separate drain/gate/source/body RC vertices: **880 MOS per case**,
+including 280 in the DCC and 192 in each reset-controller replica.
+
+The eight-case pilot tests both TG ratios, SS40/SF40 and 30%/70% duty at
+410 MHz/20 fF with matched raw slews. Its decks and complete device coverage
+regenerate successfully. Its first cases fail numerically before clock startup;
+this cohort is archived incomplete following the passivity finding below.
+Inter-component wires are still ideal; the next routed backend needs
+fresh whole-layout RC. No whole-backend, all-PVT or PHY admission follows from
+these component proofs. The software regression passes all 1,698 tests without
+skips (`build/native-clock-components-v2-full-tests.log`).
+
+### Passivity repair before native timing qualification
+
+`rc_passivity_v2/b7f074f8e2f99245` identifies negative parasitic capacitors in
+seven of the ten first component models. Their capacitor matrices have
+negative diagonal entries, giving explicit negative-energy basis-vector
+witnesses at internal vertices. In NAND8, `B.n15` has a -3.81621 fF capacitor
+to VGND and no intrinsic MOS or MIM terminal on that vertex. The first joint
+RC simulations abort near 17.3 ps, before raw clocks start at 22 ns. Isolated
+NAND8 runs also spend hundreds of thousands of steps near 17–18 ps.
+`rc_passivity_v2/651ae98a9ba3bb5c` binds the issue to both isolated-gate
+cohorts. Their timing/stress diagnostics are **not qualification evidence**,
+even where the transient finished.
+
+This does not invalidate source-only cells or DRC/LVS. Bias receipt
+`rc_passivity_v2/daf4709e5246a6fe` confirms positive R/C elements in the
+unchanged bias library. Receipt `rc_passivity_v2/72f07ac0eb6b515d` separately
+confirms all four retained DCDL compound RC models have positive elements.
+The earlier routed clock-hold DCC is also passive in
+`rc_passivity_v2/66feb64fa88260ba`; its prior timing failure is not explained
+by this particular defect. These certificates concern RC signs, not whole-chain
+timing.
+
+The versioned flat extraction experiment uses `extract no resistance` before
+initial extraction, one explicit unsimplified `extresist` pass with zero
+threshold/mindelay/minres, and `ext2spice hierarchy off` plus an explicit top
+subcircuit. This removes negative capacitors from all ten regenerated
+components without deleting, clipping or relocating any element. The pinned
+tool is Magic 8.3.623. The upstream [command documentation](https://github.com/RTimothyEdwards/magic/blob/master/doc/html/extresist.html)
+describes these controls; a later [upstream issue](https://github.com/RTimothyEdwards/magic/issues/557)
+also reports capacitance problems with hierarchical output on another PDK.
+That report motivated this controlled experiment, not a conclusion about our
+specific root cause. Several extraction controls change together, so this
+does not isolate which one caused each former defect.
+
+Flat output appends `$ **FLOATING` comments to some parasitics. The old
+topology collapser recognized only four-token R/C lines, leaving commented
+parasitics in the wire-collapsed netlist and causing false LVS mismatches.
+A versioned auditor strips inline comments before the unchanged collapse,
+preserving every native MOS/MIM. Fresh independent topology receipts now
+pass with positive R/C elements:
+
+- NAND2_2/NAND2_8: `passive_clock_rc_verification_v2/6e12628bd8ac8bc9`.
+- Six qualifier/NAND3/inverter/buffer variants:
+  `passive_clock_rc_verification_v2/92eed0de8314254e`.
+- Both guarded TG XORs: `passive_clock_rc_verification_v2/b6bca7b2eadf7928`.
+
+The original flat-extraction receipts `acde423833429b59`, `92f2004644d6f040`
+and `ecd1efe7bfaab12c` remain preserved with their false topology failures.
+No original extracted file or report was edited to make the new audit pass.
+`extract_native_flat_v4.py` rejects nonpositive resistors or negative
+capacitors before marking extraction successful. Tests cover that gate,
+comment handling, and refusal to signal unrelated or unfrozen jobs.
+
+Three separate drain receipts preserve the invalid cohorts:
+`1652238_443753319` retains 24 summaries/26 case folders;
+`1653853_443788595` retains 26/28;
+`1657643_443902568` retains 7/8. Each exact coordinator was verified and
+frozen before future dispatch stopped. Four owned SPICE leaves using the
+proven-nonpassive libraries were terminated with per-PID/start/argv and partial
+raw-time receipts; adapters exited and all files were inventoried before
+coordinator retirement. Source/threshold solvers were not signalled, and no
+dispatcher lock inode changed. These are archived incomplete campaigns.
+
+Replacement `native_clock_components_v2/fab3576c6ca5b3c8` uses only the ten
+positive-element, independently topology-verified RC models. It retains all
+880 MOS witnesses, the same eight-case matrix and source startup stimulus.
+Its first two simulations have advanced beyond 4.5 ns, past the old pre-clock
+failure. They are still running; native timing/stress results are unproven.
+Independent whole-cohort raw verification is queued. The complete software
+suite passes **1,706 tests without skips** in
+`build/passive-native-clock-components-v3-full-tests.log`.
+
 The next integration must finish the joint source matrix and independent
-waveform verification, then qualify actual extracted gate loading and assemble
-the physical DCC. Physical shunted NAND3/inverter/buffer/TG
-macros, their native RC, all 15 PVT and 390/400/410 MHz, actual permanent
+waveform verification, then qualify the component-RC assembly and route the
+physical DCC/reset/clock backend. Whole-backend RC, all 15 PVT and
+390/400/410 MHz, actual permanent
 measurement loading, and closed-loop DLL/RX/full-link qualification remain
 required. Production control RTL still has its clock-model admissions closed.
