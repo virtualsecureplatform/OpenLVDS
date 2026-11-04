@@ -1695,3 +1695,64 @@ pinned software suite passes **1,782 tests without skips** in
 `build/guarded-static-phase-release-v2-full-tests.log`; matched analog cases
 and their independent consumer continue running. These software checks and
 the isolated macro RC proofs do not admit the integrated controller or PHY.
+
+### Lower the native NAND2B body-return impedance
+
+The guarded static-counter campaign completes all eight cases. Independent
+receipt `static_phase_release_verification_v3/433b099a7794d47a` regenerates
+and remeasures the whole matrix and rejects both variants. The maximum
+terminal-pair differences are 1.969781 V for o1 and 1.956287 V for o2.
+Completed 60%-duty cases pass voltage screening but fail low-level phase
+qualification. Thus private-node guards alone do not establish controller
+feasibility, and neither voltage nor timing failures are waived.
+
+Diagnosis `guarded_static_phase_release_failure_v2/6a864d359568130b`
+reproduces both first o1 failures. The remaining worst pair is now output
+versus body, rather than the original unguarded floating stack: the initial
+low setter has approximately 1.931505 V on Y and -0.038276 V on its actual
+R-separated NFET body at 4.0055 ns. Both parallel macros show the same pair.
+This identifies body-return impedance and output overshoot as the next
+electrical mechanisms to test; stable external VGND does not force local
+extracted body terminals to be ideal ground.
+
+`build_nand2b_bodytap_v2.py` adds a complete row of thirteen native tap cells
+below each guarded NAND2B4. The row is mirrored so its substrate contacts
+face the native NFET region, with ground-rail location -0.4 um. Its separate
+lower nwell rail is connected to VPWR at -3.12 um through a lower power trunk.
+All native transistor masks, the two private MIM guards and each variant's
+public output MIM remain unchanged. The new macros have distinct names and
+fresh GDS; no retained prototype or RC model is edited in place.
+
+Fresh physical run `nand2b_bodytap_physical_v2/1f230175810cee8a` passes zero
+DRC and unique LVS for both o1/o2 tap-row variants. Fresh extraction
+`nand2b_bodytap_rc_v2/d46e4b8f65596f09` retains 488/489 resistors and
+121/117 capacitors before exact positive-conductance reduction. Both raw
+element gates and primary topology comparisons pass. Independent receipt
+`nand2b_bodytap_rc_verification_v2/bc0db584463b32eb` confirms exact two-variant
+coverage, source/GDS/interfaces, positive passive elements and unique topology.
+
+Read-only comparison `nand2b_body_resistance_v2/c18a95f510a9e8df` uses the
+actual verified resistor networks. Maximum shortest-series-path bounds from
+NFET bodies to VGND decrease from approximately 5,203.956 ohms to 2,748.999
+ohms; the PFET-to-VPWR bound remains approximately 1,515.755 ohms. These are
+upper bounds from one positive resistor path, not effective resistances or
+transient predictions. Parallel paths and intrinsic junctions remain in the
+unaltered simulation models. This diagnostic does not replace electrical
+screening or admit a reduced model.
+
+`static_phase_clock_release_v4.py` connects those actual tap-row RC macros
+to the same drive-4 static counter, changing only the low-setter physical
+models. Campaign `static_phase_clock_release_v4/c0bf7f7c59e1f899` is running
+the matched eight SS/40 C, 410 MHz, 40%/60% duty and low-/high-stop cases,
+with 488 native MOS witnesses per case. It retains seven loaded pulses,
+20 ps external REQUEST transitions, the 2 ns reset/reassertion interval,
+all three DCC reset-input loads and all earlier phase/count/reset/voltage
+checks. Its independent consumer requires both complete regenerated variant
+matrices. Whether the new contacts reduce peak voltage sufficiently remains
+unproven, and the earlier 60%-duty timing failures remain an open requirement.
+
+The full pinned software suite passes **1,785 tests without skips** in
+`build/bodytap-static-phase-v2-full-tests.log`. The tap-row physical/RC proofs
+and resistor-path analysis are additional scoped native checks. Actual DCC
+first events, whole-controller RC, full-PVT and full PHY qualification remain
+open; production admissions stay closed.
