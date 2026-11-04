@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-import harden_dcc_v2 as physical
+import dcc_source_admission_v2 as physical
 
 class SourceAdmissionTests(unittest.TestCase):
     def test_complete_cached_witnesses_required_and_mutation_rejected(self):

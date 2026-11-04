@@ -10,14 +10,13 @@ import argparse
 import fcntl
 import hashlib
 import json
-import itertools
+import importlib.util
 import os
 from pathlib import Path
 import subprocess
+import sys
 
 from dcc_physical_policy_v2 import interface_retained
-import expand_dcc_clock_hold_v2 as source
-import verify_dcc_clock_hold_pvt_v2 as consumer
 from digital_candidate_rc import reference_schematic
 from audit_rc import collapse
 from extract import extract
@@ -26,43 +25,35 @@ from spice_library import checked_netlist
 
 ROOT=Path(__file__).resolve().parents[1]
 NAME='openlvds_dcc_clock_hold_v2'
-VERSION='dcc-clock-hold-physical-v2.1'
-sha=source.base.sha
-atomic=source.base.atomic
+VERSION='dcc-clock-hold-physical-v2.2'
+
+def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def atomic(path,value):
+    temporary=path.with_name(path.name+'.tmp')
+    temporary.write_text(json.dumps(value,indent=2,allow_nan=False)+'\n');temporary.replace(path)
 
 
 def source_admission(parent):
-    m=source.bound(parent)
-    identity=dict(artifact=str(parent.relative_to(ROOT)),manifest_sha256=sha(parent/'manifest.json'),
-        summary_sha256=sha(parent/'summary.json'),consumer_sha256=sha(Path(consumer.__file__)))
-    receipt=ROOT/'build/diagnostics/dcc_clock_hold_pvt_verification_v2'/hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()[:16]/'summary.json'
-    report=json.loads(receipt.read_text())
-    if (report['artifact']!=identity['artifact'] or report['consumer_sha256']!=identity['consumer_sha256']
-        or report['cases']!=270 or report['numerical_errors']!=0 or report['source_only'] is not True
-        or report['qualified_phy'] is not False or len(report['candidates'])!=1):
-        raise ValueError('Incomplete independent DCC source proof')
-    candidate=report['candidates'][0]
-    if (candidate['topology']!=[1,'clock_hold','inv_4'] or candidate['cases']!=270 or candidate['pvt_count']!=15
-        or candidate['source_screen_passed'] is not True):raise ValueError('DCC candidate failed source qualification')
-    rows=json.loads((parent/'summary.json').read_text())['rows']
-    if len(m['tasks'])!=270 or [r['task'] for r in rows]!=m['tasks']:
-        raise ValueError('DCC source case coverage changed')
-    expected=set(itertools.product(['tt','ff','ss','fs','sf'],[0,25,40],[390,400,410],[20,250],[0,-140,140]))
-    actual=set()
-    required={str((parent/n).relative_to(ROOT)) for n in ['manifest.json','summary.json','state.json']}
-    for row in rows:
-        spec=row['task']['spec'];actual.add(tuple(spec[k] for k in ['process','temperature','mhz','slew_ps','phase_error_ps']))
-        if (spec['drive']!=1 or spec['buffers']!=0 or spec['output_cell']!='inv_4'
-            or spec['reset_drive']!=1 or row['error'] is not None or not row['result']['event_integrity_passed']
-            or not row['result']['pulse_generator_integrity_passed']
-            or (spec['phase_error_ps']==0 and row['result']['symmetric_timing_passed'] is not True)):
-            raise ValueError('DCC source result no longer passes')
-        required.update(str((parent/row['task']['id']/n).relative_to(ROOT)) for n in consumer.reader.REQUIRED|{'summary.json'})
-    if actual!=expected or not required<=set(report['witness_files']):
-        raise ValueError('Incomplete DCC source witness coverage')
-    if any(sha(ROOT/n)!=v for n,v in report['witness_files'].items()):
-        raise ValueError('DCC source witnesses changed')
+    # LibreLane's interpreter has no NumPy. Keep native evidence validation in
+    # the container's scientific interpreter, without leaking Python paths.
+    environment={k:v for k,v in os.environ.items() if k not in ('PYTHONPATH','PYTHONHOME')}
+    result=subprocess.run(['/usr/bin/python3',str(ROOT/'scripts/dcc_source_admission_v2.py'),str(parent)],
+        cwd=ROOT,env=environment,capture_output=True,text=True)
+    if result.returncode:raise ValueError('DCC source admission failed: '+result.stderr[-2000:])
+    receipt=Path(json.loads(result.stdout)['receipt'])
+    if not receipt.is_relative_to(ROOT/'build/diagnostics/dcc_clock_hold_pvt_verification_v2') or not receipt.is_file():
+        raise ValueError('Source validator returned an invalid receipt')
     return receipt
+
+
+def tool_identity():
+    package=importlib.util.find_spec('librelane')
+    if package is None or package.origin is None:raise ValueError('Use scripts/env.sh --tools --ngspice python3')
+    root=Path(package.origin).parent
+    files=[root/n for n in ['__init__.py','flows/classic.py','steps/common_variables.py']]
+    return dict(python=sys.executable,python_sha256=sha(Path(sys.executable)),
+        scientific_python_sha256=sha(Path('/usr/bin/python3')),librelane_files={str(p):sha(p) for p in files})
 
 
 def configuration():
@@ -88,13 +79,14 @@ def prepare(parent):
         ROOT/'sky130/v2/dcc_blackboxes_v2.v',ROOT/'constraints/v2/dcc.sdc',ROOT/'constraints/v2/dcc_pins.cfg',
         ROOT/'scripts/extract.py',ROOT/'scripts/digital_candidate_rc.py',ROOT/'scripts/audit_rc.py',
         ROOT/'scripts/lvs_utils.py',ROOT/'scripts/spice_library.py',ROOT/'scripts/env.sh',ROOT/'requirements.json',
-        ROOT/'build/apptainer/openlvds.sif.sha256',Path(consumer.__file__),receipt]
+        ROOT/'build/apptainer/openlvds.sif.sha256',ROOT/'scripts/dcc_source_admission_v2.py',
+        ROOT/'scripts/verify_dcc_clock_hold_pvt_v2.py',receipt]
     pdk=Path(os.environ['PDK_ROOT'])/'sky130A'
     pdk_paths=[pdk/'libs.ref/sky130_fd_sc_hd'/suffix for suffix in [
         'lef/sky130_fd_sc_hd.lef','gds/sky130_fd_sc_hd.gds',
         'lib/sky130_fd_sc_hd__tt_025C_1v80.lib','spice/sky130_fd_sc_hd.spice']]
     pdk_paths += [pdk/'libs.tech/magic/sky130A.magicrc',pdk/'libs.tech/netgen/sky130A_setup.tcl']
-    identity=dict(version=VERSION,source=str(parent.relative_to(ROOT)),source_receipt=str(receipt.relative_to(ROOT)),
+    identity=dict(version=VERSION,tools=tool_identity(),source=str(parent.relative_to(ROOT)),source_receipt=str(receipt.relative_to(ROOT)),
         inputs={str(p.relative_to(ROOT)):sha(p) for p in paths},pdk_files={str(p):sha(p) for p in pdk_paths},configuration=config)
     out=ROOT/'build/diagnostics/dcc_physical_v2'/hashlib.sha256(json.dumps(identity,sort_keys=True).encode()).hexdigest()[:16]
     out.mkdir(parents=True,exist_ok=False);(out/'inputs').mkdir()
@@ -110,7 +102,10 @@ def bound(out):
     if (out.name!=hashlib.sha256(json.dumps(i,sort_keys=True).encode()).hexdigest()[:16] or i['version']!=VERSION
         or any(sha(ROOT/n)!=v or sha(out/'inputs'/n)!=v for n,v in i['inputs'].items())
         or any(sha(Path(n))!=v for n,v in i['pdk_files'].items())
+        or tool_identity()!=i['tools']
         or json.loads((out/'config.json').read_text())!=i['configuration']):raise ValueError('DCC physical inputs changed')
+    if source_admission(ROOT/i['source'])!=ROOT/i['source_receipt']:
+        raise ValueError('DCC source proof selection changed')
     return m
 
 
