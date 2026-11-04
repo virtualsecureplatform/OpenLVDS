@@ -39,3 +39,5 @@ class V2RTLTests(unittest.TestCase):
         self.assertEqual([r[2] for r in rows],['0']*400+['1']*32)
 
     def test_dcdl_source_topology_and_polarity(self): self.run_tb("tb_dcdl_v2")
+
+    def test_rx_training_cdc_payload_boundary(self): self.run_tb("tb_rx_training_integration_v2")
