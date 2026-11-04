@@ -2785,3 +2785,23 @@ passing. Mean half-cycle error is 8.252 ps and the largest individual
 half-cycle error is 46.719 ps. This is a single component-RC pilot result;
 the corresponding 60% case and independent four-case receipt remain
 pending. It does not qualify full-PVT startup, hardware warmup or the PHY.
+
+### Wider native guard-pair power rails
+
+`build_nand2b_guard_pair_v4.py` widens only the shared M4 supply rails from
+0.8 to 1.6 um. Their original x envelope is retained, so the native macro
+footprint does not grow. Child devices, guard capacitors, signal routing,
+port centers and the native schematic are unchanged. Physical artifact
+`nand2b_guard_pair_physical_v2/5946b21d55ad3174` passes zero-error Magic DRC
+and unique Netgen LVS. Earlier narrow-rail evidence remains unchanged.
+
+Fresh extraction with `extract_nand2b_guard_pair_v3.py` produces
+`nand2b_guard_pair_rc_v2/e88c835f6f468a6b`: 988 resistors and 286 capacitors,
+with positive resistors/nonnegative capacitors and a fresh topology match.
+Exact protected-node reduction retains 789 resistors. Independent receipt
+`nand2b_guard_pair_rc_verification_v2/9360f971d6120228` reaudits the raw and
+reduced networks, native GDS/source/interface identities and fresh strict
+LVS. These receipts qualify component geometry and extracted topology
+only. They do not establish clock timing, voltage safety or legal codes
+for the changed metal. No old timing result or candidate admission is
+transferred to this variant.
