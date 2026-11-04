@@ -1075,3 +1075,53 @@ fresh whole-bank passive RC and native delay/ROM qualification remain pending.
 The complete software regression passes **1,722 tests without skips** in
 `build/approved-duty-and-bank-frames-v2-full-tests.log`. This validates the
 software checks and generators, not the unfinished native timing or layout.
+
+### Clean whole-bank physical signoff
+
+Bank run `dcdl_bank_physical_v2/3a29043d4903f11c` completes successfully
+with zero routing DRC, Magic DRC, KLayout DRC, LVS errors and antenna
+violating nets/pins. Netgen reports a unique match, and the independent final
+OpenDB connection check preserves every intended instance and signal/power
+connection. Clock timing, delay range and the legal-code ROM remain unqualified.
+
+The fixes preserve all native devices: frame/keepout receipt
+`dcdl_macro_frames_v2/a2fc8fb180bdd025` adds M3 routing obstructions around
+MIM markers with 1.34 um clearance (0.14 um plate enclosure plus 1.2 um
+unrelated-metal spacing), without changing any physical mask or pin. Run
+`dcdl_bank_physical_v2/90abcc8ddeefe82a` proves that this clears the capacitor
+spacing errors, but retains two untapped nwell islands and fails signoff.
+The clean successor uses actual `tapvpwrvgnd_1` row endcaps to supply local
+well contacts. Earlier failing layouts and their metrics remain preserved.
+
+`extract_dcdl_bank_rc_v2.py` requires the clean physical gates, repeats the
+final connection check, and checks continuity of both final power grids before
+fresh flat extraction. Its native reference expands the actual final OpenDB
+instances, including routing-added diodes and filler/decap cells, through each
+macro's own schematic scope. It preserves primitive parameters and unit
+suffixes without resizing or splitting devices. The preflight on the earlier
+bank expands 1,214 routed instances to 2,884 native primitives; this is a
+reference-generation check, not an extracted topology result. Whole-bank
+extraction must separately pass positive-element screening and strict Netgen
+comparison after comment-aware RC collapse. Macro-level LVS alone does not
+replace that expanded audit.
+
+Whole-bank RC campaign `dcdl_bank_rc_v2/4b6f1c51ef43e238` is now running.
+Its fresh final-OpenDB check passes, and OpenROAD confirms all shapes on each
+of VPWR and VGND are connected. The clean bank reference expands 1,205
+placed instances into 2,684 native primitives. Magic is extracting the actual
+clean GDS; passivity and expanded topology results are still pending. The
+complete pinned-environment software suite passes **1,730 tests without
+skips** (`build/whole-bank-rc-admission-v2-full-tests.log`). Earlier host-only
+and tools-Python regression attempts lack the required scientific Python
+dependencies; they are retained as failed environment attempts, not regression
+evidence. Use `make test-full` for the pinned complete suite.
+
+The original passive component-RC clock cohort `fab3576c6ca5b3c8` has now
+finished: six cases fail reset release; the remaining SF/40 C cases fail event
+integrity and exceed 50 ps mean half-cycle error (82.699 ps P3, 135.504 ps P4).
+The stronger-storage 30%/70% cohort `786085a1def9aeb4` also completes without
+a qualifying case: two reset-release failures, a one-driver 70% startup/event
+failure, and a three-driver 30% event failure despite 13.346 ps steady mean
+half-cycle error. The approved 40%/60% cohort is separate and remains running.
+These results keep reset release and first-event timing as active native-clock
+work; they do not relax either requirement.
