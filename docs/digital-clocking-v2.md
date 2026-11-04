@@ -430,6 +430,23 @@ minimum/range, a fine step and bulk-update stress. No tolerance, supply or
 one-period target changes. Any survivor still needs compound-cell physical
 proof, coarse/fine overlap, full PVT and full-bank extraction.
 
+All three cases completed without solver errors and pass custom-device stress;
+independent receipt `dcdl_rc_drive_verification_v2/cc13670b539c43b5` confirms
+the measured outcomes. Double-turn/double-merge is the sole range survivor:
+its fine-0 first/repeated rising delays are 609.24/607.32 ps. The first edge
+leaves only 0.52 ps below the fastest quarter period, which is insufficient
+to select it for routing.
+
+`dcdl_balanced_drive_v2/ebaad5ef41119fe1` instead doubles every coarse-core
+standard cell with identical-input native parallel copies, including all forward,
+turn, pass and merge stages. Two variants use double or quadruple output drive.
+Both coarse codes 0/1 use the same hardware, with fine codes 0/1/16/31/0,
+the unchanged extracted 31-unit bank and unchanged 4x4 shared-node MIM. The
+independent consumer measures the worst first/repeated fine-0 rising delay and
+conservative rising/falling overlap between coarse 0/fine 31 and coarse 1/fine 0.
+This sparse SS40 pilot cannot admit a dense code table, compound-cell layout,
+full-bank routing or all-PVT timing, even if its feasibility checks pass.
+
 All these artifacts remain component evidence. Full-array extraction, periodic
 pulse transport, native selected/boundary codes, all-PVT models and whole-PHY
 qualification remain required. No active layout/model selection is published.
