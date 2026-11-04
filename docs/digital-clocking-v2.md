@@ -1533,3 +1533,55 @@ The full pinned software suite passes **1,774 tests without skips** in
 `build/nand2b-and-guarded-ff-access-v3-full-tests.log`. Native electrical,
 guarded-cell geometry/RC, whole-clock routing and full PHY qualification remain
 open. All failed access attempts and circuit waveforms are retained.
+
+### Alternating static-phase readiness architecture
+
+The buffered-REQUEST comparison completes all eight cases. Independent receipt
+`guarded_phase_release_verification_v3/46b9d505a4f9488c` regenerates and
+remeasures the complete matrix. The larger guards pass all voltage screens,
+with maximum terminal-pair difference 1.928114 V, but neither guard profile
+passes full feasibility because 60%-duty low-level arming still fails. The
+native NAND2B arm-setter candidate remains a separate running experiment.
+
+`static_phase_clock_release_v2.py` now implements an alternative readiness
+architecture entirely from the existing physical/passive-RC macros. It uses
+six alternating sticky states: low0, high1, low1, high2, low2 and public high3.
+Low0 qualifies a low phase after REQUEST before the first counted high phase.
+High2 supplies diagnostic PREPARE; low2 supplies the sticky arm; high3 opens
+the public mask. The initial low state is intended to prevent a REQUEST
+asserted during a high phase from counting that partial high phase. Real
+setup/hold and analog races remain waveform requirements, not consequences
+of the Boolean description.
+
+All six feedback paths share a real buf8_o4 REQUEST driver. High setters use
+native shunted NAND2 macros; low setters use the actual NAND2B4-pair macro.
+Drive-4 and drive-8 variants compare state-path speed against the real clock
+and REQUEST fanout. Both retain the drive-8 public setter and output gate.
+There are no source readiness FFs or private FF guard connections in this
+candidate. Its individual macros already have native geometry, strict topology
+and passive-RC receipts; the complete controller still needs physical routing
+and fresh extraction. Component proof alone does not qualify this architecture.
+
+Campaign `static_phase_clock_release_v2/2fe84bb44161f56d` is running eight
+SS/40 C, 410 MHz, 100 ps input-slew cases: both drives, both approved duty
+endpoints and both stopped-clock levels. Each case retains the original 20 ps
+external REQUEST transitions, 2 ns reset/reassertion interval, seven real
+loaded clock pulses and all three DCC reset-input loads on the public mask.
+The two variants save 488/696 actual MOS terminal witnesses. In addition to
+the retained two-/three-clock transition counts and 1.95 V voltage screen,
+measurement checks low0/high1/low1 ordering, low-phase qualification and
+clearing of intermediate states after a stopped-clock reset. Low0 may arm
+again after reassertion with a stopped-low clock; high1, low1, PREPARE, arm
+and public release must remain cleared until new clock activity.
+
+The independent consumer watches this exact immutable matrix. It requires all
+eight regenerated libraries/decks and complete raw waveforms, retaining any
+reproducible event failures as negative evidence for the affected drive profile.
+The candidate has not yet established native feasibility or an actual DCC
+first event. No source FF repair, controller physical-RC, full-PVT, DLL or PHY
+admission is inferred from it.
+
+The full pinned software suite passes **1,777 tests without skips** in
+`build/static-phase-release-v2-full-tests.log`. The new tests reject missing
+profile coverage, bad intermediate phase ordering and uncleared stopped-clock
+state. All prior failed and running artifacts remain intact.
