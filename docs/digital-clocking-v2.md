@@ -2292,3 +2292,45 @@ repairs alone cannot qualify this completed case: the control/fine network
 also needs investigation. The direct-port guarded root-switch comparisons
 already running retain their own scope; no result for them is inferred from
 this original unit-switch trace. All failed and unfinished artifacts remain.
+
+### Isolated weighted fine-control repair experiment
+
+The completed original weighted-bank failure includes the native source
+buf_1/inv_1 controls and fine switches as well as the turn cell. The next
+experiment isolates that network, rather than attributing every failure to
+the coarse path. `weighted_fine_control_v2.py` compares the original source
+controls with the existing physically extracted BUF8-o4 and INV8-o4 shunted
+macros. The fine root-switch geometry, MIM weights, keeper transistors and
+2x2 ENB shunts are unchanged. The swap selects complete native components;
+it is not a scalar transistor resize or a new behavioral timing model.
+
+`probe_weighted_fine_control_v2.py` binds the completed full-bank case-0
+failure and its exact files as motivation. Campaign
+`weighted_fine_control_v2/a522d5d58a738970` declares four SS/40 C cases:
+source/guarded driver selection crossed with DATA held at logic 0/1.8 V.
+Supply remains fixed at 1.8 V. All five fine loads are connected, and 20 ps
+control transitions apply codes **0,31,0,16,15,0** in six 2 ns windows.
+The 12 ns trace covers maximum loading, discharge/reassertion and the
+16->15 carry. Every EN/ENB and fine CAP node must reach its expected rail
+within the retained 1.5--1.9 ns settled window of each word. Every actual
+MOS terminal pair is still screened at 1.95 V, including the entire input
+edge, with no clipping, initial conditions or tolerance change.
+
+The guarded profile has 205 MOS witnesses; the source reference has 45.
+`verify_weighted_fine_control_v2.py` independently regenerates every native
+library, fine load, device witness and deck, checks complete raw file hashes,
+and remeasures all four cases. Both DATA biases are required per driver
+profile. A failed source reference remains negative evidence and cannot
+hide a guarded failure or count as its repair. These are source fine-device
+bias tests with actual guarded-driver RC, without full-bank delay/range,
+physical fine/control/common-wire RC, active-clock, full-PVT or PHY admission.
+
+Units `openlvds-weighted-fine-control-v2-pilot.service` and
+`openlvds-weighted-fine-control-v2-verify.service` queue the cases under the
+existing six-engine/two-worker limits; earlier healthy jobs continue.
+Independent read-only preflight regenerates all four decks and 205/45 MOS
+witnesses exactly. `make test-full` passes **1,814 tests without skips** in
+`build/weighted-fine-control-v2-full-tests.log`. Tests reject transient
+overstress, failed keeper discharge and missing DATA-bias coverage, preserve
+the fine source geometry and map actual driver port order. Component repair
+and subsequent full-bank results remain pending.
