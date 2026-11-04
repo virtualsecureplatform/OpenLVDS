@@ -2600,3 +2600,50 @@ admission. The existing bank candidate and healthy solvers remain unchanged.
 `build/forward-pair-v2-full-tests.log`. Regression cases reject initial
 glitches, incomplete output settling, transient stress and changed supply,
 retain both pin orientations and prevent failed-reference timing comparisons.
+
+### Full candidate physical hierarchy and OpenDB assembly
+
+`weighted_bank_physical_v2.py` supplies the physical hierarchy for the staged
+v3 weighted-bank candidate. It preserves all sixteen coarse choices, the 31
+routed NAND2B guard pairs, original forward/merge compound cells, five native
+fine cells and ten native fine-control drivers. The shared 4x4 MIM is wrapped
+in its existing physical macro. The hierarchy has 94 instances: 78 macros
+from eleven exact types, plus the fifteen standard coarse-control buffers
+and one tie cell. Standard-cell body pins are explicitly connected.
+
+`assemble_weighted_bank_v2.py` regenerates the native candidate library and
+compares complete flattened leaf multisets against the physical hierarchy.
+The proof includes every R/C statement, native MOS/MIM/passive primitive,
+internal node path, parameter and multiplicity. Only leaf-device labels and
+the root VPWR/VGND versus VDD/VSS naming convention are adapted. The shared
+MIM wrapper adds no device or electrical change. No device or parasitic is
+collapsed to obtain this source equivalence.
+
+Assembly `weighted_bank_assembly_v2/da87ad589530ae49` passes the real OpenDB
+check. Actual LEF dimensions drive a provisional 305x468 um placement; the
+larger guard/fine macros do not reuse the old fixed pitches. All 78 macros
+are placed without overlap, and OpenDB confirms all 94 instance identities,
+473 instance-terminal connections, 24 public ports and their direction/use,
+and the actual M3/M4 macro-access layers. The complete native source,
+generated structural Verilog/SPICE, macro configuration, physical views,
+PDK/tool identities and saved database are bound in the artifact. No SPICE
+engine ticket is consumed by these physical-tool checks.
+
+`verify_weighted_bank_assembly_v2.py` regenerates the native library and leaf
+proof, derives expected connections from the rendered SPICE and reloads the
+saved database in a separate OpenROAD process. Receipt
+`weighted_bank_assembly_verification_v2/31b0f9559cd509d6` independently passes
+all instance/model/connection, public-interface, actual macro geometry,
+placement status, access-layer and serialized die checks. Output hashes
+and regenerated Verilog/SPICE are checked by the assembly binding consumer.
+Regression cases retain the complete coarse/fine hierarchy, all native
+passives and dimensions, reject duplicate/wrong-pin-count instances, and
+exercise placement with deliberately oversized guard/fine macros.
+
+This is an assembly preflight, not a routed bank. The 16 standard cells
+and top-level I/O pins are not placed; rows, power routing, signal routing,
+whole-bank DRC/LVS/antenna/RC and timing still remain. The staged electrical
+candidate's control-repair prerequisite is unchanged, and no qualified
+model, legal code ROM, configuration or PHY is selected by this result.
+`make test-full` passes 1,843 tests without skips, recorded in
+`build/weighted-bank-assembly-v2-full-tests.log`.
