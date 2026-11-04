@@ -1806,3 +1806,23 @@ The full pinned software suite passes **1,787 tests without skips** in
 only the series node is exposed for guarding, that both native transistors
 in the test fixture remain unchanged and that all sequencing checks are
 retained. The native layout/RC checks above independently cover the real cell.
+
+### Complete stack-only guarded release counter result
+
+The eight cases in `static_phase_clock_release_v5/69d0acd654522289`
+complete without numerical errors. Independent receipt
+`static_phase_release_verification_v5/7b739b8137745f14` remeasures every
+case: both o1/o2 physical guard variants pass at 40%/60% duty and both
+stopped-clock levels, SS/40 C and 410 MHz. This supersedes the pending
+60%-duty status above. The original phase-order, three-clock release,
+asynchronous clear, stopped-clock reassertion and 1.95 V terminal limits
+remain enforced.
+
+`verify_static_phase_profile_v2.py` additionally permits preselection only
+of a complete four-case positive variant, binding all retained files and
+independently regenerating and remeasuring both duties and stop levels.
+The selected o1 receipt is
+`static_phase_profile_verification_v2/c657a2d449809d32`. Its scope is the
+isolated loaded counter, without whole-controller RC, full-PVT or PHY
+admission. This allows joint DCC experiments without waiting for unrelated
+variant results; the full eight-case independent receipt remains available.
