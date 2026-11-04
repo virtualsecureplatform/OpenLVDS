@@ -125,3 +125,51 @@ DCC output is high during reset and falls on its first phase0 event; invalidatio
 and identical phase conventions are required during integration. Sparse DCDL
 samples cannot generate a production code table. No physical certificate is
 transferred from the legacy architecture or from these source experiments.
+
+## RX scan and capture integration
+
+`openlvds_rx_scan_v2` scans all legal code indices through an admitted delay-ROM
+port. The scan records four-frame results, with an independent per-code marker
+timeout. It searches contiguous passing runs and maximizes the conservative
+minimum distance from both measured eye boundaries using delay intervals. It
+then reapplies the selected code and requires a fresh frame test before
+`rx_ready`. The model-admission parameter defaults false. No fabricated ROM is
+provided as a production implementation.
+
+`openlvds_rx_training_v2` connects the scan, code mailbox, capture training and
+tagged command/result mailboxes. Results carry both generation and code index.
+Raw and capture clocks are watched independently, and management status masks
+public validity when a stopped clock cannot advance capture-domain logic. The
+current integration test uses a synthetic eye mask explicitly for protocol/CDC
+verification; actual timing-model and native integration remain required.
+
+## DCDL fine-bank correction
+
+The original fine-load source pilot has insufficient coarse/fine overlap. The
+new `dcdl_cap_bank_v2.py` uses complementary transmission gates and native MIM
+capacitors; disabled branches discharge explicitly. `probe_digital_dcdl_cap_v2.py`
+checks two bounded geometries and observes all custom MOS terminal pairs.
+`dcdl_cap_strong_v2.py` strengthens the return merge to reduce the unit delay.
+`probe_digital_dcdl_batch_v2.py` measures dense code sets in separate tagged pulse
+windows, amortizing device-model elaboration without reducing the integration
+accuracy or reusing incomplete outputs.
+
+The producer's internal-control 10 mV check was inappropriate for digital
+inverter outputs. `analyze_dcdl_batch_v2.py` retains those failures and performs
+separate reanalysis with explicit digital logic margins; source inputs, pulse
+integrity and thin-oxide stress remain strict. Both that consumer and
+`verify_dcdl_mim_v2.py` check exact binary/export agreement and retain receipts
+outside producer artifacts. Code-path selection uses conservative intervals
+through `digital_delay_path_v2.py`; it cannot supply missing PVT coverage or
+turn source data into physical qualification.
+
+## Edge-detector feasibility
+
+`openlvds_bbpd_v2` and `probe_digital_bbpd_v2.py` test matched input swapping,
+conditioning and two native edge-sampling FFs at SS40. The native pilot includes
+both +/-20 ps and +/-150 ps at matched and unequal slews, and records ambiguous
+and unresolved outputs separately from correct signs. Twelve pilot votes do
+not qualify 64-confirmation lock or remove the independent tagged-epoch check.
+`verify_digital_bbpd_v2.py` remeasures the completed curves with exact waveform
+witness checks. A detector with a dead zone or slew-dependent sign failure must
+be repaired before it is used by the DLL calibration measurement engine.

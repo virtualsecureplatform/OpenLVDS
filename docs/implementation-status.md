@@ -18,8 +18,8 @@ bounded DLL management FSM and training transmitter/receiver RTL. The RTL tests
 exercise 64 confirmations, epoch/range rejection, code freezing, timeout, clock
 loss, asynchronous mailbox backpressure, all 256 frame rotations, both payload
 pair alignments and an independently generated TX frame reference. DLL
-measurement hardware, qualified delay-code ROMs, RX scan control, full PHY
-wrappers, new physical extraction and release integration remain to be built.
+measurement hardware, qualified delay-code ROMs, full PHY wrappers, new
+physical extraction and release integration remain to be built.
 These control tests do not qualify clock timing.
 
 The native minimum-drive pulse/toggle DCC screen completed 12 cases with no
@@ -35,17 +35,68 @@ point, not physical admission. The 270-case source expansion across all fifteen
 PVT, 390/400/410 MHz, 20/250 ps input slews and 0/+/-140 ps phase error is running
 in `digital_dcc_pvt_v2/b94d5bd361c66be7`, with two fair-dispatch workers.
 
-The NAND-mirror DCDL source pilot is running in
-`digital_dcdl_v2/52741a634623ac02`. At TT25, coarse 0/fine 0 measures
-366.0/406.2 ps rising/falling delay; fine 1 measures 368.4/407.4 ps. Coarse
-1/fine 0 measures 564.8/554.4 ps. These sparse samples do not establish a legal
-code sequence or coarse/fine overlap. The full-fine case encountered a numerical
-timestep collapse at the PWL input's falling corner. Original partial output is
-retained; `digital_dcdl_smooth_v2/669f29af98c95bd2` is a separate four-case
-analytic-edge diagnostic of the same circuit and fixed supply, preserving
-160 ps input 10--90% slew. Different source-shape tables cannot be combined for
-admission. All diagnostics use the existing shared six-engine dispatcher and
-at most two workers per campaign.
+RX scan control and capture-domain integration are now implemented in
+`rtl/v2/openlvds_rx_scan_v2.v` and `openlvds_rx_training_v2.v`. The scan tests every
+legal code, times out missing markers individually, selects maximum conservative
+physical clearance, reapplies the best code and requires a new four-frame pass.
+The default refuses unadmitted timing tables. Tagged command/result mailboxes
+reject stale measurements, code updates use atomic raw-clock-domain commits,
+and separate raw/capture clock monitors invalidate status even when the capture
+clock stops. Reference comparisons cover unequal code spacing, split/narrow
+eyes, malformed ROMs, timeout and final revalidation failure. An integration test
+uses a clearly synthetic eye mask to exercise actual frame recognition, the
+end marker, payload publication and stopped-capture-clock invalidation. This is
+control/CDC evidence; it does not qualify the mask as a timing model.
+
+The original NAND-mirror DCDL source pilot completed 12 cases in
+`digital_dcdl_v2/52741a634623ac02`, retaining one numerical timestep collapse at
+the PWL falling corner. The separate smooth-source diagnostic
+`digital_dcdl_smooth_v2/669f29af98c95bd2` completed all four cases without
+numerical errors; both campaigns were independently remeasured. Matching TT25
+smooth-source endpoints expose a real range gap: coarse 0/full fine rises at
+446.0 ps, while coarse 1/zero fine rises at 559.8 ps, leaving 113.7 ps uncovered.
+The corresponding falling gap is 97.3 ps. Thus the enabled-inverter fine bank
+cannot meet the unchanged 20 ps common-code gap limit.
+
+A new custom MOS-switched native MIM fine bank is being evaluated in
+`digital_dcdl_cap_v2/7261f0f8fd8f0771`. All 12 source cases completed without
+numerical errors. The 2x2 geometry at TT25 expands the coarse-0 rising delay
+from 306.3 ps to 842.9 ps and overlaps coarse 1 (501.4 ps minimum); all custom
+MOS stress checks pass. That establishes range feasibility only. Dense code
+steps still need measurement. A second candidate strengthens just the return
+merge from NAND4 to NAND8, keeping the 2x2 MIM geometry, to reduce fine step size.
+`digital_dcdl_batch_v2/de70a6fd17e9ca96` measures every fine code at coarse 0/1
+and TT25/SS40/FF0, eight isolated tagged pulses per run. Codes change only while
+the input is low. The first eight TT25 codes rise at 305.0--360.1 ps, with
+adjacent steps about 6.0--8.7 ps and all 93 custom MOS checks passing. The full
+192-code/24-run source matrix remains running; it is not all-fifteen-PVT or
+physical admission.
+
+The initial batch analyzer incorrectly applied a 10 mV reference tolerance to
+internal complementary control outputs. Native traces show up to 26 mV of
+feedthrough, comfortably within digital logic margins. The producer failures
+and immutable traces remain retained. `analyze_dcdl_batch_v2.py` independently
+compares binary/exports and remeasures them with strict 10 mV stimulus checks,
+10/90% internal logic margins and unchanged 1.95 V terminal-stress limits.
+Its first eight-code receipt is
+`dcdl_batch_reanalysis_v2/44e9b9522ad4d449`. Sparse or reanalyzed source samples
+cannot authorize a delay ROM. `digital_delay_path_v2.py` finds a single monotonic
+raw-code order across supplied corner intervals, preferring 10 ps and rejecting
+all gaps over 20 ps; it rejects corners that only pass after different code
+reordering. Characterization coverage, uncertainty bounds, actual clock pulse
+transport and physical proofs remain separate prerequisites.
+
+A native exchanged-input edge-sampler pilot is now running in
+`digital_bbpd_v2/d4f11c9971be64d2`: two conditioning strengths, both input swaps,
+matched and both extreme slews, and 0/+/-20/+/-150 ps at SS40. The first
+minimum-drive cases correctly identify -150 ps but show an ambiguous dead zone
+at -20 ps for matched and 20/200 ps slews. This is not yet a complete detector
+screen. Its final independent consumer will retain all sign curves; the
+measurement engine must not assume the new sampler meets the 20 ps bracket.
+
+All diagnostics use the existing shared six-engine dispatcher, with at most
+two workers per campaign. Independent verification is queued after the active
+campaigns; no healthy solver has been restarted.
 
 The legacy analog timing screen completed 54/54 and reports tail140_w20 as its
 survivor, with worst estimated zero offset 3.803 ps. All four RX skew buffers
