@@ -2441,3 +2441,50 @@ receipt or deck preflight does not establish a passing electrical result.
 Independent read-only preflight regenerated all four decks and all native
 MOS/plate witnesses exactly. `make test-full` passes 1,824 tests without
 skips in `build/weighted-fine-control-v3-full-tests.log`.
+
+### Full-bank candidate with physical guard pairs and fine/control RC
+
+`dcdl_weighted_direct_v3.py` retains the full sixteen-choice coarse topology
+and direct input/output ports. All 31 turn/pass compound drivers now select
+the actual routed guarded NAND2B pair model, replacing the earlier ideal
+parallel connections between two separate guarded cells. Forward/merge
+connections and every coarse choice remain. Each of the five fine loads
+uses its independently verified physical RC macro, and all five fine-control
+buffer/inverter pairs select the native BUF8-o4/INV8-o4 guarded models.
+Connections use each extracted macro's port order. The selected macros retain
+their extracted device geometry; voltage limits and fine-MIM area are unchanged.
+
+`probe_weighted_direct_v3.py` prepares two SS/40 C cases at coarse settings
+0 and 1, each with codes 0,1,15,16,31,0 over 60 ns. The full native hierarchy
+contains 2,495 MOS witnesses. Campaign
+`weighted_direct_v3/8d170377b3a7a963` binds all four physical RC families,
+PDK/model files, generated libraries/decks, solver settings and source.
+The 100 ps isolated input pulses, 20 ps controls, fixed 1.8 V supply,
+20 fF output load, ITL4=100, 2 ps maximum timestep and existing tolerances
+are retained. All six MOS terminal-pair voltages retain the 1.95 V screen;
+LSB/carry steps, both edge polarities, quarter-period headroom, adjacent
+coarse overlap and repeated code-zero delay are still measured.
+
+This campaign is **prepared, not started or passed**. The run command
+requires `--control-receipt` pointing to the independent physical-fine
+control verifier's receipt. `weighted_bank_control_gate_v2.py` checks its
+identity, bound raw/deck/result witnesses, matching fine/driver families,
+complete four-case coverage and a guarded-driver pass at both DATA biases.
+A failed source-driver reference cannot stand in for a guarded pass. The
+gate is checked again before each solver starts; its receipt/hash is saved
+in `control_gate.json` and rechecked by the full-bank verifier. Missing,
+unsafe, incomplete or mismatched prerequisites cannot launch this campaign.
+
+`verify_weighted_direct_v3.py` regenerates the full native library and MOS
+witnesses, then remeasures both complete raw traces and all existing sparse
+feasibility checks. No new solver tickets are queued at this checkpoint.
+Source coarse-control cells and the source 4x4 shared base MIM remain;
+intercell wires are ideal. Whole-bank routing/RC, active periodic clocks,
+dense common code mapping across all 15 PVT points, upstream/downstream
+chain integration and PHY qualification remain required. Sparse pilot
+success would not admit a code ROM or establish a usable PHY.
+Independent read-only preflight regenerated both 60 ns decks and all 2,495
+MOS witnesses exactly. An attempted run without `--control-receipt` was
+rejected before creating execution state or raw output.
+`make test-full` passes 1,829 tests without skips, recorded in
+`build/weighted-direct-v3-full-tests.log`.
