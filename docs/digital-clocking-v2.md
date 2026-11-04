@@ -1372,3 +1372,52 @@ The full pinned software suite passes **1,764 tests without skips** in
 `build/guarded-clock-prepare-reset-v3-full-tests.log`. These are software checks;
 the circuit failures above remain qualification failures. All failed and
 partial artifacts are retained and all production admissions remain closed.
+
+### Strong NAND2 phase-qualified release experiment
+
+The next source controller, `guarded_phase_clock_release_v2.py`, retains two
+native asynchronous-clear readiness FFs and all ten diagnosed MIM guards per
+FF. It replaces the third release FF and its output buffer with two sticky
+phase-qualified states made from already extracted, passivity-checked native
+NAND2_8 macros. The first state arms after readiness while CLK is low; the
+second sets the public release on the next high phase. REQUEST asynchronously
+clears both readiness FFs and both sticky states, including stopped-clock
+operation. This is a fresh diagnostic candidate, not a production selection.
+
+The earlier phase-armed prototype used NAND3 feedback with one input tied to
+VPWR. Its Boolean function is NAND2(Q, REQUEST); using the actual strong NAND2
+macro removes the redundant transistor stack. Both phase setters also use
+NAND2. Their readiness/armed inputs are cleared by REQUEST; no new asynchronous
+set permission is introduced. Actual reset races, arming setup and loaded
+release latency still require waveform evidence.
+
+Campaign `guarded_phase_clock_release_v2/61817fe170bad6b5` is running eight
+SS/40 C, 410 MHz, 100 ps input-slew cases: two guard sizes, 40%/60% duty and
+both stopped-clock levels. All two data-gate NAND inputs and the output-mask
+NAND input now load the public release together, matching the original DCC
+reset fanout; PREPARE is only the diagnostic second-FF readiness node. Each
+case saves all 350 actual MOS terminal witnesses. The consumer retains the
+two-/three-clock counts, full-waveform voltage screen and stopped-clock clear
+and reassertion checks, and additionally requires arming while CLK is low,
+before the release clock, with a cleared arm after stopped-clock reset.
+An independent consumer is watching this exact immutable campaign.
+
+This assembly uses extracted NAND/inverter/clock-buffer components and source
+guarded FFs with ideal inter-component wires. Fresh guarded-cell geometry/RC,
+actual DCC first-event behavior, joint routing and all-PVT qualification remain
+required. The new tests explicitly reject high-phase arming and uncleared
+sticky state; they do not establish analog feasibility.
+
+Meanwhile six of seven direct-port bank cases have completed. The SS/40 C
+minimum-code repeat pulse measures 452.997/455.386 ps rising/falling delay at
+100 ps input slew, and 481.525/511.306 ps at 250 ps slew; both pass the voltage
+screen and fit below the fast quarter-period. SS maximum-fine rising delay is
+792.894 ps, while next-coarse minimum rising delay is 1,024.654 ps, leaving a
+231.760 ps gap. That next-coarse case fails stress at 2.015353 V. These are
+producer measurements pending completion and independent verification of the
+seven-case matrix. Removing port buffers therefore shows useful minimum-delay
+headroom but does not yet solve coarse/fine overlap or coarse-stage stress.
+
+The full pinned software suite passes **1,767 tests without skips** in
+`build/guarded-phase-release-v2-full-tests.log`. The live circuit campaign and
+its independent consumer have not yet established feasibility or admission.
