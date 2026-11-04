@@ -659,9 +659,22 @@ digital hardening as ordinary independent cells.
 `dcdl_mim_bank_physical_v2.py` instead groups each pair into a single-output
 compound-macro interface. Its 174-instance view expands to the exact retained
 238 native instances; Yosys reports zero problems. The 64 compound instances
-use four types: paired buf4, NAND2-4, NAND2-8 and NAND2B-4. Their actual GDS,
-tap/power connectivity, DRC/LVS and extracted RC must be built and verified
-before bank assembly. Logical blackboxes are not physical or timing models.
+use four types: paired buf4, NAND2-4, NAND2-8 and NAND2B-4. These now have actual
+GDS, native taps, zero Magic DRC and unique LVS matches in
+`compound_driver_physical_v2/e526d97182ddb6c5`. Restricted LEFs preserve all
+routing geometry and expose only declared metal-3 rails. Earlier sticky-label
+parsing and narrow-track/notch failures are retained separately. Fresh native RC
+and independent topology audits pass for all four in
+`compound_driver_rc_v2/ff754f3ebf571140`.
+
+`dcdl_bank_assembly_v2/cbcead194f7cc775` checks all six macro types in OpenDB,
+including the fine unit and shared shunt. Every pin direction/use/layer and all
+174 instance connections are present; the 96 macro placements fit without
+overlap. The other 78 instances require standard-cell row placement. This
+materializes a concrete macro configuration and placement, not a routed bank.
+Whole-bank power/signal routing, extracted range/overlap/stress, dense code
+characterization and an admitted ROM remain open. Logical blackboxes and
+isolated RC proofs supply no bank timing admission.
 
 ### Completed DCC source and recovered physical extraction
 
@@ -685,5 +698,62 @@ Fresh extraction contains 6,890 resistors and 734 parasitic capacitors; its
 independent wire-collapsed transistor-topology check passes. The actual source
 schematic hash is bound explicitly. Nonfinite timing remains named diagnostics,
 never zero slack; the original unrecorded producer return code is not invented.
-This is physical/RC evidence only. Native extracted timing, actual control-clock
-loads, unequal input slews, RX duty range and whole-PHY qualification remain open.
+This is physical/RC evidence only. The following native timing experiment
+exposes a failure; this backend remains unqualified.
+
+### Native DCC failure and replacement experiments
+
+`dcc_native_rc_v2/3c67e55b2d7e08a2` tests the exact routed network at SS40/SF40,
+410 MHz, 20/100/200 fF output load, 20/250 and 250/20 ps input slews, and common
+30%/70% input duty. Input-source delays compensate the different rise times so
+their actual 0.9 V crossings are exactly half a period apart. Reset releases
+150 ps after a PH0 rising crossing while PH0 is high. Every MOS terminal is
+saved; all six terminal-pair voltages are screened at 1.95 V. These diagnostics
+do not widen the fixed supplies or replace the existing clocking contract.
+
+The first cases miss output events and exceed the terminal screen. Independent
+raw-waveform receipt `dcc_native_failure_v2/a8e252ff2a35af3d` binds cases 0/1.
+At 30% duty, the phase pulses last about 2.77–2.80 ns, longer than the 1.22 ns
+input-event spacing. At 70%, both pulse FFs still fire, but their OR never
+crosses below 0.9 V during the measured steady window; the final toggle receives
+no new rising edges. Retained failures, rather than the earlier source-only
+pass, determine the current hold.
+
+The 24-case `dcc_toggle_pair_v2/9cc8e5acc822a14e` compares the exact routed
+transistor network with wire R/C removed against two independent toggle FFs
+and a native XNOR. The collapsed controls preserve events; several still fail
+half-cycle or terminal screens. The direct two-toggle candidate exposes a
+second issue: with feedback `D=!Q`, the master latch can retain a 1 during
+reset and toggle when reset deasserts while its clock is high. A simple logical
+FF model would miss this startup event.
+
+The 24-case `dcc_toggle_pair_v2/0a6ed067a47953ae` changes feedback to
+`D=RESET_N & !Q`. It passes startup and output-event checks in completed cases,
+but a single XNOR has excessive duty bias even with matched input slews
+(about 67 ps for the first SS40/drive-1 pair). Terminal excursions also remain
+above the screening limit. `dcc_toggle_pair_v2/af5834ab76e4deca` tests two native
+XNOR2-2 cells with opposite input assignments and tied outputs, retaining equal
+aggregate output drive and testing both FF strengths. This is a physical
+compound-gate candidate, not a production multi-driver RTL net.
+
+The five-cell reset-qualified drive-2 candidate is separately placed/routed in
+`dcc_toggle_pair_physical_v2/59c37db357dc5b9b`, with all six physical check counts
+zero and the exact two feedback loops verified. Its fresh network has 6,692
+resistors and 586 parasitic capacitors; an independent wire-collapsed topology
+audit passes. Nonfinite untimed STA values remain explicit diagnostics.
+`dcc_toggle_pair_rc_v2/9cdb701177c3b82b` contains four matched-slew SS40 native
+tests at 20/100 fF and 30%/70% duty to separate actual routing effects from the
+source candidate's timing/stress limitations. It is not admitted.
+
+The balanced XNOR macro has actual native cells/taps, one public output,
+zero Magic DRC and a unique LVS match in
+`balanced_xnor_physical_v2/8444c61422ffa5c2`. Fresh extraction and an independent
+wire-collapsed topology check pass in `balanced_xnor_rc_v2/7279d17009af8771`
+(439 resistors, 247 parasitic capacitors before exact resistor reduction).
+The first matched-slew SS40/drive-1 source cases improve mean half-cycle error
+from about 67.23 ps to 40.49 ps, but still exceed the terminal screening limit.
+That is evidence for testing the symmetric combiner, not electrical admission.
+Next admission work must establish symmetric-combiner timing, reset release,
+internal stress and actual permanently loaded clock-conditioning interfaces
+before full-PVT native DCC qualification or integration into TX/RX. Do not
+replace the production backend or assert its admission bits from these pilots.

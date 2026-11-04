@@ -75,9 +75,9 @@ delays; it checks 64 confirmations, both warmups and an independently generated
 432-pair training/end-marker/payload stream. Stage-error, deadline and missing
 admission cases pass. This does not qualify physical delay or clock timing.
 
-The bank/physical-recovery checkpoint passes all 1,638 tests
-without skips using `make test-full`; log:
-`build/clocking-bank-recovery-v2-full-tests.log`. Yosys process/check with both admissions
+The native clock/macro checkpoint passes all 1,655 tests
+without skips using the `make test-full` environment; log:
+`build/native-clock-physical-checkpoint-v2-full-tests.log`. Yosys process/check with both admissions
 enabled and with defaults closed reports zero problems
 (`build/tx-control-v2-admitted-synthesis-check.log` and
 `build/tx-control-v2-default-synthesis-check.log`).
@@ -284,8 +284,29 @@ control drivers and 31 fine macros plus the shared shunt. Its original direct
 parallel-gate netlist fails Yosys's multiple-driver check. A separate 174-instance
 physical view uses 64 single-output compound macros, expands to the same 238
 native instances, and passes Yosys with zero problems. All four compound types
-still need actual GDS, power/tap connectivity, DRC/LVS and RC before full-bank
-assembly; blackbox interfaces provide no physical or timing admission.
+now pass native geometry/connectivity checks in
+`compound_driver_physical_v2/e526d97182ddb6c5`, and extracted topology audits in
+`compound_driver_rc_v2/ff754f3ebf571140`. OpenDB checks all six macro interfaces,
+174 instance connections and 96 nonoverlapping macro placements in
+`dcdl_bank_assembly_v2/cbcead194f7cc775`. Whole-bank routing, native timing and ROM
+admission remain open.
+
+The first routed DCC timing tests fail: long pulses overlap or prevent the
+OR output from falling through its switching threshold. Independent receipt
+`dcc_native_failure_v2/a8e252ff2a35af3d` retains the first two raw-waveform
+diagnoses. Terminal excursions also exceed the screening limit. The native
+pilot continues without restarting healthy solvers. The source-only DCC pass
+therefore does not admit the routed backend.
+
+New DCC experiments replace the one-shot/800 MHz toggle stage with independent
+400 MHz toggles and an XNOR. Reset-qualified feedback fixes the observed extra
+startup toggle, but a single XNOR still has duty bias. A swapped-input paired
+XNOR source pilot and real compound layout now test a symmetric alternative.
+The five-cell reset-qualified candidate separately passes complete physical
+checks and fresh RC topology in
+`dcc_toggle_pair_physical_v2/59c37db357dc5b9b`; four native timing/stress tests
+are queued. These are diagnostic candidates; all clock admission defaults stay
+false. See [the native DCC experiments](digital-clocking-v2.md#native-dcc-failure-and-replacement-experiments).
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active
