@@ -168,6 +168,41 @@ and one downstream registered-status cycle. Stop-phase tests cover 80 phases
 at each of 390/400/410 MHz and require registered readiness low within eight
 management cycles. The eight-cycle contract is unchanged.
 
+## DCC startup and transmitter training
+
+`openlvds_clock_startup_v2` accepts actual raw PH0/PH90 and delivered DCC clocks.
+It generates no clock and has a separate, default-false DCC-model admission
+parameter. Own-phase reset release is followed by at least 256 actual delivered
+rising edges on each clock. Both counters must finish, their synchronized flags
+must arrive, and independent clock watchers must report both clocks running
+before management `clocks_ready` asserts. Delivered-domain `ready0`/`ready90`
+assert through their own two-stage synchronizers and invalidate asynchronously,
+including when that clock itself stops. Parameters below 256 hardware warmup
+cycles are rejected; absent clocks time out. This startup stage retains the
+100 ms timeout parameter; whole-PHY startup budgeting remains to be integrated.
+
+Each clock watch resets with its own DCC release generation. In particular, an
+edge produced by the DCC reset output cannot count as fresh running-clock
+history after a restart. Clock loss latches failure and resets both DCCs;
+disable or a new DLL calibration clears the stage for explicit retraining.
+Native DCC CQ/recovery/removal and propagated loads still require qualification.
+
+`openlvds_tx_training_control_v2` connects startup to the existing frame generator
+on delivered PH0. Management `train_req` is synchronized into that domain and
+remains a level held by the lab controller until RX ready. The first valid pair
+starts a complete training frame only after startup. The existing generator's
+additional minimum training duration and frame-boundary end-marker rules are
+retained. Payload must be preloaded in the pair-clock domain. The dedicated
+forwarded clock remains the physical DCC output, not a data mux constant.
+
+The composed protocol test uses the actual clock-hold DCC gate topology with
+explicit test-only cell delays. It independently checks 432 transmitted pairs
+against three full training frames, the end marker and payload; proves both
+delivered warmups; stops each phase independently; and checks asynchronous
+disable/source-loss invalidation and fresh reacquisition. Missing both clocks,
+one clock never starting, default admission and shortened hardware warmup are
+separate rejection cases. These tests do not establish native clock timing.
+
 ## RX scan and capture integration
 
 `openlvds_rx_scan_v2` scans all legal code indices through an admitted delay-ROM
@@ -491,6 +526,11 @@ range gap. Device stress passes, but this is not an overlapping legal code
 path. These two completed cases were independently remeasured with exact
 binary/export agreement and before/after witness checks while the other two
 output-drive cases remained live. Their original files are unchanged.
+The complete four-case campaign is now independently verified in
+`dcdl_balanced_drive_verification_v2/ca2ad9a4ffc2cf92`. Both variants pass
+custom-device stress. Conservative rising overlap is -25.24 ps for `core2`
+and -27.11 ps for `core2_output4`; worst first/repeated minimum-code headroom
+is 53.35/63.88 ps respectively. The stronger output does not close the gap.
 
 The separate `openlvds_mim_switch_2x3_v2` keeps every MOS and its control shunt
 unchanged, increasing only the switched native MIM from 2x2 to 2x3 um.

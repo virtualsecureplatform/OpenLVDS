@@ -47,12 +47,25 @@ That integration exposed the shared clock watch counting eight stale samples
 after its CDC pipeline. Four stale samples now leave room for CDC and a
 registered status consumer within the unchanged eight-management-cycle budget.
 Tests stop clocks at 80 phases each for 390/400/410 MHz and verify the full bound.
-This is digital protocol evidence; native timing and DCC/warmup/PHY integration
+This is digital protocol evidence; native DCC/warmup timing and physical PHY integration
 remain open.
 
-The larger-fine-unit integration checkpoint passes all 1,606 tests
+The DCC/startup/training control path is now connected in
+`openlvds_clock_startup_v2` and `openlvds_tx_training_control_v2`. Each DCC gets
+own-phase reset release and a fresh clock-watch generation; each actual
+delivered phase must complete 256 warmup cycles. Both phases are required before
+training starts at a full-frame boundary. A stopped delivered clock invalidates
+its own data-domain readiness asynchronously. Missing clocks time out, and
+independent DCC-model admission defaults false. The composed test uses actual
+clock-hold DCC topology with test-only cell delays, checking framing/payload,
+fresh reacquisition, per-phase clock loss, default admission and warmup rejection.
+These are protocol proofs; native DCC timing, total startup budgeting and
+whole-PHY integration remain open. Yosys reports zero problems with DCC admission
+enabled and disabled (`build/clock-startup-v2-synthesis-1.log` and `-0.log`).
+
+The DCC/startup/training integration checkpoint passes all 1,611 tests
 without skips using `make test-full`; log:
-`build/dcdl-larger-unit-v2-full-tests.log`. Yosys process/check with model admission
+`build/clock-startup-v2-full-tests.log`. Yosys process/check with model admission
 enabled reports zero problems (`build/dll-control-v2-admitted-synthesis-check.log`).
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
@@ -205,6 +218,11 @@ The terminal `core2` coarse pair recovers minimum-delay headroom (556.41 ps firs
 a 24.73 ps rising range gap. Independent binary/export remeasurement and
 before/after hashes retain these two case witnesses while other parent cases
 continue. This is a measured range failure, not a numerical error.
+The complete four-case campaign now has independent receipt
+`dcdl_balanced_drive_verification_v2/ca2ad9a4ffc2cf92`. All cases pass device
+stress, but conservative rising overlap is -25.24/-27.11 ps for the two output
+drives. Extra output drive improves minimum-delay headroom but does not close
+the range gap; neither candidate qualifies an overlapping code table.
 
 A separate larger fine-switch unit changes only its switched MIM from 2x2 to
 2x3 um; MOS geometry and the 2x2 control shunt remain unchanged. Actual PCell
