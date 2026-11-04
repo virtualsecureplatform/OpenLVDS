@@ -132,6 +132,42 @@ and identical phase conventions are required during integration. Sparse DCDL
 samples cannot generate a production code table. No physical certificate is
 transferred from the legacy architecture or from these source experiments.
 
+## DLL configuration and control integration
+
+`openlvds_dll_control_v2` connects the actual calibration FSM, Gray-counter clock
+watch, complete isolated measurement engine and atomic configuration bridge.
+The bridge transfers all four legal-code indices and separated/cascaded mode
+as one generation-tagged bundle into the raw-reference domain. Its digital
+mailbox acknowledgement is deliberately insufficient to enable measurement.
+The physical backend must acknowledge `raw_sequence` through `raw_settled` and
+`raw_settled_sequence` only after the delay-ROM outputs, switches and mode route
+have settled. It permits commits through `raw_update_allowed` only while the
+physical clocks are invalid. These signals are raw-reference-domain inputs;
+their exact acknowledgement returns through a second bundled-data mailbox.
+
+The management side requires the acknowledged configuration to match its
+current desired bundle. Retraining, disable and clock loss invalidate that
+proof. Old transactions drain intact, but an acknowledgement from before
+retraining cannot qualify the new generation. Mode changes between the
+separated tournament and independent period test also require fresh physical
+settling. Locked codes remain frozen. The public DLL lock is masked by current
+configuration validity and clock presence; it is not DCC, warmup or RX readiness.
+
+The composed test uses the real controllers, CDC mailboxes, launch logic and
+event guards with explicitly synthetic external delay/arbiter paths. It
+converges through all 64 confirmations, checks every launch against actual
+committed code/mode, freezes after lock, and invalidates after source-clock
+loss. Additional cases reject stale/pre-retrain settling, hold unsafe commits,
+time out a backend that never settles, and prove default model admission stays
+closed. These are control proofs, not physical delay models or native convergence.
+
+Integration exposed an end-to-end clock-loss budget error in the shared clock
+watch: eight stale samples after the CDC pipeline exceeded eight management
+cycles overall. It now uses four stale samples, reserving three pipeline cycles
+and one downstream registered-status cycle. Stop-phase tests cover 80 phases
+at each of 390/400/410 MHz and require registered readiness low within eight
+management cycles. The eight-cycle contract is unchanged.
+
 ## RX scan and capture integration
 
 `openlvds_rx_scan_v2` scans all legal code indices through an admitted delay-ROM

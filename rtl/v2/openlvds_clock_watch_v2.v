@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 `default_nettype none
 // A single-bit heartbeat aliases at 400 MHz / 25 MHz. Use an eight-bit Gray
-// counter, whose wrap period exceeds the eight-management-cycle loss window.
+// counter. Four stale samples reserve the rest of the eight-management-cycle
+// loss budget for the Gray CDC/previous-sample pipeline and a registered status
+// consumer. Counting eight stale samples AFTER the CDC exceeds that budget.
 module openlvds_clock_watch_v2 (
     input wire reset_n, input wire observed_clk, input wire mgmt_clk_25,
     output reg clock_present
@@ -20,9 +22,9 @@ module openlvds_clock_watch_v2 (
         end else begin
             gray_meta<=gray; gray_sync<=gray_meta; previous<=gray_sync;
             if (gray_sync!=previous) begin stale<=0; clock_present<=1; end
-            else if (stale<8) begin
+            else if (stale<4) begin
                 stale<=stale+1'b1;
-                if (stale==7) clock_present<=0;
+                if (stale==3) clock_present<=0;
             end
         end
 endmodule

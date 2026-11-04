@@ -34,9 +34,26 @@ swaps, rejects stale tags and reversed/disagreeing brackets, and bounds retries.
 The real calibration FSM converges in a synthetic transaction test and still
 requires all 64 confirmations before code freeze. Composed pulse/event tests
 and Yosys process/check pass; physical offsets and native convergence remain open.
-The balanced-drive/prefix integration checkpoint passes all 1,596 tests
+`openlvds_dll_control_v2` now connects actual calibration, measurement, clock
+watch and raw-reference configuration CDC. All four codes and separated/cascaded
+mode commit as one tagged bundle. Measurement waits for a separate matching
+physical-settle acknowledgement; digital mailbox capture alone cannot qualify
+the bank. Stale and pre-retrain acknowledgements are rejected, locked codes
+freeze, and missing settling times out. A composed test reaches all 64
+confirmations using actual launch/event/controller RTL with explicitly synthetic
+external paths. Default physical/model admission remains closed.
+
+That integration exposed the shared clock watch counting eight stale samples
+after its CDC pipeline. Four stale samples now leave room for CDC and a
+registered status consumer within the unchanged eight-management-cycle budget.
+Tests stop clocks at 80 phases each for 390/400/410 MHz and verify the full bound.
+This is digital protocol evidence; native timing and DCC/warmup/PHY integration
+remain open.
+
+The DLL-control integration checkpoint passes all 1,601 tests
 without skips using `make test-full`; log:
-`build/clocking-v2-balanced-prefix-full-tests.log`.
+`build/dll-control-v2-full-tests.log`. Yosys process/check with model admission
+enabled reports zero problems (`build/dll-control-v2-admitted-synthesis-check.log`).
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
 errors but failed all 54 SF cases: self-reset release while CLK remained high
