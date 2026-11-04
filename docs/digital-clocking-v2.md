@@ -1255,3 +1255,57 @@ The complete pinned software suite passes **1,749 tests without skips** in
 `build/native-ff-and-weighted-fine-v2-full-tests.log`. All old and new failed,
 partial and running artifacts remain intact. Production model admissions stay
 closed, and full DLL/RX/link/OpenPLL qualification remains unfinished.
+
+### Direct-port bank reaches clean native RC
+
+`dcdl_mim_bank_direct_v2.py` removes only the two compound input/output
+buffers from the 174-instance bank, connecting IN to the former f0 net and OUT
+to the former r0 net. Every coarse stage, fine switch, control buffer, tie and
+shared MIM remains unchanged. The external thermometer-control interface is
+retained. This is a separate 172-instance physical variant, not an edit to the
+old bank or its bound timing evidence. Its eventual upstream driver, downstream
+load and multi-section clock propagation still need native qualification.
+
+Preflight `dcdl_bank_direct_assembly_v2/759e6c27363975af` checks all 172
+instances, 94 macro placements and 78 native standard cells in OpenDB. It
+reuses the exact normalized macro views from the clean retained bank, including
+their MIM keepouts. Fresh run `dcdl_bank_physical_v2/a04b1f6612f4d8c4` then
+passes detailed routing, Magic/KLayout DRC, LVS and antenna checks with zero
+errors. The final database check preserves all intended connections and rejects
+unrequested signal buffers; none was inserted to restore the deleted stages.
+
+Fresh extraction `dcdl_bank_direct_rc_v2/1d3adf1f73d5cc61` verifies continuity
+of both final power grids and yields 88,872 resistors and 22,759 capacitors,
+all passing the elementwise passivity gate. Exact positive-conductance reduction
+retains 62,482 resistors. Strict comparison against the fully expanded native
+reference, containing 2,643 primitives from 1,238 final placed instances,
+matches uniquely. This is physical/passive-RC/DC-topology proof, not a timing
+or ROM admission.
+
+Timing campaign `routed_dcdl_bank_direct_v2/88e8378abb06e188` is queued with
+seven cases and 2,569 MOS witnesses per case. It retains the original two-PVT
+SS/40 C and FF/0 C minimum, maximum-fine and next-coarse tests at 100 ps input
+slew, and adds an early SS/40 C minimum-code case at 250 ps input slew. All
+use two absolute-epoch pulses and 20 fF load. The independent consumer requires
+all seven raw cases, deck/MOS regeneration and the maximum-slew stress/range
+check. This matrix does not cover the 20 ps input-slew boundary, dense codes,
+actual upstream-driver loading, a four-section chain or full PVT; those remain
+open. Timing benefit from removing the buffers has not yet been demonstrated.
+
+The first two native-FF release cases in `acc8cd8e1df679ed` also complete.
+At 40%/60% duty they pass first-phase polarity and show mean half-cycle errors
+of 10.687/9.470 ps, but miss the first two expected output events. Their public
+reset releases at 33.4618/33.4566 ns, leaving only about 389 ps before the
+following P180 edge. Native-FF private-node screening fails: the 1.8 V FF
+terminal-pair peaks reach 2.248545/2.248538 V. For example, XR180 first-stage
+PFET X12 has about 0.00062 V on one terminal and 2.24917 V on another near
+30.376 ns in the 40% case. These are distinct from the permitted larger
+terminal differences in the 5 V analog devices. Native FF provenance therefore
+does not establish electrical safety or first-event setup. Private-node
+guarding/physical RC and separation of internal data preparation from public
+clock release need investigation before another release controller is selected.
+All unfinished and failed clock runs continue to retain their own evidence.
+
+The full pinned software suite passes **1,754 tests without skips** in
+`build/dcdl-direct-bank-coverage-v2-full-tests.log`. All model-admission bits
+remain closed while native timing, DLL/RX/link and OpenPLL integration are open.
