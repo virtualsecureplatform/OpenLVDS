@@ -1105,11 +1105,17 @@ extraction must separately pass positive-element screening and strict Netgen
 comparison after comment-aware RC collapse. Macro-level LVS alone does not
 replace that expanded audit.
 
-Whole-bank RC campaign `dcdl_bank_rc_v2/4b6f1c51ef43e238` is now running.
+Whole-bank RC campaign `dcdl_bank_rc_v2/4b6f1c51ef43e238` completes and passes.
 Its fresh final-OpenDB check passes, and OpenROAD confirms all shapes on each
 of VPWR and VGND are connected. The clean bank reference expands 1,205
-placed instances into 2,684 native primitives. Magic is extracting the actual
-clean GDS; passivity and expanded topology results are still pending. The
+placed instances into 2,684 native primitives. Fresh extraction from the actual
+clean GDS produces 87,565 resistors and 22,956 capacitors, with positive-element
+screening passed. Exact positive-conductance star-mesh reduction retains
+61,876 resistors; a separate reread of the hash-checked simulator-facing model
+also passes elementwise passivity. All 50 formal ports are retained. Strict
+Netgen comparison of the wire-collapsed model against the fully expanded
+native reference reports a unique match. This qualifies the bank's extracted
+DC topology and passive RC, not its delay range or timing. The
 complete pinned-environment software suite passes **1,730 tests without
 skips** (`build/whole-bank-rc-admission-v2-full-tests.log`). Earlier host-only
 and tools-Python regression attempts lack the required scientific Python
