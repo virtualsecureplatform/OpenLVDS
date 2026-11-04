@@ -75,9 +75,9 @@ delays; it checks 64 confirmations, both warmups and an independently generated
 432-pair training/end-marker/payload stream. Stage-error, deadline and missing
 admission cases pass. This does not qualify physical delay or clock timing.
 
-The integrated-TX control checkpoint passes all 1,617 tests
+The bank/physical-recovery checkpoint passes all 1,638 tests
 without skips using `make test-full`; log:
-`build/tx-control-v2-full-tests.log`. Yosys process/check with both admissions
+`build/clocking-bank-recovery-v2-full-tests.log`. Yosys process/check with both admissions
 enabled and with defaults closed reports zero problems
 (`build/tx-control-v2-admitted-synthesis-check.log` and
 `build/tx-control-v2-default-synthesis-check.log`).
@@ -85,10 +85,9 @@ enabled and with defaults closed reports zero problems
 The original 270-case pulse/toggle DCC source matrix completed without numerical
 errors but failed all 54 SF cases: self-reset release while CLK remained high
 retriggered pulse FFs. The clock-aware reset repair passes its 24-case SF40/SS40
-pilot and is running a fresh 270-case matrix in
-`dcc_clock_hold_pvt_v2/8b83d935bd2d01f3`. Physical implementation is queued behind
-complete independent source verification. A new layout/DRC/LVS/RC flow checks
-exact reset-feedback topology; its existence does not admit electrical timing.
+pilot and all 270 fresh cases in `dcc_clock_hold_pvt_v2/8b83d935bd2d01f3`.
+Independent receipt `dcc_clock_hold_pvt_verification_v2/f1d1e1e39c014c23`
+confirms all 15 PVT and 29.70 ps worst balanced mean half-cycle error.
 Phase-specific reset release passes logic startup/quadrature regression but
 still needs native CQ/recovery/removal qualification. See [repair evidence and
 remaining gates](digital-clocking-v2.md#native-repairs-and-next-admission-gates).
@@ -96,6 +95,15 @@ The actual LibreLane configuration preflight now passes. Its Python environment
 has no NumPy, so source receipt/witness validation runs in the separate scientific
 interpreter; physical inputs bind both interpreters and package hashes. No
 physical artifact or qualification was created by that preflight.
+The later completed flow `dcc_physical_v2/75fb1becc16e8a41` has clean routing,
+Magic/KLayout DRC, LVS and antenna counts. Its strict summary writer failed on
+two infinite unconstrained timing slacks. Separate recovery
+`dcc_physical_recovery_v2/5b37b88a57c9d32d` preserves that failure, binds the same
+GDS used by signoff and validates true constant tie clones and power-only row
+endcaps without changing signal topology. Fresh extraction contains 6,890 R and
+734 parasitic C; the independent transistor-topology audit passes. Nonfinite
+slacks remain explicit diagnostics, not zero slack or timing closure. Native RC
+clock behavior, actual loads/slews/duty and whole-PHY qualification remain open.
 
 RX scan control and capture-domain integration are now implemented in
 `rtl/v2/openlvds_rx_scan_v2.v` and `openlvds_rx_training_v2.v`. The scan tests every
@@ -156,7 +164,11 @@ but both placements of standard-cell conditioning retain unequal-slew bias.
 The retained analog conditioner plus a 30x30 um native reference MIM passes all
 six new-load +/-20 ps sign, stress and reference checks; independent receipt
 `clock_repairs_v2_verification/3d4ed08666f410c4`. Its 180-case all-PVT/input-swap
-expansion is running in `analog_arbiter_pvt_v2/e6ec7847a89bd52b`.
+expansion in `analog_arbiter_pvt_v2/e6ec7847a89bd52b` is archived incomplete:
+the new threshold load supersedes that circuit. It retains 54 original summaries
+and 55 cases, including a final export, in retirement receipt
+`superseded_clocking_drain_v2/1598271_440984732`. Healthy solvers and exports
+finished before the exact Python coordinator was retired.
 The original 18-case native signed-threshold pilot completed without solver errors in
 `phase_threshold_v2/b5b100243bdaa8b1`: matched switched-MIM branches after
 conditioning, both threshold selections and raw -20/0/+20 ps under matched
@@ -172,9 +184,13 @@ physical threshold qualification remain open. The original producer is retained.
 The six repaired native cases also pass independent 200 ns/20 ns quiescent-prefix
 equivalence (`phase_prefix_verification_v2/15be3c82462f9f28`), with a 3.31 times
 aggregate runtime improvement. Hardware warmup is unchanged. A new 30-case SS40
-cohort in `phase_threshold_slew_v2/1a45576caa4bab48` tests the remaining input
-orders and unequal 20/250 ps slews using that prefix. Native verification is
-queued; this is not all-PVT or extracted-threshold admission.
+cohort in `phase_threshold_slew_v2/1a45576caa4bab48` completes and independently
+passes all remaining input orders and unequal 20/250 ps slews in
+`phase_threshold_slew_verification_v2/7061a3cc4f520556`. The new 540-case
+`phase_threshold_pvt_v2/7f2eeea8cd9e0678` is running all 15 PVT, both swaps,
+three offsets, three slew pairs and both threshold selections. Verification is
+queued. This remains static source evidence; physical matching, route updates
+and native convergence are unqualified.
 
 A native 2x2 MIM shunt reduces complementary DCDL control stress to 1.93214 V
 in the first eight SS40 codes; stronger inverter drive instead worsens stress.
@@ -190,9 +206,11 @@ admitted. All four source repair cases pass; independent receipt:
 `dcdl_charge_kick_verification_v2/702b10e5862a3a2e`. The 4x4 node shunt peaks at
 1.91815 V, compared with 1.94795 V for 2x2 and 1.93223/1.87948 V for single-bit
 updates near the low/high endpoints. Its 150-run all-PVT dense-code/bulk-update
-expansion is active in `dcdl_node_bank_pvt_v2/e307e4f382060f33`, with independent
-verification queued after completion. This explores coarse-count 16 at coarse
-0/1; it does not qualify RX range or select a minimum-area implementation.
+expansion in `dcdl_node_bank_pvt_v2/e307e4f382060f33` is archived incomplete
+after the same source core failed the actual unit-RC minimum. Retirement receipt
+`superseded_clocking_drain_v2/1603762_441209628` retains 43 original summaries
+and 45 cases, including the final healthy exports. No running solver was killed.
+It does not qualify RX range or select a minimum-area implementation.
 The complete original
 24-run dense reanalysis is retained separately
 in `dcdl_batch_reanalysis_v2/163552785b25d024`, including all eight SS40 stress
@@ -246,15 +264,28 @@ topology receipt `mim_switch_2x3_verification_v2/26f440d15e6e9da1` pass; its
 198 R/55 parasitic C model has about 2.97 fF NODE interconnect load, excluding
 intentional MIM and MOS capacitance. The M3-only LEF passes OpenDB validation.
 Original 2x2 layouts/models are unchanged. Six native tasks in
-`dcdl_larger_unit_v2/b22eb8e365e6d65a` now test 31 actual extracted larger units
-at SS40/FS40/FF0, coarse 0/1, fine 0/1/16/31/0. Independent overlap, first-edge
-headroom and stress checks are queued. No dense ROM, full-PVT, full-bank or PHY
+`dcdl_larger_unit_v2/b22eb8e365e6d65a` test 31 actual extracted larger units
+at SS40/FS40/FF0, coarse 0/1, fine 0/1/16/31/0. All six pass independent overlap,
+first-edge headroom and stress checks in
+`dcdl_larger_unit_verification_v2/8c6234e034c425d5`. No dense ROM, full-PVT, full-bank or PHY
 admission follows from the component proofs; whole-bank routing remains held.
 The first SS40 pair passes source-core/extracted-unit stress and restores
 conservative rising overlap to 34.51 ps: coarse 0/fine 31 is 892.10 ps versus
 coarse 1/fine 0 at 857.59/857.08 ps. First/repeated coarse 0/fine 0 is
 555.80/554.05 ps, leaving about 54 ps first-edge headroom. This is early component
-evidence; independent full-pilot verification still waits for FS40 and FF0.
+evidence. Across all three pilot PVT, minimum rising overlap is 32.48 ps and
+minimum first-edge headroom is 53.95 ps.
+
+The native shared 4x4 shunt has zero Magic DRC errors and unique LVS in
+`mim_base_4x4_physical_v2/d32143aff2efa2c7`; raw/restricted LEFs are retained.
+The first access-parser failure is preserved separately. The complete bank
+generator matches the measured 128-cell core at every coarse setting, adds real
+control drivers and 31 fine macros plus the shared shunt. Its original direct
+parallel-gate netlist fails Yosys's multiple-driver check. A separate 174-instance
+physical view uses 64 single-output compound macros, expands to the same 238
+native instances, and passes Yosys with zero problems. All four compound types
+still need actual GDS, power/tap connectivity, DRC/LVS and RC before full-bank
+assembly; blackbox interfaces provide no physical or timing admission.
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active

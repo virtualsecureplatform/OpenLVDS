@@ -598,3 +598,92 @@ It retries only contention on the existing execution lock; witness, terminal
 state and measurement failures remain errors. Service startup ordering alone
 does not imply producer completion. Original early lock-rejection logs remain
 retained; no producer is restarted to obtain a proof.
+
+## Superseded source campaigns and current physical work
+
+The source-only `analog_arbiter_pvt_v2/e6ec7847a89bd52b` and
+`dcdl_node_bank_pvt_v2/e307e4f382060f33` campaigns are archived incomplete. The
+former lacks the new threshold load; its frontend/bias/arbiter library bytes
+match the loaded pilot, which must supply its own full-PVT proof. The latter
+uses the identical single-drive source whose extracted-unit minimum failed at
+711.88 ps. Neither old campaign can qualify the replacement circuit.
+
+`drain_superseded_clocking_v2.py` verifies the exact Python coordinator's UID,
+argv, start identity and open artifact-lock device/inode. Run it on the host
+with that Python PID, not the Apptainer service parent. Queue ownership uses
+the coordinator's open ticket-owner lock inodes: namespace-local PID 14 is
+shared by unrelated containers and cannot identify a campaign. No dispatcher
+implementation or lock inode changes. Only future dispatch stops; solvers and
+exports finish before the stopped coordinator is retired. Reasons and exact
+superseding evidence hashes are retained separately.
+
+Receipts `superseded_clocking_drain_v2/1598271_440984732` and
+`superseded_clocking_drain_v2/1603762_441209628` retain 54/43 original summaries
+and 55/45 cases respectively, including final exports without original case
+summaries. Their original campaigns remain incomplete. Unrecorded exports need
+independent measurement before any timing claim.
+
+The loaded threshold pilot now independently passes all 30 cases in
+`phase_threshold_slew_verification_v2/7061a3cc4f520556`. The six-case larger-unit
+pilot independently passes SS40/FS40/FF0 in
+`dcdl_larger_unit_verification_v2/8c6234e034c425d5`; minimum conservative rising
+overlap is 32.48 ps and minimum first-edge headroom is 53.95 ps. Dense code
+steps, other PVT and complete bank routing remain unqualified.
+
+`phase_threshold_pvt_v2/7f2eeea8cd9e0678` is the new 540-point source matrix for
+the actual repaired threshold load: all 15 PVT, three slew pairs including
+20/250 and 250/20 ps, both swaps, all -20/0/+20 ps offsets and both threshold
+selections. Fast and mixed stress corners run first. It retains 1 ps precision,
+the verified 20 ns simulation prefix and two workers through the same global
+six-engine dispatcher. Independent verification requires 180 complete signed
+brackets and all device/reference checks. No voltage sweep or hardware warmup
+change is introduced.
+
+### Shared shunt and full-bank topology
+
+`build_mim_base_4x4_v3.py` builds the real shared 4x4 MIM in
+`mim_base_4x4_physical_v2/d32143aff2efa2c7`, with zero Magic DRC errors and a
+unique LVS match. Raw and restricted-access LEFs are retained. The first
+`4a9e84595335b2c5` attempt had clean geometry but its abstract parser expected an
+existing obstruction block. A two-port capacitor has no internal signal net,
+so Magic exposed all routing as pins and omitted that block. The versioned
+replacement adds it while preserving every routing rectangle and the GDS.
+
+`dcdl_mim_bank_v2.py` generates the 16/32 bank: the exact 128-cell paired core,
+real coarse/fine control buffers and complement inverters, 31 larger fine units
+and one shared shunt. Every legal coarse setting is compared to the measured
+native source. That direct parallel-gate RTL is retained as a failed P&R
+prototype: Yosys reports 64 multiple-driver nets, so it cannot be passed through
+digital hardening as ordinary independent cells.
+
+`dcdl_mim_bank_physical_v2.py` instead groups each pair into a single-output
+compound-macro interface. Its 174-instance view expands to the exact retained
+238 native instances; Yosys reports zero problems. The 64 compound instances
+use four types: paired buf4, NAND2-4, NAND2-8 and NAND2B-4. Their actual GDS,
+tap/power connectivity, DRC/LVS and extracted RC must be built and verified
+before bank assembly. Logical blackboxes are not physical or timing models.
+
+### Completed DCC source and recovered physical extraction
+
+The repaired 270-case DCC source matrix independently passes all 15 PVT in
+`dcc_clock_hold_pvt_verification_v2/f1d1e1e39c014c23`; its worst balanced mean
+half-cycle error is 29.70 ps. The queued LibreLane run completed with zero
+routing/Magic/KLayout DRC, LVS and antenna counts in
+`dcc_physical_v2/75fb1becc16e8a41`. Its strict summary writer then rejected two
+infinite unconstrained timing slacks. The original failed state and all files
+remain unchanged.
+
+`recover_dcc_physical_v2.py` creates the separate receipt
+`dcc_physical_recovery_v2/5b37b88a57c9d32d`, binding the exact GDS consumed by
+signoff stages. The new topology policy recognizes true constant-high tie
+clones feeding the two pulse FF D pins and power-only decap row endcaps; all
+pulse/reset/toggle/output connections remain checked. Altered signal wiring
+and signal-connected endcaps are rejected. The actual cloned ties and power
+devices remain in the native RC and topology audit.
+
+Fresh extraction contains 6,890 resistors and 734 parasitic capacitors; its
+independent wire-collapsed transistor-topology check passes. The actual source
+schematic hash is bound explicitly. Nonfinite timing remains named diagnostics,
+never zero slack; the original unrecorded producer return code is not invented.
+This is physical/RC evidence only. Native extracted timing, actual control-clock
+loads, unequal input slews, RX duty range and whole-PHY qualification remain open.
