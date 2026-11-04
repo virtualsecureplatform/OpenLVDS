@@ -2516,3 +2516,43 @@ slot with the next existing return-mux case.
 `build/dcdl-iteration-failure-v2-full-tests.log`. Parser regressions reject
 truncated records, invalid native formats and nonterminal/ambiguous failure
 logs, and keep aborted prefixes explicitly unqualified.
+
+### Physical NAND2 pair for forward-stack conditioning experiments
+
+Read-only inspection of the immutable coarse-1 failed prefix finds IN at
+exactly 0 V throughout and a maximum saved-node excursion of about 3.03 nV.
+The largest excursions occur at native forward-NAND stack terminals around
+1.337 V. The accepted trajectory is therefore nearly static before failure;
+this is not evidence of a data-edge timing violation. These observations
+motivate testing stack conditioning, but do not establish the underlying
+solver/model cause or prove that a guard capacitor will fix it.
+
+`build_nand2_guard_pair_v2.py` assembles two unchanged native
+`openlvds_nand2_4_o3_shunted_v2` GDS cells with real shared M4 wiring. Each
+child already has its own 2x2 MID MIM guard and 3x3 output MIM shunt, with
+native transistor geometry and side body contacts retained. The new model
+is `openlvds_nand2_4_o3_shunted_pair_v2`, exposing A/B/Y/VGND/VPWR. The
+noninverting A input must not be confused with the separate NAND2B guard
+pair's A_N input. No native mask or device dimension is edited inside a
+child; the shared pair interconnect is drawn and checked physically.
+
+Artifact `nand2_guard_pair_physical_v2/e1fa9ef6fbb91a5e` has zero Magic
+DRC errors and successful unique Netgen LVS. Fresh extraction
+`nand2_guard_pair_rc_v2/75cf8ac0c93e10ea` contains 32 native MOS, four native
+MIM devices, 556 positive resistors and 218 nonnegative parasitic capacitors;
+the exact algebraic reduction retains 388 resistors. Independent receipt
+`nand2_guard_pair_rc_verification_v2/b9ec344c4af3618b` checks both raw and
+reduced passivity/hashes and a fresh strict topology comparison.
+
+`forward_guard_rc_families_v2.py` checks the receipt, bound source/PDK/tools,
+actual physical GDS/source and topology logs before providing this model to
+later experiments. Other native RC families remain distinct. The existing
+full-bank v3 candidate, active solvers and queued control tests are unchanged.
+The extra output/MID loading must be characterized; no convergence repair,
+coarse step, headroom, common-code ROM or PHY admission is inferred from
+the physical/passive/topology results. The next electrical comparison must
+retain the original paired NAND as a reference and measure both inactive
+bias behavior and loaded transition timing before any bank substitution.
+Read-only model-reader preflight verified the bound receipt and loaded all
+32 native MOS and four MIM devices. `make test-full` passes 1,834 tests
+without skips in `build/nand2-guard-pair-v2-full-tests.log`.
