@@ -1826,3 +1826,46 @@ The selected o1 receipt is
 isolated loaded counter, without whole-controller RC, full-PVT or PHY
 admission. This allows joint DCC experiments without waiting for unrelated
 variant results; the full eight-case independent receipt remains available.
+
+### Joint conditioner/DCC restoration with static release
+
+`probe_native_static_dcc_v2.py` binds the positive o1 counter receipt above
+and restores both static controllers in the analog-conditioned clock/DCC
+chain. Campaign `native_static_dcc_v2/8f73e3a90f1d54b3` has four declared
+SS/40 C, 410 MHz cases: common release versus early internal data prepare,
+each at the approved 40% and 60% duty endpoints. Supply voltages remain
+fixed at 3.3 V and 1.8 V. This focused pilot does not replace the required
+390/400/410 MHz and 0/25/40 C qualification matrix.
+
+Each phase uses three actual extracted clock-driver components. In common
+mode the public RESET_N qualifies both DCC data and its output mask. In
+prepare mode only the two data qualifiers use PREPARE_0; the public output
+mask still uses RESET_N. A separate own-phase counter produces
+PREPARE_180/RESET_180. Both masks must follow at least three actual clocks;
+preparation must follow REQUEST and precede its own public mask. The
+original first-P180 startup, one correctly directed output per source
+interval, common-mode and every MOS terminal-pair voltage check remain.
+The mean output half-cycle error limit remains **50 ps**; individual
+half-cycle excursions remain diagnostic.
+
+The producer retains every complete raw waveform and failed result. The
+independent `verify_native_static_dcc_v2.py` regenerates component libraries,
+actual MOS witnesses and all decks, then remeasures every completed case.
+The pilot and verification watcher run under
+`openlvds-native-static-dcc-v2-pilot.service` and
+`openlvds-native-static-dcc-v2-verify.service`, using the shared six-engine
+dispatcher with at most two workers. Existing healthy solvers continue.
+
+The conditioner is source circuitry with extracted bias; DCC, clock drivers
+and counter use native component RC. Common wires and parallel-driver
+routing remain ideal. There is no whole-backend RC, 256-clock hardware
+warmup, full-PVT, link or PHY admission from these four cases. The original
+release/deadline and qualification requirements remain open.
+
+Validation: `make test-full` passes **1,789 tests without skips**
+(`build/native-static-dcc-v2-full-tests.log`). New synthetic waveform checks
+reject early masks, late prepare, missing output events and overstress.
+A separate read-only regeneration check matches all four decks and all
+1,588 actual MOS witnesses per case. At this checkpoint the joint pilot
+is running with its first two cases queued for engine capacity; no joint
+waveform result is claimed.
