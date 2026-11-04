@@ -17,18 +17,24 @@ TX: OpenPLL -> four independently programmable noninverting sections -> two
 symmetric DCCs -> data DDR plus dedicated forwarded clock -> existing LVDS I/O.
 RX clock: existing receiver -> deskew DCDL -> one four-section DLL and two DCCs
 -> capture. RX data retains the existing analog receiver and DDR sampler.
-The forwarded clock has the steady polarity `~PH0`; it no longer traverses a
-constant-data DDR mux. Changed clock latency is included in RX training.
+The forwarded clock no longer traverses a constant-data DDR mux. The current
+DCC release controller aligns delivered rising clocks with their respective
+raw PH0/PH90 rising phases, preserving positive quadrature. This supersedes the
+initial inverted-output startup assumption. Native startup and input-port timing
+still need qualification; changed clock latency is included in RX training.
 
 During calibration a section sees the common reference, then the sections are
 cascaded. Increment the fastest section, validate an unwrapped tagged-burst
-one-period measurement, and require 64 valid confirmations. An edge-sampled
-PD uses symmetric paths, input swapping and repeated votes; both extreme
+one-period measurement, and require 64 valid confirmations. The current detector
+candidate uses analog edge conditioning followed by a retained-event
+regenerative arbiter, input swapping and repeated votes; both extreme
 unequal slews must still bracket zero within +/-20 ps. Clock codes update only
 while outputs are invalid and become immutable during payload.
 
-Each DCC ORs the outputs of identical self-reset pulse FFs driven by opposite
-rising phases and toggles a final FF. The 780--820 MHz event stream, including
+Each DCC ORs the outputs of identical pulse FFs driven by opposite rising
+phases and toggles a final FF. The repaired pulse reset stays asserted until
+its input clock falls, preventing repeated events during the high phase.
+The 780--820 MHz event stream, including
 minimum jittered event spacing, pulse widths, startup polarity, CQ asymmetry
 and real loads, must pass native simulation. A standard-cell implementation is
 a candidate, not an assumed solution. Small custom timing cells are allowed if
@@ -173,3 +179,52 @@ not qualify 64-confirmation lock or remove the independent tagged-epoch check.
 `verify_digital_bbpd_v2.py` remeasures the completed curves with exact waveform
 witness checks. A detector with a dead zone or slew-dependent sign failure must
 be repaired before it is used by the DLL calibration measurement engine.
+
+## Native repairs and next admission gates
+
+The original 270-case DCC matrix completed without numerical errors, but all
+54 SF cases failed. Its reset released while the input clock was still high,
+retriggering the native pulse FF. The failed source and independent receipt
+`digital_clocking_v2_verification/3c04509edf48618f` remain unchanged.
+`openlvds_dcc_clock_hold_v2` adds a clock-aware reset latch. Its 24-case SF40/SS40
+pilot preserves one pulse per source edge, including +/-140 ps spacing offsets;
+balanced half-cycle error is about 29.7 ps at SF40 and 0.224 ps at SS40.
+The new 270-case expansion is `dcc_clock_hold_pvt_v2/8b83d935bd2d01f3`.
+
+`harden_dcc_v2.py` requires a complete independent passing source receipt before
+starting fresh placement, DRC/LVS and GDS RC extraction. It checks the exact
+reset-feedback topology and rejects inserted signal cells. Physical success
+alone cannot admit electrical timing. `openlvds_dcc_release_v2` independently
+releases the two DCC resets after their own raw rising phases. Logic regression
+sweeps 25 startup offsets and checks positive quadrature; native recovery,
+removal, CQ and actual loads remain open.
+
+The mutual-FF detector completed 60 cases and exposes a dead zone near zero.
+`openlvds_tag_arbiter_v2` retains isolated input events before a cross-coupled
+NAND race, removing that FF setup aperture. Its standard-cell conditioner still
+introduces roughly 45 ps of unequal-slew bias. Moving the buffer before the
+swap mux did not fix it. The retained `tail140_w20` analog frontend restores all
+six +/-20 ps signs, but its new arbiter load initially pushes local reference
+ripple 255 uV beyond the 10 mV limit. Increasing only the native reference MIM
+from 22x22 to 30x30 um passes all six sign, stress and reference checks; peak
+reference is 0.905723 V. Independent receipt:
+`clock_repairs_v2_verification/3d4ed08666f410c4`.
+`expand_analog_arbiter_v2.py` expands this exact topology to 180 source cases:
+15 PVT, both input swaps and matched/unequal slews at +/-20 ps. The tagged
+one-period trial hardware, repeated votes and physical detector still need
+implementation and native qualification.
+
+Dense DCDL reanalysis found real SS40 control-device stress at 1.95726 V,
+above the unchanged 1.95 V limit. Strengthening the complementary-control
+inverter worsens it to 1.97904 V. A native 2x2 MIM shunt reduces it to 1.93214 V
+in the first eight-code source test, preserving delays. The separate
+`dcdl_control_margin_v2/4a4181e6cbb757d0` tests 2x2/4x4 shunts, both code
+directions and large jumps at 20/100/200 ps control slew. The first large-jump
+2x2 result fails at 20 ps (1.96278 V), while 100 ps passes (1.93223 V); the
+remaining geometry/slew cases are running. No delay ROM is admitted.
+
+Next gates, in dependency order: finish independent source repair matrices;
+select a stress-safe fine bank and characterize a common all-PVT code path;
+build tagged period/tournament measurement hardware; qualify fresh physical
+clock primitives and startup; connect TX/RX clock islands; then run the native
+full-link and release matrix. Supplies remain fixed throughout.

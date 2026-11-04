@@ -21,19 +21,20 @@ pair alignments and an independently generated TX frame reference. DLL
 measurement hardware, qualified delay-code ROMs, full PHY wrappers, new
 physical extraction and release integration remain to be built.
 These control tests do not qualify clock timing.
+The repair/PVT implementation checkpoint passes all 1,550 tests without skips
+using `make test-full`; log:
+`build/digital-clocking-v2-repairs-pvt-full-tests.log`.
 
-The native minimum-drive pulse/toggle DCC screen completed 12 cases with no
-numerical errors and preserved every event, but failed the 50 ps symmetry
-limit (about 69 ps at SS40/410 MHz). A 16-case stronger-toggle screen also
-completed; stronger drive and a noninverting output buffer did not solve the
-balanced-input symmetry error. An independent eight-case output-polarity
-screen found dfrtp_1 plus inv_4 promising: about 0.1 ps half-cycle error at
-SS40/410 MHz/250 ps input slew/20 fF load. Its raw/export equality and all
-measurements were independently rechecked in
-`digital_clocking_v2_verification/c1f16c849e14124b`. This is one source operating
-point, not physical admission. The 270-case source expansion across all fifteen
-PVT, 390/400/410 MHz, 20/250 ps input slews and 0/+/-140 ps phase error is running
-in `digital_dcc_pvt_v2/b94d5bd361c66be7`, with two fair-dispatch workers.
+The original 270-case pulse/toggle DCC source matrix completed without numerical
+errors but failed all 54 SF cases: self-reset release while CLK remained high
+retriggered pulse FFs. The clock-aware reset repair passes its 24-case SF40/SS40
+pilot and is running a fresh 270-case matrix in
+`dcc_clock_hold_pvt_v2/8b83d935bd2d01f3`. Physical implementation is queued behind
+complete independent source verification. A new layout/DRC/LVS/RC flow checks
+exact reset-feedback topology; its existence does not admit electrical timing.
+Phase-specific reset release passes logic startup/quadrature regression but
+still needs native CQ/recovery/removal qualification. See [repair evidence and
+remaining gates](digital-clocking-v2.md#native-repairs-and-next-admission-gates).
 
 RX scan control and capture-domain integration are now implemented in
 `rtl/v2/openlvds_rx_scan_v2.v` and `openlvds_rx_training_v2.v`. The scan tests every
@@ -69,7 +70,9 @@ merge from NAND4 to NAND8, keeping the 2x2 MIM geometry, to reduce fine step siz
 and TT25/SS40/FF0, eight isolated tagged pulses per run. Codes change only while
 the input is low. The first eight TT25 codes rise at 305.0--360.1 ps, with
 adjacent steps about 6.0--8.7 ps and all 93 custom MOS checks passing. The full
-192-code/24-run source matrix remains running; it is not all-fifteen-PVT or
+192-code/24-run source matrix is complete, retaining ten producer measurement
+failures from the internal logic check. Reanalysis also finds real SS40 stress
+at 1.95726 V, beyond the unchanged 1.95 V limit. It is not all-fifteen-PVT or
 physical admission.
 
 The initial batch analyzer incorrectly applied a 10 mV reference tolerance to
@@ -86,13 +89,20 @@ all gaps over 20 ps; it rejects corners that only pass after different code
 reordering. Characterization coverage, uncertainty bounds, actual clock pulse
 transport and physical proofs remain separate prerequisites.
 
-A native exchanged-input edge-sampler pilot is now running in
-`digital_bbpd_v2/d4f11c9971be64d2`: two conditioning strengths, both input swaps,
-matched and both extreme slews, and 0/+/-20/+/-150 ps at SS40. The first
-minimum-drive cases correctly identify -150 ps but show an ambiguous dead zone
-at -20 ps for matched and 20/200 ps slews. This is not yet a complete detector
-screen. Its final independent consumer will retain all sign curves; the
-measurement engine must not assume the new sampler meets the 20 ps bracket.
+The 60-case exchanged-input FF sampler completed and fails the near-zero
+bracket. A retained-event regenerative arbiter removes its FF setup dead zone,
+but both placements of standard-cell conditioning retain unequal-slew bias.
+The retained analog conditioner plus a 30x30 um native reference MIM passes all
+six new-load +/-20 ps sign, stress and reference checks; independent receipt
+`clock_repairs_v2_verification/3d4ed08666f410c4`. Its 180-case all-PVT/input-swap
+expansion is running in `analog_arbiter_pvt_v2/e6ec7847a89bd52b`.
+
+A native 2x2 MIM shunt reduces complementary DCDL control stress to 1.93214 V
+in the first eight SS40 codes; stronger inverter drive instead worsens stress.
+The separate six-case shunt margin campaign tests both code directions, large
+jumps and 20/100/200 ps control slew. Its first 2x2 large-jump result fails
+20 ps slew at 1.96278 V, while 100 ps passes at 1.93223 V. Remaining cases are
+running. No delay ROM or detector is admitted.
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active
