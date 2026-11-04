@@ -814,9 +814,12 @@ Two targeted experiments accompany the 540-case threshold matrix:
   tail140_w20 conditioner and distributed-RC bias continuously at 410 MHz.
   Real buf8 clock drivers feed the actual buffered DCC input circuitry held in
   reset, plus permanent buf8 monitor inputs and fixed native 4x4 MIM rails.
-  The first six SS40 cases pass clock integrity, common-mode and terminal
+  All twelve SS40/SF40 cases pass clock integrity, common-mode and terminal
   screens. Their largest conditioned phase-spacing error is 4.21 ps, including
-  both 20/250 and 250/20 ps raw input slew and both 30%/70% duty. This proves neither DCC run
+  both 20/250 and 250/20 ps raw input slew and both 30%/70% duty. Independent
+  receipt `conditioned_clock_verification_v2/94097d668b5de414` regenerates the
+  libraries, decks and MOS coverage and remeasures every raw waveform.
+  This proves neither DCC run
   timing nor a complete five-channel conditioner; integration remains required.
 
 Native layout access is now concrete. Inspection
@@ -824,12 +827,74 @@ Native layout access is now concrete. Inspection
 and extracted device geometry. Label-only proof
 `nand_mid_access_v2/9627a8f5d45d42e4` exposes the drive-2 and drive-8 stack nodes
 as MID ports, obtains unique transistor-level matches, and identifies existing
-local-interconnect landing rectangles on those exact nets. No mask changed;
-MIM contact/routing, DRC/LVS and RC of the modified gate macros are still open.
+local-interconnect landing rectangles on those exact nets. No native mask changed.
 
-The next integration must connect the continuous conditioned clocks to the
-chosen buffered DCC with real phase-specific reset release, then qualify the
-combined waveform and all device terminals. Physical shunted gate/buffer/TG
+Two actual shunted NAND macros now pass DRC, unique transistor-level LVS and
+fresh RC topology checks. Physical receipt
+`nand_shunt_physical_v2/e81ae766c2d4bf14` adds contacts to existing stack LI,
+native 2x2/4x4 stack MIM and 2x2 output MIM, with M3 signal/power interfaces.
+Extraction `nand_shunt_rc_v2/ef0d175bd6be9bcb` contains 121 R/68 C for drive-2
+and 384 R/197 C for drive-8 before exact resistor reduction. The original
+geometry `ea63ebb142230ada` remains preserved: it matched schematics but failed
+M1 enclosure and MIM-to-unrelated-M3 clearance rules. The corrected geometry
+passes both checks. These are component results, not DCC admission.
+
+`nand_shunt_native_v2/1ac6dd7fabd5ca7d` is the running 48-case electrical pilot:
+each extracted gate at SS40/SF40/FF0, 410 MHz, both input pin orders, 20/250 ps
+slew and two external loads. A/B clocks offset by a quarter period exercise
+610 ps NAND pulses. It checks actual input/output crossings, full-swing logic
+settling and all six MOS terminal differences. The first two drive-2, SS40,
+20 ps, 5 fF cases preserve output events but fail the terminal screen at
+1.980/1.956 V. The first peak combines a 1.959 V output with a -20 mV local
+body excursion. Heavier 20 fF drive-2 loading can also miss the full-swing
+settling check despite preserving crossing counts. These are explicit load
+limits/failures, not a relaxed voltage bound. A separate output-3x3-MIM layout
+experiment tests additional damping without changing any transistor size.
+Its first geometry `nand_shunt_physical_v2/e6936ac0b1d21df1` preserves unique
+LVS but fails one MIM/M3 clearance rule per gate. Raising the output escape
+from 10.0 to 10.8 µm produces
+`nand_shunt_physical_v2/54edb7bb83c9c87a`: both gates pass DRC/LVS, and fresh
+RC/topology receipt `nand_shunt_rc_v2/2bfbb5b632ecca00` passes. The new 48-case
+electrical comparison is `nand_shunt_native_v2/85a89de29ccff159`; timing/stress
+results are pending. The shared dispatcher still caps all cohorts at six
+active engines, two workers per campaign. Independent native-gate waveform
+verification is queued; passing geometry does not select this variant.
+
+### Joint conditioned DCC and native reset release
+
+The joint source pilot now connects the continuous conditioner to the actual
+running buffered-TG DCC. A static native two-register controller asynchronously
+clears both master/slave states and requires two new conditioned-clock edges
+before reset release. A matching controller loads the other phase. The only
+external ideal startup stimulus is REQUEST; RESET_N comes from real native
+storage. Clock-stop/retrain tests cover stopped HIGH and LOW states. This
+source experiment does not replace the production clock-hold control topology
+or shorten the 256-actual-clock hardware warmup.
+
+The first controller in `conditioned_dcc_v2/b72aae608fddc043` used redundant
+tied REQUEST NAND inputs. The first two cases passed events and mean timing
+but exceeded the terminal limit inside that controller only. Versioned
+`native_clock_release_v3.py` uses REQUEST directly as first-stage data and one
+inverter for its complement. Both asynchronous internal clears remain. The
+replacement `conditioned_dcc_v2/96f84f2b4b28c340` tests both TG ratios N1/P3 and
+N1/P4, SS40/SF40, three slew pairs and 30%/70% duty at 410 MHz/20 fF. Its first
+six SS40 N1/P3 cases pass startup, events, actual two-edge reset release,
+common-mode, mean timing and every MOS terminal screen. The first four mean
+half-cycle errors are 16.9–23.1 ps. Remaining cases are running; no full-PVT
+selection or native RC timing is claimed. Independent raw verification waits
+for the whole cohort to finish.
+
+The superseded controller cohort was drained through receipt
+`superseded_clocking_drain_v2/1648525_443551665`: exact coordinator identity and
+held lock inode were verified, future dispatch stopped, healthy solver/export
+children finished, and four completed summaries plus six retained case folders
+were inventoried before coordinator retirement. The original artifact remains
+incomplete and unchanged. Neither running replacement nor threshold campaign
+was restarted. Bound producers and failed geometries remain immutable.
+
+The next integration must finish the joint source matrix and independent
+waveform verification, then qualify actual extracted gate loading and assemble
+the physical DCC. Physical shunted NAND3/inverter/buffer/TG
 macros, their native RC, all 15 PVT and 390/400/410 MHz, actual permanent
 measurement loading, and closed-loop DLL/RX/full-link qualification remain
 required. Production control RTL still has its clock-model admissions closed.

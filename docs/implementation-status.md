@@ -75,9 +75,9 @@ delays; it checks 64 confirmations, both warmups and an independently generated
 432-pair training/end-marker/payload stream. Stage-error, deadline and missing
 admission cases pass. This does not qualify physical delay or clock timing.
 
-The conditioned-clock source checkpoint passes all 1,675 tests
+The conditioned-clock/native-gate checkpoint passes all 1,688 tests
 without skips using the `make test-full` environment; log:
-`build/dcc-conditioned-input-checkpoint-v2-full-tests.log`. Yosys process/check with both admissions
+`build/shunted-gate-rc-v2-full-tests.log`. Yosys process/check with both admissions
 enabled and with defaults closed reports zero problems
 (`build/tx-control-v2-admitted-synthesis-check.log` and
 `build/tx-control-v2-default-synthesis-check.log`).
@@ -318,13 +318,25 @@ The agreed 50 ps criterion remains the descriptor's **mean** error. Individual
 cycle excursions are retained as full-link diagnostics.
 
 A completed eight-device TG width experiment passes N=1/P=3 µm matched cases
-at SS40/SF40, with worst mean error below 37.5 ps. The first six cases of the
-continuous 410 MHz conditioner pilot pass at SS40 and limit phase-spacing
+at SS40/SF40, with worst mean error below 37.5 ps. All twelve cases of the
+continuous 410 MHz conditioner pilot pass at SS40/SF40 and limit phase-spacing
 perturbation to 4.21 ps under the tested fanout and both unequal slew directions. That pilot
-holds the actual DCC in reset; combined run/reset qualification remains open.
-Label-only native layout proofs also identify existing metal access to the
-NAND stack nodes that need shunts. Actual added contacts/MIM routing and native
-RC are still required. See [the static-storage and TG evidence](digital-clocking-v2.md#static-nand-storage-and-isolated-transmission-gates).
+holds the actual DCC in reset. Independent receipt
+`conditioned_clock_verification_v2/94097d668b5de414` confirms exact regenerated
+sources/decks/MOS coverage and raw remeasurement. The running joint source
+pilot connects the DCC and real two-edge reset release; its first six SS40
+N1/P3 cases pass all checks. The first controller's tied-REQUEST terminal-stress
+failure is retained separately and fixed by direct first-stage data. Its
+cohort was safely drained after active children finished.
+
+Native NAND2 drive-2/8 with actual stack/output MIM shunts now pass DRC, unique
+LVS, fresh RC and independent topology checks. Their isolated extracted-gate
+pilot exposes terminal excursions and heavy-load settling limits: the first
+two fast-slew drive-2 cases reach 1.980/1.956 V and are not admitted. A separate
+larger-output-MIM variant separately passes DRC/LVS and fresh RC/topology;
+its electrical comparison is running. Physical NAND3, inverter, buffer and
+TG macros, integrated native DCC timing and full-PVT qualification remain open.
+See [the joint-clock evidence](digital-clocking-v2.md#joint-conditioned-dcc-and-native-reset-release).
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active
