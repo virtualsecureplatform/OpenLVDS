@@ -1,0 +1,51 @@
+{
+  "mos_centers": [
+    [
+      2.0,
+      2.0
+    ],
+    [
+      6.0,
+      2.0
+    ],
+    [
+      10.0,
+      2.0
+    ]
+  ],
+  "cap_centers": [
+    [
+      4.5,
+      3.8
+    ],
+    [
+      10.05,
+      3.3
+    ]
+  ],
+  "tracks": {
+    "B": -1.5,
+    "D": -0.8,
+    "G": 0.0,
+    "S": 0.8
+  },
+  "gate_escape": 0.3,
+  "cap_escape_y": 7.0,
+  "buses": {
+    "NODE": 0.3,
+    "EN": 8.7,
+    "ENB": 9.5,
+    "VDD": 10.4,
+    "VSS": 11.4,
+    "CAP": 7.9
+  },
+  "bus_left": 0.3,
+  "bus_right": 12.1,
+  "signal_width": 0.4,
+  "power_width": 0.6,
+  "drop_width": 0.18,
+  "bottom_via_x": [
+    6.6,
+    11.8
+  ]
+}
