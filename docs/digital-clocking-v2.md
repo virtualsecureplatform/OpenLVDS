@@ -2748,3 +2748,40 @@ admission flags remain unchanged. Six healthy SPICE solvers continue; these
 CAD attempts consume no SPICE tickets. `make test-full` passes 1,850 tests
 without skips in `build/weighted-bank-flow-v3-full-tests.log`, including
 negative body/power, instance-substitution and reversible net-alias checks.
+
+### Existing guard-pair M3 power access and held grid replay
+
+`weighted_bank_power_access_v2.py` promotes exactly four existing M3 power
+rectangles from the guarded NAND2B pair's obstructions to their original
+named power pins. The candidate is
+`weighted_bank_power_access_v2/1df6952c90cd499a`. Each promoted rectangle is
+an exact original extracted PG shape, is fully contained in the native M3
+GDS, and contains an existing via3 cut completely inside its intersection
+with the original named M4 rail. Both child rails are covered for both
+supplies. The complete routing-geometry multiset, all signal pin text,
+macro boundary and GDS are unchanged. The consumer regenerates the view,
+checks the native mask proof again and rejects changed source/output hashes
+or any changes to the other ten macro views. This is access preparation,
+not grid, timing or PHY admission.
+
+`harden_weighted_bank_v5.py` consumes that bound view and retains the earlier
+340x468 um floorplan and all macro positions. Artifact
+`weighted_bank_bringup_v2/2c9a89458f8122ee` reaches detailed placement with
+all original interface/placement checks passing, but returns 2 because the
+power grid remains disconnected. Merely exposing M3 does not resolve the
+chip-wide strap phase and M4 signal-obstruction problem. This failed run
+and all earlier artifacts remain immutable; all physical/electrical/PHY
+admission flags remain false. The next experiment adds local M5 escapes
+rather than inferring physical connectivity from logical supply nets.
+
+`make test-full` passes 1,852 tests without skips in
+`build/weighted-bank-power-access-v2-full-tests.log`. New negative checks
+reject missing, duplicated, shifted and incorrectly named supply rails;
+positive checks preserve signal pins and the routing-geometry multiset.
+
+Early-prepare joint-DCC case 2 (SS/40 C, 410 MHz, 40% duty) has completed
+with its startup/event, mean half-cycle and terminal-voltage pilot checks
+passing. Mean half-cycle error is 8.252 ps and the largest individual
+half-cycle error is 46.719 ps. This is a single component-RC pilot result;
+the corresponding 60% case and independent four-case receipt remain
+pending. It does not qualify full-PVT startup, hardware warmup or the PHY.
