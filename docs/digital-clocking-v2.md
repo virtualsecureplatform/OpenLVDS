@@ -1028,3 +1028,50 @@ physical DCC/reset/clock backend. Whole-backend RC, all 15 PVT and
 390/400/410 MHz, actual permanent
 measurement loading, and closed-loop DLL/RX/full-link qualification remain
 required. Production control RTL still has its clock-model admissions closed.
+
+### Approved duty range and native integration status (2026-11-04)
+
+The user-approved reference-clock input duty range is now **40%–60%**.
+`clocking_duty_v2_2.json` applies only that override to the SHA-bound original
+descriptor. The output mean half-cycle error limit remains **50 ps**;
+390/400/410 MHz, all 15 process/temperature combinations, fixed supplies and
+all other requirements remain unchanged. Earlier 30%/70% campaigns retain
+their original identities and continue without restarting healthy solvers.
+The four-case stronger-storage native pilot
+`native_clock_components_v2/363a482d0837cc35` tests both new duty endpoints
+at SS/40 C, 410 MHz with one or three actual clock drivers. It is running;
+neither that pilot nor its queued independent verifier has admitted the PHY.
+
+The source conditioner/DCC matrix `conditioned_dcc_v2/96f84f2b4b28c340`
+passes all 24 cases. Independent receipt
+`conditioned_clock_verification_v2/d2819f2b5a574d05` regenerates libraries,
+decks and MOS coverage and remeasures the raw waveforms: worst mean
+half-cycle errors are 38.921 ps (P3) and 48.482 ps (P4), with a worst
+low-voltage MOS terminal difference of 1.94012 V. This is a two-PVT source
+pilot, not physical or all-PVT qualification.
+
+The passive component-RC baseline now reaches clock startup. Its first two
+SS/40 C cases fail reset release rather than numerical convergence.
+`native_clock_release_failure_v2/d2139c60ceb19998` binds the raw/deck
+identities and diagnoses saved MOS terminals through the extracted resistor
+graphs: at 30% duty the master sets but the slave does not latch; at 70%
+the master does not set. The stronger native-storage experiment retains
+these failures. Its 70% one-driver case releases reset and meets steady
+half-cycle timing (9.624 ps mean error), but misses the first expected P0
+event. Startup and event-integrity requirements remain enforced.
+
+Whole-bank routing now preserves all 174 intended instance connections,
+passes detailed routing and antenna checks, and reaches GDS DRC/LVS.
+Metadata receipt `dcdl_macro_boundaries_v2/ec13d360f6f77457` supplies the
+required placement boundaries. Frame receipt
+`dcdl_macro_frames_v2/7dcd08948d158942` then normalizes all six macro
+GDS/LEF coordinate frames, preserving native geometry under a verified rigid
+translation. This fixes an observed mismatch between streamed GDS placement
+and routed OpenDB pins. The resulting bank run
+`dcdl_bank_physical_v2/ea909f46b30b7d57` still fails signoff: 143 Magic DRC,
+36 KLayout DRC and 33 LVS errors remain. It is not a clean physical bank;
+fresh whole-bank passive RC and native delay/ROM qualification remain pending.
+
+The complete software regression passes **1,722 tests without skips** in
+`build/approved-duty-and-bank-frames-v2-full-tests.log`. This validates the
+software checks and generators, not the unfinished native timing or layout.
