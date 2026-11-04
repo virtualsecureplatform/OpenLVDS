@@ -2083,3 +2083,41 @@ Two focused tests pass: the failed-baseline path must not attempt a raw
 comparison, inconsistent failed rows are rejected, and a valid baseline
 requires matching independent measurement. The routed-pair full suite above
 completed before this isolated new consumer was added.
+
+### Complete native static release-counter physical backend
+
+`build_static_phase_backend_v2.py` constructs the complete tested nineteen-
+macro counter from its exact component-RC topology: fourteen ordinary native
+logic/driver macros, two stronger release gates and three routed guarded
+low-setter pairs, across four actual macro types. Each output net has one
+public driver. Native GDS, private guards and body contacts remain intact.
+The first artifact `static_phase_backend_physical_v2/0755686519e08e14`
+stops during route construction because a floating-point rail-boundary
+comparison rejects a coordinate differing by less than a layout grid.
+It is retained as an incomplete artifact, not a running physical job.
+
+Revision `build_static_phase_backend_v3.py` makes that boundary check grid
+aware and records terminal exceptions explicitly. Whole-counter artifact
+`static_phase_backend_physical_v2/81e0989798b29f0d` completes with **zero DRC
+violations and unique LVS** against the full native schematic. All nineteen
+macros and every feedback, clock, request and supply connection are routed.
+M3 spines use empty macro corridors; M4 local escapes join per-stage M5
+buses. The six public CLK/REQUEST/PREPARE/RESET_N/VPWR/VGND ports expose M5
+access. `restrict_macro_rails_v6.py` supports that layer while preserving
+all routing/obstruction geometry and antenna metadata. No STA timing model,
+production controller selection or electrical admission is fabricated.
+
+The structural route binds exact native port orders, rejects conflicting
+source definitions across reused cells and refuses different nets sharing
+a spine interval. Native schematic definitions are deduplicated only when
+their complete tokenized bodies agree. Actual full-block DRC/LVS, rather
+than structural software checks alone, establishes geometry/connectivity.
+The preceding paired-component and joint clock simulations continue with
+their immutable libraries; this backend does not replace them silently.
+
+Validation: `make test-full` passes **1,805 tests without skips** in
+`build/static-phase-backend-v2-full-tests.log`. Focused checks require all
+nineteen unique output drivers, preserve complete clock/request/prior-state
+fanout, reject conflicting native source bodies and preserve every routing
+shape when selecting M5 access. The reported DRC evidence is from Magic;
+independent whole-block DRC/antenna checks and physical timing remain open.
