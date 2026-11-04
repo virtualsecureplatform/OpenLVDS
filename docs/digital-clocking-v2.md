@@ -2697,3 +2697,54 @@ decks and logs remain intact. The dispatcher naturally reassigned the
 released engine to early-prepare joint-DCC case 2; all other healthy solvers
 continue without restart. The isolated original/shunted forward-pair
 comparison is still queued, so no conditioning repair is inferred yet.
+
+### Full-bank CAD placement bring-up and retained PDN failures
+
+`weighted_bank_flow_v3.py` renders the exact staged hierarchy for LibreLane.
+It retains all instance/model identities and signal connections. The sixteen
+standard cells use the flow's global supply/body connections; the adapter
+refuses to omit any body/power pin whose source connection differs from its
+expected rail. Eleven hard macro interfaces retain explicit power pins and
+their actual port directions. Only five internal net names are renamed to
+avoid sharing the Verilog namespace with fine-cell instance names. The
+reversible map is bound in the manifest and applied during the post-flow
+connection comparison. Public ports and instance names are unchanged.
+
+`harden_weighted_bank_v4.py` consumes the bound normalized macro frames,
+places all sixteen controls on native 0.46x2.72 um sites above the fine bank,
+and runs the Classic flow through `OpenROAD.DetailedPlacement`. It retains
+the existing macro coordinates and disables input/output repair, delay-cell
+replacement and CTS. The SDC supplies a 20 fF nominal output load and does
+not claim STA admission for the calibrated asynchronous delay paths. The
+post-flow reader checks every original signal/body/supply attachment,
+macro model/position/orientation, public direction/use, all original cell
+placement states, I/O shapes and OpenROAD placement legality. Physical
+fill/tap/diode cells and real constant cloning are accounted for; extra
+functional buffers or changed body rails are rejected.
+
+All attempts remain separate and immutable:
+
+| Producer | Artifact under `weighted_bank_bringup_v2` | Result |
+| --- | --- | --- |
+| `harden_weighted_bank_v2.py` | `00e6c00d855ce374` | Held at lint: five internal net/instance name collisions produced 20 errors. |
+| `harden_weighted_bank_v3.py` | `f63e6c5a46de12f5` | Renaming fixed lint and synthesis; PDN stopped at PDN-0179, an unrepairable narrow right-edge channel. The saved partial DB retains the original connections. |
+| `harden_weighted_bank_v4.py` | `739e945fe80c24fe` | A 35 um right-edge extension, to 340x468 um, removed the channel failure and reached detailed placement. All original placement/interface checks pass, but deferred power-grid errors keep the run held. |
+
+The latest saved database has all 94 original cells placed, unchanged macro
+boxes/orientations and 22 signal I/O pins with actual geometry. Its instance
+and public-interface checks and `check_placement -verbose` pass. The CAD
+return code is nevertheless 2: the grid checker reports **8,892 power-grid
+violations**, including 62 disconnected guard-pair supply pins/shapes and
+failed M4-to-M5 via insertions. Logical ITerm/net assignment is not proof of
+physical supply continuity. `placement_bringup_passed` and
+`physical_implementation_passed` remain false. The tool's suggestion that
+grid warnings may be ignored if LVS passes is not adopted.
+
+The next physical fix must provide legal, connected access from the guard
+pairs' narrow M4 power rails to the external grid and recheck the full grid.
+Signal routing, whole-bank DRC/LVS/antenna/RC and native timing remain open.
+The candidate's electrical control-repair prerequisite and all PHY/code-ROM
+admission flags remain unchanged. Six healthy SPICE solvers continue; these
+CAD attempts consume no SPICE tickets. `make test-full` passes 1,850 tests
+without skips in `build/weighted-bank-flow-v3-full-tests.log`, including
+negative body/power, instance-substitution and reversible net-alias checks.
