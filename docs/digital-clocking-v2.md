@@ -2805,3 +2805,82 @@ LVS. These receipts qualify component geometry and extracted topology
 only. They do not establish clock timing, voltage safety or legal codes
 for the changed metal. No old timing result or candidate admission is
 transferred to this variant.
+
+### Local power-grid experiments and native frame integration
+
+`weighted_bank_wide_power_frames_v4.py` produces the bound replacement
+view `weighted_bank_wide_power_frames_v2/21af22833c328beb`. It preserves
+all eleven macro placements, compares the schematic byte-for-byte,
+checks every non-M4 mask layer by XOR, and requires the M4 XOR to equal
+exactly the two intended PG width increments. Hierarchy, labels, signal
+pin text and the macro footprint are unchanged. MIM M3 keepouts are
+retained. Its consumer regenerates the geometric proof and view mapping.
+The two initial view artifacts `1bc0f34ca440089d` and `85af602beaad6edc`
+are held: their JSON round-trip proof comparison mishandled tuple/list
+containers. Their physical comparisons passed, but their own binding
+failed. Revision v4 canonicalizes the full proof before comparison; the
+older sources and outputs are retained.
+
+`weighted_bank_row_strip_v2.py` derives the control extent from all sixteen
+source cells and actual native LEF dimensions. Its Tcl retains the unique
+row segment containing that full extent and removes only generated
+`tapvpwrvgnd_1` instances outside that segment. It refuses to remove an
+original instance and compares all 94 original model/terminal/net
+attachments before and after trimming. The replay removed 345 empty row
+segments and 2,117 generated taps; the retained row is
+(178.940,296.480)-(334.420,299.200) um. The macro hierarchy, including its
+internal body taps, remains intact. All controls retain their planned
+positions. Supply connectivity is not inferred from this reduction.
+
+`probe_weighted_bank_pdn_v2.py` through v7 retain distinct harness and grid
+attempts. The first two harnesses lacked LibreLane's SCRIPTS_DIR and
+VDD_NET/GND_NET initialization; the corrected bootstrap binds the actual
+installed global-connection Tcl. The local-grid replay
+`weighted_bank_pdn_replay_v2/163839f24f1d7653` encounters PDN-0179 with the
+original unused rows. Single-row replay `b1d8301c50d412b7` generates a grid
+but both supply checks fail. Its initial report filename accidentally
+contains a literal `$net`; revision v6 separates the two supply reports.
+The source and output of every attempt remain unchanged.
+
+With the wider pair and original local-strap offset, full-flow v6 artifact
+`weighted_bank_bringup_v2/c04aa6ed721dae74` stops at PDN-0233: all 31 local
+guard grids are empty after generation. All original connections remain
+intact in the partial database. V6 and successors also require a fresh
+power-grid check after detailed placement, in addition to the original
+placement and interface checks. Failed/partial database checks cannot
+admit the design.
+
+The explicit-domain experiment v7,
+`weighted_bank_bringup_v2/7fa32d9d426587cb`, fails earlier at PDN-0190
+(unable to determine row pitch). A separate direct OpenDB check shows
+that the original core boundary actually remains
+(5.520,2.720)-(334.420,456.960) um after row trimming. The hypothesis that
+the domain shrank is therefore unsupported, and this variant is held.
+Untrimmed diagnostic `3039cc7f9be17887` retains that explicit-domain
+failure. Diagnostic `e8e62398748bfea1`, using the default domain, writes
+separate supply error reports and actual DEF/ODB geometry. Both supply
+checks fail, and disabling trimming is explicitly nongating.
+
+The latter diagnostic identifies a concrete local-strap offset error:
+its M5 ground stripe overlaps the wider M4 pin only over
+12.900--14.300 um, rather than the complete 12.700--14.300 um pin. The
+nominal 1.6 um landing is reduced to 1.4 um by a 0.2 um offset. The next
+normal-flow experiment centers the straps at native relative Y=3.5 and
+7.9 um; it retains all power-grid and failed-via checks.
+
+`make test-full` passes 1,854 tests without skips in
+`build/weighted-bank-local-power-v2-full-tests.log`. New row checks reject
+missing controls, multiple rows, unexpected cell heights and orientation
+changes. No routed-bank DRC/LVS/antenna/RC, native timing, code-ROM or PHY
+admission follows from these physical preparation experiments.
+
+Early-prepare joint-DCC case 3 (SS/40 C, 410 MHz, 60% duty) also completes
+with startup/event, terminal-voltage and mean half-cycle pilot checks
+passing. Mean half-cycle error is 4.042 ps; the largest individual error
+is 50.248 ps (the approved limit applies to the mean). The independent
+four-case verifier remains live, and the common-prepare negative controls
+still fail their initial events. No full-PVT or hardware-warmup admission
+is inferred. Original return-mux case 0 also finishes with numerical
+collapse at 8.98872 ns, after the first input pulse; it supplies no complete
+20 ns timing/safety result. Its raw and logs remain intact, and the shared
+dispatcher naturally assigns the released engines to queued work.
