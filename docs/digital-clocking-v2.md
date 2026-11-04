@@ -1585,3 +1585,113 @@ The full pinned software suite passes **1,777 tests without skips** in
 `build/static-phase-release-v2-full-tests.log`. The new tests reject missing
 profile coverage, bad intermediate phase ordering and uncleared stopped-clock
 state. All prior failed and running artifacts remain intact.
+
+### Return-mux delay bank and physically reachable NAND2B guards
+
+The native NAND2B arm-setter campaign finishes all eight cases. Independent
+receipt `guarded_phase_release_verification_v4/25d225f32860b5ba` confirms
+the faster arming result but rejects both guard profiles: their maximum
+terminal-pair differences remain 1.982825/1.972642 V. This does not repair the
+guarded FF's physical-access limitation or admit a controller.
+
+The all-static phase-counter campaign also finishes all eight cases, with
+independent receipt `static_phase_release_verification_v2/b4731b4ce1f9a6cb`.
+Every case retains the two-/three-clock transition counts. Drive-4 passes
+phase ordering and stopped-clock logic, but only its 60%-duty low-stop case
+passes full feasibility; voltage rejects the other three. Drive-8 reduces
+some voltage excursions but introduces late initial-low qualification, and
+its high-stop cases also fail reset clearing and voltage. Neither complete
+drive profile passes; maximum voltage differences are 1.967293/1.967572 V.
+
+Diagnosis `static_phase_release_failure_v2/d03a3298db2f7239` regenerates and
+remeasures the three complete failed drive-4 cases. The 40%-duty low-stop
+case peaks at 1.950415 V during initial qualification near 3.8565 ns, including
+local body bounce. Both high-stop cases have floating NFET series nodes in
+all three NAND2B low setters: initial setter stack nodes reach approximately
+-0.1681 V while its output stays near 1.7992 V, and the following setters
+retain approximately -0.1570 V against 1.8000 V near 25.04 ns. Slowing only
+REQUEST is therefore not assumed to fix every failing setter. These results
+remain electrical failures at the unchanged 1.95 V screen.
+
+Native access proof `nand2b_access_v2/389725ef7a1d1742` passes exact-source
+unique LVS and proves both NAND2B4 private nodes distinct with existing LI
+landings: inverter node `a_27_47#` and series-stack node `a_215_47#`.
+Unlike the four problematic FF nodes, these permit a concrete shunt layout
+without adding diffusion contacts or changing native transistor masks.
+
+Two native NAND2B4 shunt macros now add a 2 x 2 um MIM to each private node
+and compare 1 x 1 versus 2 x 2 um public-output MIMs. The first physical
+attempt `nand2b_shunts_physical_v2/ef841c7df56f6b98` preserves two LVS
+passes but fails two Metal2 spacing checks per variant. Corrected producer
+`build_nand2b_shunts_v3.py` chooses another independently surveyed inverter
+LI landing away from the left rail straps. Fresh physical run
+`nand2b_shunts_physical_v2/c94c88d0d7ffd713` passes DRC with zero errors
+and unique LVS for both variants. No native transistor is resized or removed.
+
+Fresh GDS extraction `nand2b_shunts_rc_v2/99b3d8b0d58b1782` uses the retained
+flat, single-pass extraction and elementwise passivity gate. The variants
+contain 291/292 resistors and 98/94 capacitors before exact positive-conductance
+reduction. Both primary wire-collapsed topology comparisons pass against the
+actual guarded source. Independent receipt
+`nand2b_shunts_rc_verification_v2/dc43c73ad540c75b` confirms both complete
+GDS/source/interface identities, elementwise passivity and unique topology
+matches using comment-aware collapse. Native controller timing with these
+models remains untested; adding
+guards may consume arming margin and must not be inferred safe from geometry.
+
+In parallel, `dcdl_mux_return_v2.py` replaces the old turn/pass/merge return
+structure with a native inverting mux. It realizes
+`r_i = coarse_i ? !r_(i+1) : f_i` using `MUX2I(!f_i, r_(i+1), coarse_i)`.
+The last return retains two native inversions, preserving a two-stage final
+turnaround. All sixteen coarse choices, fifteen gated forward stages and
+thirty-one extracted 2 x 3 fine units remain. Native turn inverters are paired;
+return muxes are paired, with four copies at the root to match its stronger
+nominal drive. New compound mux/turn geometry is still required.
+
+Campaign `dcdl_mux_return_v2/1eb79ae5fb488676` is running six SS/40 C and
+FF/0 C minimum, maximum-fine and next-coarse cases, each with two isolated
+pulses, 100 ps input slew, 20 fF load and 2,269 native MOS witnesses. Forward
+drivers and fine units use their exact independently checked passive RC;
+muxes, turn/control cells and common wires remain source-only. Internal
+thermometer controls must also retain logic margins. Its independent consumer
+is watching. This tests whether a shorter coarse increment can bridge the
+measured gaps; it does not supply a physical bank, dense/common ROM, full-PVT
+or periodic-clock admission. Source tests verify polarity and selected actual
+depth at every coarse code, including the restored final turnaround.
+
+The full pinned software suite passes **1,780 tests without skips** in
+`build/dcdl-mux-and-nand2b-shunts-v2-full-tests.log`. Physical shunt DRC/LVS
+and fresh RC checks are additional native evidence; all production admissions
+remain closed pending electrical and integrated qualification.
+
+### Apply independently extracted NAND2B guards to the static counter
+
+`static_phase_clock_release_v3.py` keeps the drive-4 static counter and replaces
+only each low-phase NAND2B4 pair with two independently extracted guarded
+NAND2B4 macros. The first variant uses 1 x 1 um output guards; the second uses
+2 x 2 um output guards. Both use the physical 2 x 2 um private-node guards.
+REQUEST conditioning, high-phase setters, all state feedback, public-output
+strength and the loaded clock driver remain the same. Correct mapping follows
+the extracted port order, including the explicit power/ground terminals.
+
+`static_release_rc_families_v2.py` requires both exact guarded macro names,
+their complete independent RC receipt, clean physical reports, stored binary
+identities, source/GDS hashes and passive-element checks. It also retains the
+earlier native clock and compound receipts. No voltage trace, MOS or passive
+element is clipped, removed or aliased when constructing this candidate.
+
+Matched campaign `static_phase_clock_release_v3/3b8f6d1c2c2f9989` is running
+eight SS/40 C, 410 MHz, 40%/60% duty and low-/high-stop cases, comparing the
+two physical shunt variants. It retains the original seven pulses, 20 ps
+external REQUEST transitions, 2 ns reset/reassertion interval and all three
+DCC reset-input loads. Its independent consumer reuses the complete phase
+ordering, stopped-state, count and voltage checks and regenerates both actual
+guarded libraries. Feasibility remains unproven: the guards add real loading
+and may reduce low-phase arming margin. Whole-controller wires, actual DCC
+first-event behavior, full PVT and PHY admission remain open.
+
+Both guarded variants retain 488 actual MOS witnesses per case. The full
+pinned software suite passes **1,782 tests without skips** in
+`build/guarded-static-phase-release-v2-full-tests.log`; matched analog cases
+and their independent consumer continue running. These software checks and
+the isolated macro RC proofs do not admit the integrated controller or PHY.
