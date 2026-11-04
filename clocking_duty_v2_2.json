@@ -1,0 +1,15 @@
+{
+  "schema": "openlvds-clocking-duty-amendment-v2.2",
+  "status": "development_unqualified",
+  "qualified_phy": false,
+  "base_descriptor": "clocking_v2.json",
+  "base_sha256": "df53da026ad47e4786016c59262f94e53955066a9ad043fbdfd271ee4e5e5aea",
+  "timing_overrides": {
+    "rx_reference_duty_range": [
+      0.4,
+      0.6
+    ]
+  },
+  "scope": "User-approved raw reference-clock/DCC input duty range; output timing and all other base requirements are retained",
+  "authorization": "User requested narrowing clock duty checks to 40% and 60% on 2026-11-04"
+}
