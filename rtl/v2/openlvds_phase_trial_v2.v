@@ -45,7 +45,12 @@ module openlvds_phase_trial_v2 #(
         .request_ready(launch_ready),.busy(launch_busy),.done(launch_done),
         .launch_pulse(launch_pulse),.reference_pulse(reference_pulse)
     );
-    wire event_reset_n=allowed && arm;
+    // Observer flops use a dedicated per-trial clear. Idle values are never
+    // trusted: acceptance asserts this reset, CLEAR drains its synchronized
+    // flags, and only then are reset and arm released with both inputs low.
+    // Keeping clear deasserted outside trials guarantees a real assertion on
+    // the first request even when a parent has held this controller disabled.
+    reg event_reset_n;
     reg seen_a,seen_b,duplicate_a,duplicate_b;
     always @(posedge observed_a or negedge event_reset_n)
         if(!event_reset_n)begin seen_a<=0;duplicate_a<=0;end
@@ -68,13 +73,13 @@ module openlvds_phase_trial_v2 #(
     task reject;
         input [3:0] reason;
         begin
-            arm<=0;result_valid<=1;result_epoch_valid<=0;result_detector_valid<=0;
+            arm<=0;event_reset_n<=0;result_valid<=1;result_epoch_valid<=0;result_detector_valid<=0;
             result_reference_first<=0;result_feedback_first<=0;failure_code<=reason;state<=REPORT;
         end
     endtask
     always @(posedge mgmt_clk_25 or negedge allowed)
         if(!allowed)begin
-            state<=IDLE;age<=0;wait_cycles<=0;arm<=0;
+            state<=IDLE;age<=0;wait_cycles<=0;arm<=0;event_reset_n<=1;
             route_next_period<=0;route_swap<=0;route_section_a<=0;route_section_b<=0;
             result_valid<=0;result_sequence<=0;result_epoch_valid<=0;result_detector_valid<=0;
             result_reference_first<=0;result_feedback_first<=0;failure_code<=0;
@@ -88,7 +93,7 @@ module openlvds_phase_trial_v2 #(
                     route_swap<=request_swap;route_section_a<=request_section_a;route_section_b<=request_section_b;
                     result_valid<=0;result_epoch_valid<=0;result_detector_valid<=0;
                     result_reference_first<=0;result_feedback_first<=0;failure_code<=0;
-                    age<=0;wait_cycles<=0;arm<=0;
+                    age<=0;wait_cycles<=0;arm<=0;event_reset_n<=0;
                     if(!MODEL_ADMITTED || SETTLE_CYCLES<3 || !frontend_ready)reject(4'd8);
                     else state<=CLEAR;
                 end
@@ -96,7 +101,7 @@ module openlvds_phase_trial_v2 #(
                     // Three complete management cycles drain old event flags.
                     if(wait_cycles==3)begin
                         if({level_sync,seen_sync,duplicate_sync}==6'b0)begin
-                            arm<=1;wait_cycles<=0;state<=ARM_WAIT;
+                            arm<=1;event_reset_n<=1;wait_cycles<=0;state<=ARM_WAIT;
                         end else reject(4'd4);
                     end else wait_cycles<=wait_cycles+1;
                 end
@@ -123,7 +128,7 @@ module openlvds_phase_trial_v2 #(
                         default:reject(4'd4);
                     endcase
                 end else wait_cycles<=wait_cycles+1;
-                REPORT:if(result_ready)begin arm<=0;result_valid<=0;state<=IDLE;end
+                REPORT:if(result_ready)begin arm<=0;event_reset_n<=1;result_valid<=0;state<=IDLE;end
                 default:reject(4'd4);
             endcase
         end
