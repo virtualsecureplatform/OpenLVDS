@@ -210,21 +210,61 @@ from 22x22 to 30x30 um passes all six sign, stress and reference checks; peak
 reference is 0.905723 V. Independent receipt:
 `clock_repairs_v2_verification/3d4ed08666f410c4`.
 `expand_analog_arbiter_v2.py` expands this exact topology to 180 source cases:
-15 PVT, both input swaps and matched/unequal slews at +/-20 ps. The tagged
-one-period trial hardware, repeated votes and physical detector still need
-implementation and native qualification.
+15 PVT, both input swaps and matched/unequal slews at +/-20 ps. Low-level tagged
+trial control is now implemented as described below. The section tournament,
+characterized tolerance perturbations, repeated votes and physical detector
+still need integration and native qualification.
 
 Dense DCDL reanalysis found real SS40 control-device stress at 1.95726 V,
 above the unchanged 1.95 V limit. Strengthening the complementary-control
 inverter worsens it to 1.97904 V. A native 2x2 MIM shunt reduces it to 1.93214 V
 in the first eight-code source test, preserving delays. The separate
 `dcdl_control_margin_v2/4a4181e6cbb757d0` tests 2x2/4x4 shunts, both code
-directions and large jumps at 20/100/200 ps control slew. The first large-jump
-2x2 result fails at 20 ps (1.96278 V), while 100 ps passes (1.93223 V); the
-remaining geometry/slew cases are running. No delay ROM is admitted.
+directions and large jumps at 20/100/200 ps control slew. All six cases are
+complete without numerical errors. Both geometries fail at 20 ps (1.96278 V
+for 2x2, 1.96118 V for 4x4), while 100/200 ps pass. Independent receipt:
+`dcdl_control_margin_verification_v2/7f57360f2f2b99f7`.
+The fastest bulk falling update pulls r0 to -0.16278 V; the worst terminal pair
+is the switch PMOS r0/body, not its complementary gate. The separate
+`dcdl_charge_kick_v2/a802a32a83c0b5ee` compares adding native 2x2/4x4 MIM at r0
+against one-bit thermometer updates near both ends of the fine bank. Both
+retain 2x2 complementary-control shunts and 20 ps source slew. No delay ROM is
+admitted; a serialized update policy would require its own controller and
+native all-code/all-PVT proof before selection.
 
 Next gates, in dependency order: finish independent source repair matrices;
 select a stress-safe fine bank and characterize a common all-PVT code path;
-build tagged period/tournament measurement hardware; qualify fresh physical
+complete tagged tournament/vote measurement integration; qualify fresh physical
 clock primitives and startup; connect TX/RX clock islands; then run the native
 full-link and release matrix. Supplies remain fixed throughout.
+
+## Isolated measurement trials
+
+`openlvds_tag_launch_v2` accepts one management command through an atomic CDC
+mailbox. Enables change on falling raw-reference edges. A separated trial
+launches source and comparison pulses together; a period trial launches its
+comparison pulse on the next raw rising edge. A second mailbox acknowledges
+that the pulse sequence ended. This acknowledgement is not detector settling
+or DLL lock. Disable and clock loss cancel outstanding commands.
+
+`openlvds_phase_trial_v2` holds section routes and input swap through result
+consumption. It clears prior event history, arms the retained detector, starts
+the launcher, waits for the configured characterized settling interval and
+samples synchronized decisions. Each conditioned pre-swap input must contain
+exactly one rising event and return low. Missing/duplicate events, unresolved
+decisions, timeout and frontend loss reject the trial. Results retain request
+sequence tags and survive management backpressure. Failure cancels the launcher
+so a delayed command cannot contaminate a later trial.
+
+Admission defaults closed. Physical wrappers must connect the actual routing,
+conditioner, arbiter and event observers, qualify minimum event widths and the
+worst path/settling window, and provide frontend readiness. Protocol tests use
+explicit synthetic paths only. They test both input swaps, a 2.4/2.6 ns period
+bracket and a 5.1 ns delay that remains long rather than aliasing at 400 MHz.
+No simulated logic delay is admitted as native timing evidence.
+
+Verification follow-ups use `verify_clocking_when_idle_v2.py` for live contexts.
+It retries only contention on the existing execution lock; witness, terminal
+state and measurement failures remain errors. Service startup ordering alone
+does not imply producer completion. Original early lock-rejection logs remain
+retained; no producer is restarted to obtain a proof.

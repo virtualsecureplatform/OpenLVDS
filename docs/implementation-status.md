@@ -18,12 +18,18 @@ bounded DLL management FSM and training transmitter/receiver RTL. The RTL tests
 exercise 64 confirmations, epoch/range rejection, code freezing, timeout, clock
 loss, asynchronous mailbox backpressure, all 256 frame rotations, both payload
 pair alignments and an independently generated TX frame reference. DLL
-measurement hardware, qualified delay-code ROMs, full PHY wrappers, new
+measurement tournament/vote integration, qualified delay-code ROMs, full PHY wrappers, new
 physical extraction and release integration remain to be built.
 These control tests do not qualify clock timing.
-The repair/PVT implementation checkpoint passes all 1,550 tests without skips
-using `make test-full`; log:
-`build/digital-clocking-v2-repairs-pvt-full-tests.log`.
+Low-level measurement hardware now includes isolated tag launch with a
+next-epoch comparison reference and a phase-trial controller with route/swap
+holding, event-count guards, result tags, timeout and cancellation. Its default
+refuses unadmitted models. Tests use synthetic paths to check the protocol,
+including a full extra period that must remain long. Physical routing,
+conditioners, event observers and settling still require native qualification.
+The isolated-trial implementation checkpoint passes all 1,558 tests without
+skips using `make test-full`; log:
+`build/clocking-v2-tagged-trial-final-full-tests.log`.
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
 errors but failed all 54 SF cases: self-reset release while CLK remained high
@@ -100,9 +106,18 @@ expansion is running in `analog_arbiter_pvt_v2/e6ec7847a89bd52b`.
 A native 2x2 MIM shunt reduces complementary DCDL control stress to 1.93214 V
 in the first eight SS40 codes; stronger inverter drive instead worsens stress.
 The separate six-case shunt margin campaign tests both code directions, large
-jumps and 20/100/200 ps control slew. Its first 2x2 large-jump result fails
-20 ps slew at 1.96278 V, while 100 ps passes at 1.93223 V. Remaining cases are
-running. No delay ROM or detector is admitted.
+jumps and 20/100/200 ps control slew. All six cases completed and were
+independently remeasured in
+`dcdl_control_margin_verification_v2/7f57360f2f2b99f7`. Both shunts fail 20 ps
+bulk updates, but pass 100/200 ps. The worst fast-update stress is now caused by
+shared-node r0 undershoot below -0.16 V. The four-case
+`dcdl_charge_kick_v2/a802a32a83c0b5ee` compares shared-node MIM capacitance
+against one-bit updates at both bank endpoints. No delay ROM or detector is
+admitted. The first completed high-end single-bit case passes at 1.87948 V;
+the low-end and node-capacitance cases remain running. The complete original
+24-run dense reanalysis is retained separately
+in `dcdl_batch_reanalysis_v2/163552785b25d024`, including all eight SS40 stress
+failures and all original producer measurement errors.
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active
