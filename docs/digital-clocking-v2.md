@@ -1910,3 +1910,59 @@ Validation: `make test-full` passes **1,791 tests without skips** in
 changes only its title and iteration allowance, and reject pulse-epoch or
 MOS-coverage mismatches in numerical comparisons. The matched simulations
 remain queued at this checkpoint; no runtime improvement is claimed.
+
+### Direct-port weighted fine bank with an actual guarded NAND2B comparison
+
+The original weighted bank still contains the two compound port buffers.
+Their cost is already established separately by the buffered/direct routed
+bank measurements; that original weighted campaign is retained and continues.
+`dcdl_weighted_direct_v2.py` now removes only those port buffers, aliases
+f0/r0 to IN/OUT and retains all sixteen coarse choices. Its five root-sized
+switches preserve the original 6/12/24/48/96 um2 MIM weights, total 186 um2,
+with the same 4x4 shared base and 2x2 complementary-control shunts.
+
+A second mode replaces all 31 paired NAND2B core cells (both turn and pass)
+with two actual o1 stack-guard/body-contact macros per pair. It retains their
+original named input/output connections and all native MOS. Both the original
+compound library and the guard library have independent passive-RC, DRC and
+unique-LVS proofs. Guarding is a candidate for the observed terminal-voltage
+failure, not an assumption that isolated-counter results transfer to a bank.
+The source root fine-switch/control geometry and common/parallel wires still
+need their own physical implementation and extraction.
+
+`probe_weighted_direct_v2.py` prepares campaign
+`weighted_direct_v2/70fd8cd26309c493`: guarded/plain modes at coarse 0/1,
+SS/40 C, fixed 1.8 V, 100 ps input slew and 20 fF load. All four cases retain
+2,335 actual MOS witnesses and the complete coarse topology. The six 10 ns
+pulse windows use fine codes **0, 1, 15, 16, 31, 0**, explicitly covering
+both sides of the binary carry and the return to minimum code. Every pulse
+must have exactly one correctly ordered rise and fall, and both external and
+native buffered controls must settle before it. Full 60 ns traces and every
+MOS terminal pair remain required, without initial conditions or clipping.
+ITL4=100 raises the iteration allowance only; the original numerical
+tolerances and 2 ps maximum step remain. Its runtime benefit is unproven.
+
+`verify_weighted_direct_v2.py` regenerates every native library, component
+connection, MOS witness and deck, then independently remeasures all four
+complete raw traces. The sparse screen requires minimum-delay quarter-cycle
+headroom, coarse0/fine31 to coarse1/fine0 overlap in both polarities, sampled
+fine ordering, 0->1 and 15->16 observed increments in (0,20] ps, and the
+unchanged 1.95 V terminal limit. The repeated code-zero delay is reported.
+A failed observed carry is evidence about that pair; it does not prove that
+no filtered common legal-code table exists. Dense all-PVT code selection is
+still required even if every sparse observation passes.
+
+The pilot and consumer run as `openlvds-weighted-direct-v2-pilot.service`
+and `openlvds-weighted-direct-v2-verify.service`. They use at most two workers
+and the shared six-engine dispatcher. The four cases are queued while older
+healthy solvers continue. Independent read-only preflight regenerates all
+libraries, 2,335 MOS witnesses per mode and all four decks exactly. No whole
+bank RC, dense ROM, periodic-clock, full-PVT, DLL or PHY admission follows.
+
+Validation: `make test-full` passes **1,795 tests without skips** in
+`build/weighted-direct-v2-full-tests.log`. New tests preserve every coarse
+connection across guard replacement, exercise the carry/repeat fixture,
+retain native tie resistors while mapping distinct private MOS nodes and
+reject incomplete coverage, reversed/oversized carry, lost overlap,
+insufficient quarter headroom and terminal-stress failures. All production
+model and ROM admissions remain closed pending complete electrical results.
