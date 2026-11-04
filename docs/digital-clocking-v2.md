@@ -1309,3 +1309,66 @@ All unfinished and failed clock runs continue to retain their own evidence.
 The full pinned software suite passes **1,754 tests without skips** in
 `build/dcdl-direct-bank-coverage-v2-full-tests.log`. All model-admission bits
 remain closed while native timing, DLL/RX/link and OpenPLL integration are open.
+
+### Guarded native FF preparation: reset stress versus release latency
+
+The approved input-duty endpoints remain **40% and 60%**, as recorded in
+`clocking_duty_v2_2.json`. This narrows the reference-clock input check only;
+the output mean half-cycle-error limit remains 50 ps. Existing bound 30%/70%
+experiments retain their original identity and results.
+
+Diagnosis `native_ff_guard_targets_v2/9a19ac3ff6a7d9eb` regenerates the first
+two completed native-FF release decks and accounts for all 34 violating FF
+devices per case. It selects six actual private nodes for native MIM guards;
+it does not resize or replace native transistors. The new source controller
+uses three asynchronous-clear native FFs: internal PREPARE rises after two
+clock edges and the buffered public mask releases after three. A separate DCC
+source variant enables its two data gates with PREPARE while retaining the
+public output mask. That DCC variant has not yet been jointly simulated.
+
+Isolated campaign `guarded_clock_prepare_v2/78ecab6164cb0fd9` tests 1 x 1 and
+2 x 2 um guards at both duty endpoints and both stopped-clock levels, at
+SS/40 C, 410 MHz and 100 ps input slew. It connects real passive-RC clock and
+output buffers, two native NAND data-input loads and one public-mask load,
+retaining 192 MOS witnesses. All eight complete waveforms pass the two-/three-
+clock counts, asynchronous clearing and reassertion with a stopped clock.
+All eight fail the 1.95 V terminal-pair screen, reaching 2.193--2.232 V.
+Independent receipt `guarded_clock_prepare_verification_v2/4f3b294c97046382`
+regenerates and remeasures all eight cases; neither guard profile passes.
+
+Reset-specific diagnosis `native_ff_reset_guard_targets_v2/945463b891af84e7`
+retains those six guards and identifies four additional actual private nodes:
+`a_1270_413#`, `a_193_47#`, `a_639_47#` and `a_805_47#`. These excursions
+arise in reset/clock-stop states absent from the original release-only sample.
+Matched campaign `guarded_clock_prepare_v3/5eff041b5135f471` therefore adds
+ten guards per FF and repeats the same eight cases without changing the old
+producer or its artifacts. All eight complete without numerical errors and
+retain the expected counts and stopped-clock clearing.
+
+The smaller guards pass stress only when the clock stops high; low-stop cases
+still reach 2.008672 V. Their public-release latency is approximately 891 ps.
+The larger guards pass stress in all four cases, with peaks below 1.910 V,
+but release 1,233.854--1,235.012 ps after the qualifying edge. This exceeds
+the 410 MHz half-period by 14.341--15.500 ps; internal preparation has only
+66.547--67.513 ps of margin to that half-period. Neither profile therefore
+passes the complete isolated-counter feasibility gate. Independent receipt
+`guarded_clock_prepare_verification_v3/f2d4cc5fc5e5dccf` regenerates and
+remeasures all eight complete waveforms and confirms both profile failures.
+No actual first DCC event, physical guarded-FF extraction, full PVT or PHY
+admission follows from these source-level experiments. A faster phase-qualified
+release path or selectively sized guards needs a fresh versioned experiment;
+uniformly increasing guard capacitance has exposed a timing tradeoff.
+
+The original buffered-bank campaign `routed_dcdl_bank_v2/5dadafbb1d5d8a27`
+also finishes all six cases. Independent receipt
+`routed_dcdl_bank_verification_v2/b5d120ed0fcffceb` confirms its failure:
+SS/40 C minimum rising delay is 947.087 ps, above the required quarter-period;
+the maximum-fine to next-coarse rising gaps are 168.561 ps at SS/40 C and
+39.917 ps at FF/0 C. Both next-coarse cases fail terminal stress. The separate
+direct-port bank and weighted-fine campaigns remain in progress; neither is
+admitted on the basis of these results.
+
+The full pinned software suite passes **1,764 tests without skips** in
+`build/guarded-clock-prepare-reset-v3-full-tests.log`. These are software checks;
+the circuit failures above remain qualification failures. All failed and
+partial artifacts are retained and all production admissions remain closed.
