@@ -3,7 +3,67 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
-Current bring-up state (2026-11-03):
+Current architecture work (2026-11-04):
+
+The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
+four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew
+DCDL, explicit startup training and an independent 25 MHz management clock.
+The existing LVDS analog I/O is retained. There is no background CDR, dual RX
+bank, FFE or PODL driver. Legacy wrappers remain the development baseline until
+the new physical clock islands and training integration qualify.
+
+Implemented v2 foundations include the machine-readable contract, conservative
+physical-delay reference algorithms, atomic code CDC, clock-loss watchdog,
+bounded DLL management FSM and training transmitter/receiver RTL. The RTL tests
+exercise 64 confirmations, epoch/range rejection, code freezing, timeout, clock
+loss, asynchronous mailbox backpressure, all 256 frame rotations, both payload
+pair alignments and an independently generated TX frame reference. DLL
+measurement hardware, qualified delay-code ROMs, RX scan control, full PHY
+wrappers, new physical extraction and release integration remain to be built.
+These control tests do not qualify clock timing.
+
+The native minimum-drive pulse/toggle DCC screen completed 12 cases with no
+numerical errors and preserved every event, but failed the 50 ps symmetry
+limit (about 69 ps at SS40/410 MHz). A 16-case stronger-toggle screen also
+completed; stronger drive and a noninverting output buffer did not solve the
+balanced-input symmetry error. An independent eight-case output-polarity
+screen found dfrtp_1 plus inv_4 promising: about 0.1 ps half-cycle error at
+SS40/410 MHz/250 ps input slew/20 fF load. Its raw/export equality and all
+measurements were independently rechecked in
+`digital_clocking_v2_verification/c1f16c849e14124b`. This is one source operating
+point, not physical admission. The 270-case source expansion across all fifteen
+PVT, 390/400/410 MHz, 20/250 ps input slews and 0/+/-140 ps phase error is running
+in `digital_dcc_pvt_v2/b94d5bd361c66be7`, with two fair-dispatch workers.
+
+The NAND-mirror DCDL source pilot is running in
+`digital_dcdl_v2/52741a634623ac02`. At TT25, coarse 0/fine 0 measures
+366.0/406.2 ps rising/falling delay; fine 1 measures 368.4/407.4 ps. Coarse
+1/fine 0 measures 564.8/554.4 ps. These sparse samples do not establish a legal
+code sequence or coarse/fine overlap. The full-fine case encountered a numerical
+timestep collapse at the PWL input's falling corner. Original partial output is
+retained; `digital_dcdl_smooth_v2/669f29af98c95bd2` is a separate four-case
+analytic-edge diagnostic of the same circuit and fixed supply, preserving
+160 ps input 10--90% slew. Different source-shape tables cannot be combined for
+admission. All diagnostics use the existing shared six-engine dispatcher and
+at most two workers per campaign.
+
+The legacy analog timing screen completed 54/54 and reports tail140_w20 as its
+survivor, with worst estimated zero offset 3.803 ps. All four RX skew buffers
+decode 32/32 bits and pass stress, but fail the unchanged 200 ps hold-margin
+requirement (about 166--168 ps). These results motivated real RX phase/duty
+restoration. The old 1215-case analog expansion and extended aperture campaign
+have been drained: exact coordinator dispatch stopped, active solver/export
+children finished, and separate receipts inventoried the evidence before the
+coordinators retired. The analog expansion retains 16 original case summaries
+and two terminal exports awaiting separate remeasurement. The aperture drain
+retains 1043 point summaries and two terminal exports; point counts are not
+completed aperture-boundary counts. Neither incomplete campaign is admitted.
+Original producer files, artifacts, and the qualified original 480-condition
+capture aperture remain unchanged. Drain receipts are under
+`build/diagnostics/legacy_clocking_drain/`.
+
+Previous analog bring-up checkpoint (2026-11-03):
+
 
 The compensated driver has independently passed all thirty native output
 cases and all thirty long component cases. Coupled restoration

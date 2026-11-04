@@ -13,6 +13,12 @@ the link, and functional analog models do not establish electrical performance.
 See [implementation status](docs/implementation-status.md) for completed checks
 and the remaining link bring-up work.
 
+The next architecture, [digital clocking v2](docs/digital-clocking-v2.md), is
+under implementation: calibrated four-phase clock generation, symmetric DCC,
+RX deskew and explicit framed startup training. Its control RTL and source-cell
+experiments are separate from the legacy PHY; native clocking, physical
+integration and full-link qualification remain open.
+
 All project implementation and generated artifacts stay in this repository.
 `thirdparties/OpenPLL` is the pinned clock-source dependency; OpenSERDES was used
 as a reference and is not required at run time.

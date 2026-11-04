@@ -94,3 +94,34 @@ and boundary codes must validate the characterized models used for long
 behavioral calibration scans. Full-link checks require actual qualified phases,
 45 cases, 4096 nominal/512 corner bits, two OpenPLL traces, 200 ps margins,
 one million behavioral bits and fresh joint-RC release proofs.
+
+## Running the new work
+
+The implementation is versioned under `rtl/v2/` and `sky130/v2/`. The executable
+reference algorithms are `scripts/clocking_v2.py`. Run focused checks with:
+
+```sh
+scripts/env.sh --ngspice python3 -m unittest discover -s tests -p '*v2*.py'
+```
+
+`probe_digital_dcc_v2.py`, `probe_digital_dcc_drive_v2.py` and
+`probe_digital_dcc_output_v2.py` retain separate source circuit revisions.
+`expand_digital_dcc_v2.py prepare <complete-output-screen>` independently
+remeasures the selected source before preparing the 270-case PVT expansion.
+`probe_digital_dcdl_v2.py` measures single pulses without modulo-period ambiguity;
+`probe_digital_dcdl_smooth_v2.py` is a separate numerical diagnostic.
+
+For a completed source context, run:
+
+```sh
+scripts/env.sh --ngspice python3 scripts/verify_digital_clocking_v2.py <artifact>
+```
+
+The consumer locks out concurrent execution, checks bound input and output
+hashes, compares binary and exported samples exactly, and remeasures every
+successful case. It retains numerical failures and writes a separate receipt.
+Its reports are source feasibility only. In particular, the proposed inverted
+DCC output is high during reset and falls on its first phase0 event; invalidation
+and identical phase conventions are required during integration. Sparse DCDL
+samples cannot generate a production code table. No physical certificate is
+transferred from the legacy architecture or from these source experiments.
