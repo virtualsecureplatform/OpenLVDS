@@ -1421,3 +1421,47 @@ headroom but does not yet solve coarse/fine overlap or coarse-stage stress.
 The full pinned software suite passes **1,767 tests without skips** in
 `build/guarded-phase-release-v2-full-tests.log`. The live circuit campaign and
 its independent consumer have not yet established feasibility or admission.
+
+### Localize stopped-clock reassertion stress and buffer REQUEST
+
+The first two completed strong-NAND2 phase-release cases keep the expected
+two-/three-clock counts, low-phase arming and stopped-clock clearing. Public
+release takes 552.357 ps after its qualifying clock, versus approximately
+891 ps for the smaller-guard three-FF counter. Both still fail voltage screening.
+Diagnosis `guarded_phase_release_failure_v2/cccc41ace02b794e` independently
+regenerates both complete decks, libraries and MOS coverage, checks retained
+file hashes and localizes every failed terminal pair. It covers these two
+completed cases only; the remaining campaign cases keep running.
+
+All worst excursions in those two cases occur at the 23 ns REQUEST reassertion
+with CLK stopped. The first low-stop FF reaches 2.008672 V across native
+private nodes at 23.0103 ns. The sticky feedback NANDs also fail: for example,
+the high-stop release feedback NFET reaches 1.969990 V at 23.0405 ns, with
+approximately 1.8443 V on an output terminal and -0.1257 V on its actual
+R-separated body terminal. This is local extracted body bounce despite a
+stable external supply. These waveforms suggest testing a slower *physical*
+REQUEST driver; they do not prove the repair works.
+
+`guarded_phase_clock_release_v3.py` inserts the already extracted buf8_o4
+between external REQUEST and all readiness-FF and sticky-feedback REQUEST
+consumers. External REQUEST retains its 20 ps transition stimulus. No input
+edge is numerically slowed, no voltage is clipped and every added buffer MOS
+is included in screening. This tests a circuit change under the same stimulus.
+Both buffer polarities, stopped-clock reassertion and reset clearing remain
+covered by the complete-waveform checks. Buffered REQUEST itself must retain
+two causal rising events and one falling event.
+
+Matched campaign `guarded_phase_clock_release_v3/25c69fe1471210ba` is running
+the same eight SS/40 C, 410 MHz, 40%/60% duty and low-/high-stop cases with
+1 x 1 and 2 x 2 um guards. Its independent consumer is watching. Feasibility
+has not yet been established. In particular, the completed 60%-duty cases of
+the unbuffered candidate also fail the low-level arming check even though they
+retain the two-/three-clock transition counts; REQUEST buffering alone is not
+assumed to repair that separate phase-path timing issue. A shorter arming
+path, such as a native inverting-input NAND replacing the separate clock
+inverter and setter, needs a new experiment if this limit persists.
+
+The full pinned software suite passes **1,769 tests without skips** in
+`build/buffered-request-phase-release-v2-full-tests.log`. All electrical and
+physical qualification failures remain retained, and no production model is
+admitted by these diagnostic changes.
