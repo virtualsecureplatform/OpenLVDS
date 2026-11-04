@@ -34,8 +34,9 @@ swaps, rejects stale tags and reversed/disagreeing brackets, and bounds retries.
 The real calibration FSM converges in a synthetic transaction test and still
 requires all 64 confirmations before code freeze. Composed pulse/event tests
 and Yosys process/check pass; physical offsets and native convergence remain open.
-The measurement integration checkpoint passes all 1,567 tests without skips
-using `make test-full`; log: `build/dll-measurement-v2-final-full-tests.log`.
+The threshold/preflight implementation checkpoint passes all 1,575 tests
+without skips using `make test-full`; log:
+`build/phase-threshold-v2-and-physical-preflight-full-tests.log`.
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
 errors but failed all 54 SF cases: self-reset release while CLK remained high
@@ -47,6 +48,10 @@ exact reset-feedback topology; its existence does not admit electrical timing.
 Phase-specific reset release passes logic startup/quadrature regression but
 still needs native CQ/recovery/removal qualification. See [repair evidence and
 remaining gates](digital-clocking-v2.md#native-repairs-and-next-admission-gates).
+The actual LibreLane configuration preflight now passes. Its Python environment
+has no NumPy, so source receipt/witness validation runs in the separate scientific
+interpreter; physical inputs bind both interpreters and package hashes. No
+physical artifact or qualification was created by that preflight.
 
 RX scan control and capture-domain integration are now implemented in
 `rtl/v2/openlvds_rx_scan_v2.v` and `openlvds_rx_training_v2.v`. The scan tests every
@@ -108,6 +113,12 @@ The retained analog conditioner plus a 30x30 um native reference MIM passes all
 six new-load +/-20 ps sign, stress and reference checks; independent receipt
 `clock_repairs_v2_verification/3d4ed08666f410c4`. Its 180-case all-PVT/input-swap
 expansion is running in `analog_arbiter_pvt_v2/e6ec7847a89bd52b`.
+The new native signed-threshold pilot is running separately in
+`phase_threshold_v2/b5b100243bdaa8b1`: matched switched-MIM branches after
+conditioning, both threshold selections and raw -20/0/+20 ps under matched
+and unequal slews at SS40. It checks the changed load, native custom-device
+stress and unchanged reference-ripple limit. All-PVT, control-update and
+physical threshold qualification remain open.
 
 A native 2x2 MIM shunt reduces complementary DCDL control stress to 1.93214 V
 in the first eight SS40 codes; stronger inverter drive instead worsens stress.

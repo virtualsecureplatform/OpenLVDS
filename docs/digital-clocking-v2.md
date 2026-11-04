@@ -199,6 +199,17 @@ releases the two DCC resets after their own raw rising phases. Logic regression
 sweeps 25 startup offsets and checks positive quadrature; native recovery,
 removal, CQ and actual loads remain open.
 
+Physical-flow preflight found that LibreLane's Python lacks NumPy. Before any
+physical artifact was prepared, the DCC flow was revised to invoke the unchanged
+source-admission checks through `/usr/bin/python3` in the scientific container
+environment. It strips foreign Python package paths and checks the exact source
+witnesses again when binding physical inputs. The physical manifest now records
+both interpreters and LibreLane package hashes. The actual LibreLane constructor
+accepts the configuration; this preflight does not run layout or grant source
+admission. Original failed-import and successful-preflight logs remain under
+`build/dcc-v2-physical-preflight-*.log` and
+`build/dcc-v2-physical-config-constructor-preflight.log`.
+
 The mutual-FF detector completed 60 cases and exposes a dead zone near zero.
 `openlvds_tag_arbiter_v2` retains isolated input events before a cross-coupled
 NAND race, removing that FF setup aperture. Its standard-cell conditioner still
@@ -313,6 +324,24 @@ A separate transaction model drives the real calibration FSM through code
 increments and all 64 confirmations. These synthetic external models prove
 control behavior only. Yosys process/check passes for default and admitted
 configurations do not replace physical/native timing qualification.
+
+`phase_threshold_pair_v2.py` now supplies a native source candidate for the
+signed threshold. Both branches use matched buf_8 drivers, one switched native
+2x2 MIM load, explicit off-state discharge and buf_4 outputs. Complementary
+selection adds load to reference or feedback; it does not advance an edge.
+The branches follow the analog conditioner and precede the exchanged-input
+retained arbiter. Their absolute thresholds, including detector bias, are
+measured rather than assigned an ideal delay.
+
+`phase_threshold_v2/b5b100243bdaa8b1` runs 18 new-load SS40 source cases:
+raw offsets -20/0/+20 ps, matched and both unequal slew directions, and both
+threshold polarities. At zero raw offset, opposite threshold selections must
+produce opposite decisions; both selections must retain correct outer signs
+at +/-20 ps. All custom MOS terminals, native branch pulse transport, digital
+control stability and the unchanged 10 mV local-reference limit are checked.
+Independent remeasurement is queued after completion. Static controls in this
+pilot do not qualify route updates, all-PVT thresholds, extracted matching,
+calibration convergence or the PHY.
 
 Verification follow-ups use `verify_clocking_when_idle_v2.py` for live contexts.
 It retries only contention on the existing execution lock; witness, terminal
