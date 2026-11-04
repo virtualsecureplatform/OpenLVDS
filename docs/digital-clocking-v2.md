@@ -2201,3 +2201,38 @@ protect the observation conductors during exact reduction. Flattening and
 labeling can change extraction partitioning, so timing equivalence to the
 six-port extraction is not assumed from element counts. This freshly
 extracted characterization view must pass its own full native timing checks.
+
+### Full routed-counter loaded timing pilot retains every phase check
+
+`static_phase_clock_release_v7.py` connects the eleven physical RC ports by
+name inside a six-port test wrapper. The five observation nets stay unloaded;
+no ideal source, extra device or internal electrical alias is inserted.
+`whole_counter_rc_families_v2.py` requires the independently verified full
+counter and retains the native clock-driver/load RC family checks.
+
+Campaign `static_phase_clock_release_v7/d08f71c9cc098f2b` declares four
+SS/40 C, 410 MHz cases: 40%/60% duty crossed with low/high stopped clock.
+It retains the real clock driver and all three DCC reset-input loads, with
+**488 actual MOS witnesses** per case. The 26 ns fixture still includes
+asynchronous clear and request reassertion with the clock stopped. Source
+counter states are replaced by the complete distributed physical RC;
+harness wires outside that block remain ideal.
+
+`verify_static_phase_clock_release_v7.py` independently regenerates all
+libraries, wrappers, decks and actual MOS mappings. It retains the original
+alternating phase/order, two/three clock counts, next-half-phase margins,
+stopped-clock clear/reassertion, buffered REQUEST and 1.95 V checks. It also
+remeasures the matching complete original o1 baseline and reports timing
+and voltage changes, rather than treating routing/LVS as timing evidence.
+The pilot/consumer run as `openlvds-whole-counter-static-phase-v2-pilot.service`
+and `openlvds-whole-counter-static-phase-v2-verify.service`, under the same
+six-engine queue and two-worker campaign limit. Cases are queued, not passed.
+Independent preflight exactly regenerates all four decks and 488 MOS witnesses.
+
+`make test-full` passes **1,809 tests without skips** in
+`build/whole-counter-static-phase-v2-full-tests.log`. Tests preserve native
+mask/source bodies during observation, select only resistor-connected real
+MOS output terminals, map all eleven physical ports and reject a missing
+monitor or incomplete/failed timing profile. Native timing, early-data DCC
+repair, full PVT, independent physical/antenna and full-chain PHY admission
+remain pending.
