@@ -1202,7 +1202,7 @@ epochs therefore have not established a usable quarter-period section.
 Loading receipt `routed_bank_loading_v2/4f1ca4e225edbbc6` identifies the path
 nets through resistor connectivity without changing the simulation network.
 The return net r0 has 238.982 fF of external passive capacitance, including
-169.774 fF to VGND, compared with 28.494 fF on f0 and 30.503 fF on t0. Its
+169.768 fF to VGND, compared with 28.494 fF on f0 and 30.503 fF on t0. Its
 native fanout includes 55 drain, 55 source and four gate terminals plus the
 direct 4x4 MIM shunt. These passive totals exclude intrinsic nonlinear MOS/MIM
 capacitance; they identify a loading concentration rather than proving an
