@@ -2488,3 +2488,31 @@ MOS witnesses exactly. An attempted run without `--control-receipt` was
 rejected before creating execution state or raw output.
 `make test-full` passes 1,829 tests without skips, recorded in
 `build/weighted-direct-v3-full-tests.log`.
+
+### ITL4 increase reproduces the original coarse-1 numerical failure
+
+Case 2 of `dcdl_iterations_v2/a994d04ddcc0bdbb` has now completed with a
+numerical error. `diagnose_dcdl_iterations_v2.py` binds the completed case
+and original `dcdl_mux_return_v2/1eb79ae5fb488676/2` failure, checks every
+retained output hash, verifies the exact title/ITL4-only deck change and
+regenerates both translated solver decks. Diagnosis
+`dcdl_iteration_failure_v2/fe0c114ee910ccca` confirms that the raw binary
+payloads are bit-for-bit identical: 2,671 variables, 8,629 records, with the
+last accepted sample at **0.6544043994140895 ns**. Header title/date metadata
+is excluded from the payload comparison; complete raw files remain bound.
+
+Both terminal logs report timestep collapse at 0.654404 ns, timestep
+2.5e-24 s, with `bin#branch` named by the solver. The translated ITL4=100
+option is present. This rules out simply raising this allowance as the fix
+for this matched case. It does not prove that the reported branch is the
+underlying cause, and it does not establish a simulator speed comparison.
+The first input pulse is at 2.1 ns; neither run reaches it. Partial raw
+prefixes are explicitly marked incomplete and unqualified, never passed to
+the full-waveform timing/safety gate as successful traces. The original
+failure and new failure remain intact; the other healthy matched case is
+not restarted or stopped. The dispatcher filled the naturally released
+slot with the next existing return-mux case.
+`make test-full` passes 1,832 tests without skips, recorded in
+`build/dcdl-iteration-failure-v2-full-tests.log`. Parser regressions reject
+truncated records, invalid native formats and nonterminal/ambiguous failure
+logs, and keep aborted prefixes explicitly unqualified.
