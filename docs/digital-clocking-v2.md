@@ -2556,3 +2556,47 @@ bias behavior and loaded transition timing before any bank substitution.
 Read-only model-reader preflight verified the bound receipt and loaded all
 32 native MOS and four MIM devices. `make test-full` passes 1,834 tests
 without skips in `build/nand2-guard-pair-v2-full-tests.log`.
+
+### Matched electrical comparison of original and shunted forward pairs
+
+`probe_forward_pair_v2.py` binds the original extracted NAND2 pair, the new
+independently verified shunted pair, and the completed matched pre-input
+failure diagnosis. Campaign `forward_pair_v2/f74f825112bc7310` declares four
+SS/40 C cases: shunted/original crossed with B/A as the switching input.
+The other input is held at 1.8 V. The B-switching case therefore begins at
+A=1.8 V, B=0 V, the inactive stack state motivating the experiment. Both
+models retain their actual complete 32-MOS geometry and distributed RC.
+
+Every case uses the same fixed 1.8 V supply, 20 fF load, 100 ps 10--90%
+tanh edges, 20 ns duration, 1 ps maximum timestep, Gear integration,
+RELTOL=1e-4, ABSTOL=1e-12 and ITL4=100. Pulses rise at 2.1/12.1 ns and
+fall at 6.1/16.1 ns. The measurement checks the complete source waveform,
+initial settled high output and all subsequent settled truth levels,
+exactly four output edges of the correct polarity/epoch, both propagation
+directions, and all six terminal-pair differences on every native MOS at
+the unchanged 1.95 V limit. Initial 0--1 ns terminal excursion is reported
+as a diagnostic, not used as a new pass threshold. Extra initial glitches,
+stuck output levels and transient overstress remain failures.
+
+`verify_forward_pair_v2.py` independently regenerates both libraries, all
+four decks and native MOS witnesses, validates hashes and translated decks, and
+remeasures successful complete raw traces. A completed timestep-collapse
+case is retained with its failure log and unqualified partial raw file; it
+cannot supply an electrical result or propagation difference. Infrastructure
+errors cannot masquerade as a known numerical failure. Both input
+orientations must pass for a shunted component pass. A failed original
+reference does not conceal a shunted failure; no timing difference is
+reported unless both compared isolated cases pass. Elapsed wall time is
+retained without a simulator-speedup claim.
+
+Independent read-only preflight regenerated all four exact decks and all
+32 MOS witnesses per case. Services `openlvds-forward-pair-v2-pilot.service`
+and `openlvds-forward-pair-v2-verify.service` queue/verify under the unchanged
+six-engine/two-worker policy. This is an isolated component comparison with
+ideal upstream sources; it cannot establish full-bank convergence, coarse
+step/headroom, dense common PVT mapping, periodic-clock operation or PHY
+admission. The existing bank candidate and healthy solvers remain unchanged.
+`make test-full` passes 1,838 tests without skips in
+`build/forward-pair-v2-full-tests.log`. Regression cases reject initial
+glitches, incomplete output settling, transient stress and changed supply,
+retain both pin orientations and prevent failed-reference timing comparisons.
