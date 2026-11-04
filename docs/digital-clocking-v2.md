@@ -2366,3 +2366,35 @@ The approved duty amendment remains `clocking_duty_v2_2.json`: input
 endpoints are 40% and 60%; the output mean half-cycle error limit remains
 50 ps. The frozen base descriptor and previous bound experiments are
 retained. No supply sweep is introduced.
+
+### Fresh RC for all five root-weighted fine cells
+
+`extract_weighted_fine_units_v2.py` extracts from each actual GDS in the
+completed five-cell physical family, using single-pass unsimplified native
+resistance extraction. Artifact `weighted_fine_unit_rc_v2/74761bf55657275c`
+passes the positive-resistor/nonnegative-capacitor gate and a fresh strict
+Netgen comparison for every cell. Wire collapse is used for topology
+comparison only; the simulation models retain their distributed R/C.
+The established algebraic star-mesh reduction protects device and capacitor
+nodes and introduces no empirical timing approximation.
+
+| Fine bit | Native resistors | Native capacitors | Reduced resistors |
+| --- | ---: | ---: | ---: |
+| 0 | 194 | 58 | 170 |
+| 1 | 250 | 68 | 208 |
+| 2 | 250 | 68 | 206 |
+| 3 | 292 | 62 | 238 |
+| 4 | 324 | 61 | 267 |
+
+`verify_weighted_fine_units_rc_v2.py` independently checks exact coverage,
+physical/source/interface identity, both raw and reduced network passivity,
+the raw hash recorded by reduction, and fresh strict topology comparisons.
+Receipt `weighted_fine_unit_rc_verification_v2/c433d849b89e6612` passes all
+five cells. Missing, duplicated, reordered or dirty physical cells are
+rejected before extraction. These models retain actual native MOS junction
+geometry and MIM devices. The scope remains component RC/topology; native
+timing, control-driver safety, full-bank integration, dense PVT mapping and
+PHY admission remain open. Earlier source-fine experiments are preserved
+and do not acquire physical-fine coverage from this separate receipt.
+`make test-full` passes 1,820 tests without skips, recorded in
+`build/weighted-fine-units-v2-rc-full-tests.log`.
