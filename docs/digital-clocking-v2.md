@@ -1993,3 +1993,30 @@ metadata. Earlier bound M3-only interfaces remain unchanged. The paired
 macro exposes its shared M4 buses and keeps its child M3 shapes obstructed.
 This geometry/connectivity result does not establish electrical timing,
 whole-controller RC, full PVT or PHY admission.
+
+### Fresh passive RC proof for the physical guarded pair
+
+`extract_nand2b_guard_pair_v2.py` extracts the clean paired GDS in a new
+namespace: `nand2b_guard_pair_rc_v2/2e6cb776c0315f4a`. The unmodified flat
+model has **988 positive resistors, 292 nonnegative capacitors and all 36
+native MOS**. Exact positive-conductance star-mesh elimination removes 193
+unprotected algebraic nodes, leaving 789 resistors and the same capacitors
+and native terminals. This includes the real shared M4 routes and vias.
+No extracted device, guard, supply path or negative element is discarded.
+
+`verify_nand2b_guard_pair_rc_v2.py` independently binds the physical GDS,
+source, ports, extractor and raw/reduced files, repeats the passivity audit
+and runs strict fresh Netgen LVS. Receipt
+`nand2b_guard_pair_rc_verification_v2/8df7c5f5a7ab600e` passes. Inline-comment
+aware wire collapse is used only for the LVS comparison; the simulation
+RC library remains unchanged. The preceding single-cell pilots continue to
+use their bound libraries. Substituting this paired RC into the counter and
+bank requires new timing experiments, then whole-controller routing and
+fresh extraction. No electrical or PHY admission follows from RC topology.
+
+Validation: `make test-full` passes **1,797 tests without skips** in
+`build/nand2b-guard-pair-v2-full-tests.log`. Source tests preserve the actual
+child pin order and schematic and check that M4 access restriction retains
+every routing shape while rejecting wrong-layer/absent access. Actual Magic
+DRC, unique Netgen LVS, positive-R/nonnegative-C audit and independent fresh
+RC topology verification provide the physical evidence above.
