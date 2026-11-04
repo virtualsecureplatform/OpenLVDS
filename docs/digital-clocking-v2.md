@@ -203,6 +203,34 @@ disable/source-loss invalidation and fresh reacquisition. Missing both clocks,
 one clock never starting, default admission and shortened hardware warmup are
 separate rejection cases. These tests do not establish native clock timing.
 
+`openlvds_tx_control_v2` now composes the actual DLL controller, DCC startup and
+training generator. A management training edge invalidates output immediately,
+issues one DLL-start pulse, waits for calibration and both delivered warmups,
+and then retimes the final management grant into the pair-clock domain. The
+same training request remains a level for the frame generator, so the lab can
+hold training until RX readiness without repeatedly restarting calibration.
+DLL/delay and DCC admission remain separate default-false parameters. Backend
+ROMs, code/mode settle acknowledgement, physical routes/offsets, observers,
+raw phases and delivered DCC clocks are all explicit physical interfaces.
+
+`openlvds_clock_sequence_v2` supplies one 100 ms management deadline across DLL
+calibration and DCC warmup. DLL lock cannot restart that budget. Failure reasons
+are latched before disabling stages, so their later cleared local flags cannot
+erase the cause; a fresh training edge or disable clears the overall failure.
+Unadmitted DLL measurements map to the public unqualified-model reason. Clock
+loss invalidates the final grant independently of a clock domain's ability to
+advance. Completed payload codes and measurement launches remain frozen.
+
+The complete composition test exercises 64 real-controller confirmations,
+atomic configuration/physical-settle CDC, actual isolated launch/event logic,
+clock-hold DCC gate topology, both warmups and 432 independently checked frame/
+end-marker/payload pairs. Separate unit tests cover a deadline spanning both
+stages, success at the deadline, held requests, latched stage errors and explicit
+retraining. External delay/threshold/arbiter paths and published raw-phase
+delays are synthetic; the phase model derives delays from committed codes and
+publishes cascaded phases only after DLL lock. These tests do not qualify
+pre-lock physical switching, analog transients, SKY130 timing or a full PHY.
+
 ## RX scan and capture integration
 
 `openlvds_rx_scan_v2` scans all legal code indices through an admitted delay-ROM
@@ -554,6 +582,12 @@ requires both-edge overlap, worst first/repeated minimum-code delay and every
 custom-device stress check independently at each pilot PVT. This experiment
 does not qualify dense steps, common all-PVT ROMs, a physical compound gate,
 inter-unit routing or a full bank. Whole-bank routing remains on hold.
+The first two SS40 cases have completed without numerical errors and pass
+custom-device stress. Their coarse-0 fine-0 first/repeated rising delays are
+555.80/554.05 ps; fine 31 is 892.10 ps. Coarse-1 fine-0 is 857.59/857.08 ps,
+giving 34.51 ps conservative rising overlap and about 54 ps first-edge headroom.
+Full pilot verification still waits for FS40 and FF0. This is early extracted-
+unit evidence, not admission of the whole bank or an all-PVT code path.
 
 All these artifacts remain component evidence. Full-array extraction, periodic
 pulse transport, native selected/boundary codes, all-PVT models and whole-PHY

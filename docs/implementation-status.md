@@ -63,10 +63,24 @@ These are protocol proofs; native DCC timing, total startup budgeting and
 whole-PHY integration remain open. Yosys reports zero problems with DCC admission
 enabled and disabled (`build/clock-startup-v2-synthesis-1.log` and `-0.log`).
 
-The DCC/startup/training integration checkpoint passes all 1,611 tests
+`openlvds_tx_control_v2` now connects actual DLL calibration/configuration/
+measurement control, DCC startup and transmitter framing under one coordinator.
+A request edge starts one calibration; the held level continues training until
+the lab ends it. The final grant is synchronized into the actual pair-clock
+domain. The coordinator's single 100 ms deadline spans calibration and warmup,
+and failures stay latched after stages disable. Both model admissions default
+false. A composed protocol test uses all actual control blocks and clock-hold
+DCC topology with explicit synthetic external paths/phases and test-only cell
+delays; it checks 64 confirmations, both warmups and an independently generated
+432-pair training/end-marker/payload stream. Stage-error, deadline and missing
+admission cases pass. This does not qualify physical delay or clock timing.
+
+The integrated-TX control checkpoint passes all 1,617 tests
 without skips using `make test-full`; log:
-`build/clock-startup-v2-full-tests.log`. Yosys process/check with model admission
-enabled reports zero problems (`build/dll-control-v2-admitted-synthesis-check.log`).
+`build/tx-control-v2-full-tests.log`. Yosys process/check with both admissions
+enabled and with defaults closed reports zero problems
+(`build/tx-control-v2-admitted-synthesis-check.log` and
+`build/tx-control-v2-default-synthesis-check.log`).
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
 errors but failed all 54 SF cases: self-reset release while CLK remained high
@@ -236,6 +250,11 @@ Original 2x2 layouts/models are unchanged. Six native tasks in
 at SS40/FS40/FF0, coarse 0/1, fine 0/1/16/31/0. Independent overlap, first-edge
 headroom and stress checks are queued. No dense ROM, full-PVT, full-bank or PHY
 admission follows from the component proofs; whole-bank routing remains held.
+The first SS40 pair passes source-core/extracted-unit stress and restores
+conservative rising overlap to 34.51 ps: coarse 0/fine 31 is 892.10 ps versus
+coarse 1/fine 0 at 857.59/857.08 ps. First/repeated coarse 0/fine 0 is
+555.80/554.05 ps, leaving about 54 ps first-edge headroom. This is early component
+evidence; independent full-pilot verification still waits for FS40 and FF0.
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active
