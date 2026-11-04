@@ -2937,3 +2937,91 @@ case with settling and native terminal screening passing; the maximum
 terminal difference is 1.895250 V. The complementary DATA=1 case and
 independent complete receipt remain prerequisites for starting the staged
 whole-bank electrical experiment. One case is not a control-repair gate.
+
+### Connected PDN and legal full-bank placement
+
+The successful producer is `harden_weighted_bank_v15.py`, consuming native
+wide-power frame `weighted_bank_wide_power_frames_v2/21af22833c328beb`.
+Artifact `weighted_bank_bringup_v2/28a6b803538e79b7` completes the normal
+Classic flow through detailed placement with return code 0. PDN metrics
+report **zero violations on VPWR and VGND**. A fresh OpenROAD process
+reloads the final database and independently passes `check_placement`,
+both `check_power_grid` calls, all original model/terminal/net identities,
+all public directions/uses, placement of all 94 original instances, all
+78 unchanged macro boxes/orientations and geometry on all 22 signal I/O
+pins. `placement_bringup_passed` is true. `physical_implementation_passed`,
+`route_complete`, electrical qualification and PHY admission remain false.
+
+The row/power requirements are separated by phase. During PDN generation,
+`weighted_bank_row_strip_v3.py` retains the active control row and the
+original boundary row segments: four segments in total. It removes 342
+unused segments and 2,067 generated taps, preserving every original
+functional instance and all macro-internal taps. The native-pitch global
+M5 grid supplies the guarded pairs directly. A bottom M5 power/ground
+pair supplies the retained boundary row below the first macro row.
+
+For placement, `weighted_bank_row_restore_v3.py` restores all **346 exact
+original row records**, including name, site, origin, orientation,
+direction, site count, spacing and bbox. Rows are placement metadata;
+unused taps and unnecessary M1 rails are not reintroduced. The callback
+requires the complete before/after row signature multiset to match and
+checks that the instance count and all 94 original circuit attachments
+are unchanged. It executes only after successful normal PDN generation,
+before LibreLane writes the database and checks power. Failed generation
+and report/check-only PDN commands cannot trigger successful restoration.
+The final legalizer can therefore use the original floorplan, while
+post-placement power checks require every actually placed cell to have
+connected supplies. No placement or supply check is suppressed.
+
+The installed Classic flow has no dedicated post-PDN hook. The bound
+configuration registers a single-use Tcl command-leave callback on
+`pdngen`; no installed tool script or shared solver dispatcher is edited.
+The loader executes configuration in a Tcl procedure, so the retained
+metadata variables are explicitly scoped for that callback. The initial
+callback's scope failure is retained unchanged.
+
+The remaining attempts explain the final phase separation:
+
+| Producer | Artifact under `weighted_bank_bringup_v2` | Held result |
+| --- | --- | --- |
+| v10 | `c30bc2d12cad9bd8` | Restoring all rows before PDN restores PDN-0179 channel failures. |
+| v11 | `427ce7dd5eedf7ba` | Boundary rows plus a bottom power strap leave one ground channel failure. |
+| v12 | `3601494654cf1213` | Separate single-net bottom strap specifications still leave that ground channel failure. |
+| v13 | `9bf0bf463081a70c` | A conventional two-net bottom pair gives zero PDN violations, but permanently sparse rows produce fourteen macro padding failures in the legalizer. |
+| v14 | `46fdad265e618de0` | The restoration callback reaches generation but fails because configuration-loader-local variables are unavailable to it. |
+| v15 | `28a6b803538e79b7` | Explicit callback scope plus exact post-PDN row restoration passes both placement and supply connectivity. |
+
+Native contract receipt
+`weighted_bank_row_restore_contract_v2/d5798b4241e89f77`, produced by
+`check_weighted_bank_row_restore_v3.py`, independently exercises the actual
+OpenDB metadata under a procedure-scoped loader. It reproduces the old
+scope error, verifies the corrected 346-to-4-to-346 row transformation by
+comparing complete serialized native row records, and proves that an
+injected generation failure retains the four-row state. This contract
+stubs PDN and is explicitly not a power-grid or physical qualification;
+the real full-flow result above supplies that evidence. Initial contract
+`c40e71298c53379b` is held for its output parser dropping an empty trailing
+result field; revision v3 preserves that field. All failed source and
+output variants are retained.
+
+The regression suite passes 1,854 tests without skips in
+`build/weighted-bank-row-restore-v14-full-tests.log`. The final source set
+is also checked by `build/weighted-bank-placed-power-v15-full-tests.log`.
+Signal routing, complete bank GDS DRC/LVS/antenna, fresh intercell/grid RC,
+native timing across the required PVT matrix, legal code admission and
+full link qualification remain required. The electrical candidate is not
+started without its independent complementary fine-control repair proof;
+these placement results do not waive that prerequisite or reuse timing
+results from the narrower power rails.
+
+The complementary guarded DATA=1.8 V fine-control case has now completed.
+Terminal screening passes (peak 1.895253 V), but settling fails for the
+largest fine bit at codes 31 and 16. Its maximum CAP-node error is
+0.226052/0.226045 V against the unchanged 0.18 V limit, while the control
+driver error is only 0.001571 V. This localizes the next investigation to
+the largest capacitor/switch branch rather than accepting the controls as
+repaired. DATA=0 passes. The whole-bank electrical gate remains closed;
+inspect the completed charge curves and strengthen or revise that branch,
+then repeat native geometry/RC and both bias checks before admission.
+The final regression run passes 1,854 tests without skips in
+`build/weighted-bank-placed-power-v15-full-tests.log`.
