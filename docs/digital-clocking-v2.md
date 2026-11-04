@@ -2884,3 +2884,26 @@ is inferred. Original return-mux case 0 also finishes with numerical
 collapse at 8.98872 ns, after the first input pulse; it supplies no complete
 20 ns timing/safety result. Its raw and logs remain intact, and the shared
 dispatcher naturally assigns the released engines to queued work.
+
+### Centered local straps: legal landing, unresolved grid attachment
+
+`harden_weighted_bank_v8.py` corrects the macro-local M5 offset to 3.5 um.
+Artifact `weighted_bank_bringup_v2/f5cc0a306bae5804` again reaches detailed
+placement with all original instances placed, all 22 signal I/O pins
+shaped, unchanged macro boxes and the full original interface intact.
+The supply check still fails for all 62 guard-pair PG pins. The generated
+DEF now has correctly centered M5 stripes, but they run only from each
+macro's left boundary to its right boundary. They do not reach the main
+grid. The normal flow and its post-placement check remain held; local
+via legality is not a power-connectivity pass. All earlier source and
+failure artifacts remain intact.
+
+Independent joint-DCC receipt
+`native_static_dcc_verification_v2/613812473724653c` is now complete. It
+regenerates the four original decks/libraries, validates the raw hashes
+and independently remeasures the results. Both early-prepare cases pass
+at the approved 40% and 60% endpoints. Both common-prepare negative
+controls retain their failed startup-event checks, so the all-four-case
+receipt is deliberately not an aggregate pass. The early-prepare subset
+is SS/40 C, 410 MHz, component-RC evidence only; full PVT, hardware warmup,
+whole-backend RC and PHY admission remain open.
