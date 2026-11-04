@@ -388,8 +388,20 @@ transient timing reduction. `dcdl_unit_rc_v2/fd1d622597ea4be3` therefore tests
 using fine codes 0/31/0. It measures minimum/maximum delay and every extracted
 MOS terminal during code updates. This early diagnostic omits inter-unit and
 coarse-core routing, so it cannot qualify a full physical bank or delay ROM.
-Its result will decide whether the present return driver leaves adequate
-609.8--641.1 ps quarter-period headroom before full-bank routing.
+Independent receipt `dcdl_unit_rc_verification_v2/d44e7b19d8358afc` confirms
+that unit stress passes, but the minimum rising delay is 711.88 ps at SS40.
+This is above both ends of the 609.8--641.0 ps quarter-period range. The first
+and repeated fine-0 delays are 713.63/711.88 ps; fine 31 rises at 1302.33 ps.
+This hybrid is insufficient for the intended quarter-period clock sections;
+whole-bank routing of the present driver configuration is held.
+
+`dcdl_rc_drive_v2/7d81b2af858f05f5` retains the exact unit RC and tests three
+source compound-gate alternatives: two merge gates; two turn plus two merge
+gates; or three merge gates. Each uses matched parallel copies of existing
+native cells with identical logical inputs. The 0/1/16/31/0 sequence checks
+minimum/range, a fine step and bulk-update stress. No tolerance, supply or
+one-period target changes. Any survivor still needs compound-cell physical
+proof, coarse/fine overlap, full PVT and full-bank extraction.
 
 All these artifacts remain component evidence. Full-array extraction, periodic
 pulse transport, native selected/boundary codes, all-PVT models and whole-PHY

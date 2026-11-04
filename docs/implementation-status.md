@@ -34,9 +34,9 @@ swaps, rejects stale tags and reversed/disagreeing brackets, and bounds retries.
 The real calibration FSM converges in a synthetic transaction test and still
 requires all 64 confirmations before code freeze. Composed pulse/event tests
 and Yosys process/check pass; physical offsets and native convergence remain open.
-The unit-layout/RC integration checkpoint passes all 1,581 tests
+The unit-layout/RC integration checkpoint passes all 1,582 tests
 without skips using `make test-full`; log:
-`build/mim-switch-unit-v2-and-rc-integration-full-tests.log`.
+`build/mim-switch-unit-v2-rc-drive-full-tests.log`.
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
 errors but failed all 54 SF cases: self-reset release while CLK remained high
@@ -153,9 +153,14 @@ fresh distributed extraction contains 199 resistors and 55 parasitic capacitors;
 independent topology/model receipt:
 `mim_switch_unit_verification_v2/e0f493e7d69328f9`. This qualifies component
 geometry/connectivity only. It supplies no whole-bank or electrical admission.
-The NODE interconnect bound is about 3 fF/unit. An exact 31-unit RC/source-core
-SS40 timing/stress experiment is running in `dcdl_unit_rc_v2/fd1d622597ea4be3`
-to assess quarter-period headroom before committing to full-bank routing.
+The NODE interconnect bound is about 3 fF/unit. The exact 31-unit RC/source-core
+SS40 experiment `dcdl_unit_rc_v2/fd1d622597ea4be3` completed and was independently
+remeasured in `dcdl_unit_rc_verification_v2/d44e7b19d8358afc`. Stress passes, but
+minimum rising delay is 711.88 ps, above the required 609.8--641.0 ps quarter
+range. The present driver configuration cannot advance to whole-bank routing.
+A separate three-case native compound-driver search is running in
+`dcdl_rc_drive_v2/7d81b2af858f05f5`, preserving the exact unit RC and timing/stress
+limits. Source survivors will still require physical and full-PVT qualification.
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active
