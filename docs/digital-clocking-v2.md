@@ -2398,3 +2398,46 @@ PHY admission remain open. Earlier source-fine experiments are preserved
 and do not acquire physical-fine coverage from this separate receipt.
 `make test-full` passes 1,820 tests without skips, recorded in
 `build/weighted-fine-units-v2-rc-full-tests.log`.
+
+### Isolated control repair with physical fine-cell RC
+
+`weighted_fine_rc_families_v2.py` admits only the complete independently
+verified five-cell fine family. It rechecks the bound source/PDK/tool and
+physical identities, raw and reduced RC hashes/passivity, exact coverage and
+the independent topology logs before returning simulator models. This is a
+read-only check; no physical job is rerun. The existing source-fine pilot and
+its failed/unfinished artifacts remain unchanged.
+
+`weighted_fine_control_v3.py` connects each actual fine macro by its own
+extracted port order. It identifies the switched MIM by its exact dimensions
+and follows resistor connectivity to every physical plate node, requiring
+all three native MOS plate terminals to remain connected and isolated from
+public rails/signals. No ideal CAP alias or electrical observation port is
+introduced. All 11/17/17/14/13 plate nodes for bits 0 through 4 are retained
+in the waveform and checked for settling. Capacitive coupling is not treated
+as a wire. Regression tests reject a disconnected keeper, a plate short,
+negative resistance, wrong plate dimensions, hidden far-node settling
+failure and transient MOS overstress.
+
+Campaign `weighted_fine_control_v3/f276c77a9801f293` compares the native
+BUF8-o4/INV8-o4 guarded drivers with source buf_1/inv_1 controls, both driving
+the same actual fine-cell RC. Four SS/40 C cases cover DATA held at 0 or
+1.8 V for each driver profile, fixed 1.8 V supply, 20 ps control edges and
+codes 0,31,0,16,15,0 over 12 ns. Every physical plate node must settle within
+0.18 V of its expected rail during each retained 1.5--1.9 ns window; all
+MOS terminal pairs retain the 1.95 V whole-waveform limit. The guarded and
+source profiles contain 205 and 45 MOS witnesses respectively.
+
+`probe_weighted_fine_control_v3.py` binds the native fine receipt, guarded
+driver receipt and completed original weighted-bank failure. The independent
+`verify_weighted_fine_control_v3.py` regenerates the libraries, device/plate
+witnesses and decks before checking complete raw waveforms. Services
+`openlvds-weighted-fine-control-v3-pilot.service` and
+`openlvds-weighted-fine-control-v3-verify.service` queue and verify this work
+under the unchanged six-engine/two-worker policy. This is a fixed-data
+component experiment with ideal intercell wires; active-clock, full-bank
+timing/range, full-PVT and PHY admission remain open. A passing physical RC
+receipt or deck preflight does not establish a passing electrical result.
+Independent read-only preflight regenerated all four decks and all native
+MOS/plate witnesses exactly. `make test-full` passes 1,824 tests without
+skips in `build/weighted-fine-control-v3-full-tests.log`.
