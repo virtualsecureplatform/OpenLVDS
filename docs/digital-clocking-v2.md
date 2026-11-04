@@ -2236,3 +2236,59 @@ MOS output terminals, map all eleven physical ports and reject a missing
 monitor or incomplete/failed timing profile. Native timing, early-data DCC
 repair, full PVT, independent physical/antenna and full-chain PHY admission
 remain pending.
+
+### Independent full-counter macro DRC and installed partial antenna check
+
+`check_static_phase_klayout_v2.py` runs the unmodified installed SKY130A MR
+runset against the exact complete counter GDS. Artifact
+`static_phase_klayout_v2/0bdae5d1739762aa` reports **zero violations** with
+FEOL, BEOL, off-grid and floating-metal checks enabled, two checker threads
+and no SRAM exclusion. The run uses the parameter names actually implemented
+by that pinned deck (`top_cell`, `floating_met`, `thr`), binds its content hash
+and checks the selected top and enabled-group confirmations. This is macro
+DRC, without die seal/density or antenna coverage from that deck.
+
+`check_static_phase_antenna_v2.py` separately runs the installed Magic antenna
+rules after extracting the full counter. Artifact
+`static_phase_antenna_v2/87f3306ba8932cb2` reports **zero antenna feedback
+entries**, with all **402 native MOS** in its extraction. Successful command
+completion and complete device coverage are required; an empty/missing report
+cannot count as a pass. The pinned technology explicitly selects its
+**partial** antenna model and notes that diode diffusion is not modeled.
+This check therefore does not establish cumulative/foundry antenna signoff.
+The [Magic command reference](https://opencircuitdesign.com/magic/commandref/antennacheck.html)
+requires extraction before checking so that sensitive gates can be enumerated;
+the retained logs confirm the actual extraction and antenna execution.
+
+`verify_static_phase_geometry_v2.py` independently reparses the raw KLayout
+XML, Magic result, feedback and extracted devices; checks the exact run
+command and enabled rule groups; and rejects reports for different counter
+GDS inputs. Receipt
+`static_phase_geometry_verification_v2/020baf11a08a6301` passes. No routing,
+parasitic model, live simulation or production-admission bit is changed.
+Native timing, full PVT, cumulative/foundry antenna and full-chain PHY
+qualification remain open.
+
+`make test-full` passes **1,811 tests without skips** in
+`build/static-phase-independent-checks-v2-full-tests.log`. New parser tests
+reject incomplete/wrong-top DRC reports, count each violation record and
+require successful antenna execution with every native MOS before accepting
+zero feedback. The combined audit above was also run against the actual
+complete physical reports.
+
+### First original weighted-bank result: minimum range and fine-control stress
+
+Original buffered weighted-bank case 0 (unit-sized switches, coarse 0),
+`weighted_fine_bank_v2/43447c0bbcb6ec85/0`, now completes without numerical
+errors. At fine code 0 its first rise/fall delays are 661.737/770.299 ps,
+leaving **-160.543 ps** fast-quarter headroom. Fine code 31 reaches
+735.607/868.790 ps: this sparse unit-switch case alone does not establish
+coarse overlap or a legal fine-code table.
+
+Terminal failures include the turn0 core (2.033147 V), native source fine
+buffers (up to 2.087355 V), fine inverters (1.988506 V) and fine switches
+(1.978124 V), all above the retained 1.95 V limit. Thus port-delay and turn
+repairs alone cannot qualify this completed case: the control/fine network
+also needs investigation. The direct-port guarded root-switch comparisons
+already running retain their own scope; no result for them is inferred from
+this original unit-switch trace. All failed and unfinished artifacts remain.
