@@ -1756,3 +1756,53 @@ The full pinned software suite passes **1,785 tests without skips** in
 and resistor-path analysis are additional scoped native checks. Actual DCC
 first events, whole-controller RC, full-PVT and full PHY qualification remain
 open; production admissions stay closed.
+
+### Retain the stack guard while reducing inverter-node loading
+
+The tap-row counter campaign completes all eight cases without numerical
+errors. Independent receipt
+`static_phase_release_verification_v4/a5e19eac8926fdb1` regenerates and
+remeasures the whole matrix. Every case passes terminal screening; maxima are
+1.943492 V (o1) and 1.946248 V (o2). Both 40%-duty cases in each variant pass
+the complete isolated-counter gate. The 60%-duty cases still fail low-level
+phase qualification, so neither variant passes the complete four-case profile.
+The new contacts therefore address the measured voltage problem in this
+SS/40 C matrix; full-PVT voltage qualification remains open.
+
+`build_nand2b_stack_guard_v2.py` retains the mirrored thirteen-tap row and
+2 x 2 um series-stack MIM, and removes only the added inverter-node MIM and
+its route. It preserves the original native inverter node `a_27_47#` and
+every transistor. The series node `a_215_47#` remains explicitly connected to
+its physical guard through the proven MID0 access. The two variants retain
+1 x 1 and 2 x 2 um public-output MIMs. This tests the timing cost of guarding
+an inverter node that was not the localized failure in the retained drive-4
+diagnosis. It does not presume that the native inverter is safe at every PVT;
+all its actual MOS terminals remain screened at the same 1.95 V limit.
+
+Fresh physical run `nand2b_stack_guard_physical_v2/597f324ab7f4a8d5` passes
+zero DRC and unique LVS for both variants. Fresh extraction
+`nand2b_stack_guard_rc_v2/cf3503a5a3efb48a` retains 479/480 resistors and
+120/116 capacitors before exact positive-conductance reduction. Both primary
+passivity and topology gates pass. Independent receipt
+`nand2b_stack_guard_rc_verification_v2/62a9e4b71323a44a` confirms both exact
+source/GDS/interfaces, positive elements and unique topology matches. These
+are distinct macros and artifacts; earlier guards, failed waveforms and
+running experiments remain intact.
+
+`static_phase_clock_release_v5.py` applies these actual RC models to only
+the three low-phase setters in the same drive-4 counter. All high setters,
+feedback, REQUEST conditioning, public output and loaded clock driver remain
+unchanged. Campaign `static_phase_clock_release_v5/69d0acd654522289` is
+running the matched eight SS/40 C, 410 MHz, 40%/60% duty and low-/high-stop
+cases with 488 MOS witnesses per case. The first two o1 cases complete and
+pass the full isolated-counter gate, with peaks 1.940187/1.909628 V. The
+60%-duty cases and complete profile proof are still pending. The independent
+consumer is watching and retains every earlier phase/count/reset/voltage check.
+No joint DCC first event, whole-controller RC, full-PVT or PHY admission
+follows from these initial results.
+
+The full pinned software suite passes **1,787 tests without skips** in
+`build/stack-guard-static-phase-v2-full-tests.log`. Source tests verify that
+only the series node is exposed for guarding, that both native transistors
+in the test fixture remain unchanged and that all sequencing checks are
+retained. The native layout/RC checks above independently cover the real cell.
