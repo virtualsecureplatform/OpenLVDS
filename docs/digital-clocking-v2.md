@@ -1966,3 +1966,30 @@ retain native tie resistors while mapping distinct private MOS nodes and
 reject incomplete coverage, reversed/oversized carry, lost overlap,
 insufficient quarter headroom and terminal-stress failures. All production
 model and ROM admissions remain closed pending complete electrical results.
+
+### Physical guarded NAND2B pair for native backend integration
+
+The counter and guarded weighted-bank prototypes use two guarded NAND2B4
+outputs in parallel. Their ideal shared wires are not a physical macro.
+`build_nand2b_guard_pair_v2.py` imports the exact o1 guarded cell GDS twice
+and routes all five public nets on M4, preserving both child hierarchies,
+private shunts and body-contact rows. Its first placement,
+`nand2b_guard_pair_physical_v2/6fcc7ef0cd46a890`, passes unique LVS but has
+22 DRC violations around compact signal vias and their native M3 neighbors.
+The failed geometry and source are retained.
+
+Revision `build_nand2b_guard_pair_v3.py` moves signal landings to the right
+of the dense native contacts and uses 0.32 um via paint with 0.44 um metal
+landings. Its fresh result,
+`nand2b_guard_pair_physical_v2/d9d269bff28ee670`, has **zero DRC violations
+and unique LVS**. The two source cells and native masks are unchanged;
+the source schematic hashes are identical across both wrapper revisions.
+The new public macro is `openlvds_nand2b_4_o1_stack_guard_pair_v2`, with
+A_N/B/Y/VGND/VPWR ports and a single public output for implementation tools.
+
+`restrict_macro_rails_v5.py` selects designated M3 or M4 access shapes while
+preserving the exact union of routing/obstruction geometry and native antenna
+metadata. Earlier bound M3-only interfaces remain unchanged. The paired
+macro exposes its shared M4 buses and keeps its child M3 shapes obstructed.
+This geometry/connectivity result does not establish electrical timing,
+whole-controller RC, full PVT or PHY admission.
