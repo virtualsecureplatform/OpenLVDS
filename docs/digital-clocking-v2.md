@@ -1186,3 +1186,72 @@ clock-backend routing, full-PVT timing and PHY admission remain open.
 The complete pinned regression passes **1,739 tests without skips** in
 `build/phase-armed-release-v2-full-tests.log`. This is software verification;
 neither new simulation campaign has supplied a native timing qualification.
+
+### Routed timing limits and narrower repair experiments
+
+The first two complete SS/40 C routed-bank cases have no numerical errors and
+pass all 2,609 MOS terminal screens. At minimum code (0,0), the initial/repeated
+rising delays are 950.018/947.087 ps and falling delays are
+1072.075/1072.062 ps. These miss the required 609.756–641.026 ps quarter-period
+range. At (0,31), rising delay is 1375.090/1372.137 ps and falling delay is
+1596.760/1596.771 ps. Their worst terminal differences are 1.938652 and
+1.938491 V. The remaining coarse/PVT cases and independent whole-cohort
+verification are still running. Clean layout, passive RC and correct pulse
+epochs therefore have not established a usable quarter-period section.
+
+Loading receipt `routed_bank_loading_v2/4f1ca4e225edbbc6` identifies the path
+nets through resistor connectivity without changing the simulation network.
+The return net r0 has 238.982 fF of external passive capacitance, including
+169.774 fF to VGND, compared with 28.494 fF on f0 and 30.503 fF on t0. Its
+native fanout includes 55 drain, 55 source and four gate terminals plus the
+direct 4x4 MIM shunt. These passive totals exclude intrinsic nonlinear MOS/MIM
+capacitance; they identify a loading concentration rather than proving an
+exact attribution of transient delay. The bank's redundant input/output
+buffers and fine-bank placement/loading now need joint investigation before
+another full implementation is selected.
+
+`weighted_fine_bank_v2/43447c0bbcb6ec85` tests a five-bit fine-bank alternative
+while the complete thermometer-bank runs continue. It retains every native
+coarse stage and the four actual compound-core RC models. Five switched MIMs
+have nominal areas 6/12/24/48/96 square micrometres, preserving the former
+31-unit total of 186. Two switch-size profiles compare fixed widths with
+1/2/2/3/4 scaling. Both retain native complementary control buffers,
+discharge switches, 2x2 control shunts and the shared 4x4 node shunt. Four
+SS/40 C cases cover both profiles and coarse 0/1 with fine codes
+0/1/16/31/0, input slew 100 ps, control slew 20 ps and load 20 fF. All 2,375
+MOS witnesses per profile are saved, including code-update intervals.
+The campaign and independent regeneration/raw verifier are queued under the
+unchanged six-engine dispatcher, with at most two workers. Fine switches,
+control cells and common wiring are source-only here. Binary MIM areas alone
+do not prove binary electrical weights, monotonicity or 20 ps legal gaps;
+dense common-code, physical RC and all-PVT qualification remain necessary.
+
+The complete 40%/60% stronger-storage clock cohort `363a482d0837cc35` has now
+finished. Independent receipt
+`native_clock_components_verification_v2/30873f09970e20ea` regenerates all
+libraries, decks and MOS coverage and remeasures all four raw waveforms.
+Every case passes steady mean timing, voltage screening and two-clock reset
+readiness, but fails first-event integrity. Mean errors are 10.683/9.448 ps
+for one driver and 10.694/9.479 ps for three drivers at 40%/60%. The latter
+pair passes first-phase polarity but still misses startup events. None is
+admitted. The phase-armed NAND prototype `802cabc7d3ad7564` is still running;
+preliminary traces show no release in its first case and multiple releases in
+its second. Those observations are not final whole-run measurements and do
+not justify selecting that architecture.
+
+Alternative `native_clock_components_v2/acc8cd8e1df679ed` uses two unmodified
+source `dfrtp_1` or `dfrtp_2` asynchronous-clear readiness FFs per controller,
+followed by the existing actual output-buffer RC macro. Both FFs clear from
+REQUEST; second-stage data comes from first-stage Q. This data saturates
+after readiness, unlike the earlier continuously toggling FF/XNOR DCC that
+failed private-node stress. The unchanged passive-RC DCC and one actual
+clock driver per phase remain connected. Four SS/40 C, 410 MHz, 20 fF,
+100 ps slew cases test both FF drives at 40%/60% duty, retaining 852/860 MOS
+witnesses. The experiment and independent verifier are queued. Native FF
+private-node stress, first-event timing and fresh FF physical RC are required;
+standard-cell provenance is not a substitute for those proofs.
+
+The complete pinned software suite passes **1,749 tests without skips** in
+`build/native-ff-and-weighted-fine-v2-full-tests.log`. All old and new failed,
+partial and running artifacts remain intact. Production model admissions stay
+closed, and full DLL/RX/link/OpenPLL qualification remains unfinished.
