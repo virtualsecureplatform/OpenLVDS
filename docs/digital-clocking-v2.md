@@ -2058,3 +2058,28 @@ regenerates all four decks and their 488 MOS witnesses exactly. Timing,
 actual DCC first event, whole-controller RC, full-PVT and PHY admission are
 still pending. `make test-full` passes **1,799 tests without skips** in
 `build/routed-pair-static-phase-v2-full-tests.log`.
+
+### Numerically failed original baseline is retained without timing comparison
+
+Original return-mux case 2 has now terminated at 0.654404 ns, before its
+first input edge at 2.1 ns. Its ngspice log reports `Timestep too small`,
+a final 2.5e-24 s step and an aborted transient. All raw/deck/log evidence
+remains in `dcdl_mux_return_v2/1eb79ae5fb488676/2`. This is a numerical
+failure, not a complete pulse/timing verdict. The other original solvers
+and the ITL4=100 comparison campaign continue.
+
+The original iteration-test consumer rejected an experiment if an original
+baseline row had any error. `verify_dcdl_iterations_v3.py` now retains and
+hashes that failed baseline evidence, records the comparison as unavailable,
+and still requires complete regenerated decks, full-duration new waveforms,
+every MOS terminal and independent new raw remeasurement. A valid baseline
+still requires exact independent remeasurement before pulse/peak differences
+are reported. No timing equivalence is inferred for the failed baseline.
+
+Only the read-only v2 verification watcher was retired; its source remains
+intact. Replacement unit `openlvds-dcdl-iterations-v3-verify.service` watches
+the same unchanged producer artifact. No simulation was stopped or restarted.
+Two focused tests pass: the failed-baseline path must not attempt a raw
+comparison, inconsistent failed rows are rejected, and a valid baseline
+requires matching independent measurement. The routed-pair full suite above
+completed before this isolated new consumer was added.
