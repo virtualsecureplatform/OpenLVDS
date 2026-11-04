@@ -34,9 +34,9 @@ swaps, rejects stale tags and reversed/disagreeing brackets, and bounds retries.
 The real calibration FSM converges in a synthetic transaction test and still
 requires all 64 confirmations before code freeze. Composed pulse/event tests
 and Yosys process/check pass; physical offsets and native convergence remain open.
-The unit-layout/RC integration checkpoint passes all 1,582 tests
+The balanced-drive/prefix integration checkpoint passes all 1,596 tests
 without skips using `make test-full`; log:
-`build/mim-switch-unit-v2-rc-drive-full-tests.log`.
+`build/clocking-v2-balanced-prefix-full-tests.log`.
 
 The original 270-case pulse/toggle DCC source matrix completed without numerical
 errors but failed all 54 SF cases: self-reset release while CLK remained high
@@ -113,7 +113,7 @@ The retained analog conditioner plus a 30x30 um native reference MIM passes all
 six new-load +/-20 ps sign, stress and reference checks; independent receipt
 `clock_repairs_v2_verification/3d4ed08666f410c4`. Its 180-case all-PVT/input-swap
 expansion is running in `analog_arbiter_pvt_v2/e6ec7847a89bd52b`.
-The new native signed-threshold pilot is running separately in
+The original 18-case native signed-threshold pilot completed without solver errors in
 `phase_threshold_v2/b5b100243bdaa8b1`: matched switched-MIM branches after
 conditioning, both threshold selections and raw -20/0/+20 ps under matched
 and unequal slews at SS40. It checks the changed load, native custom-device
@@ -125,6 +125,12 @@ repair completed in `phase_threshold_load_v2/f8c2416efc6cd197`; all six cases
 pass sign, stress and reference checks. Independent receipt:
 `phase_threshold_load_verification_v2/aaa5f22c61533cda`. Unequal slews, PVT and
 physical threshold qualification remain open. The original producer is retained.
+The six repaired native cases also pass independent 200 ns/20 ns quiescent-prefix
+equivalence (`phase_prefix_verification_v2/15be3c82462f9f28`), with a 3.31 times
+aggregate runtime improvement. Hardware warmup is unchanged. A new 30-case SS40
+cohort in `phase_threshold_slew_v2/1a45576caa4bab48` tests the remaining input
+orders and unequal 20/250 ps slews using that prefix. Native verification is
+queued; this is not all-PVT or extracted-threshold admission.
 
 A native 2x2 MIM shunt reduces complementary DCDL control stress to 1.93214 V
 in the first eight SS40 codes; stronger inverter drive instead worsens stress.
@@ -155,14 +161,26 @@ fresh distributed extraction contains 199 resistors and 55 parasitic capacitors;
 independent topology/model receipt:
 `mim_switch_unit_verification_v2/e0f493e7d69328f9`. This qualifies component
 geometry/connectivity only. It supplies no whole-bank or electrical admission.
+The integration LEF (`mim_switch_unit_abstract_v2/e1049520c33a5145`) exposes only
+the five designated M3 rails and moves other routing shapes to obstructions,
+preserving every routing rectangle and the GDS. Actual OpenROAD/OpenDB port
+validation passes. This does not qualify an array or its timing.
 The NODE interconnect bound is about 3 fF/unit. The exact 31-unit RC/source-core
 SS40 experiment `dcdl_unit_rc_v2/fd1d622597ea4be3` completed and was independently
 remeasured in `dcdl_unit_rc_verification_v2/d44e7b19d8358afc`. Stress passes, but
 minimum rising delay is 711.88 ps, above the required 609.8--641.0 ps quarter
 range. The present driver configuration cannot advance to whole-bank routing.
-A separate three-case native compound-driver search is running in
+A separate three-case native compound-driver search completed in
 `dcdl_rc_drive_v2/7d81b2af858f05f5`, preserving the exact unit RC and timing/stress
-limits. Source survivors will still require physical and full-PVT qualification.
+limits. Independent receipt `dcdl_rc_drive_verification_v2/cc13670b539c43b5`
+confirms all three stress passes. The only range survivor has first/repeated
+fine-0 delays of 609.24/607.32 ps, leaving just 0.52 ps first-edge headroom.
+It is not selected for routing. A fresh four-case SS40 balanced-drive pilot
+(`dcdl_balanced_drive_v2/ebaad5ef41119fe1`) doubles the whole coarse core,
+compares two output drives and tests coarse codes 0/1 with identical hardware.
+Independent checks use worst first/repeated minimum-code delay and both-edge
+coarse/fine overlap. Dense steps, all-PVT, compound-cell physical proof and
+full-bank RC remain open.
 
 All diagnostics use the existing shared six-engine dispatcher, with at most
 two workers per campaign. Independent verification is queued after the active
