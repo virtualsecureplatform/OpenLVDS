@@ -1,0 +1,12 @@
+{
+  "signal_y": [
+    0.8,
+    1.48,
+    2.16
+  ],
+  "signal_width": 0.32,
+  "ground_y": 0.0,
+  "power_y": 3.0,
+  "power_width": 0.6,
+  "drop_width": 0.4
+}
