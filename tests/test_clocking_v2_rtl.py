@@ -14,7 +14,9 @@ class V2RTLTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             out=Path(folder)/'test.vvp'
             subprocess.run(['iverilog','-g2012','-Wall','-s',name,'-o',str(out),
-                *map(str, sorted((ROOT/'rtl/v2').glob('*.v'))),str(ROOT/'tb'/f'{name}.v')],check=True,capture_output=True,text=True)
+                *map(str, sorted((ROOT/'rtl/v2').glob('*.v'))),
+                *([str(ROOT/'sky130/v2/openlvds_dcdl_v2.v')] if name=='tb_dcdl_v2' else []),
+                str(ROOT/'tb'/f'{name}.v')],check=True,capture_output=True,text=True)
             result=subprocess.run(['vvp',str(out)],capture_output=True,text=True,timeout=30)
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn('PASS v2',result.stdout)
@@ -35,3 +37,5 @@ class V2RTLTests(unittest.TestCase):
         frame=''.join(map(str,clocking_v2.training_frame()))
         self.assertEqual(serial,frame*3+format(clocking_v2.END_MARKER,'032b')+'10'*32)
         self.assertEqual([r[2] for r in rows],['0']*400+['1']*32)
+
+    def test_dcdl_source_topology_and_polarity(self): self.run_tb("tb_dcdl_v2")
