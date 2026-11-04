@@ -2169,3 +2169,35 @@ master state in its first acquisition window. The common enable starts data
 preparation and the public mask together. The separately queued early-data
 prepare mode is the existing direct test of that startup cause; a repair
 pass is not inferred before its complete waveforms are available.
+
+### Unloaded physical observations preserve full-counter phase checks
+
+A flat full-counter model needs real observation points for its internal
+phase-order and stopped-clock checks. The characterization view exposes the
+existing low0/high1/low1/armed/request_i M5 conductors as five unloaded test
+ports, alongside the six original functional ports. No devices, routing,
+voltage sources, shorts or external loads are added. The original six-port
+GDS/RC and its immutable proofs remain unchanged.
+
+`observe_static_phase_backend_v2.py` first imports and flattens the actual
+clean GDS, rather than synthesizing a logical replacement. Artifact
+`static_phase_observed_physical_v2/64e64b3269c11645` retains zero DRC but
+fails interface qualification: GDS label import loses the six original
+Magic port numbers. Revision `observe_static_phase_backend_v3.py` explicitly
+restores those original ports before flattening and appending the five
+observation labels. Fresh artifact
+`static_phase_observed_physical_v2/8ca98eafae7d6aa9` passes **zero Magic DRC
+and unique eleven-port LVS**. The flattened mask-geometry prefix hashes
+before/after annotation are identical. Only labels and port attributes
+change. Internal source names are exposed by extending the source interface;
+every native instance and connection remains intact.
+
+Fresh extraction `static_phase_observed_rc_v2/2fc7d6d1a2ace804` has 6,405
+positive resistors, 2,136 nonnegative capacitors and 402 native MOS. Exact
+algebraic-node elimination leaves 5,255 resistors. Independent receipt
+`static_phase_observed_rc_verification_v2/e71c1b13b0b4547c` passes the sign,
+GDS/source/interface and strict fresh LVS audits. Its eleven declared ports
+protect the observation conductors during exact reduction. Flattening and
+labeling can change extraction partitioning, so timing equivalence to the
+six-port extraction is not assumed from element counts. This freshly
+extracted characterization view must pass its own full native timing checks.
