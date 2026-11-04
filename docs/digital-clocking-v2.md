@@ -1869,3 +1869,44 @@ A separate read-only regeneration check matches all four decks and all
 1,588 actual MOS witnesses per case. At this checkpoint the joint pilot
 is running with its first two cases queued for engine capacity; no joint
 waveform result is claimed.
+
+### Matched transient iteration allowance experiment
+
+The original return-mux cases remain live. A read-only look at their flushed
+binary prefixes found case 0 at 0.874060 ns (10,402 complete records) and
+case 2 at 0.465713 ns (7,054 records), before the first 2.1 ns input edge.
+Across the last 128 flushed records, the largest voltage range was only
+5.3e-11/8.4e-11 V, despite accepted time steps down to 0.000244 ps. This is
+non-gating progress telemetry, without complete-waveform or electrical
+qualification. It motivates a numerical experiment rather than a conclusion
+that these quiet intervals demonstrate a functional oscillation.
+
+`probe_dcdl_iterations_v2.py` prepares two matched full-duration cases from
+`dcdl_mux_return_v2/1eb79ae5fb488676`, retaining exact case 0/2 models,
+component RC, tolerances, 2 ps maximum step, two input pulses, saved MOS
+terminals and 20 ns stop. The only numerical change is `.options itl4=100`.
+The [ngspice manual](https://ngspice.sourceforge.io/docs/ngspice-manual.pdf)
+defines ITL4 as the transient time-point iteration limit (default 10).
+No supply, circuit, device model, initial condition, voltage limit or timing
+requirement is changed by this experiment.
+
+Campaign `dcdl_iterations_v2/a994d04ddcc0bdbb` runs with two lower-priority
+workers under the existing six-engine dispatcher. The original solvers
+continue. Units `openlvds-dcdl-iterations-v2-pilot.service` and
+`openlvds-dcdl-iterations-v2-verify.service` retain independent complete raw
+remeasurement. The consumer regenerates every parent library and MOS
+witness and checks every altered deck. Comparisons to original waveforms
+are reported only for original cases that have completed, and include
+maximum pulse-delay and individual MOS-peak differences. Missing baseline
+results are explicit; no speed or equivalence claim follows from partial
+traces. This experiment cannot admit a legal-code ROM or PHY.
+
+The joint static-release DCC cases 0 and 1 have acquired simulator slots;
+read-only prefixes reach approximately 5.09/4.46 ns. These are still before
+the raw clocks start at 22 ns. There is no complete joint result yet.
+
+Validation: `make test-full` passes **1,791 tests without skips** in
+`build/dcdl-iterations-v2-full-tests.log`. Tests ensure the matched deck
+changes only its title and iteration allowance, and reject pulse-epoch or
+MOS-coverage mismatches in numerical comparisons. The matched simulations
+remain queued at this checkpoint; no runtime improvement is claimed.
