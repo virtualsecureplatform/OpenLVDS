@@ -2145,3 +2145,27 @@ without native timing, independent DRC/antenna, actual DCC first-event,
 full-PVT, full-clock backend or PHY admission. Its four-dimension native
 loaded-counter timing cases must be prepared separately and retain the
 approved 40%/60% duty endpoints and all stopped-clock checks.
+
+### Completed common-release startup misses are late data preparation
+
+Both common-release cases 0/1 in
+`native_static_dcc_v2/8f73e3a90f1d54b3` complete without numerical errors.
+They pass every terminal-voltage check, common mode, preparation/mask order,
+at least three actual release clocks and the mean half-cycle limit
+(11.6835/8.1492 ps for 40%/60% duty). They fail exactly the first expected
+P180 and following P0 output events; subsequent measured output intervals
+pass. This is not a device-overstress failure or an incomplete transient.
+
+`diagnose_common_dcc_startup_v2.py` independently regenerates and remeasures
+both complete cases, then observes every actual output drain/source terminal
+connected to each native gate's output through resistor-only paths. It does
+not introduce ideal logical aliases or choose one favorable finger. Receipt
+`common_dcc_startup_diagnosis_v2/35194dbd49c1ca42` binds all retained files.
+B's master first crosses high **1,789.8--1,801.6 ps** after its first expected
+P180 clock at 40% duty, and **2,262.8--2,274.2 ps** after that clock at 60%.
+The real data/master/slave terminal event lists localize the missed first
+sample: data qualification arrives too late to establish the initial B
+master state in its first acquisition window. The common enable starts data
+preparation and the public mask together. The separately queued early-data
+prepare mode is the existing direct test of that startup cause; a repair
+pass is not inferred before its complete waveforms are available.
