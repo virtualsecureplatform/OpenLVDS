@@ -2647,3 +2647,53 @@ candidate's control-repair prerequisite is unchanged, and no qualified
 model, legal code ROM, configuration or PHY is selected by this result.
 `make test-full` passes 1,843 tests without skips, recorded in
 `build/weighted-bank-assembly-v2-full-tests.log`.
+
+### Routing-ready macro frames with actual placed-pin equivalence
+
+`normalize_weighted_bank_frames_v3.py` consumes the independent full-bank
+assembly receipt. It checks its exact source/PDK/tool bindings and serialized
+connectivity/model/interface readback before adapting all eleven macro types.
+Every macro receives a zero-origin LEF/GDS coordinate frame and an exact
+235/4 PR boundary. Existing native MIM markers generate conservative metal3
+routing obstructions expanded by 1.34 um, using the retained native frame
+helpers. Source GDS, LEF, SPICE and their physical/electrical records remain
+unchanged; no native transistor, capacitor or routing mask is redrawn.
+
+Artifact `weighted_bank_macro_frames_v2/04ede2e3d90cc5de` passes fresh GDS
+reload/XOR checks on every physical layer except PR metadata. All cell
+hierarchy, transforms and labels match the exact rigid translation. Two
+separate OpenROAD processes then read the original and normalized LEFs and
+place all 78 actual macro instances. Their 377 placed public-port rectangles,
+layers, direction/use and all 78 macro bounding boxes are identical. This
+uses actual instance origins and shape coordinates from OpenDB, rather than
+assuming a LEF-origin sign convention. The bound consumer also checks all
+adapted output hashes, unchanged source views/configuration and the exact
+complete eleven-type set. Regression cases reject one-DBU pin/box shifts,
+duplicated port records and failed tool runs even when saved rectangles match.
+
+The first producer, `normalize_weighted_bank_frames_v2.py`, passed those
+physical checks but wrote into the older directory namespace. Its source
+and `dcdl_macro_frames_v2/28010e726741bfa7` output are retained and held for
+the binding mismatch. Revision v3 fixes the producer namespace and binds
+both helper revisions; the corrected artifact passes its own consumer.
+No original or failed/partial evidence is overwritten.
+
+These are physical-view preparation results, not whole-bank routing or
+signoff. Standard-cell/I/O placement, rows, power and signal routing,
+whole-bank DRC/LVS/antenna/RC, native timing and code admission remain open.
+No new SPICE ticket was added by this work.
+The corrected consumer revalidated all eleven macro types and reports 18
+MIM keepout boxes. `make test-full` passes 1,845 tests without skips in
+`build/weighted-bank-frames-v3-full-tests.log`.
+
+### Return-mux FF minimum-code numerical failure
+
+Original return-mux case 3 (FF/0 C, coarse 0/fine 0) has now completed with
+timestep collapse at 0.129134 ns, timestep 2.5e-24 s, reporting `bin#branch`.
+It does not reach the first 2.1 ns input pulse. This extends the observed
+pre-input numerical problem beyond the retained SS/40 C coarse-1 failure;
+it supplies no pulse-delay, safety or legal-code result. Its failed raw,
+decks and logs remain intact. The dispatcher naturally reassigned the
+released engine to early-prepare joint-DCC case 2; all other healthy solvers
+continue without restart. The isolated original/shunted forward-pair
+comparison is still queued, so no conditioning repair is inferred yet.
