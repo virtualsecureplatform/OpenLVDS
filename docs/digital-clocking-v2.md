@@ -3025,3 +3025,45 @@ inspect the completed charge curves and strengthen or revise that branch,
 then repeat native geometry/RC and both bias checks before admission.
 The final regression run passes 1,854 tests without skips in
 `build/weighted-bank-placed-power-v15-full-tests.log`.
+
+### Largest fine-cell charge diagnosis and stronger native transmission gate
+
+`diagnose_weighted_fine_charge_v2.py` binds the completed guarded DATA=1.8 V
+case from `weighted_fine_control_v3/f276c77a9801f293`, validates its complete
+raw/deck hashes and independently repeats the original measurement.
+Receipt `weighted_fine_charge_diagnosis_v2/cc501aa4c8cf3fa5` reproduces only
+the two bit-4 settling failures (codes 31 and 16), while terminal screening
+passes. Every one of the thirteen resistor-connected CAP nodes is observed.
+The minimum plate voltage is 1.573948 V at 1.5 ns after selection and
+1.716844 V at 1.9 ns. All plate nodes reach the unchanged high-state limit
+at 1.5955 ns after either selection. The control-driver error is about
+1.57 mV in the original settled window. This is evidence of continued
+charging after the 1.5 ns deadline, not evidence of a permanent voltage
+ceiling. It does not itself prove a repair.
+
+`weighted_fine_repair_v2.py` doubles only the bit-4 transmission gate:
+NMOS width 1.68 -> 3.36 um and PMOS width 3.36 -> 6.72 um, retaining
+0.15 um length. The clear NMOS remains 1.68 um wide, and the 8x12 um
+weighted MIM and 2x2 um control shunt are unchanged. The other four fine
+bits are unchanged. No settling window, voltage limit or supply changes.
+Source regression checks verify exactly these two width changes and
+preserve all other devices, connections and primitive parameters.
+
+`build_weighted_fine_repair_v2.py` produces native geometry
+`weighted_fine_repair_physical_v2/cba9bb198826abb7`, with zero Magic DRC
+errors and unique Netgen LVS. It retains the model name and five-port
+interface inside a separate immutable physical artifact; no earlier
+source, GDS or RC file is overwritten. The PCell dimensions and junction
+geometry are generated from the actual larger devices.
+
+Fresh extraction `weighted_fine_repair_rc_v2/84611c007287da47` contains
+443 resistors and 64 capacitors. Exact protected-node reduction retains
+368 resistors. Independent receipt
+`weighted_fine_repair_rc_verification_v2/85ccacc712f50848` verifies raw and
+reduced passivity, native mask/source/interface identity and fresh strict
+LVS. The actual three-MOS/two-MIM topology is preserved, including native
+junction areas/perimeters; the old small-device parasitics are not scaled
+or reused for the larger transmission gate. These are geometry and RC
+proofs only. New settling, terminal-voltage and whole-bank timing results
+remain required. `make test-full` passes 1,856 tests without skips in
+`build/weighted-fine-repair-v2-full-tests.log`.
