@@ -6640,3 +6640,54 @@ and two narrowed-quantum tests are included. Actual compact native DRC/LVS,
 mask equality, measured junction/RC checks and independent passive witnesses
 supply the physical evidence described above; software tests alone do not
 admit electrical timing or the full PHY.
+
+
+### Bank model with measured fine-cell local RC (v90/v91)
+
+`moscap_component_rc_bank_v90.py` inserts the actual v87 corrected fine-cell
+RC into all 31 `selected` loads before the existing final inverter. Native
+assembly preflight succeeds for all three physical widths with 1,013 MOS,
+37 MIMs, 133 programming-gate probes and 86 root-control observations.
+Every original other-component definition and every measured fine-cell
+body statement remain byte-identical; only bank/unit wrapper identities
+change. No new buffer or guessed ideal capacitor is inserted.
+
+Programming-gate probes are rebuilt from the new fine cell's actual
+transistor names and R/C-separated gate terminals. The old CLR instance
+number can now denote a gate-cap MOS, so copying the previous probe names
+would incorrectly treat a data gate as a static control. Width alone also
+cannot distinguish a 0.84 um PMOS gate capacitor from the switch PMOS.
+V90 instead identifies the three switch roles from the single cell's
+wire-collapsed gate/body/D-S connectivity, then locates their true gate
+nodes in every raw hierarchy instance. It preserves all 40 TG probes and
+regenerates all 93 fine probes with the same control/kind coverage.
+
+RC alias collapse is deliberately scoped to one fine-cell definition.
+Local node names in different library subcircuits are separate namespaces;
+collapsing the entire library as one flat list could join unrelated nets.
+Five tests cover native instance renumbering, raw gate aliases, repeated
+local node names in unrelated cells, incorrect guard or capacitor-control
+wiring, and refusal to transfer measured RC between capacitor widths.
+
+`moscap_component_rc_bank_v91/59dc8297cd482cdb` contains the 0.84 um
+zero/fine31/first-coarse pilot. It binds complete original-component and
+v87 geometry/RC evidence, all original/corrected files and tool/numeric
+runtime identities. The model, device/gate map and fixtures regenerate
+exactly before dispatch. The full 20 ns, two-pulse SS/40 C fixture retains
+1.8 V, 100 ps input slew and 20 fF load. Measurements keep every MOS terminal
+pair, native control settling, repeated pulses, <=250 ps output slew,
+positive zero-code fast-quarter headroom and both coarse overlaps.
+
+The service `openlvds-moscap-component-rc-bank-v91` uses at most two workers
+and the unchanged six-engine dispatcher/priority/aging rules. Its zero case
+is verified running; its second worker waits for an available slot. Existing
+healthy solvers are retained. This pilot quantifies local fine-cell RC's
+impact, not whole-bank/common-route or all-PVT timing. All v91 electrical
+and PHY qualification flags remain false.
+
+The intermediate-width v89 task1 (0.76 um, fine31) has completed with
+repeated rise/fall delays **585.976462/617.142630 ps** and maximum output
+slew **247.110212 ps**. Native voltage/control/repetition and output-slew
+screens pass. Zero and first-coarse cases remain pending, so there is no
+complete overlap or candidate-admission result yet. That prototype does
+not contain the newly measured local fine-cell RC.
