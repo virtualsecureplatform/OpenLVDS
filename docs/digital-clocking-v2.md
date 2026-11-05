@@ -6727,3 +6727,60 @@ values are retained in `build/fine-routing-preflight/cap_bus_comparison.json`.
 Both complete original and corrected extraction artifacts remain intact.
 This qualification applies to the isolated 0.84 um cell, not the whole bank,
 common route, clock chain, all-PVT code map or PHY.
+
+
+### Matched short-route pilot and stage attribution (v94-v96)
+
+`short_cap_bus_bank_v94.py` binds the v93 short-route RC receipt to the
+unchanged v90 bank graph. It rejects the old v87 route as a parent.
+`short_cap_bus_bank_v95/2a3bfe1d4751b249` prepares zero/fine31/first-coarse
+SS/40 C cases with the same stimulus, model dimensions, 1,013 MOS,
+133 programming-gate checks and 86 root controls as v91. Only the fine-cell
+local RC routing changes. Its service `openlvds-short-cap-bus-bank-v95`
+uses two workers under the unchanged dispatcher; no prior solver is stopped.
+
+The first preparation stopped before creating an artifact because the
+adapter omitted a Python import. The failed log
+`build/short-cap-bus-bank-v95-prepare.log` is retained. The import was fixed
+while the adapter was unprepared, and the successful preparation is recorded
+in `build/short-cap-bus-bank-v95-prepare-2.log`. No simulation retry or
+replacement of a frozen producer occurred.
+
+All three original-route v91 cases now complete without solver errors.
+The zero repeated rise/fall delays are **593.519200/661.131259 ps**;
+maximum OUT slew is 215.285535 ps, and voltage/control/repeat screens pass.
+The falling zero delay misses the 410 MHz quarter budget. Fine31 gives
+**1063.446625/1460.321635 ps**, maximum OUT slew **395.098036 ps**, and
+rising repeated-pulse difference **101.623783 ps**. Its native voltage
+and control checks pass, but slew and repetition fail. These are real
+component-RC failures, not merely an ideal-width tuning near miss.
+
+`analyze_moscap_bank_stages_v96.py` reads only complete, hash-verified v91
+cases, validates the full 20 ns traces, and reproduces all four measured
+output delays. It selects the saved MOS terminal closest in wire resistance
+to each functional component port; these are representative internal-node
+diagnostics, not exact-boundary timing certificates. Receipts are
+`moscap_stage_analysis_v96/c18fb8908840fbf1` (zero) and
+`moscap_stage_analysis_v96/fcbda6ef2a45d03f` (fine31). Repeated input-falling
+50% crossing delays relative to IN are:
+
+| Representative node | Zero (ps) | Fine31 (ps) |
+| --- | --- | --- |
+| Group inverter input | 68.903005 | 68.923250 |
+| Group inverter output | 209.935751 | 225.624242 |
+| Root TG output | 533.756609 | 1336.292072 |
+| Final inverter input | 536.297791 | 1341.113754 |
+| OUT | 661.131259 | 1460.321635 |
+
+The root-mux interval is **323.820859 ps** at zero and
+**1110.667830 ps** at fine31. It is the largest interval in both, directing
+the next circuit experiment toward root drive. The final inverter is
+already regenerating zero-code OUT to <=250 ps slew; adding another serial
+buffer would not remove the dominant mux delay.
+
+The completed v89 0.76 um zero/fine31/first-coarse prototype points have
+positive overlap **20.649958/10.736333 ps**, zero quarter headroom
+191.690594 ps and all original voltage/control/repeat/output-slew gates
+passing. This is only the original width prototype, whose new local
+routing/junctions are unqualified; it does not supersede the physical-RC
+failure above or qualify a full delay bank.
