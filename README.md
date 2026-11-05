@@ -34,6 +34,9 @@ extracted double/triple coarse-buffer components.
 Canonical measured fine, inverter and stronger-coarse cell views pass layout
 and OpenDB checks. The model with measured group/final inverter wiring maps
 to 179 functional macros; its native inventories and named-pin graph agree.
+Both stronger-coarse balanced placements pass zero DRC and all 351-instance
+connectivity checks, with native mask previews available. Their routing and
+timing admission remain pending.
 Their exploratory 332-instance placement passes zero DRC and fixed-bus
 connectivity checks; whole-bank routing and timing qualification remain open.
 The physical parallel INV8 output master passes native geometry and complete

@@ -103,7 +103,14 @@ measured group/final inverter-pair wiring; both native inventories and all
 173 programming gates are preserved. Its v126 canonical physical graph has
 179 functional macros and matches every named component connection and full
 native model/W/L inventory. These are structural preparations; their native
-timing and bank placement/routing/RC admission remain open. A matched
+timing and routing/native-bank-LVS/RC admission remain open. Both exploratory
+balanced placements now pass zero DRC, all native masks/hierarchy/labels,
+actual 351-instance OpenDB checks and fixed-bus connectivity at
+`balanced_placement_v129/a158104d2fd54d99` (b2) and
+`balanced_placement_v129/f53b50318fc8e365` (b3). Each has 179 functional macros
+and 43 tapped control rows; root outputs remain unrouted. Read-only native
+mask previews are available through `render_balanced_placement_v130.py`.
+A matched
 single-case fine31 diagnostic using those measured inverter gangs is running
 at `measured_gang_fine_v127/36cf5a7471a52929`, after independently remeasuring
 the completed b2 parent point. It uses one dispatcher lease and preserves
@@ -115,12 +122,11 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-The full regression passes **2,121 tests without skips** in 366.669 s
-(`build/measured-gang-bank-v125-full-tests.log`), including the stronger-coarse
-and measured inverter-gang tests. Three subsequently added physical graph
-alias/body/profile/reference tests and two matched-diagnostic fixture/parent
-rejection tests also pass, alongside both actual-model 179-component graph
-and native reference checks. Native architecture experiments
+The full regression passes **2,126 tests without skips** in 387.615 s
+(`build/balanced-placement-v129-full-tests.log`), including physical graph and
+matched-diagnostic tests. Both CAD campaigns also reject injected metal,
+label and duplicated-instance faults; these native layout checks supplement
+the software suite. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
 healthy older solvers and failed results are retained. Remaining timing gates
 must pass before bank/common-RC, dense/update/periodic, all-PVT legal-code

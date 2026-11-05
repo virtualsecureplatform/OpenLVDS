@@ -7379,3 +7379,55 @@ rejection test both pass (`build/measured-gang-fine-v127-tests.log`). Together
 with the three later v126 graph tests, these are five targeted passing tests
 beyond the 2,121-test full regression. Timing results for the new measured
 gang diagnostic and remaining v123 cases are outstanding.
+
+
+### Balanced real-master placement feasibility for both coarse strengths
+
+Both exploratory balanced layouts complete/pass:
+
+| Profile | Placement receipt | Die (um) | Top-level instances |
+| --- | --- | --- | ---: |
+| b2 | `balanced_placement_v129/a158104d2fd54d99` | 482.08 x 130.56 | 351 |
+| b3 | `balanced_placement_v129/f53b50318fc8e365` | 504.62 x 130.56 | 351 |
+
+Each contains **179 functional macros, 86 physical taps and 86 fillers** in
+43 tapped control rows. The wider coarse stages occupy a four-row serpentine
+chain; each leaf group holds two copies per tap, one measured inverter-pair
+macro and two root TGs. Group spacing grows to accommodate those actual
+footprints. Fine/control rows move right as needed, with control rows kept
+on their actual standard-cell site grid. The middle fine cell moves down
+4.25 um while preserving its global public data/control/supply rail heights.
+
+The original, inverter-pair and matched-coarse libraries merge into 17
+canonical masters. The merge verifies every cell's own masks, complete child
+instance/array multiplicities and transformations, and every text/port label
+against its source library. Actual OpenDB pin direction/use/geometry checks
+pass. Added metal, a changed port label and an overlapping duplicate native
+instance are independently rejected for each profile; all six corrupt
+snapshots and their rejection receipts are retained under `negative_controls`.
+
+Actual stored OpenDB connectivity, placement and master sizes are verified.
+Placement/fixed-bus DRC is **zero** for both. Each supply bus connects all
+31 required fine rails; the selected-node bus connects **32 required rails**
+(31 fine NODEs and final inverter input), with no other named terminal
+shorted. The eight root output connections and remaining signal/control/
+supply routes are explicitly pending. These are placement feasibility
+results, not profile selection, bank native LVS, joint RC or electrical/PHY
+admission. Their graphs and native references match all **1,453/1,773 MOS**
+and **42 MIMs** in the measured component models.
+
+`render_balanced_placement_v130.py` provides a read-only native KLayout mask
+preview of a completed snapshot. It verifies the recorded output hashes and
+actual OpenDB boxes before rendering; outputs and rendering receipts go under
+`build/reports/balanced_placement_v130/<placement-hash>/`. Generated previews
+are `a158104d2fd54d99/unrouted_b2.png` and
+`f53b50318fc8e365/unrouted_b3.png`. They depict recorded unrouted geometry,
+not a new qualification. For example:
+
+```sh
+./scripts/env.sh --tools --ngspice env QT_QPA_PLATFORM=offscreen python3   scripts/render_balanced_placement_v130.py   build/diagnostics/balanced_placement_v129/a158104d2fd54d99
+```
+
+Full regression passes **2,126 tests without skips** in **387.615 s**
+(`build/balanced-placement-v129-full-tests.log`). Geometry work leaves every
+running native campaign and its immutable sources/fixtures unchanged.
