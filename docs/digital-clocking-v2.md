@@ -4206,3 +4206,54 @@ The expanded regression passes 1,922 tests in 379.092 s with no skips
 (`build/mux-tree-access-v3-full-tests.log`). The two layer-selection tests added
 after that run started also pass independently. Fresh real-GDS reimport and
 exact-source LVS succeed for both mux cells in the independent receipt above.
+
+### Structural physical view of the complete uniform bank (2026-11-05)
+
+`uniform_tree_netlist_v3.py` exports a distinct physical top
+`openlvds_dcdl_uniform_tree_c16_f32_physical_v3`. It preserves the exact native
+component graph from the bound pulse pilot, with mandatory VPWR/VGND top ports,
+explicit native SC body ties, 18 guarded buffer macros (including the final
+balancing load), 31 fine macros, five mux4 cells and 66 source control cells.
+All 120 components and internal wires have preservation attributes. Instance
+names have a `u_` prefix so source tags such as `input` and `output` remain valid
+Verilog identifiers. Blackboxes declare interfaces only and contain no
+behavioral delay, clock generation or admitted timing models.
+
+`export_uniform_tree_netlist_v3.py` binds the native pilot's immutable manifest,
+component libraries and bank source, validates each native SPICE pin by name,
+then imports the generated Verilog with the pinned Yosys. Context
+`uniform_tree_netlist_v3/11cd16824e8785a8` passes exact native graph checks for
+all 120 components and 39 public ports. The checker rejects missing or merged
+internal nets, altered primitive interfaces, wrong model/pin/direction/body
+connections, unexpected hierarchy and removed preservation attributes.
+
+`verify_uniform_tree_netlist_v3.py` regenerates the physical views and repeats
+the Yosys import. Receipt
+`uniform_tree_netlist_verification_v3/46218d038aded0a4` verifies an identical
+graph and retains eight rejected copies of the actual imported JSON: dropped
+tail load, wrong root select, shorted buffer ground, wrong fine attachment,
+wrong native body tie, lost preservation attribute, merged select wires and
+replacement of a native blackbox. Original native pilot files are untouched.
+
+The default view and native interface declarations are checked in at
+`sky130/v2/openlvds_dcdl_uniform_tree_c16_f32_physical_v3.v` and
+`sky130/v2/uniform_tree_physical_blackboxes_v3.v`. All ten combinations of the
+declared coarse/fine dimensions compile with Icarus; tests also reject native
+SPICE component/wiring loss and missing power/body interfaces. Compilation and
+graph identity establish structural correspondence, not component timing.
+
+Existing guarded-buffer and fine-unit geometry can support a new physical
+frame, but the fine macro's broad raw LEF access still needs explicit routing
+and power-grid treatment. A fresh bank frame, powered-row exclusions, native
+GDS/macro identity checks, DRC/LVS, joint RC and native electrical timing remain
+required. The current electrical pilot must establish base-delay budget and
+sampled coarse/fine coverage before selecting this candidate for a full routed
+bank. Logs are `build/uniform-tree-netlist-v3.log`,
+`build/uniform-tree-netlist-v3-verify.log` and
+`build/uniform-tree-netlist-v3-full-tests.log`. No PHY, ROM or electrical
+qualification gate is opened by this export.
+
+The complete current suite passes 1,928 tests without skips in 372.869 s
+(`build/uniform-tree-netlist-v3-full-tests.log`), including every mux-access
+and structural-view test. The actual Yosys reimport and all eight retained
+graph corruption controls pass in the independent receipt above.

@@ -58,6 +58,14 @@ private-node routing access is not proven. The failed first n-diffusion-only
 label probe remains retained. This is a physical-access result, without mux
 voltage, RC, timing or PHY qualification.
 
+The uniform bank now has a checked structural physical netlist, including
+explicit supply/body ties and the final tap's balancing load. Export
+`uniform_tree_netlist_v3/11cd16824e8785a8` and independent fresh-import receipt
+`uniform_tree_netlist_verification_v3/46218d038aded0a4` preserve all 120 native
+components and reject eight actual imported-graph corruption controls. Checked-in
+Verilog/blackboxes compile for all declared dimensions. This is a placement and
+routing input, without routed geometry, parasitic or electrical admission.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal
