@@ -3948,3 +3948,90 @@ calculation (max minus min equals the maximum of the six absolute terminal
 differences). It must preserve the existing producer and publish a separate
 receipt; it cannot overwrite a live campaign's summaries or bypass the required
 complete two-case gate.
+
+### Completed drive/shunt diagnostics remain failed candidates
+
+`routed_return_drive_v2/9863a48a58472c31` completes both declared 8 ns
+transients without numerical errors. Independent receipt
+`routed_return_drive_verification_v2/a9e90316064fea3a` regenerates the native
+libraries/witnesses and remeasures all raw traces against the exact first-pulse
+baseline. Both candidates pass pulse integrity and distributed-control settling,
+but fail the unchanged 1.95 V terminal limit:
+
+| First-pulse model | Peak terminal difference | Violating MOS | Quarter headroom |
+| --- | ---: | ---: | ---: |
+| Original routed bank | 1.973619 V | 40 | 0.553 ps |
+| Extra native guard pair | 2.018768 V | 48 | 74.176 ps |
+| Extra pair plus source 2x2 MIM | 2.010466 V | 48 | 64.002 ps |
+
+More drive improves delay here but does not repair voltage stress. The small
+extra shunt only partly reduces the larger peak. Neither candidate is selected;
+all electrical/ROM/PHY admission flags stay false. Their complete negative
+results are retained rather than replacing any original model or acceptance
+limit.
+
+### Physical separated-output guard cells and pair
+
+`build_nand2b_separated_output_v3.py` implements the routing candidate as a new
+immutable producer/context. The child Y escape moves from y=2.08 to 5.00 um,
+above the existing VPWR rail at y=3.6 um; B remains at y=1.4 um. Both original
+output-shunt variants retain their exact transistor source, stack-guard MIM,
+output MIM and mirrored body-contact row. Geometry
+`nand2b_separated_output_physical_v3/96544ed14eef87a9` passes zero DRC and
+unique LVS in both variants. Independent source/mask proof
+`nand2b_separated_output_proof_v3/579b90b91171bc01` proves every native child
+mask and placement unchanged, identical source except the root model name, and
+only M2/via2/M3 output routing changes. Only the Y public pin moves.
+
+Fresh child extraction `nand2b_separated_output_rc_v3/9b32d22a45e49dcf`
+and independent RC receipt
+`nand2b_separated_output_rc_verification_v3/240eabc960a062d1` pass native
+flat topology and elementwise passivity with exact positive-resistor reduction.
+The o1 child's extracted B-Y coupling falls from 2.46091 to 0.32118 fF.
+
+`build_nand2b_separated_pair_v3.py` joins two of the new o1 children with the
+original placement and wide shared PG buses. Its Y bus/port is at y=10.00 um,
+above shared VPWR at y=8.6 um, replacing the old Y coordinate of 7.08 um.
+Geometry `nand2b_separated_pair_physical_v3/357ec85ae78da03e` passes zero DRC
+and unique LVS. Independent proof
+`nand2b_separated_pair_proof_v3/50d08b62ede20dfe` checks the exact two-child
+placement, unchanged native masks and source, and only the permitted child/
+pair routing layers. All other public pin locations remain unchanged.
+
+Fresh pair RC `nand2b_separated_pair_rc_v3/7ae985e7b379500c` has 988 positive
+resistors and 292 nonnegative parasitic capacitors; exact degree-at-most-four
+star-mesh reduction retains 791 resistors. Independent receipt
+`nand2b_separated_pair_rc_verification_v3/56a111f6ff565e9e` repeats strict flat
+LVS, native source/GDS/interface identity and raw/reduced passivity checks. Its
+bound consumer refuses changed physical/native-proof inputs.
+
+`compare_nand2b_separated_coupling_v3.py` creates
+`nand2b_separated_pair_coupling_v3/e3a4ac127b23f215` from the exact old and
+new independently verified receipts. It groups actual R-connected nodes without
+altering either circuit, checks native primitive counts and identical coupling
+summaries before/after resistor reduction, and handles the native inline-comment
+syntax. Both pairs contain exactly 18 NFET, 18 high-threshold PFET and four MIM
+primitives. Extracted B-Y coupling drops **10.5944 -> 0.67189 fF (93.658%)**.
+Explicit parasitic capacitance incident on the Y net drops **48.5484 ->
+33.89315 fF**. These sums exclude intrinsic transistor/MIM-model capacitance;
+they do not assert a measured delay or voltage improvement.
+
+Negative-control GDS copies in `build/nand2b-separated-negative-controls-v3`
+deliberately alter a native poly polygon or move a guarded child. The unchanged
+proof functions reject each for the expected mask/placement violation. The
+three new software tests check distributed-node coupling, native-source edits,
+inline comments, pin shorts and nonpassive/unknown elements. The final complete
+suite passes 1,905 tests without skips in
+`build/nand2b-separated-pair-v3-final-full-tests.log`.
+
+This is a real routed/mask-verified reduction in extracted coupling, not yet an
+electrical repair certificate. Next, compare old/new native pair RC in a matched
+first-pulse component-bank experiment, preserving all sixteen coarse choices
+and the repaired five-bit fine bank. The existing component prototype is
+`weighted_direct_v4/c466d6eb048d9e82`; any adapter must explicitly bind the new
+pair's ordered ports/model name and regenerate all 2,495 MOS witnesses. Its
+ideal shared wiring cannot substitute for a new whole-bank route. Changed Y
+pin coordinates must propagate into new macro frames/access views and a fresh
+whole-bank route/DRC/LVS/RC flow before complete-code, periodic-clock and all-PVT
+qualification. The retained full-bank model and its running producer remain
+unchanged and electrically unqualified.

@@ -21,10 +21,13 @@ model to its sparse timing pilot. A bounded live prefix already exposes 40
 terminal-limit violations in the return-mux region (observed peak 1.97362 V
 against 1.95 V), with very little conservative zero-code quarter-period
 headroom. A reproducible bounded-prefix diagnosis confirms 32 downstream gate
-stresses and eight return-device drain/source stresses. Two matched native
-extra-drive/optional-MIM diagnostics are queued under the unchanged dispatcher.
-Their new interconnections are ideal diagnostic connections; they cannot admit
-a physical repair. Original coarse 0 has now completed 60 ns numerically and
+stresses and eight return-device drain/source stresses. Both completed native
+extra-drive/optional-MIM diagnostics fail voltage stress (peaks 2.01877/2.01047 V),
+so neither is selected. A new separated-output child/pair passes DRC/LVS,
+independent native-mask/source/placement checks and fresh passive-RC verification.
+Pair B-Y coupling falls from 10.5944 to 0.67189 fF (93.7%) without resizing
+transistors or MIMs. Native transient voltage/delay and a newly routed whole
+bank are still required before this candidate can qualify as a repair. Original coarse 0 has now completed 60 ns numerically and
 awaits producer measurements; coarse 1 is running. Complete independent
 timing/voltage verification and repair are still required. These results do not yet qualify
 delay range, legal-code ROMs, all-PVT clock timing
