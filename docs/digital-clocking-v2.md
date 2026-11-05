@@ -5306,3 +5306,50 @@ native guard dimensions/connections, unchanged MOS geometry/body ties, exact
 driver selection and RC retention, matched fixture includes, and refusal to
 promote zero-code results to complete sparse or PHY admission. Passing the
 software suite does not qualify the running native experiments.
+
+### Smaller-guard zero gates complete: both2 passes, fine2 fails timing
+
+Both cases in `nlvt_guard2_bank_v36/4421df67843ca5bf` complete with zero
+numerical errors. Independent receipt
+`nlvt_guard2_bank_verification_v36/24018f4e84f767d6` regenerates both native
+variants and remeasures their complete waveforms.
+
+| Profile | Second-pulse rise / fall (ps) | Worst-pulse fast-quarter headroom (ps) | Maximum native span (V) | Zero gate |
+| --- | ---: | ---: | ---: | --- |
+| fine2 | 520.228481 / 623.216972 | -13.461318 | 1.869810344 | timing fails |
+| both2 | 511.218245 / 605.469721 | +4.285820 | 1.874598289 | passes |
+
+Both pass the unchanged terminal-voltage, 93 fine-gate, 40 actual TG-gate,
+public-control and repeated-pulse screens. For both2 the repeated rise/fall
+differences are 0.000196165/0.000556907 ps. Only both2 may proceed to the next
+sparse range screen. Its 4.29 ps headroom is small and does not establish
+routed-bank, periodic-duty, PVT or PHY feasibility. Fine2 and the earlier
+22.94 ps deficit remain retained timing failures.
+
+### Physical balancing-tail MIM with routable public pins
+
+The prototype's bare native 2x2 balancing MIM now also has a physical cell,
+`openlvds_tail_mim2_v39`, in `tail_mim2_v39/8b861719a27becb7`. It retains the
+exact generated native capacitor masks and placement, and escapes on M4 to
+public M3 A/VGND pins below the capacitor. The first layout,
+`tail_mim2_v38/db8d04984bfeac46`, passes LVS but fails capm.11: unrelated M3
+must be at least 1.34 um from the MIM. It is preserved. V39 moves both M3 pads
+from y=-2 to y=-3 um and passes zero DRC errors and strict native LVS, retaining
+one native MIM with W=L=2 and exactly the intended two terminals.
+
+Independent fresh-GDS receipt
+`tail_mim2_verification_v40b/61f4fec25e77b5a7` verifies native masks/placement,
+all routed mask regions, native dimensions/terminals, zero DRC errors, strict
+LVS, passive raw/reduced RC and byte-identical exact reduction. Wrong native
+MIM dimensions and shorted-terminal negative controls are rejected. The cell
+has four raw / three reduced resistors and six explicit capacitors. The first
+independent wrapper (`tail_mim2_verification_v40/387ecd82b9c7fcce`) stopped on
+a port-metadata lookup error before GDS reimport; the corrected verifier is a
+new file/context, and the failed run is retained.
+
+This tail cell is a physical input for the future whole-bank implementation.
+Its RC is deliberately not substituted into the sparse continuation: that
+experiment must retain the exact v36 circuit to reuse its measured zero
+waveform. Actual common/control/tail wiring still needs joint extraction and
+new native qualification; this isolated component proof transfers no bank
+voltage/timing or PHY admission.

@@ -5,23 +5,22 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current architecture work (2026-11-05):
 
-The actual-component-RC low-Vt bank has now completed its zero-code SS/40 C
-native test. Independent receipt
-`actual_nlvt_bank_verification_v32/9a84e18716c8a139` confirms 532.582/632.696 ps
-rising/falling delay and a **22.940 ps fast-quarter deficit**. Terminal voltage,
-all fine/TG/public controls and repeatability pass, with maximum native span
-1.869812 V against 1.95 V. The stacked TG and low-Vt driver/buffer physical
-proofs remain valid, but the bank cannot advance to range admission.
+The smaller-guard bank has an independently verified zero-code pass at SS/40 C:
+`both2` measures 511.218/605.470 ps rising/falling delay, with **4.286 ps**
+worst-pulse fast-quarter headroom and maximum native span 1.874598 V against
+1.95 V. All native controls and repeatability pass. Receipt
+`nlvt_guard2_bank_verification_v36/24018f4e84f767d6` retains fine2 as a timing
+failure (-13.461 ps); the preceding actual-component bank remains a timing
+failure (-22.940 ps). Both2 advances only to sparse range screening. Routed-bank,
+periodic clock, all-PVT and PHY feasibility remain unproven.
 
-A new low-Vt INV8 with a native 2x2 output MIM guard passes independent
-fresh-GDS DRC/LVS, unchanged MOS/body masks and placements, native junction
-checks and exact passive-RC reduction
-(`nlvt_guard2_verification_v35/dd63e937c9f7ef52`). Two matched bank experiments
-are running in `nlvt_guard2_bank_v36/4421df67843ca5bf`, testing that smaller
-guard on the fine driver alone or both data drivers; an independent waveform
-watcher is active. The PHY remains unqualified. The full pinned regression passes **2,003 tests
-without skips**, including the new physical-component and bank-integration
-checks. Native timing and voltage for the smaller guard remain unqualified.
+A physical 2x2 balancing-tail MIM now passes independent fresh-GDS DRC/LVS,
+exact native/routed masks, native dimensions and passive exact-RC reduction
+(`tail_mim2_verification_v40b/61f4fec25e77b5a7`). Its failed first M3-pad spacing
+layout and initial verifier software error are retained. This component is for
+future physical-bank assembly; its RC is not transferred into the existing
+native reference. The last committed full pinned regression passed 2,003
+tests; the added tail and sparse-continuation checks are in a fresh full run.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew
