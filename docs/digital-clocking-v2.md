@@ -3386,3 +3386,30 @@ recovery, not new counter timing evidence.
 `make test-full` passes 1,879 tests without skips in
 `build/weighted-bank-routed-followup-v2-full-tests.log`, including exact-owner,
 missing-state, failed/incomplete coverage and receipt ambiguity checks.
+
+### Completed post-pulse ITL4 comparison: identical terminal failure
+
+The SS/40 C minimum-code matched iteration case finishes with a numerical
+abort, so both cases in `dcdl_iterations_v2/a994d04ddcc0bdbb` are now terminal
+failures. `diagnose_dcdl_iterations_v3.py` extends the earlier pre-input-only
+diagnostic to the explicitly supported interval after the first input fall
+and before the second input rise. It regenerates both decks and solver
+translations, verifies every terminal output hash and preserves all failed
+artifacts. Printed abort times are compared at the precision actually emitted
+by the solver; binary record/payload comparisons remain exact.
+
+Receipt `dcdl_iteration_failure_v3/89668a2c13e79181` proves that the default
+and ITL4=100 case-0 waveforms contain exactly the same 36,611 records across
+2,671 variables, ending at 8.98871830810505 ns. Their binary payload SHA256 is
+`025b959c221e4aaf1db8ce217baa08718d5465e85f148b069057706355059e78`.
+Both report time 8.98872 ns, timestep 2.5e-24 s and `bin#branch`. Thus increasing
+the iteration allowance does not resolve this retained post-first-pulse
+failure, in addition to the earlier identical pre-input case-2 failure.
+The reported source branch is not established as the circuit root cause.
+Elapsed wall times of these individual runs do not establish a speed comparison.
+
+These are incomplete 20 ns experiments; no complete pulse/timing, voltage
+safety, legal-code or PHY gate is passed. This negative result does not alter
+the separate guarded repaired-bank source, prepared routed timing pilot,
+settling prerequisite or healthy solvers. The two additional diagnostic tests
+pass in `build/dcdl-iteration-inter-pulse-failure-v3-final-tests.log`.
