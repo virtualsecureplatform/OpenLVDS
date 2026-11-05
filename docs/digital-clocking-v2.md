@@ -3645,3 +3645,47 @@ prepare/public-release margins are 489.848/683.660 ps. These results support
 the drive-repair hypothesis in this fixture only: shared inter-driver wires
 are ideal, and whole-controller routed RC, joint DCC first events, all-PVT
 qualification and hardware warmup are still required.
+
+### RX deskew update transaction with explicit physical settling
+
+`openlvds_rx_deskew_transaction_v2` implements the missing per-code protocol
+between the management-domain scanner and the source-clock deskew backend.
+An accepted request holds the real DCC/startup path, waits for old clock
+readiness to drop, and transfers code plus a new generation through the atomic
+mailbox. Publication occurs only on a source-clock edge while the backend
+permits updates and the hold has synchronized. Digital capture alone cannot
+complete the transaction: the backend must report an unsettled level at or
+after that physical commit, then assert settled with the matching sequence.
+A low observed only before publication cannot refresh a stale matching high.
+The tagged settling reply crosses back to management before the hold releases.
+The existing startup controller must then provide fresh readiness after both
+actual delivered clocks complete at least 256 warmup cycles.
+
+One deadline spans hold, transport, physical settling and warmup. Source loss,
+startup failure and timeout latch failure and hold the clocks. Model admission
+defaults false. Enable-off cancels transport while retaining the last physical
+code; only global reset clears that word. Canceled generations are not reused
+on the next enable. The module emits no generated clocks and is not yet wired
+into a production RX wrapper. In particular, the old training wrapper's digital
+mailbox acknowledgement is not upgraded merely by adding this module. A new
+RX coordinator still needs the single overall startup/training deadline,
+controlled-update versus unexpected clock-loss handling, and actual backend
+settling integration.
+
+The composed bench `tb_rx_deskew_transaction_v2` uses the existing startup
+controller and clock-hold DCC topology with explicit test-only cell delays.
+Twelve scenarios cover consecutive safe updates, withheld update permission,
+wrong/stale settling tags, missing settling, a low seen only before commit,
+source loss, missing model admission, stale clock readiness and cancellation
+both before and after physical publication. Each completion independently
+checks both delivered-edge counts, physical acknowledgement and code identity.
+These are control/CDC protocol checks, not SKY130 electrical timing evidence.
+
+Final verification passes all 1,892 software tests without skips
+(`build/rx-deskew-transaction-v2-final-full-tests.log`). Yosys process/optimization/
+check reports zero problems with admission enabled and with the default closed
+(`build/rx-deskew-transaction-v2-final-yosys-admitted.log` and `-default.log`).
+A separate negative-control run deliberately restores the precommit-only low
+guard in a temporary source copy; the unchanged bench rejects its stale-high
+completion (`build/rx-deskew-transaction-v2-negative-guard.log`). No retained
+producer, live solver, clock-duty descriptor or electrical admission gate changes.

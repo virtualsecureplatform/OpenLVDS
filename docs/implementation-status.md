@@ -92,6 +92,14 @@ delays; it checks 64 confirmations, both warmups and an independently generated
 432-pair training/end-marker/payload stream. Stage-error, deadline and missing
 admission cases pass. This does not qualify physical delay or clock timing.
 
+`openlvds_rx_deskew_transaction_v2` now holds the real startup path for each
+code update, requires safe source-clock publication plus fresh matching physical
+settling, and waits for both actual delivered-clock warmups before completion.
+Cancellation retains the physical code and flushes pending transport. Twelve
+composed protocol scenarios pass using actual startup/DCC control with test-only
+cell delays. Model admission defaults false; full RX wrapper integration and
+native backend settling qualification remain open.
+
 The passive native clock-component checkpoint passes all 1,706 tests
 without skips using the `make test-full` environment; log:
 `build/passive-native-clock-components-v3-full-tests.log`. Yosys process/check with both admissions
