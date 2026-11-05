@@ -3616,3 +3616,32 @@ This diagnoses the intended guarded DC-bias repair; it is not a four-case
 campaign receipt. The two source-driver comparisons remain queued, and the
 original independent four-case settling gate and routed-bank follow-up are
 unchanged. No active-clock, whole-bank delay/ROM, all-PVT or PHY admission follows.
+
+### Completed repaired fine-control gate and two-buffer pilot (2026-11-05)
+
+`weighted_fine_control_v4/bf80210dbae10cb1` completes all four declared
+12 ns cases without numerical errors. Independent receipt
+`weighted_fine_control_verification_v4/598d971bfc6c62af` verifies every raw
+waveform. Both guarded DATA biases pass settling and the 1.95 V terminal bound
+(peak 1.895252 V). The ideal-source comparisons remain negative controls:
+both exceed the terminal limit (peak 2.090524 V), and the high-DATA source
+case also fails settling. The existing gate requires all four complete traces
+and both guarded cases to pass; it does not require the ideal-source comparison
+to be electrically safe. No gate was relaxed. Follow-up
+`weighted_routed_followup_v2/dc345835ff7729e3` binds this exact independent
+receipt and has advanced `weighted_routed_v2/9bbfa0849b136d25` to its original
+sparse timing pilot under the unchanged shared dispatcher. No routed timing
+pass or code-ROM admission is available yet.
+
+`static_phase_clock_drive_v2/5b5e068d257c374b` also completes all four
+26 ns cases. Independent receipt
+`static_phase_clock_drive_verification_v2/b2ffb8be4df997f4` regenerates and
+remeasures all new and matched single-buffer traces. The two-buffer component
+model passes both approved 40%/60% duty endpoints and both stopped-clock levels
+at SS/40 C, 410 MHz. Minimum clock-low voltage margin is 0.171854 V at 40%
+and 0.185960 V at 60%; worst native terminal difference is 1.945490 V. The
+previous single-buffer 60% cases remain failed in the comparison. The minimum
+prepare/public-release margins are 489.848/683.660 ps. These results support
+the drive-repair hypothesis in this fixture only: shared inter-driver wires
+are ideal, and whole-controller routed RC, joint DCC first events, all-PVT
+qualification and hardware warmup are still required.

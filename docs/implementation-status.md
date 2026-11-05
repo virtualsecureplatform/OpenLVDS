@@ -14,15 +14,19 @@ the new physical clock islands and training integration qualify.
 
 The repaired weighted delay bank now passes whole-bank GDS physical checks,
 fresh passive RC extraction and independent strict flat native-device LVS.
-The complete routed model has sparse timing decks prepared, with execution
-held until the matched physical fine-control settling campaign passes. These
+The matched four-case physical fine-control campaign is complete. Independent
+remeasurement passes both guarded DATA biases and retains the ideal-source
+comparisons as failures. The unchanged gate has admitted the complete routed
+model to its sparse timing pilot; no routed timing result is available yet. These
 results do not yet qualify delay range, legal-code ROMs, all-PVT clock timing
 or the complete link. See the [routed-bank timing checkpoint](digital-clocking-v2.md#staged-native-timing-using-complete-routed-bank-rc).
 
-Native phase-release testing exposes a 60% duty clock-low margin regression.
-A matched two-buffer drive experiment is queued, and a physical parallel-buffer
-macro already passes DRC/LVS and independent fresh passive-RC verification.
-The proposed drive repair is not yet electrically proven; see the
+The matched two-buffer component experiment fixes the observed 60% duty
+clock-low margin regression in all four SS/40 C cases. Independent remeasurement
+passes phase ordering, low-level arming, stopped-clock clearing and terminal
+stress. Shared inter-driver wiring is ideal in this pilot. A physical parallel-buffer
+macro passes DRC/LVS and independent fresh passive-RC verification, but its
+routed timing and joint DCC first-event behavior remain unqualified; see the
 [clock-drive experiment](digital-clocking-v2.md#matched-native-clock-drive-experiment-for-the-60-low-phase-regression).
 
 Implemented v2 foundations include the machine-readable contract, conservative
