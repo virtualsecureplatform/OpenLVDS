@@ -6823,3 +6823,47 @@ bank integration checkpoint passes 2,090 tests in 440.541 s
 (`build/moscap-component-rc-bank-v91-full-tests.log`). Actual v92/v93 native
 geometry, mask, junction and RC checks additionally exercise the routing
 revision; software regression alone is not physical evidence.
+
+
+### Parallel final-inverter experiment (v100/v101)
+
+The completed root-parallel fine31 point is electrically safe and repeats,
+but still exceeds the unchanged 250 ps interface domain at 286.136079 ps.
+V100 adds one complete copy of the existing qualified final-inverter cell
+with exactly the same input, output and supply connections. This increases
+drive within the existing inversion stage; it adds no serial buffer stage.
+Both extracted cell models, including both 2x2 output-shunt MIMs, remain
+present. Removing the added call and normalizing the identity must restore
+the entire original v97 root-parallel bank byte for byte.
+
+The model has **1,037 MOS and 38 MIMs**. All 16 added inverter MOS devices
+are included in native terminal-pair stress observations. Programming-gate
+coverage remains **141**, with 86 root-control observations: the added
+inverter's input is data, not a static programming control. Three new tests
+cover identical input/output/supply connections, rejection of serial or
+wrong-supply wiring, and duplicate application. Actual full-model native
+preflight confirms these counts and the complete observation map.
+
+`parallel_final_bank_v101/23efdf678be2ab7e` prepares the same three
+zero/fine31/first-coarse SS/40 C cases. It independently remeasures the
+completed v98 fine31 raw trace, requiring voltage/control/repetition to pass
+and output slew to fail before preparing the extra-drive prototype. It
+retains the v96 root-loading cause, v93 fine-cell RC, original component and
+independent buffer-latency evidence. Root and final-stage gang/common wiring
+remain unextracted; no whole-bank/electrical/PHY qualification is admitted.
+
+The service `openlvds-parallel-final-bank-v101` uses at most two workers and
+the unchanged six-engine dispatcher with normal priority/aging. All healthy
+older solvers and their results are retained. Its first generator preflight
+stopped before writing the producer file; the associated missing-file log
+`build/parallel-final-bank-v101-prepare.log` is preserved. The successful
+preparation is in `build/parallel-final-bank-v101-prepare-2.log`; no prepared
+artifact or native simulation was replaced.
+
+The full regression after v100/v101 passes **2,096 tests without skips**
+in 387.221 s (`build/parallel-final-bank-v101-full-tests.log`). Pending
+native results must still pass both zero-quarter edges, <=250 ps output
+slew, repeated pulses, positive coarse overlap and every voltage/control
+check. Full bank geometry/common RC, dense/update/periodic duty endpoints,
+all-PVT legal codes, clock-chain integration and the complete LVDS PHY
+remain required.
