@@ -100,6 +100,16 @@ composed protocol scenarios pass using actual startup/DCC control with test-only
 cell delays. Model admission defaults false; full RX wrapper integration and
 native backend settling qualification remain open.
 
+`openlvds_rx_training_v3` now composes the real scanner, physical deskew
+transaction and DCC startup under one overall deadline, including DLL lock wait
+and final-code revalidation. Intentional update holds are distinguished from
+unexpected clock loss, pending capture state is canceled, and payload code
+freezes. Fifteen composed scenarios and 480 delivered-phase loss cases at
+390/400/410 MHz pass; the latter preserve the eight-management-cycle bound.
+`openlvds_clock_startup_v3` exposes the existing loss decode to avoid an extra
+status-register delay. The eye/settling backend and cell delays are synthetic;
+full DLL-controller/RX-wrapper wiring and native qualification remain open.
+
 The passive native clock-component checkpoint passes all 1,706 tests
 without skips using the `make test-full` environment; log:
 `build/passive-native-clock-components-v3-full-tests.log`. Yosys process/check with both admissions

@@ -3689,3 +3689,70 @@ A separate negative-control run deliberately restores the precommit-only low
 guard in a temporary source copy; the unchanged bench rejects its stale-high
 completion (`build/rx-deskew-transaction-v2-negative-guard.log`). No retained
 producer, live solver, clock-duty descriptor or electrical admission gate changes.
+
+### RX training now composes physical update transactions and real startup
+
+`openlvds_rx_training_v3` replaces the old wrapper's digital-capture-only code
+acknowledgement with `openlvds_rx_deskew_transaction_v2`. Each scanner request
+holds both actual DCC reset paths, waits for a safe source-domain physical code
+commit, requires a fresh matching physical-settle acknowledgement, and then
+waits for both actual delivered clocks to complete 256 new cycles. Only then
+can the scanner start its four-frame measurement. The forwarded source clock
+remains independently monitored during intentional capture-clock holds; an
+intentional hold is not reported as a missing delivered clock. Unexpected
+clock loss still invalidates readiness and payload.
+
+The wrapper emits one `dll_train` pulse and `dll_enable` for an external DLL
+controller. Its single management deadline begins at the request edge and
+covers DLL lock wait, initial warmup, every code transaction/measurement, eye
+selection and final-code reapplication/revalidation. Successful intermediate
+codes do not renew this deadline. The existing scanner still enforces the
+physical-delay interval/250 ps training-clearance rules. The selected code
+freezes during payload. This wrapper does not itself instantiate the DLL
+calibration/measurement controller or qualify a physical delay table; that
+connection remains required in the full RX control wrapper.
+
+Capture command/result mailboxes and training/payload state reset whenever
+capture stops, including retraining and intentional updates. Command generations
+persist across cancellation; stale results cannot qualify the new code. The
+physical deskew word retains its last value during cancellation, while each
+new physical request receives a new transaction generation. Held training
+levels cannot retrigger acquisition. ROM, deskew and DCC admissions independently
+default false; invalid dimensions/deadlines and revoked tables fail closed.
+
+Integration testing found that forwarding the registered startup-failure status
+through a second sticky status register reports some clock losses after nine
+management cycles. `openlvds_clock_startup_v3` preserves the v2 startup/reset/
+warmup implementation and additionally exposes its existing combinational
+clock-loss decode. The enclosing RX coordinator consumes that decode directly,
+reserving one management edge within the original eight-cycle budget. No extra
+heartbeat counter, reduced warmup count or relaxed loss limit is introduced.
+The v2 startup and legacy RX wrapper remain unchanged.
+
+`tb_rx_training_v3` composes the actual scanner, transaction, startup, atomic
+mailboxes and training TX/RX with clock-hold DCC topology and explicit test-only
+cell delays. Fifteen scenarios check complete 101-code scans, code 55 selection
+with 349 ps clearance in the synthetic eye fixture, final revalidation, 64
+payload pairs after the end marker, frozen code, intentional holds, stale/missing
+settling, retraining cancellation, independent admissions, source/DLL/table
+failures and one overall timeout spanning multiple successful updates. The
+capture command checks physical settling and both delivered-edge counts at
+every code. The final-revalidation and no-eye cases remain required failures.
+
+`tb_rx_clock_loss_v3` stops either actual delivered phase at 80 offsets at each
+of 390/400/410 MHz while initial warmup is incomplete: all 480 cases must report
+sticky failure within eight management cycles with readiness, payload and DCC
+resets invalid. The tests force no scan result, warmup counter or status signal.
+The deliberately delayed-status negative control fails at nine cycles, as
+retained in `build/rx-training-v3-delayed-status-negative.log`. All fifteen
+integration scenarios and all 480 loss cases pass in
+`build/rx-training-v3-targeted-tests.log`. These are protocol results using a
+synthetic eye and settling backend, not native electrical timing certificates.
+
+The complete software suite passes 1,894 tests without skips in
+`build/rx-training-v3-full-tests.log`. Yosys process/optimization/check reports
+zero problems at the production 13-bit/8,192-code dimensions with admissions
+enabled and with default admissions closed (`build/rx-training-v3-admitted-synthesis.log`
+and `build/rx-training-v3-default-synthesis.log`). These checks do not establish
+mapped area, physical timing or electrical admission. The full routed-bank
+SPICE pilot remains live; no retained native producer or gate was changed.
