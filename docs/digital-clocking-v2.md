@@ -5110,3 +5110,37 @@ fails. Logs: `build/tg-component-bank-v23-prepare.log`,
 `build/nlvt-data-path-v25-prepare.log`, `build/nlvt-data-path-v25-pilot.log` and
 `build/nlvt-data-path-v25-verification.log` and
 `build/nlvt-data-path-v25-available.log`.
+
+### Stacked native low-Vt TG: physical routing repair
+
+The stacked TG is now a physical candidate rather than only a model-flavor
+substitution. Producer `build_stacked_nlvt_tg_v27.py`, context
+`stacked_nlvt_tg_v27/b246982d731cb0f7`, places an NMOS-LVT W1.68/L0.15
+below a mirrored regular PMOS W3.36/L0.15, separated by 4.8 um. Short local
+M1 data connections replace the previous side-by-side routing. Both native
+junction geometries and all six public ports are retained. The first attempt,
+`stacked_nlvt_tg_v26/562e0fe96581bb5f`, passes LVS but fails eight M1 spacing
+checks at the native D/S metal. It is preserved unchanged. The v27 data rails
+move from +/-0.5 to +/-0.6 um, clearing those notches.
+
+Independent fresh-GDS receipt
+`stacked_nlvt_tg_verification_v28/d4502a53e9953cf4` passes zero DRC errors,
+strict native LVS, exact primitive masks and both placements, raw/reduced RC
+passivity, and byte-identical regeneration of the exact RC reduction. It also
+rejects wrong-gate and changed-junction negative controls. The component has
+215 raw resistors, 192 reduced resistors and 57 explicit capacitors.
+
+| Explicit wiring capacitance upper tally | Previous side-by-side TG (fF) | Stacked TG (fF) |
+| --- | ---: | ---: |
+| A | 5.60281 | 4.19082 |
+| Z | 4.36265 | 3.91223 |
+| A-Z coupling | 1.20853 | 0.91526 |
+
+These diagnostic tallies exclude native MOS capacitance and count coupling in
+full at both connected ports; they do not replace the distributed RC network
+in simulation. Lower wiring loading is established, but recovered bank timing
+is not. The existing low-Vt diagnostic still misses the fast-quarter gate by
+37.418 ps and uses borrowed RC for changed data-component implants. Actual
+low-Vt inverter/buffer layouts and fresh extraction are the next prerequisite.
+Input duty remains 40%/60%, nominal 50%, at 390/400/410 MHz, fixed supplies
+and the approved 0/25/40 C temperatures. No electrical or PHY gate is waived.
