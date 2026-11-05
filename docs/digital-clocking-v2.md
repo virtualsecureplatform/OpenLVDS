@@ -6251,3 +6251,151 @@ admission or termination/restart of a healthy legacy solver is introduced.
 Full native repair comparisons, fresh physical implementation, common legal
 codes over all fifteen PVT points, clock-chain integration and the complete
 LVDS link remain unfinished.
+
+
+### Complete prototype remeasurement and physical output-cell models
+
+`verify_repair_prototypes_v71.py` accepts only a complete six-case split
+or buffered campaign. It verifies every translated deck, terminal log,
+binary sample count, full 20 ns trace, voltage/control result and producer
+comparison, then independently regenerates both profile comparisons. It
+also deliberately substitutes clock data for a static control and applies
+incorrect MOS voltage limits. Complete independent receipts now exist for both six-case campaigns:
+`repair_prototype_verification_v71/377eb2093d2bf001` (buffered) and
+`repair_prototype_verification_v71/49688934409e00df` (split). Both reproduce
+every producer result exactly and reject both deliberate faults. They do
+not claim that added/moved geometry is already qualified.
+
+```sh
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/verify_repair_prototypes_v71.py \
+  /work/OpenLVDS/build/diagnostics/split_fine_component_v69/2c940e2825524d42 --kind split
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/verify_repair_prototypes_v71.py \
+  /work/OpenLVDS/build/diagnostics/buffered_bank_prototype_v70/6728d070d7815da5 --kind buffered
+```
+
+Completed buf1 prototype cases 0 and 2 are numerically successful and retain
+all native stress/control/repeat checks. Buf1 zero rises at 877.177610 ps
+and falls at 772.199025 ps, with maximum 10–90 percent slew 493.347024 ps.
+It therefore fails both zero quarter timing and the existing 250 ps
+interface domain. The first coarse step measures 1073.994442/971.425873 ps.
+The larger-buffer and split-loading results complete later below. Buf1
+was rejected from completed evidence while its remaining healthy solver
+continued unchanged.
+
+`build_tapped_output_cells_v72.py` supplies actual physical component models
+for both standard buffers. Each cell is surrounded by two native well taps
+and two boundary fillers in one continuous physical row. Native LI1 input
+and output pin rectangles and M1 supply rectangles are used directly; no
+invented metal access or ideal body tie substitutes for geometry. It imports
+the frozen registered native masters and separately builds/qualifies each
+five-instance GDS row.
+
+Context `tapped_output_cells_v72/2a493f55c1ca912c` completes and passes:
+zero placed/native DRC, unique native LVS, all 4/10 actual MOS junction
+geometries and ordered IN/OUT/VPWR/VGND interfaces. The buf1 row extracts
+103 R/27 C, reducing to 41 R; buf4 extracts 170 R/57 C, reducing to 94 R.
+Both reductions regenerate exactly, retain positive passive elements,
+match actual native topology and full junction parameters, and pass four
+independent Schur terminal-current witnesses. Their extraction namespaces
+are `8fedb7682a04a77f` and `b38bd846cb5297af` respectively. This qualifies
+component geometry/RC only; complete-bank wiring and output-stage timing
+still need fresh qualification.
+
+```sh
+./scripts/env.sh --tools --ngspice python3 \
+  scripts/build_tapped_output_cells_v72.py campaign \
+  /work/OpenLVDS/build/diagnostics/bank_cell_registry_verification_v48/b1813242cd69dc23
+```
+
+The existing completed context is immutable; the command documents its
+producer and must not overwrite/rerun it. Two new row tests cover native
+pin access, actual site-grid continuity and physical well/body domains.
+All **2,076** software regression tests pass without skips in 416.093 s
+(`build/tapped-output-cells-v72-full-tests.log`). Healthy legacy and repair
+solvers remain running under the unchanged six-engine dispatcher.
+
+
+### Completed repair comparisons and smaller internal fine quanta
+
+Both v69 and v70 campaigns complete all six native cases without numerical
+errors. Independent v71 receipts above remeasure all traces. Both buffer
+choices fail zero quarter timing: buf1 headroom -267.421707 ps and buf4
+-176.623150 ps. Buf4 restores edge speed (zero 118.174/72.904 ps, maximum
+138.498 ps over its three cases) and positive rise/fall overlap, but its
+zero latency is 764.213246/786.379248 ps. The extra output stage is not
+admitted as a serial delay-section repair.
+
+Split12 passes its component zero/range endpoint screen: 519.868938 ps
+rising, 551.458683 ps falling, +58.297414 ps headroom, and
++737.867405/+592.677836 ps coarse overlap. This does not establish dense
+fine steps or output slew. Complete-trace diagnostics in
+`build/split-fine-component-v69-output-slew.log` measure maximum output
+slew 311.447 ps at its first coarse step and 1907.863 ps at full fine.
+The full-fine delay reaches 1436.667553/1332.472748 ps. Native voltage,
+static controls and repeated isolated pulses pass, but a usable output
+clock and dense legal-code path are not established.
+
+A 25-unit relocation draft was therefore retired **before formal physical
+preparation**. Its host graph/inventory/placement checks and two failed
+software preflight wrappers are retained under
+`build/bank-physical-preflight/split25_retired` and the adjacent preflight
+logs. The wrappers failed on a Yosys metadata lookup and a helper-module
+export before native geometry qualification; no new routed bank, DRC/LVS
+or timing pass is claimed. No running solver or prepared artifact was
+replaced. This avoids expanding the old large fine quantum onto the weak
+internal mux node before reducing that quantum.
+
+`moscap_fine_bank_v75.py` instead replaces each 2x3 data MIM with a
+complementary pair of native gate-capacitor MOS devices, then connects the
+fine data ports to `selected` before the existing final inverter. NMOS
+D/S/body stay at VGND; PMOS D/S/body stay at VPWR; their gates share the
+private switched-capacitor node. All original fine switches and their
+junction parameters remain in the prototype, as do the separate 2x2 ENB
+control-guard MIMs. No new output buffer is added. Native nonlinear MOS
+capacitance is simulated directly; no ideal numerical capacitor value or
+physical qualification is assumed.
+
+Three candidate gate widths are 0.42/0.84/1.26 um for both capacitor
+transistors at L=0.15 um. Every variant has **1,013 MOS and 37 MIMs**.
+The original other component RC is retained; new fine-cell local/common
+routing is unextracted. Programming-gate observations are regenerated from
+the actual new native terminal maps after wire collapse, retaining all
+133 programming gates and 86 root-control checks. Every MOS terminal pair
+is screened at the unchanged voltage limits.
+
+`moscap_fine_component_v76/8faeeb90f5c78a3c` is prepared and running under
+`openlvds-moscap-fine-bank-v76.service`. Its nine tasks measure zero, fine31
+and first coarse for each width, in that order, using two workers and the
+unchanged dispatcher. The full 20 ns/two-pulse fixture retains nominal
+1.8 V, SS/40 C, 100 ps input slew and 20 fF output load. Comparisons require
+positive zero quarter headroom, both coarse overlaps, output slew <=250 ps,
+all native terminal/control gates and repeated pulses. All native/model
+producer files are now frozen.
+
+Completed task 1 (0.42 um, coarse0/fine31) measures
+550.901747/573.923729 ps on the repeated pulse, maximum output slew
+224.431937 ps, peak MOS terminal span 1.869828590 V, and passing voltage,
+control and repeat screens. Its zero/coarse overlap and the other widths
+remain pending. This is one component-feasibility point, not a qualified
+fine bank, periodic clock, physical model or PHY.
+
+```sh
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_moscap_fine_bank_v76.py prepare \
+  /work/OpenLVDS/build/diagnostics/repair_prototype_verification_v71/377eb2093d2bf001 \
+  --component-parent /work/OpenLVDS/build/diagnostics/regenerated_bank_v56/454ef5c8722f8a61
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_moscap_fine_bank_v76.py run \
+  /work/OpenLVDS/build/diagnostics/moscap_fine_component_v76/8faeeb90f5c78a3c
+```
+
+The context already exists and is live; do not repeat those commands.
+Two gate-capacitor tests verify preservation of the original switch/guard,
+fixed well/body supplies and rejection of changed original interfaces.
+Actual source-model preflight verifies the 1,013-MOS/37-MIM inventory for
+all widths. All **2,078** software regression tests pass without skips in
+364.406 s (`build/moscap-fine-bank-v76-full-tests.log`). All-PVT common legal
+codes, new fine-cell physical qualification, periodic bank/clock-chain
+integration and the complete LVDS PHY remain unfinished.
