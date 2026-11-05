@@ -6476,3 +6476,39 @@ not evidence that either allocation is a qualified physical model.
 The next fix must derive junctions from native device geometry with
 separate terminal identities and verify their mapping to RC terminals.
 No guessed area, blanket exception or waived junction check is admitted.
+
+
+### Compact two-row fine-cell layout (v81/v82/v84)
+
+The initial v78 layout spreads five MOS devices over a 20.4 um bus span.
+The compact layout moves the two gate-cap devices below the original
+switches and combines each capacitor's D/S/body into a local M1 rail
+escape, retaining a separate gate track. Public buses span 12.4 um,
+matching the original fine-cell width rather than lengthening the bank's
+31-cell bus. Vertical placement and complete bank integration still need
+new proofs; the cells are not interchangeable with the frozen registry.
+
+The first compact v81 experiment (`9bb819483dabff11`, 0.42 um) passes LVS
+but fails eight M2 spacing checks. Moving only the gate-cap shared rail
+escape 0.10 um fixes these in v82. Its 0.42/0.84 um cells pass DRC/LVS;
+its 1.26 um cell retains one N-well spacing failure. All are retained.
+V84 moves the lower row from y=-2.0 to -2.6 um, preserving the compact
+width while clearing that well-spacing failure. Each width now has
+actual fresh zero-DRC/strict-LVS evidence:
+
+| Gate width | Compact physical v84 context | DRC | LVS |
+| --- | --- | --- | --- |
+| 0.42 um | `85b77f220568dd27` | 0 | pass |
+| 0.84 um | `d55c27324290458a` | 0 | pass |
+| 1.26 um | `87da7f4accb17514` | 0 | pass |
+
+These are standalone geometry results only. Distributed RC qualification,
+full bank placement/routing, timing and common PVT legal codes are pending.
+The frozen failed v79 RC extraction is not replaced or waived by this
+placement change.
+
+The v76 0.84 um fine31 case has also completed: repeated rise/fall delay
+593.247518/627.087915 ps and maximum output slew **251.810496 ps**. Its
+native voltage/control/repeat screens pass, but the unchanged <=250 ps
+output-slew gate fails. Zero/coarse cases remain pending, so this is not a
+complete overlap result. Do not round this near miss into a timing pass.
