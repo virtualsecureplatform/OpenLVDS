@@ -119,6 +119,27 @@ terminal and reports the unsaved public-node range as unavailable. No solver
 was rerun or restarted. This bank still needs faster data-path drive and a new
 native screen before physical bank routing, dense/PVT or PHY admission.
 
+The next controlled experiment is now launched as
+`tg_driver_experiment_v9/bf8c0a4abc4024a1`. Three complete 16-tap/32-fine
+variants compare doubled selector width with the original HVT drivers,
+regular-threshold PMOS in the input/fine drivers with the previous selectors,
+and both changes together. Eighteen SS/40 C static cases retain all 903 native
+MOS observations, all 93 distributed fine gates and the same six sparse codes.
+The new fixtures explicitly save the passive public tail node. Regular-PMOS
+variants borrow the original inverter wiring RC for device-flavor diagnosis;
+that RC is not a physical witness for the changed implant. Buffer/fine-unit RC
+is unchanged. Two workers use the existing six-engine dispatcher, and the
+full-result verifier waits for completion. Independent available-case receipt
+`tg_driver_experiment_verification_v9/402c6ded5d4a727d` verifies the first two
+zero codes: wider TGs give 583.775/663.145 ps and regular PMOS alone give
+594.743/709.394 ps rising/falling, with safe voltage and controls. Both improve
+delay but still fail the fast-quarter budget. The combined variant and all new
+range/gap measurements remain pending. Primitive preparation also verifies
+six requested MOS models/W/L and positive junctions by fresh-GDS extraction
+(`tg_device_pcells_v10/505929ce7b0bf358`); those standalone TG junctions match
+the estimates but do not prove routed bank parasitics. No new physical
+equivalence or PHY admission has been established.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal

@@ -4609,3 +4609,91 @@ Logs: `build/dcdl-tg-component-rc-v7-prepare.log`,
 `build/dcdl-tg-component-rc-v8-available.log`,
 `build/dcdl-tg-component-rc-v8-recovery.log` and
 `build/dcdl-tg-component-rc-v8-recheck.log`.
+
+### Native driver and selector isolation (2026-11-05)
+
+`tg_driver_experiment_v9.py` and `probe_tg_driver_experiment_v9.py` implement
+the next experiment from the measured loaded-driver/selector bottleneck. The
+terminated 16-tap/32-fine graph, controls, native fine units, tail MIM and buffer
+component RC remain intact. Three variants separate the changes:
+
+| Profile | Input/fine-driver PMOS | Selector N/P width (um) |
+| --- | --- | ---: |
+| `hvt_quad` | Original HVT | 1.68 / 3.36 |
+| `regular_double` | Regular threshold, same geometry | 0.84 / 1.68 |
+| `regular_quad` | Regular threshold, same geometry | 1.68 / 3.36 |
+
+Each regular variant changes only the model of the sixteen PMOS fingers across
+the input and fine drivers. Their W/L, junction parameters, native guard MIM,
+terminal connections and original inverter wiring RC remain unchanged. This
+is explicitly a borrowed-RC flavor isolation: changing threshold implant
+invalidates the old inverter layout/RC equivalence. A promising variant needs
+its own real geometry, DRC/LVS and fresh extraction before physical admission.
+Wider TG junctions remain explicit nonzero prelayout estimates scaled with
+width, and TG/control/common/tail-cap routing remains unextracted.
+
+Prepared context `tg_driver_experiment_v9/bf8c0a4abc4024a1` binds all source
+and inherited native evidence before launch. Its eighteen cases are the same
+six sparse codes for each profile at SS/40 C, fixed 1.8 V, 100 ps input slew,
+20 fF load and two pulses in 20 ns. All 903 MOS terminals, 93 distributed fine
+gates, public and one-hot controls, 1.95 V stress, 20 ps adjacent-gap/repeat
+limits, positive overlap and absolute fast-quarter headroom remain required.
+Future fixtures explicitly probe `XD:unused_tail`; a missing probe is fatal in
+this new producer. The dispatcher and two-worker campaign limit are unchanged.
+
+`verify_tg_driver_experiment_v9.py` regenerates all variants, attests translated
+decks and successful native record counts, and independently remeasures complete
+waveforms. It keeps all existing sparse comparison limits and cannot admit
+dense legal codes, borrowed inverter RC, whole-bank RC or the PHY even if sparse
+timing passes. The native pilot and full-result watcher remain running.
+Available-case receipt
+`tg_driver_experiment_verification_v9/402c6ded5d4a727d` independently verifies
+the first two complete zero-code cases:
+
+| Profile | Repeated rise / fall delay (ps) | Fast-quarter headroom (ps) | Peak MOS difference (V) |
+| --- | ---: | ---: | ---: |
+| `hvt_quad` | 583.775 / 663.145 | -53.389 | 1.883687 |
+| `regular_double` | 594.743 / 709.394 | -99.638 | 1.887269 |
+
+Both pass all native voltage and static-control checks, including distributed
+fine gates and the now-explicit public tail observation. Neither passes the
+absolute quarter-period budget. Against the original component-RC zero code,
+wider TGs recover 97.587/92.510 ps rising/falling and regular PMOS alone recover
+86.618/46.261 ps. The combined variant and all new fine-span/coarse-overlap
+measurements remain pending. These partial results prove neither sparse-profile
+success nor a new legal-code table.
+
+Logs: `build/tg-driver-v9-prepare.log`,
+`build/tg-driver-v9-pilot.log` and `build/tg-driver-v9-verification.log`.
+
+Primitive preparation is also available in
+`tg_device_pcells_v10/505929ce7b0bf358`. The separate
+`inspect_tg_device_pcells_v10.py` generates the six candidate native MOS PCells,
+writes GDS, and extracts each transistor from a fresh Magic GDS import. Each
+extract contains exactly the requested native model, matching W/L and positive
+AD/AS/PD/PS. All original primitive geometry and logs are retained.
+
+| Model | W/L (um) | AD = AS (um2) | PD = PS (um) |
+| --- | ---: | ---: | ---: |
+| N regular | 0.84 / 0.15 | 0.2436 | 2.26 |
+| N regular | 1.68 / 0.15 | 0.4872 | 3.94 |
+| P regular | 1.00 / 0.15 | 0.2900 | 2.58 |
+| P regular | 1.68 / 0.15 | 0.4872 | 3.94 |
+| P regular | 3.36 / 0.15 | 0.9744 | 7.30 |
+| P HVT | 1.00 / 0.15 | 0.2900 | 2.58 |
+
+The four TG candidate junction estimates match these standalone PCells. That
+does not establish their eventual routed TG parasitics or allow substitution
+of standalone P-cell junctions for the shared diffusions in the inverter.
+PCell interfaces include distinct D/G/S/B contacts for subsequent placement.
+Neither a routed TG/inverter nor macro DRC/LVS, passive RC or native circuit
+qualification is claimed. Log: `build/tg-device-pcells-v10.log`.
+
+Validation: four focused circuit/fixture tests and two focused verifier tests
+pass. The first full regression passes 1,957 tests in 373.020 s
+(`build/tg-driver-v9-full-tests.log`). After adding the verifier tests, the
+complete current suite passes all 1,959 tests without skips in 385.958 s
+(`build/tg-driver-v9-verifier-full-tests.log`). The six-cell native PCell/GDS
+inspection also completes successfully, with distinct D/G/S/B in every fresh
+extract and all recorded file hashes rechecked. Software and primitive checks
+do not turn either measured quarter-period failure into an electrical pass.
