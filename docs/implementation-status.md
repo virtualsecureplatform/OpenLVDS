@@ -10,8 +10,10 @@ DRC/LVS, native primitive-mask/placement checks and exact passive-RC reduction
 (`stacked_nlvt_tg_verification_v28/d4502a53e9953cf4`). A/Z explicit wiring
 loading falls to 4.191/3.912 fF from 5.603/4.363 fF. The failed first layout
 is preserved. This is a component checkpoint; bank timing has not yet been
-rerun with it. Real low-Vt inverter/buffer layouts and fresh extraction are
-being prepared to replace the remaining borrowed implant RC. The measured
+rerun with it. Real low-Vt inverter/buffer layouts now pass DRC/LVS, unchanged non-implant
+masks, native junction geometry and fresh passive RC in
+`nlvt_data_components_v29/54bfedf45e8a4ed0`. Independent fresh-GDS checks are
+running before these replace the remaining borrowed implant RC. The measured
 37.418 ps timing deficit remains open; the PHY remains unqualified.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):

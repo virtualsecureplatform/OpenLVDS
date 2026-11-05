@@ -5144,3 +5144,32 @@ is not. The existing low-Vt diagnostic still misses the fast-quarter gate by
 low-Vt inverter/buffer layouts and fresh extraction are the next prerequisite.
 Input duty remains 40%/60%, nominal 50%, at 390/400/410 MHz, fixed supplies
 and the approved 0/25/40 C temperatures. No electrical or PHY gate is waived.
+
+### Actual native low-Vt inverter and coarse-buffer components
+
+Producer `build_nlvt_data_components_v29.py`, context
+`nlvt_data_components_v29/54bfedf45e8a4ed0`, now supplies actual layouts and
+fresh RC for both remaining low-Vt data components. The marker construction
+(poly intersect active intersect N implant, expanded by 0.18 um) is first
+compared exactly with the generated native NMOS-LVT PCell. The custom INV8
+retains its eight N/eight regular-P fingers and native 3x3 MIM guard; the BUF4
+pair retains ten N/ten P fingers. Only the N-LVT marker (125/44) is added and,
+for the buffer, the P-HVT marker (78/44) removed. Every other mask region is
+identical, with the original hierarchy and label scope retained.
+
+Both components pass zero DRC errors, strict source LVS, actual native
+body/dimension/junction signatures, fresh passive distributed RC and strict
+wire-collapsed RC LVS. The inverter has 254 raw/181 reduced resistors and 89
+capacitors; the buffer pair has 276 raw/200 reduced resistors and 116
+capacitors. New marker areas are 3.4845 and 4.4238 um2 respectively; the buffer
+removes 5.9568 um2 of HVT-P marker. These are isolated component proofs and do
+not yet establish timing recovery. Independent fresh-GDS and exact-reduction
+verification is running before installing these models with the stacked TG.
+
+The full pinned regression passes **1,987 tests without skips** in
+`build/stacked-nlvt-tg-full-tests.log` (366.665 s), covering the stacked-TG
+checks. Three additional low-Vt component-signature tests pass separately in
+`build/nlvt-data-components-v29-tests.log`; they check allowed flavor
+normalization and rejection/detection of missing devices, wrong body ties,
+changed junctions/widths and changed guards. No native bank, all-PVT or PHY
+qualification is claimed.
