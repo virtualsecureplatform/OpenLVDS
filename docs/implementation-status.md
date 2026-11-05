@@ -37,6 +37,17 @@ The original failed producer and raw evidence remain untouched. These results do
 delay range, legal-code ROMs, all-PVT clock timing
 or the complete link. See the [routed-bank timing checkpoint](digital-clocking-v2.md#staged-native-timing-using-complete-routed-bank-rc).
 
+The replacement uniform-tap prototype is now implemented in
+`scripts/dcdl_uniform_tree_v3.py`. Its complete 16-tap/32-setting native pilot
+`dcdl_uniform_tree_v3/486381e17636fb87` uses 875 MOS devices, verified component
+buffer/fine RC and a two-level mux4 selection tree. Ten SS/40 C static-code
+cases screen coarse 0/1 and fine 0/1/15/16/31, with two complete pulses per
+case. The pilot and independent waveform verifier have been launched with the
+unchanged dispatcher and at most two solver workers. Native source mux/control
+cells and ideal common wiring still require physical implementation and fresh
+joint extraction. This sparse experiment cannot qualify dense legal codes,
+updates, periodic 40%/60% clocks, all-PVT timing or the PHY.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal

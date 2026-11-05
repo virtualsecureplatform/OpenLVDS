@@ -4114,3 +4114,43 @@ custom defaults. Short, nonfinite or late-starting traces, mismatched solver
 record counts, abort logs and unrelated/live failures are rejected. The final
 complete suite passes 1,909 tests without skips in
 `build/weighted-routed-recovery-v3-full-tests.log`.
+
+### Uniform-tap balanced-tree native prototype (2026-11-05)
+
+`scripts/dcdl_uniform_tree_v3.py` implements the replacement architecture:
+uniform noninverting native buffer taps, a balanced radix-four selection tree
+(a final radix-two level for odd binary widths), and equal thermometer-enabled
+2x3 MIM fine units. Every tap sees one selection input and one identical next
+buffer input, including an explicitly retained final dummy buffer. This
+equalizes direct fanout, not extracted parasitics or effective transistor loads.
+All paths have equal selection depth; no ideal delay or behavioral clock
+element implements the bank. Supported coarse dimensions remain
+16/32/64/128/256, and fine dimensions remain 16/32. These are topology candidates,
+not admitted legal-code tables or a revised TX/RX dimension policy.
+
+`probe_dcdl_uniform_tree_v3.py` prepares the immutable native context
+`dcdl_uniform_tree_v3/486381e17636fb87`: complete 16 coarse taps, 31 identical
+fine units, 120 instances and 875 native MOS devices. Buffer and fine-unit
+models retain the independently verified component RC. Mux4 and control
+buffers/inverters use actual SKY130 source transistor definitions with explicit
+port orders. Common wiring remains ideal. The SS/40 C, fixed 1.8 V, 100 ps
+input, 20 fF load pilot runs coarse 0/1 against fine 0/1/15/16/31. Each case
+retains two isolated pulses over 20 ns with a 2 ps maximum step, every native
+MOS terminal and real internal control signals. Voltage screening retains the
+1.95 V six-terminal-pair limit; control deviations retain the 0.18 V limit.
+The first zero-code case reports actual base-delay headroom against 410 MHz's
+609.756 ps quarter-period requirement. Static repeat pulses do not establish
+code-change settling or repeatability after returning from another fine code.
+
+The pilot and separate `verify_dcdl_uniform_tree_v3.py --watch` service have
+been launched. The independent verifier regenerates libraries, topology and
+native device coverage, checks translated decks, complete raw/log counts and
+input hashes, then remeasures all ten cases. Its comparison explicitly reports
+the 15->16 carry, adjacent sampled gaps and coarse overlap while keeping dense
+coverage unproven. Both producers retain failures and keep all PHY/electrical/
+legal-code admissions false. Existing healthy solvers and the six-engine,
+two-worker dispatcher policy remain unchanged. Logs are
+`build/uniform-tree-v3-prepare.log`, `build/uniform-tree-v3-pilot.log` and
+`build/uniform-tree-v3-verify.log`. Periodic qualification still uses the
+approved 40%/60% endpoints at 390/400/410 MHz; isolated pulse screening does
+not replace those checks.
