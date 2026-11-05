@@ -5708,8 +5708,8 @@ it never resizes or fingers a wide MOS. Decimal-exact SPICE conversion makes
 Five new tests cover hierarchy/private-net identity, numeric suffixes, wide
 native devices, actual junction dimensions, newly measured control junctions,
 and rejection of changed dimensions/junctions or invalid hierarchy. The final
-frozen-producer full software regression is in progress; the preceding placement
-checkpoint passed all 2,030 tests.
+frozen-producer software regression passes **2,035 tests without skips** in
+364.640 seconds (`build/tg-bank-native-gds-v51-final-full-tests.log`).
 
 ```sh
 ./scripts/env.sh --tools --ngspice python3 scripts/build_tg_bank_gds_v51.py campaign \
@@ -5723,3 +5723,61 @@ then the complete SS/40 zero-code terminal/control/timing screen, are required
 before expanding dense codes, periodic clocks, all fifteen PVT conditions or
 the complete clock/link chain. The component-model 4.286 ps timing margin is
 unchanged evidence; no routed-bank margin has yet been measured.
+
+
+### Complete bank joint RC preserves all native devices and protected nodes
+
+`tg_bank_joint_rc_verification_v52/fa94fb57149b7ec4` consumes the complete
+v51 physical proof and the port-aware extraction namespace
+`build/extracted/f909084a381d42f9/openlvds_dcdl_c16_f32_both2_physical_v45`.
+The unchanged `extract_native_flat_v4.py` extracts the actual qualified routed
+GDS with explicit locations for all 39 public ports in canonical order. It
+retains the existing **0.01 fF** capacitance reporting threshold, coupling,
+actual native devices/junctions and finite signal/control/supply resistance.
+No ideal power-grid substitution or component-RC stitching is used.
+
+The first retained diagnostic extracted a raw passive network but supplied no
+port metadata, so the generic extractor emitted an empty public header and
+correctly withheld admission. It remains in namespace `7ebf70a62debdb9b`.
+The port-aware recovery uses the qualified Magic-written GDS and a new
+namespace; it never overwrites the failed extraction. The actual complete
+model contains **30,288 resistors and 10,556 capacitors** with no negative
+capacitors, nonpositive resistors or negative-diagonal witnesses. Exact
+positive-conductance star-mesh reduction eliminates **7,278 algebraic nodes**
+and reduces the resistor count to **22,517**. Every capacitor, device and
+public endpoint remains protected.
+
+The independent certificate regenerates the reduced file byte-for-byte,
+checks passive signs in both raw and reduced models, and verifies identical
+non-resistor statements. Four seeded sparse Dirichlet solves compare terminal
+currents at **8,789 protected boundary nodes**, using 1e-8 relative and 1e-9 A
+absolute tolerances. Maximum normalized error is **0.000710412**, well below
+one; reference/reduced residuals are 7.77e-16 and 3.47e-16, with zero floating
+components. These are algebraic resistor-network witnesses, not a native clock
+waveform or delay measurement.
+
+Wire-collapsed strict native LVS matches the routed native extraction uniquely.
+Model dimensions and **all 903 actual MOS junction parameter sets**, including
+the now-characterized control devices, match. All 65 native MIMs are retained.
+This comparison uses the actual v51 native extraction rather than the older
+W/L-only standard-cell control reference. Thus no unmeasured standard-cell
+junction is carried into the new timing model.
+
+For a new physical receipt, first invoke `extract_native_flat_v4.extract` with
+its qualified `physical.gds`, source manifest/schematic hashes, and a `ports`
+dictionary built in `graph.ports` order from each `plan.ports` rectangle's
+centre (`x_um`, `y_um`). Preserve any existing extraction namespace. The proof
+consumes only a complete, hash-matching extraction in the deterministic
+GDS/extractor namespace:
+
+```sh
+./scripts/env.sh --tools --ngspice python3 scripts/verify_tg_bank_joint_rc_v52.py campaign \
+  /work/OpenLVDS/build/diagnostics/tg_bank_native_gds_v51/05d794b67900d80f
+```
+
+The next gate is the complete SS/40 zero-code native transient using this exact
+joint model: both pulse edges, all native terminal voltage limits, actual
+fine/TG programming-gate levels, public controls and pulse repeatability must
+pass. The component-RC sparse receipt supplies no routed timing admission.
+Dense codes, periodic 40/50/60 percent duty, 390/400/410 MHz, all fifteen PVT
+conditions, complete clock islands and link/PHY qualification remain required.

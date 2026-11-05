@@ -70,8 +70,20 @@ previously supplied junction parameter agree. Actual junctions are newly
 measured for 418 standard-cell control MOS whose earlier reference supplied
 W/L only. This is no timing transfer: joint RC extraction and a fresh zero-code
 native waveform remain the next gate. Antenna and independent foundry signoff
-also remain separate. Five new native-inventory tests pass; the full regression
-for the final frozen producer is running.
+also remain separate. The final frozen-producer regression passes all **2,035 tests without skips**
+in 364.640 seconds, including five new native-inventory tests.
+
+
+The complete bank joint-RC proof also passes in
+`tg_bank_joint_rc_verification_v52/fa94fb57149b7ec4`: all 39 ports, 30,288 raw
+resistors and 10,556 capacitors are verified passive. Exact reduction yields
+22,517 resistors while retaining every capacitor and native-device statement.
+Independent sparse terminal-current witnesses pass at 8,789 boundary nodes;
+collapsed native LVS and all 903 actual MOS junctions/65 MIM geometries match
+the routed native reference. The extraction retains the existing 0.01 fF
+capacitance reporting threshold. This supplies the actual joint model for the
+next complete SS/40 C zero-code transient; no routed timing or PHY admission
+exists yet. The earlier component-model headroom remains only 4.286 ps.
 
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
