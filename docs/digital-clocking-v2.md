@@ -3218,3 +3218,27 @@ no supply check is waived. `routing_bringup_passed`, route completion and
 physical/electrical/PHY admission remain false despite zero router DRC.
 The next fix must prevent later physical cells from occupying unpowered
 sites while retaining the full row metadata needed by the legalizer.
+
+### Powered placement sites restore routed-bank supply connectivity
+
+`weighted_bank_row_restore_v4.py` restores all 347 row records after
+successful sparse PDN generation and adds hard placement blockages over
+exactly the 343 restored, unpowered row segments. The four powered segments
+remain available for later physical cells. No antenna diode is disabled,
+and no power check is waived. Native contract receipt
+`weighted_bank_row_restore_contract_v2/5144c8659e85cbef` verifies exact row
+metadata, exact blockage bounding boxes and hardness, unchanged original
+circuit attachments, and no restoration/blockages after injected PDN failure.
+This contract uses stubbed generation and does not itself qualify power.
+
+`harden_weighted_bank_v18.py`, using PDN configuration v19, completes normal
+detailed routing in `weighted_bank_bringup_v2/96f389f143f5b827`. A fresh final
+database read passes both VPWR and VGND connectivity checks, the original
+interfaces, all declared macro positions, all 22 signal I/O shapes, and
+placement of every physical instance, including inserted cells. Final
+router DRC errors are zero. Placement and routing bring-up are accepted;
+independent conductor completeness, full GDS DRC/LVS/antenna/RC, native
+timing, code ROM and PHY admission remain open. The matched repaired-cell
+electrical control campaign remains required before full-bank simulation.
+`make test-full` passes all 1,863 tests without skips, recorded in
+`build/weighted-bank-powered-sites-v18-full-tests.log`.
