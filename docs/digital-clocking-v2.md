@@ -3354,3 +3354,35 @@ The full software suite passes 1,873 tests without skips in
 `build/weighted-bank-native-rc-consumer-v2-full-tests.log`. Three subsequently
 added raw-verifier assessment tests pass separately in
 `build/weighted-bank-routed-verifier-v2-tests.log`.
+
+### Matched settling-to-routed-timing continuation
+
+`continue_weighted_routed_v2.py` prepares
+`weighted_routed_followup_v2/dc345835ff7729e3` and runs as
+`openlvds-weighted-routed-v2-followup.service`. It binds the exact staged
+routed model, repaired fine-control campaign, source files, libraries, decks
+and both live producer/verifier systemd invocation IDs and main PIDs. Its
+current state is `waiting_physical_fine_control`; no routed solver has started.
+Transient owner-observation failures retry without declaring the producer
+stopped. An owner replacement, incomplete/error case coverage, missing receipt
+after verifier exit or ambiguous matching receipts holds the continuation.
+
+After all four native control cases finish, the coordinator selects only the
+matching independent v4 receipt and executes the original physical settling
+gate for the exact clock/fine/repair inputs. A failed gate cannot request a
+routed solver. A passing gate starts the already prepared routed pilot through
+its unchanged shared-dispatch leases, followed by independent full-raw timing
+verification. It never takes over an already started pilot, retries simulations,
+changes dispatch policy or admits a code table/PHY. Sparse failures remain
+retained diagnostic results.
+
+The failed whole-counter v7 read-only verifier was also recovered. Its journal
+shows it exited at startup because the pilot's `state.json` did not yet exist.
+The pilot is now actually running with that state present; restarting only the
+failed verifier restores its wait on the original pilot. No solver, pilot,
+native model or existing artifact was restarted or modified. This is observer
+recovery, not new counter timing evidence.
+
+`make test-full` passes 1,879 tests without skips in
+`build/weighted-bank-routed-followup-v2-full-tests.log`, including exact-owner,
+missing-state, failed/incomplete coverage and receipt ambiguity checks.
