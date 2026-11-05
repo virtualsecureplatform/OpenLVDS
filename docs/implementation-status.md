@@ -79,6 +79,19 @@ is not selected for full-bank routing. The next circuit experiment must replace
 the mux4 data path with a native transmission-gate tree and a separately sized
 fine-bank driver; all existing timing and voltage limits remain unchanged.
 
+That replacement is now implemented as `dcdl_tg_tree_v5/88d4f72c48c8e1b5`:
+balanced transmission gates, real static one-hot decoding and a separate
+fine-bank inverter driver, with restored/direct output comparisons. Independent
+receipt `dcdl_tg_tree_verification_v5/2d21722f18cb5037` verifies the first eight
+complete 20 ns cases. The wider-TG direct-output zero code reaches
+428.019/520.509 ps rising/falling delay and 89.247 ps fast-quarter headroom;
+its first fine step is 10.191/5.249 ps. Voltage still fails in eight MOS devices
+at the balancing buffer's unloaded output (peak 1.95585 V). A fresh revision
+must add and test a real tail-output capacitive termination; the active bank
+and all its evidence remain unchanged. New TG junctions are prelayout estimates
+and component wire parasitics are idealized, so no physical or PHY admission
+follows from these sparse results. The 24-case campaign continues.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal

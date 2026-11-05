@@ -4358,3 +4358,84 @@ parameters/native MIMs and reject public-terminal shorts, negative R/C,
 unexpected active/hierarchical/resistor devices and broken wire aliasing. The
 matched two-waveform native checkpoint and its full recheck both pass their
 evidence checks while retaining the electrical failures.
+
+### Native TG selector and independent fine driver (2026-11-05)
+
+`dcdl_tg_tree_v5.py` implements the replacement data path: a guarded native
+inverter at the input, uniform native paired-buffer taps, balanced radix-four
+TG selection (a final radix-two stage for odd binary widths), and a separate
+guarded native inverter driving 31 equal fine units. The two data inversions
+preserve clock polarity. Real native buffers, inverters and AND gates decode
+the binary word into complementary one-hot enables. Under each static legal
+word, every TG group selects exactly one input, including groups unselected by
+the following level. This static property does not qualify transitions between
+codes or remove the native update/settling gate.
+
+Four profiles compare 0.42/0.84 um and 0.84/1.68 um NFET/PFET TG widths, each
+with a paired-buffer output restorer or with the fine-driver output connected
+directly to the declared 20 fF load. All profiles retain every coarse choice,
+all 31 fine units and the final tap's balancing buffer. Fine capacitors load
+the driver output, not the selector node. TG MOS devices have explicit nonzero
+AD/AS/PD/PS estimates using a 0.29 um diffusion extension; these are prelayout
+estimates requiring new PCell/layout/extraction proof, not established geometry.
+
+`probe_dcdl_tg_tree_v5.py` binds the failed complete-waveform mux4 checkpoint,
+regenerates verified component RC families, and preserves all native MOS/MIM
+parameters while deliberately idealizing the paired-buffer, inverter and fine
+component routing R/C. Native SC source controls remain separate from those
+component models. The experiment contains no behavioral clock/delay element in
+the bank. Context `dcdl_tg_tree_v5/88d4f72c48c8e1b5` runs 24 SS/40 C cases:
+four profiles against (coarse,fine) = (0,0), (0,1), (0,15), (0,16), (0,31),
+(1,0), each with both full isolated pulses over 20 ns. Restored profiles have
+923 native MOS devices; direct-output profiles have 903. Every MOS terminal is
+saved and checked at 1.95 V, including devices outside the selected data path.
+All decoded true/complement controls are measured at the unchanged 0.18 V limit.
+
+`verify_dcdl_tg_tree_v5.py` independently regenerates the four banks and native
+device coverage, verifies translated decks, successful native log/raw counts,
+all waveform measurements and consumed hashes before/after. `--available`
+binds only already terminal cases while other cases continue; the full
+`--watch` service waits for all 24. Each profile requires every sparse point
+before a sparse screen can pass, and dense legal-code coverage and all PHY/
+electrical admissions remain false. Receipt
+`dcdl_tg_tree_verification_v5/2d21722f18cb5037` verifies complete cases 0--7
+(zero/fine-one for all profiles). The earlier two-case receipt
+`dcdl_tg_tree_verification_v5/d16f6b2a29053e9d` is retained.
+
+Repeated zero-code delay and first fine-step observations (ps):
+
+| Profile | Rise | Fall | Fast-quarter headroom | Fine 0->1 rise/fall |
+| --- | ---: | ---: | ---: | ---: |
+| Unit TG, restored | 754.165 | 891.965 | -282.209 | 18.018 / 16.498 |
+| Double TG, restored | 579.621 | 718.924 | -109.168 | 15.251 / 13.181 |
+| Unit TG, direct | 596.011 | 680.509 | -70.754 | 13.175 / 7.601 |
+| Double TG, direct | 428.019 | 520.509 | 89.247 | 10.191 / 5.249 |
+
+The wider-TG direct-output candidate passes the source experiment's zero-code
+quarter budget and measured first fine-step maximum-gap check. It is not yet
+qualified for the 15->16 carry, coarse overlap, dense codes, code updates,
+component/joint physical RC, periodic duties, all PVT or the PHY. Every
+available profile still fails voltage at the unused balancing-buffer output.
+For the wider-TG direct zero case, all eight violations belong to `Xtail_load`;
+worst PMOS `X0` at 17.878310 ns has D/G/S/B =
+-0.155849/0.637870/1.800000/1.800000 V. Its public `unused_tail` drain is
+unloaded. The proposed next fix is a real native MIM termination on that output
+in a new immutable revision, preserving the balancing input load and every MOS.
+Removing the buffer or waiving its stress is not a valid repair.
+
+Topology tests evaluate every coarse word through 256 taps, one-hot exclusivity
+and complementary controls, equal TG depth, output polarity/driver separation,
+nonzero junction parameters and retained tail/fine loads. Waveform tests reject
+a bad decoded enable even with a correct external binary word and fine
+controls. The complete suite passes 1,939 tests without skips in 409.544 s
+(`build/dcdl-tg-tree-v5-full-tests.log`). Native records and independent proofs
+remain separate from those software checks.
+
+The pilot and full independent verifier run under the existing six-engine,
+two-worker policy; no healthy older solver was stopped or restarted. Logs are
+`build/dcdl-tg-tree-v5-prepare.log`, `build/dcdl-tg-tree-v5-pilot.log`,
+`build/dcdl-tg-tree-v5-available-verify.log`,
+`build/dcdl-tg-tree-v5-available-recheck.log` and
+`build/dcdl-tg-tree-v5-verify.log`. Reference qualification still requires
+390/400/410 MHz at the approved 40%/60% endpoints, with fixed supplies and all
+15 process/temperature combinations.
