@@ -5194,7 +5194,7 @@ NMOS-LVT, 271 regular N, 227 regular P and 209 HVT P.
 
 The frozen pilot uses zero coarse/fine code at SS/40 C with unchanged fixed
 1.8 V supply, 100 ps slew, 20 fF load, two pulses and 2 ps maximum timestep.
-The native solver and independent complete-waveform watcher are running as
+The native solver and independent complete-waveform watcher were launched as
 `openlvds-actual-nlvt-v32-pilot.service` and
 `openlvds-actual-nlvt-v32-verify.service`. The dispatcher remains six engines,
 at most two workers per campaign; this campaign has only one case. The three
@@ -5219,3 +5219,48 @@ control/common/tail-cap wiring remains unextracted. Complete sparse range,
 coarse/fine overlap, dense legal codes, updates, periodic approved 40%/60%
 clocks at 390/400/410 MHz, all 15 process/temperature points and integrated
 DCC/DLL/RX/link/OpenPLL qualification remain open.
+
+### Actual-component zero gate completes: 22.94 ps timing deficit
+
+Pilot `actual_nlvt_bank_v32/80937a3b392ee234` is complete, with one numerical
+case and zero errors. Independent complete-waveform receipt
+`actual_nlvt_bank_verification_v32/9a84e18716c8a139` regenerates the physical
+component installation and remeasures the complete native trace. Its second
+pulse has **532.581584 ps rising / 632.696025 ps falling delay**, leaving
+**-22.939927 ps** conservative fast-quarter headroom. All 903 MOS terminal
+screens, 93 fine gates, 40 actual TG gates, public controls and pulse
+repeatability pass. Maximum native terminal difference is 1.869811928 V against
+1.95 V. Repeated-pulse differences are 0.000001121/0.000288927 ps.
+
+The actual stacked-TG/data-component network improves the previous low-Vt
+falling delay by 14.478294 ps, but does not close the timing gate. The bank
+therefore cannot advance to range admission. No sparse campaign was prepared
+from this failed zero gate. The physical component proofs remain valid; the
+failed timing receipt and all native artifacts are retained unchanged.
+
+### Native low-Vt driver with a smaller real output guard
+
+Producer `build_nlvt_guard2_v34.py`, physical context
+`nlvt_guard2_v34/3ec9bfabe0d5a897`, replaces only the INV8 output's native 3x3
+MIM with a freshly generated native **2x2 MIM**. All sixteen MOS devices,
+junction dimensions, body ties, MOS/body masks and child placements are
+preserved. A declared M3 ground extension at (8.68,7.8)--(9.58,8.2) um connects
+the shifted MIM landing. Root routing otherwise remains identical, and the
+new capacitor's complete mask set matches its generated native PCell.
+
+Independent receipt `nlvt_guard2_verification_v35/dd63e937c9f7ef52` repeats
+fresh-GDS zero DRC errors, strict LVS, native geometry/body checks, exact mask
+and placement comparisons, passive raw/reduced RC and byte-identical exact
+reduction. Added root M1 and changed MOS-child M1 GDS corruption controls are
+rejected. The new component has 255 raw / 181 reduced resistors and 93
+explicit capacitors. This is a physical component checkpoint, with no bank
+voltage, timing or PHY qualification transferred to the smaller guard.
+
+The next two matched zero-code experiments reduce the guard on the fine
+output driver alone (`fine2`) or both input/fine data drivers (`both2`). They
+retain the actual stacked TG, coarse buffers, fine network, fixed supply,
+SS/40 C, 100 ps slew, 20 fF load and all native observations. The purpose is
+to test whether lower driver loading recovers the remaining 22.94 ps while
+still passing the unchanged terminal-voltage gate. Complete sparse range,
+common wiring extraction, periodic duty, all-PVT and full-chain checks remain
+required after a passing zero gate.

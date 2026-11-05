@@ -5,20 +5,22 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current architecture work (2026-11-05):
 
-The latest stacked NMOS-LVT/regular-PMOS TG passes independent fresh-GDS
-DRC/LVS, native primitive-mask/placement checks and exact passive-RC reduction
-(`stacked_nlvt_tg_verification_v28/d4502a53e9953cf4`). A/Z explicit wiring
-loading falls to 4.191/3.912 fF from 5.603/4.363 fF. The failed first layout
-is preserved. This is a component checkpoint; bank timing has not yet been
-rerun with it. Real low-Vt inverter/buffer layouts now pass DRC/LVS, unchanged non-implant
-masks, native junction geometry and fresh passive RC in
-`nlvt_data_components_v29/54bfedf45e8a4ed0`. Independent fresh-GDS, native geometry, implant-only masks, exact RC
-reduction and altered-metal negative controls pass in
-`nlvt_data_components_verification_v30/3d570437cfccf466`. The frozen bank
-pilot `actual_nlvt_bank_v32/80937a3b392ee234` is now running with these actual
-component models: 903 MOS, 65 native MIMs, 12,641 resistors and 4,879 explicit
-capacitors. Independent waveform verification is watching it. The final pinned regression passes 1,995 tests without skips. The measured
-37.418 ps timing deficit remains open; the PHY remains unqualified.
+The actual-component-RC low-Vt bank has now completed its zero-code SS/40 C
+native test. Independent receipt
+`actual_nlvt_bank_verification_v32/9a84e18716c8a139` confirms 532.582/632.696 ps
+rising/falling delay and a **22.940 ps fast-quarter deficit**. Terminal voltage,
+all fine/TG/public controls and repeatability pass, with maximum native span
+1.869812 V against 1.95 V. The stacked TG and low-Vt driver/buffer physical
+proofs remain valid, but the bank cannot advance to range admission.
+
+A new low-Vt INV8 with a native 2x2 output MIM guard passes independent
+fresh-GDS DRC/LVS, unchanged MOS/body masks and placements, native junction
+checks and exact passive-RC reduction
+(`nlvt_guard2_verification_v35/dd63e937c9f7ef52`). Two matched bank experiments
+are preparing to test that smaller guard on the fine driver alone or both
+data drivers. The PHY remains unqualified. The last committed full pinned
+regression passed 1,995 tests; the new component and integration checks are
+being included in a fresh full run.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew
