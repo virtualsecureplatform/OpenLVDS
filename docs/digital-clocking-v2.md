@@ -5178,3 +5178,44 @@ checks. Three additional low-Vt component-signature tests pass separately in
 normalization and rejection/detection of missing devices, wrong body ties,
 changed junctions/widths and changed guards. No native bank, all-PVT or PHY
 qualification is claimed.
+
+### Bank gate with actual stacked TG and low-Vt driver RC
+
+The complete bank now installs all independently checked physical replacements
+through `actual_nlvt_bank_v31.py`. Native pilot
+`actual_nlvt_bank_v32/80937a3b392ee234` replaces all 20 TGs, both 3x3-guarded
+INV8 data drivers and all 16 BUF4 pairs, retaining unrelated fine/control
+components. It consumes both independent physical receipts (v28 and v30),
+rechecks the complete prior v25 timing failure and preserves every distributed
+R/C in the new component models. Recursive expansion has **903 MOS, 65 native
+MIMs, 12,641 resistors and 4,879 explicit capacitors**. All 93 fine-control gates
+and 40 actual internal TG gates are observed. Native model counts are 196
+NMOS-LVT, 271 regular N, 227 regular P and 209 HVT P.
+
+The frozen pilot uses zero coarse/fine code at SS/40 C with unchanged fixed
+1.8 V supply, 100 ps slew, 20 fF load, two pulses and 2 ps maximum timestep.
+The native solver and independent complete-waveform watcher are running as
+`openlvds-actual-nlvt-v32-pilot.service` and
+`openlvds-actual-nlvt-v32-verify.service`. The dispatcher remains six engines,
+at most two workers per campaign; this campaign has only one case. The three
+healthy original weighted-bank solvers remain untouched. No timing result is
+claimed before complete waveform remeasurement. Existing 37.418 ps timing
+failure is retained as the comparison, not transferred as a result for this
+new deck.
+
+Preparation initially stopped before creating an artifact because a duplicated
+CAD-file key was passed through two keyword mappings. The corrected merge
+accepts identical bindings and rejects contradictory hashes. That failed log
+is retained in `build/actual-nlvt-bank-v32-prepare.log`; the successful frozen
+preparation is `build/actual-nlvt-bank-v32-prepare-bindings.log`. Five targeted
+integration tests pass, including missing instances, changed port order,
+conflicting file bindings, matched fixture selection and refusal to turn a
+zero-code pass into sparse or PHY admission. The final full pinned suite
+passes **1,995 tests without skips** in 364.366 s, recorded in
+`build/actual-nlvt-bank-v32-final-full-tests.log`.
+
+This experiment replaces the borrowed changed-implant component RC. SC
+control/common/tail-cap wiring remains unextracted. Complete sparse range,
+coarse/fine overlap, dense legal codes, updates, periodic approved 40%/60%
+clocks at 390/400/410 MHz, all 15 process/temperature points and integrated
+DCC/DLL/RX/link/OpenPLL qualification remain open.

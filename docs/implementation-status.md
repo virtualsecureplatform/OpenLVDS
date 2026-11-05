@@ -14,8 +14,10 @@ rerun with it. Real low-Vt inverter/buffer layouts now pass DRC/LVS, unchanged n
 masks, native junction geometry and fresh passive RC in
 `nlvt_data_components_v29/54bfedf45e8a4ed0`. Independent fresh-GDS, native geometry, implant-only masks, exact RC
 reduction and altered-metal negative controls pass in
-`nlvt_data_components_verification_v30/3d570437cfccf466`. The next bank
-experiment is being prepared with these actual component models. The measured
+`nlvt_data_components_verification_v30/3d570437cfccf466`. The frozen bank
+pilot `actual_nlvt_bank_v32/80937a3b392ee234` is now running with these actual
+component models: 903 MOS, 65 native MIMs, 12,641 resistors and 4,879 explicit
+capacitors. Independent waveform verification is watching it. The final pinned regression passes 1,995 tests without skips. The measured
 37.418 ps timing deficit remains open; the PHY remains unqualified.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
