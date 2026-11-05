@@ -22,8 +22,9 @@ The current bank still fails falling coarse/fine overlap and periodic
 output-slew/full-swing checks. Split-loading and output-buffer comparisons
 are complete. Three compact gate-capacitor fine cells now pass native geometry
 and component RC checks with measured junctions. Integrating that RC exposed
-root-mux loading as a timing bottleneck. Parallel-root and final-inverter
-drive experiments are running with unchanged timing gates. Full delay-range,
+root-mux loading as a timing bottleneck. A strengthened final stage meets the
+fine31 slew check, but quarter timing and overlap still fail. Balanced-drive
+and post-mux regeneration candidates are running with unchanged gates. Full delay-range,
 all-PVT, clocking integration and full-link
 qualification remain open; these results are separate from the legacy PHY.
 

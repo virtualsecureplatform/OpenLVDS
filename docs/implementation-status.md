@@ -35,13 +35,22 @@ to 4.63909 fF. That route improves fine31 slew to 351.881531 ps but worsens
 zero falling delay to 726.678695 ps; both timing gates still fail.
 
 Two qualified TG cells in parallel at each root branch improve zero to
-554.000517/644.940498 ps and fine31 slew to 286.136079 ps, with native
-voltage/control/repeat checks passing. Falling quarter and fine31 slew
-still fail. The next prototype, `parallel_final_bank_v101/23efdf678be2ab7e`,
-adds a second complete qualified inverter cell in parallel at the existing
-final stage, including its output shunt. It has 1,037 MOS, 38 MIMs,
-141 programming-gate probes and 86 root controls. New gang/common wiring
-is unextracted, and no timing/PHY qualification is transferred.
+554.000517/644.940498 ps and fine31 slew to 286.136079 ps. A second parallel
+final inverter subsequently passes fine31 slew at 248.661930 ps, but zero
+is 556.915374/658.680965 ps and rising coarse overlap is -12.968506 ps.
+Native voltage/control/repetition checks pass. Quarter timing and overlap
+still fail; these prototypes are not qualified delay banks.
+
+Stage diagnostics after root strengthening show comparable group-inverter
+and root-mux delay. Two new candidates are now running. Balanced drive
+parallels the first muxes and group inverters along with root/final cells,
+using a newly qualified 1.26 um middle-bus fine cell: 1,133 MOS, 42 MIMs,
+173 programming gates. Post-mux regeneration moves branch inversion after
+the mux, places the fine load on the active inverter output and retains
+two serial inversions per path: 981 MOS, 35 MIMs, 133 programming gates.
+Both retain 86 root controls, complete qualified component models and the
+original timing/safety gates. New topology/gang/common wiring remains
+unextracted, and no complete native timing verdict exists for either yet.
 
 The 0.76 um original width prototype separately passes its three initial
 endpoint cases with overlap 20.649958/10.736333 ps and max slew
@@ -49,8 +58,8 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-All **2,096** software regression tests pass without skips in 387.221 s
-(`build/parallel-final-bank-v101-full-tests.log`). Native drive experiments
+All **2,102** software regression tests pass without skips in 365.215 s
+(`build/post-mux-regeneration-v109-full-tests.log`). Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
 healthy older solvers and failed results are retained. Remaining timing gates
 must pass before bank/common-RC, dense/update/periodic, all-PVT legal-code
