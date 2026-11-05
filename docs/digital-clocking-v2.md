@@ -3194,3 +3194,27 @@ connectivity checks passing. The earlier successfully placed cell variant
 remains intact. These are CAD bring-up results only; settling, whole-bank
 signal routes/GDS DRC/LVS/antenna/RC, native timing, code admission and PHY
 qualification remain open.
+
+### First repaired-bank signal route: zero router DRC, held diode supplies
+
+`harden_weighted_bank_v17.py` runs the repaired bank through normal detailed
+signal routing. Artifact `weighted_bank_bringup_v2/7890e1ccbecadcb4`
+reaches that target with return code 0, 15,506 um routed wire length,
+zero final router DRC errors and zero reported routing antenna violations.
+The router clears 86 initial DRC markers over four iterations. Original
+interfaces, instances, declared macro positions and I/O geometry remain
+intact. A separate stream read also confirms zero physical-layer XOR and
+matching hierarchy/labels between the written repaired-cell GDS and its
+translated native source, in
+`build/weighted-bank-repaired-frame-stream-xor-v2.json`.
+
+The routing result is nevertheless **held**: the final power checker finds
+unpowered antenna diodes added after the sparse PDN was generated.
+`ANTENNA_3` is on net `low`, at (22.54,451.52) um, and lacks its lower
+VPWR rail. `ANTENNA_4` is on `lvds_fine0_net`, at (257.60,38.08) um, and
+lacks both supplies. Their logical PG attachments are correct; actual M1
+supply shapes are disconnected. All five antenna diodes are retained and
+no supply check is waived. `routing_bringup_passed`, route completion and
+physical/electrical/PHY admission remain false despite zero router DRC.
+The next fix must prevent later physical cells from occupying unpowered
+sites while retaining the full row metadata needed by the legalizer.
