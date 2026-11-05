@@ -27,9 +27,13 @@ so neither is selected. A new separated-output child/pair passes DRC/LVS,
 independent native-mask/source/placement checks and fresh passive-RC verification.
 Pair B-Y coupling falls from 10.5944 to 0.67189 fF (93.7%) without resizing
 transistors or MIMs. Native transient voltage/delay and a newly routed whole
-bank are still required before this candidate can qualify as a repair. Original coarse 0 has now completed 60 ns numerically and
-awaits producer measurements; coarse 1 is running. Complete independent
-timing/voltage verification and repair are still required. These results do not yet qualify
+bank are still required before this candidate can qualify as a repair. Both
+original 60 ns traces are now recovered in a separate receipt after the old
+producer failed JSON serialization of a NumPy Boolean. Pulses and control
+settling pass, but the rising fine carry decreases by 6.6--6.9 ps and the first
+coarse/fine ranges leave a 655/568 ps rising/falling gap. A smaller coarse step
+and monotonic fine architecture are required in addition to voltage repair.
+The original failed producer and raw evidence remain untouched. These results do not yet qualify
 delay range, legal-code ROMs, all-PVT clock timing
 or the complete link. See the [routed-bank timing checkpoint](digital-clocking-v2.md#staged-native-timing-using-complete-routed-bank-rc).
 

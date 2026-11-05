@@ -4025,13 +4025,92 @@ suite passes 1,905 tests without skips in
 `build/nand2b-separated-pair-v3-final-full-tests.log`.
 
 This is a real routed/mask-verified reduction in extracted coupling, not yet an
-electrical repair certificate. Next, compare old/new native pair RC in a matched
-first-pulse component-bank experiment, preserving all sixteen coarse choices
-and the repaired five-bit fine bank. The existing component prototype is
-`weighted_direct_v4/c466d6eb048d9e82`; any adapter must explicitly bind the new
-pair's ordered ports/model name and regenerate all 2,495 MOS witnesses. Its
-ideal shared wiring cannot substitute for a new whole-bank route. Changed Y
-pin coordinates must propagate into new macro frames/access views and a fresh
-whole-bank route/DRC/LVS/RC flow before complete-code, periodic-clock and all-PVT
-qualification. The retained full-bank model and its running producer remain
-unchanged and electrically unqualified.
+electrical repair certificate. The recovered complete bank results below expose
+range/carry failures that prevent selecting the existing recursive bank even
+if its overvoltage is repaired. Retain `weighted_direct_v4/c466d6eb048d9e82`
+as a component-model baseline; an old/new pair transient comparison may isolate
+voltage behavior, but cannot establish usable delay coverage. Any adapter must
+explicitly bind the new pair's ordered ports/model name and regenerate every
+native witness. Its ideal shared wiring cannot substitute for physical
+integration. Changed Y coordinates require new frames/access views and a fresh
+route/DRC/LVS/RC flow in whichever backend architecture is selected. Complete-
+code, periodic-clock and all-PVT qualification remain required; no retained
+model or admission gate is replaced by this component result.
+
+### Routed reporter failure and complete-waveform recovery
+
+The original routed coordinator terminates at 04:28 UTC with a reporting error:
+`TypeError: Object of type bool is not JSON serializable`. A per-sample pulse
+flag produced by NumPy remains a NumPy Boolean inside the result dictionary.
+Both original simulations have nevertheless completed 60 ns: each native raw
+header and solver log report 30,052 records, with exactly that many whole
+records and no tail. Their elapsed solver times are 2,776.247/2,615.544 s.
+The original coordinator is authoritatively failed/held-for-diagnosis; the pilot's
+old `running` state is stale. Neither original source/state nor missing case
+reports are rewritten, and no solver is restarted.
+
+`weighted_routed_measurement_v3.py` performs the same six pulse windows, 1.5--9.5
+ns stable-control windows, 0.18 V control bound, six-pair 1.95 V MOS screen and
+conservative quarter-headroom calculation using row blocks. For finite four-
+terminal voltages, max-minus-min equals the maximum of all six absolute pair
+differences. This avoids repeatedly paging wide columns for every device. Flags
+are constructed as built-in Booleans; ordinary JSON serialization is required,
+without a permissive string/default encoder. Complete data must start at zero,
+reach 60 ns, remain finite/monotonic and include every requested native vector.
+Streaming SHA-256 uses bounded read buffers rather than allocating a multi-GB
+raw file as one byte string.
+
+`recover_weighted_routed_v3.py` first requires the exact retained terminal JSON
+failure and both complete native log/raw pairs. It regenerates the full passive
+bank RC, all 2,651 native primitives, all 2,495 MOS witnesses, 25 distributed
+control groups, original decks/actual solver translation and unchanged matched
+four-case physical fine-control prerequisite. It hashes every consumed input
+before/after remeasurement and publishes a separate recovery receipt. It does
+not take over the old campaign, change its lock/state/reports or reinterpret an
+incomplete trace as completion.
+
+`weighted_routed_recovery_v3/c5bfbbcf79e57211` recovers both cases. Numerical
+completion, pulse integrity and routed-control settling pass. The full original
+sparse screen still **fails**:
+
+| Recovered property | Coarse 0 | Coarse 1 |
+| --- | ---: | ---: |
+| Maximum terminal difference | 1.973619 V (40 violations) | 1.919541 V (zero violations) |
+| Code 15 -> 16 rising step | -6.587549 ps | -6.874088 ps |
+| Code 15 -> 16 falling step | 0.031868 ps | 0.869227 ps |
+| Zero-code rising repeat difference | 8.939630 ps | 0.007909 ps |
+
+The conservative zero-code quarter headroom is 0.552909 ps. Code-zero repeats
+remain within the existing 20 ps limit. Coarse-0 fine-31 reaches only
+807.253092/750.342403 ps rising/falling, while coarse-1 fine-0 starts at
+1,462.215455/1,318.021588 ps. Their overlap is therefore **-654.962363/
+-567.679185 ps**. The first coarse increment is about 873.973/708.818 ps,
+beyond what 32 ordered fine settings with at-most-20-ps steps can bridge.
+Voltage shielding alone cannot repair this architecture's delay coverage.
+Native data, acceptance limits and all ROM/PHY admissions remain unchanged.
+
+The next backend architecture experiment must replace the large recursive
+forward/return coarse increment. A forward chain of uniform native delay taps
+with a balanced selection tree makes the selection depth independent of tap
+index; characterize actual mux/tree base delay before choosing among the frozen
+coarse-count candidates. Compare uniform/thermometer fine units against the
+weighted switch bank so that code 15 -> 16 does not exchange several differently
+loaded switches. Preserve the specified fine-count candidates, max legal-code
+gap, all-PVT common ordering, voltage, quarter-range and full RX-span gates.
+The separated-output native macro remains useful as a qualified geometry/RC
+candidate, but is not selected as a complete solution to these range/carry
+failures. All new circuit/physical producers require distinct immutable contexts.
+
+The independent recheck of `weighted_routed_recovery_v3/c5bfbbcf79e57211`
+passes after rereading every retained input and recomputing both full traces
+(`build/weighted-routed-recovery-v3-recheck.log`). Recovery took 4:04 wall time
+in the recorded invocation (`build/weighted-routed-recovery-v3.log`); this is
+an observed processing duration, not a simulator speedup claim. Tests compare
+its results exactly with the original six-pair/window calculation on complete
+synthetic traces, including multiple control nodes, distinct device peaks,
+late body overvoltage, quiet control faults and missing pulses. They reproduce
+the old JSON failure and require the new plain-JSON schema to serialize without
+custom defaults. Short, nonfinite or late-starting traces, mismatched solver
+record counts, abort logs and unrelated/live failures are rejected. The final
+complete suite passes 1,909 tests without skips in
+`build/weighted-routed-recovery-v3-full-tests.log`.
