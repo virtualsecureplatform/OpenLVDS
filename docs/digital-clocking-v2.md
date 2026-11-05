@@ -5353,3 +5353,44 @@ experiment must retain the exact v36 circuit to reuse its measured zero
 waveform. Actual common/control/tail wiring still needs joint extraction and
 new native qualification; this isolated component proof transfers no bank
 voltage/timing or PHY admission.
+
+### Both2 sparse continuation reuses its verified zero waveform
+
+Frozen campaign `nlvt_guard2_sparse_v41/72eaa0cf7a660134` now runs five new
+SS/40 C points: coarse/fine **0/1, 0/15, 0/16, 0/31 and 1/0**. Its source
+cell and bank SPICE are byte-identical to the passing both2 v36 experiment.
+The fixture changes only its producer title and requested static code;
+supply, slew, load, two-pulse timing, maximum timestep and all native/control
+observations remain the same. The zero waveform is not simulated again.
+
+Admission requires the complete independent v36 receipt, its unchanged full
+input closure, the selected both2 zero gate, and fresh remeasurement of that
+complete zero waveform. It does not recursively recreate upstream proof
+artifacts or rerun their solvers. The rejected fine2 result is retained and
+cannot authorize this continuation. The new verifier combines five complete
+fresh cases with the original zero result, preserving each row's source
+campaign and reuse flag. It requires all six codes, positive sampled fine
+order, adjacent fine gaps no larger than 20 ps, positive coarse/fine overlap,
+and all voltage/control/repeat screens. Partial coverage, duplicate codes,
+failed carry/overlap or missing zero cannot pass the sparse screen.
+
+The pilot and complete-waveform watcher are running as
+`openlvds-nlvt-guard2-sparse-v41-pilot.service` and
+`openlvds-nlvt-guard2-sparse-v41-verify.service`. At most two new solvers run
+concurrently, with the original three healthy weighted-bank jobs untouched.
+The six-engine dispatcher and 180 s aging policy are unchanged. No sparse
+range result is claimed while these cases are running.
+
+The physical tail MIM's new RC is intentionally absent from this continuation,
+so the reused zero trace and all five fresh traces describe the same circuit.
+Control/common/tail routing still needs whole-bank extraction and new native
+qualification. Complete sparse success would not admit dense legal codes,
+updates, periodic 40%/60% input clocks at 390/400/410 MHz, the fifteen process/
+temperature points, DCC/DLL/receiver/link/OpenPLL integration or the PHY.
+
+The full pinned software suite passes **2,010 tests without skips** in
+362.777 s (`build/nlvt-guard2-sparse-v41-full-tests.log`). Seven added tests
+cover the physical tail's exact native model/dimensions/terminals, acceptance
+of only the complete passing both2 zero gate, matched five-code fixtures,
+zero reuse, missing/duplicate coverage, fine carry and coarse overlap. These
+software tests do not replace the running native range measurements.

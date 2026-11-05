@@ -11,7 +11,9 @@ worst-pulse fast-quarter headroom and maximum native span 1.874598 V against
 1.95 V. All native controls and repeatability pass. Receipt
 `nlvt_guard2_bank_verification_v36/24018f4e84f767d6` retains fine2 as a timing
 failure (-13.461 ps); the preceding actual-component bank remains a timing
-failure (-22.940 ps). Both2 advances only to sparse range screening. Routed-bank,
+failure (-22.940 ps). Both2 is running its five additional sparse codes in
+`nlvt_guard2_sparse_v41/72eaa0cf7a660134`, reusing the independently remeasured
+zero waveform with the exact same circuit. Routed-bank,
 periodic clock, all-PVT and PHY feasibility remain unproven.
 
 A physical 2x2 balancing-tail MIM now passes independent fresh-GDS DRC/LVS,
@@ -19,8 +21,8 @@ exact native/routed masks, native dimensions and passive exact-RC reduction
 (`tail_mim2_verification_v40b/61f4fec25e77b5a7`). Its failed first M3-pad spacing
 layout and initial verifier software error are retained. This component is for
 future physical-bank assembly; its RC is not transferred into the existing
-native reference. The last committed full pinned regression passed 2,003
-tests; the added tail and sparse-continuation checks are in a fresh full run.
+native reference. The full pinned software regression passes **2,010 tests without skips**.
+Native sparse range and all later electrical gates remain open.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew
