@@ -6512,3 +6512,41 @@ The v76 0.84 um fine31 case has also completed: repeated rise/fall delay
 native voltage/control/repeat screens pass, but the unchanged <=250 ps
 output-slew gate fails. Zero/coarse cases remain pending, so this is not a
 complete overlap result. Do not round this near miss into a timing pass.
+
+
+### Independent primitive junction measurements (v83/v85)
+
+`measure_moscap_primitive_junctions_v83.py` first attempted to qualify each
+inspected native MOS primitive with D/G/S/body kept separate. The first
+0.42 um NMOS matches LVS, but the raw PCell's gate landing alone fails
+minimum M1 area. This failed measurement is retained under
+`moscap_primitive_junctions_v83/d0991c1ff9782f72`.
+
+V85 adds the same 0.3 um M1 gate escape used in the qualified fine-cell
+layout. It changes no diffusion, poly or well geometry. Context
+`moscap_primitive_junctions_v85/787f8642d60dd868` completes all six primitive
+measurements, each with zero DRC, unique native LVS, one MOS device and
+four distinct terminals. Measured junctions for both regular NMOS and
+PMOS at L=0.15 um are:
+
+| W (um) | AD = AS (um^2) | PD = PS (um) |
+| --- | --- | --- |
+| 0.42 | 0.1218 | 1.42 |
+| 0.84 | 0.2436 | 2.26 |
+| 1.26 | 0.3654 | 3.10 |
+
+This provides native geometry evidence for a junction reconstruction,
+not a corrected RC certificate. The next implementation must map actual
+placed primitives and their terminal identities to the RC devices,
+preserve the original extraction, regenerate the corrected model and
+re-run native topology/parameter and passive-reduction checks. Then the
+selected cell can enter a fresh bank physical/RC model and native timing
+screen. The component candidates' overlap/slew failures remain separate
+circuit-design constraints; junction reconstruction cannot make them pass.
+
+Software regression: **2,079 tests pass, no skips**, in 379.530 s,
+`build/moscap-fine-physical-v79-full-tests.log`. The subsequent compact
+routing/isolated-junction revisions were additionally exercised by their
+actual native DRC/LVS runs and Python syntax checks. The existing v76
+campaign continues with two workers under the unchanged engine dispatcher;
+no healthy solver was stopped or restarted.
