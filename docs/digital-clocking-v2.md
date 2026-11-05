@@ -4887,8 +4887,16 @@ both zero codes:
 
 Both pass voltage, all static controls and repeatability. The 39.913 ps falling
 improvement over the original regular-quad zero code is measured with actual
-smaller-guard component RC. The remaining fine/range points continue; neither
-smaller-guard profile has a complete sparse pass yet.
+smaller-guard component RC. The campaign subsequently completes all twelve
+cases without numerical/reporting errors. Full independent receipt
+`small_guard_bank_verification_v19/165edf7ab05fd312` verifies all declared
+cases and passes the six sparse codes in each profile. Fine 15->16 is
+17.871/7.609 ps for `fine3` and 17.872/7.569 ps for `both3`; coarse overlap is
+315.614/50.331 ps and 318.062/49.116 ps respectively. Voltage, controls and
+repeated pulses pass. This supports preserved sparse range after guard
+reduction in the model without TG wiring; it does not override the later
+actual-TG-RC timing failures below. The pilot and full verifier terminate
+successfully, and all original evidence is retained.
 
 The wider-TG campaign also completes all six cases without errors. Independent
 receipt `tg_headroom_experiment_verification_v12/8aa510ce77538201` passes its

@@ -192,8 +192,11 @@ at 490.342/596.306 ps, with 13.450 ps headroom, safe voltage and settled control
 The later two-case receipt
 `small_guard_bank_verification_v19/cb1369375a76367b` also verifies `both3`
 zero code at 475.380/568.223 ps, with 41.533 ps headroom and safe voltage/
-controls. Range, carry and coarse overlap for both smaller-guard profiles
-remain pending. The wider-TG campaign is now complete too: independent
+controls. Full receipt
+`small_guard_bank_verification_v19/165edf7ab05fd312` subsequently verifies all
+twelve cases and passes the six sparse codes in both profiles. Falling
+coarse overlap is 50.331/49.116 ps for `fine3`/`both3`; neither profile includes
+TG wiring RC. The wider-TG campaign is now complete too: independent
 `tg_headroom_experiment_verification_v12/8aa510ce77538201` passes all six
 sparse codes but retains only 1.643 ps headroom and 33.507 ps falling overlap.
 
@@ -208,7 +211,8 @@ The next gate must restore it, observe all forty actual TG gates in addition
 to the existing ninety-three fine gates, and recheck absolute zero-code delay
 before spending on dense/PVT bank timing or whole-bank routing.
 All 1,972 regression tests pass. The original driver and wider-TG pilot/
-verifier services terminate successfully; the smaller-guard campaign continues.
+verifier services terminate successfully; the smaller-guard campaign and its
+full verifier have also terminated successfully.
 
 The actual-TG-RC gate is now measured, and it fails timing. In
 `tg_component_bank_v23/dd51484b10ebd382`, all twenty TGs use independently
