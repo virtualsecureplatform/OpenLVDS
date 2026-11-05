@@ -7349,3 +7349,33 @@ runs. The recorded Xyce check is parser-only and reports a BSIM4 version
 fallback; it proves neither waveform equivalence nor speed. The existing
 TICER quick-node RC tool is explicitly approximate and needs separate native
 waveform validation. Neither is substituted into frozen v123 qualification.
+
+
+### Completed double-coarse fine31 point and matched measured-gang diagnostic
+
+The first completed v123 double-coarse point (profile b2, task1) passes all
+native voltage, static-control, repeated-delay and output-slew checks.
+Repeated rise/fall delay is **691.311798/854.854163 ps**, maximum OUT slew
+**243.348799 ps**. Rising repeat difference is **2.085791 ps**. This is a
+completed full 20 ns trace; zero and first-coarse checks are still needed,
+so it admits neither the profile nor its physical implementation.
+
+`measured_gang_fine_v127/36cf5a7471a52929` independently compares that point
+after replacing all four group inverter pairs and the final pair with their
+complete measured v111 local RC. Preparation remeasures the complete passed
+parent point and binds all original waveform/deck/checksum evidence. It
+retains the same two pulses, 20 ns stop, 2 ps maximum step, 1.8 V, SS/40 C,
+100 ps input, 20 fF output load, all 1,453 native device terminals and all
+173 programming gates. It is a **single-case diagnostic**, not a replacement
+for zero/coarse/periodic/PVT/link admission. The model and producer are now
+frozen. Source v123 continues unchanged.
+
+The new service is `openlvds-measured-gang-fine-v127`; preparation log is
+`build/measured-gang-fine-v127-prepare.log`, run log is
+`build/measured-gang-fine-v127.log`. It requests one original dispatcher lease,
+with `max_workers=1`; the total six-engine budget and two-worker v123 limit
+are unchanged. The fixture/full-terminal test and failed/wrong-fine parent
+rejection test both pass (`build/measured-gang-fine-v127-tests.log`). Together
+with the three later v126 graph tests, these are five targeted passing tests
+beyond the 2,121-test full regression. Timing results for the new measured
+gang diagnostic and remaining v123 cases are outstanding.

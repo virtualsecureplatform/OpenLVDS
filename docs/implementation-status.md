@@ -93,7 +93,9 @@ DRC/LVS, junction and complete RC checks at
 `parallel_coarse_cells_v121/be7fd56d4ea74868`. Actual bank preflight preserves
 all fine/output/control circuitry and verifies 1,453/1,773 MOS, 42 MIMs and
 173 programming gates. Six native timing cases test the two strengths
-under unchanged gates and dispatcher limits; no timing improvement is assumed.
+under unchanged gates and dispatcher limits. The first double-coarse fine31
+point passes native/slew/repeat screens at 691.311798/854.854163 ps and
+243.348799 ps maximum slew; zero/coarse admission remains outstanding.
 Canonical middle-fine and stronger-coarse GDS/LEF views now pass fresh native,
 mask/junction and OpenDB checks at
 `clock_cell_views_v124/3557a1acd9b9ad4c`. The v125 integration model includes
@@ -101,7 +103,11 @@ measured group/final inverter-pair wiring; both native inventories and all
 173 programming gates are preserved. Its v126 canonical physical graph has
 179 functional macros and matches every named component connection and full
 native model/W/L inventory. These are structural preparations; their native
-timing and bank placement/routing/RC admission remain open.
+timing and bank placement/routing/RC admission remain open. A matched
+single-case fine31 diagnostic using those measured inverter gangs is running
+at `measured_gang_fine_v127/36cf5a7471a52929`, after independently remeasuring
+the completed b2 parent point. It uses one dispatcher lease and preserves
+all original native observations and the complete 20 ns fixture.
 
 The 0.76 um original width prototype separately passes its three initial
 endpoint cases with overlap 20.649958/10.736333 ps and max slew
@@ -112,8 +118,9 @@ its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 The full regression passes **2,121 tests without skips** in 366.669 s
 (`build/measured-gang-bank-v125-full-tests.log`), including the stronger-coarse
 and measured inverter-gang tests. Three subsequently added physical graph
-alias/body/profile/reference tests also pass, alongside both actual-model
-179-component graph and native reference checks. Native architecture experiments
+alias/body/profile/reference tests and two matched-diagnostic fixture/parent
+rejection tests also pass, alongside both actual-model 179-component graph
+and native reference checks. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
 healthy older solvers and failed results are retained. Remaining timing gates
 must pass before bank/common-RC, dense/update/periodic, all-PVT legal-code
