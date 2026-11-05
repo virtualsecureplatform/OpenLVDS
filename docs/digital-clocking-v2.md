@@ -3450,3 +3450,40 @@ clock-drive/fanout and local clock-path timing, with the level and voltage limit
 retained. Stronger drive is a hypothesis requiring a matched native experiment;
 it is not an accepted fix. Whole-counter RC, actual DCC first events, hardware
 warmup, all-PVT and PHY qualification remain separate open gates.
+
+### Matched native clock-drive experiment for the 60% low-phase regression
+
+`probe_static_phase_clock_drive_v2.py` prepares
+`static_phase_clock_drive_v2/5b5e068d257c374b` from the completed independent
+routed-pair baseline receipt. It inserts exactly one additional call to the
+existing certified BUF8_o4 RC model, on the same RCLK/CLK/power nets. Every
+original counter, buffer and reset-load device witness is unchanged; exactly
+22 private MOS witnesses are added, making 510 total. The complete second
+native RC instance retains its own internal nodes, private MIM shunts and
+parasitics. Devices are not resized and no node is clipped or clamped by a
+new ideal source. Shared inter-driver wiring remains ideal in this diagnostic.
+
+The four SS/40 C cases retain 410 MHz, 40/60% duty, both stopped-clock levels,
+100 ps RCLK transitions, the original REQUEST sequence, 26 ns duration, 1 ps
+maximum step, numerical tolerances, actual reset-input loads, CLK <0.18 V
+qualification and the 1.95 V all-terminal limit. The measured clock voltage
+at low0/low1/armed assertions and the minimum low-level voltage margin are
+recorded alongside all original timing/event/reset/stress checks.
+
+The pilot and independent consumer are live as
+`openlvds-static-phase-clock-drive-v2-pilot.service` and
+`openlvds-static-phase-clock-drive-v2-verify.service`, waiting on shared
+dispatch slots with at most two pilot workers. No healthy solver or existing
+campaign is restarted, and the six-engine policy is unchanged.
+`verify_static_phase_clock_drive_v2.py` regenerates the native libraries,
+single-added-instance topology, complete MOS coverage and every deck, then
+remeasures every complete new raw waveform and all four matching single-buffer
+baselines. It records event/time, voltage-peak and low-clock-margin comparisons.
+An electrical failure can be retained as negative evidence; an incomplete
+26 ns waveform cannot become a verified timing result. The watcher also waits
+for initial state-file creation, avoiding the older observer startup race.
+
+The candidate has no electrical result yet. Stronger clock drive remains a
+repair hypothesis; it does not qualify joint DCC first events, hardware warmup,
+all-PVT clocking or the PHY. The software suite passes 1,884 tests without skips
+in `build/static-phase-clock-drive-v2-full-tests.log`.
