@@ -5904,3 +5904,55 @@ and wrong-voltage-limit faults. It retains the component-only scope: the
 new physical routing is still required before any joint-RC timing admission.
 The prior **2,044** regression tests passed without skips in 362.785 seconds
 (`build/regenerated-bank-v56-full-tests.log`).
+
+
+### Regenerated physical bank and fresh joint-RC continuation
+
+`build_regenerated_bank_v57.py` builds the new 159-component physical graph
+from the frozen original and proves native connectivity against the actual
+prepared v56 circuit. The physical bank contains 331 placed instances,
+including 86 well taps and 86 fillers across 43 tapped groups. Four qualified
+INV2 cells regenerate the first-level mux outputs; the original input INV2
+is removed. The die is 448.96 by 108.8 micrometres. No device is resized.
+
+The input pad is separate from the first-level TG terminals, and IN is now
+a regular routed net because it drives two cells. All 149 required nets
+(including supplies) need detailed wires. OUT retains the proved fine-bank
+fixed bus. Fresh streamout preserves all native manufacturing masks and
+original metal, and restores the fixed supply buses and canonical ports.
+Native DRC, unique LVS and all available native geometry parameters are
+checked on this new GDS. The prior bank's physical or electrical results
+cannot satisfy these checks.
+
+```sh
+./scripts/env.sh --tools --ngspice python3 \
+  scripts/build_regenerated_bank_v57.py campaign \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_v56/454ef5c8722f8a61 \
+  --registry /work/OpenLVDS/build/diagnostics/bank_cell_registry_verification_v48/b1813242cd69dc23
+```
+
+The fresh RC continuation is `verify_regenerated_bank_joint_rc_v59.py`:
+`extract` requires completed native physical evidence and an unused GDS-hash
+namespace; `campaign` verifies passivity, all 39 ordered public ports, all
+951 native MOS and 68 MIM parameters, exact reduction regeneration, native
+LVS and an independent terminal-current Schur witness. Extraction retains
+the fixed 0.01 fF threshold and native junction parameters.
+
+`probe_regenerated_bank_joint_zero_v61.py` prepares and runs a new SS/40
+zero-code transient only after the joint-RC certificate passes. Its v60
+observation mapper derives all 331 instance identities from actual geometry,
+checks all 150 logical nets, and observes all native MOS terminals and all
+133 programming gates. The complete 20 ns/two-pulse gate retains the
+609.756098 ps both-edge limit, terminal voltage limits, static control
+settling and repeatability checks. This is still an initial screen: full
+range, monotonicity, update integrity, 40/60 percent periodic clocking and
+all-PVT/PHY qualification remain required.
+
+
+Physical receipt `regenerated_bank_physical_v57/7eff1661b0b92d20` passes:
+zero placed/fixed-bus DRC, all 149 detailed routes, zero final routing
+violations, zero native GDS DRC, unique native LVS, all 1,019 native primitives
+and all supplied junction dimensions. The 418 standard-cell devices whose
+source supplied only W/L now have actual measured junction geometry.
+Manufacturing-mask preservation and original-metal retention also pass.
+No joint-RC electrical qualification is transferred from component feasibility.
