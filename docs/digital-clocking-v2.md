@@ -6399,3 +6399,41 @@ all widths. All **2,078** software regression tests pass without skips in
 364.406 s (`build/moscap-fine-bank-v76-full-tests.log`). All-PVT common legal
 codes, new fine-cell physical qualification, periodic bank/clock-chain
 integration and the complete LVDS PHY remain unfinished.
+
+
+### Native complementary gate-cap fine-cell geometry (v77/v78)
+
+The three component candidates now have separate native physical schematics
+in `moscap_fine_unit_v77.py`. Each contains the original three switches,
+two complementary gate-cap MOSFETs with D/S/body tied to their respective
+supplies, and the retained 2x2 ENB guard MIM. The physical reference supplies
+W/L only: all five junction geometries must be measured anew. A topology
+regression compares every candidate against the simulated v75 fine cell,
+allowing source/drain exchange while retaining gate/body connections.
+
+Native primitive inspection `moscap_fine_pcells_v77/d0953e6f48eced75`
+records actual PCell bounds and pins for all three widths. The initial
+five-MOS/one-MIM layouts have five public ports and separate local M1
+fanout, M2 drops, M3 buses and the guard's M4 top-plate escape. All three
+pass fresh Magic DRC with zero violations and strict native LVS:
+
+| Gate width | Physical v78 context | DRC | LVS |
+| --- | --- | --- | --- |
+| 0.42 um | `1811088d7cc631fa` | 0 | pass |
+| 0.84 um | `299e017d3a3ac819` | 0 | pass |
+| 1.26 um | `897b9f9938080691` | 0 | pass |
+
+The ordinary native extraction retains all five MOS devices, including
+both gate-capacitor devices, and the one guard MIM. These are standalone
+component layouts; they do not establish bank RC, output slew, periodic
+transport, common legal codes or electrical/PHY qualification. No existing
+bank/registry selection or running solver was changed.
+
+The 0.42 um component zero case has now completed at SS/40 C. Its repeated
+rise/fall delays are 387.301824/418.065250 ps, with output-slew, voltage,
+control and repetition screens passing. The first-coarse case measures
+565.326299/606.408466 ps. Relative to fine31 at
+550.901747/573.923729 ps, this gives negative coarse overlap
+-14.424553/-32.484737 ps. Thus this width fails the endpoint feasibility
+screen even though all three cases pass the native and output-slew gates.
+The other widths remain pending; these are component results only.
