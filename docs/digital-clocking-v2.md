@@ -6867,3 +6867,34 @@ slew, repeated pulses, positive coarse overlap and every voltage/control
 check. Full bank geometry/common RC, dense/update/periodic duty endpoints,
 all-PVT legal codes, clock-chain integration and the complete LVDS PHY
 remain required.
+
+
+### Post-drive measurements and wider middle-bus cell (v102/v104/v105)
+
+The complete v101 prototype passes fine31 output slew at **248.661930 ps**,
+with repeated delay 730.832858/923.186368 ps and passing native safety and
+repeat checks. Its zero delay is **556.915374/658.680965 ps**, so falling
+quarter headroom remains negative. The complete comparison has rising/falling
+overlap **-12.968506/+74.159196 ps** and quarter headroom **-48.924868 ps**.
+Thus output strengthening fixes the fine31 slew point but does not qualify
+this bank: zero-quarter timing and rising coarse overlap still fail.
+
+V102 extends the v96 full-trace stage diagnostic to the original, short-route,
+parallel-root and parallel-final producers. It retains nearest saved MOS
+terminal selection and exact reproduction of measured output delays.
+Receipts `drive_stage_analysis_v102/119cc0dd0e7c3ed9` (root-parallel zero)
+and `7e7fecafefa3dbdc` (parallel-final fine31) show repeated falling-edge
+intervals of 232.394251/220.044123 ps for group/root at zero, and
+332.996464/416.063760 ps at fine31. These are representative-node diagnostics,
+not exact-boundary certificates. Both upstream drive and mux loading matter.
+
+A 1.26 um capacitor cell with its private CAP bus at y=6.2 um provides a
+physical alternative between the earlier y=7.9 and -0.6 um routes. Devices,
+public ports and guards are unchanged. Native physical context
+`moscap_fine_physical_v104/925dafed56ad63ba` passes zero DRC and strict LVS.
+RC context `moscap_fine_rc_v105/3198638a648681ac` passes native mask equality,
+separate active regions, measured junction reconstruction and topology,
+passivity, port order and exact reduction. It has 358 raw R, 89 C, 302 reduced
+R, 82 eliminated nodes and 88 protected nodes. Four independent DC witnesses
+pass with maximum normalized current error 5.384041e-7. No bank timing
+qualification follows from these component proofs.
