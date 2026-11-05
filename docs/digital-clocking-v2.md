@@ -6898,3 +6898,33 @@ passivity, port order and exact reduction. It has 358 raw R, 89 C, 302 reduced
 R, 82 eliminated nodes and 88 protected nodes. Four independent DC witnesses
 pass with maximum normalized current error 5.384041e-7. No bank timing
 qualification follows from these component proofs.
+
+
+### Balanced-drive sizing pilot (v103/v106/v107)
+
+The post-root zero trace has comparable group-inverter and root-mux intervals
+(232/220 ps). V103 therefore parallels all 16 first-level TG cells and all
+four group inverters in the v100 root/final-parallel bank. Doubling the first
+mux drive accompanies the larger group-inverter input capacitance. No serial
+stage is added. Projection removes the 20 new calls and restores the complete
+v100 model byte for byte; all original qualified component definitions remain.
+Three tests check exact projection, all leaf/group connections, wrong-control
+rejection and duplicate application.
+
+The balanced model has **1,133 MOS, 42 MIMs, 173 programming-gate observations**
+(93 fine, 80 TG) and 86 root controls. All 32 added first-mux programming gates
+and all additional group-inverter devices are observed at actual native nodes.
+V106 binds the measured v105 1.26 um middle-bus cell; no physical evidence is
+transferred from a different width or route.
+
+`balanced_drive_bank_v107/69899aef8f1d2f8f` prepares the same zero/fine31/
+first-coarse SS/40 C pilot and explicitly binds the completed post-root stage
+failure. It retains native stress/control/repetition checks, <=250 ps OUT
+slew, both positive coarse overlaps and zero-quarter headroom. Its service
+`openlvds-balanced-drive-bank-v107` uses two workers under the unchanged
+six-engine priority/aging dispatcher. Gang/common wiring and the full bank
+remain unqualified, and all electrical/PHY admission flags stay false.
+
+The complete regression after v103-v107 passes **2,099 tests without skips**
+in 362.623 s (`build/balanced-drive-bank-v107-full-tests.log`). Native v104/v105
+geometry/junction/RC checks independently cover the new isolated fine cell.
