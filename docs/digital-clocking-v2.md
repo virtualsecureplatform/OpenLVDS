@@ -3487,3 +3487,46 @@ The candidate has no electrical result yet. Stronger clock drive remains a
 repair hypothesis; it does not qualify joint DCC first events, hardware warmup,
 all-PVT clocking or the PHY. The software suite passes 1,884 tests without skips
 in `build/static-phase-clock-drive-v2-full-tests.log`.
+
+### Physical parallel clock-buffer macro and fresh shared-wire RC
+
+`build_clock_buffer_pair_v2.py` constructs
+`clock_buffer_pair_physical_v2/3fc2cda807ff39a4` from the exact v4 producer
+of the existing BUF8_o4 shunted cell. An initial pre-artifact attempt used the
+older v3 producer and correctly rejected the mismatched source context; its log
+is retained. The corrected build imports the actual child GDS twice and connects
+A, X, VGND and VPWR on real common M4 rails with legal M3/via3 landings. The
+two native child origins are (4.00,5.00) and (32.93,5.00) um. Both child
+device/private-shunt hierarchies remain intact. The macro passes zero DRC and
+unique LVS without waiving a check or changing a native device dimension.
+
+A separate written-GDS reread in
+`build/clock-buffer-pair-native-mask-proof-v2.json` verifies zero native-child
+polygon-union XOR across all 31 layers and identical direct child hierarchy,
+and confirms exactly the two declared native child instances. Native source
+tests also retain separate private nodes and exact original dimensions while
+sharing only the four public nets.
+
+`extract_clock_buffer_pair_v2.py` produces
+`clock_buffer_pair_rc_v2/6edaf2564cd39759` from the actual new GDS. It extracts
+693 resistors and 231 parasitic capacitors, retaining 44 native MOS calls and
+four native MIM calls. The raw network is positive-element passive. Exact
+positive-conductance reduction retains 550 resistors and all four public ports
+`A X VGND VPWR`; the simulator-facing model independently passes passivity.
+Strict comment-aware flat LVS reports a unique native-source match.
+
+Independent receipt
+`clock_buffer_pair_rc_verification_v2/75e8452c193c91e7` regenerates the two
+native source scopes, checks GDS/source/interface identity and both passivity
+screens, reproduces the exact raw-to-simulator reduction, and repeats strict
+flat LVS. Its consumer `bound()` also passes in
+`build/clock-buffer-pair-rc-consumer-v2.log`. The simulator-facing pair is
+`openlvds_buf_8_o4_shunted_pair_v2` in extraction namespace
+`build/extracted/07f281758c4d2e63`.
+
+These are physical/passive-RC/topology results for the proposed drive change.
+They do not replace the queued clock-drive experiment or establish its phase
+repair. A later integrated candidate must explicitly select the real shared-wire
+model and requalify native timing, voltage, reset and clock startup before any
+clock-island or PHY admission. `make test-full` passes 1,886 tests without skips
+in `build/clock-buffer-pair-v2-full-tests.log`.

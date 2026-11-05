@@ -19,6 +19,12 @@ held until the matched physical fine-control settling campaign passes. These
 results do not yet qualify delay range, legal-code ROMs, all-PVT clock timing
 or the complete link. See the [routed-bank timing checkpoint](digital-clocking-v2.md#staged-native-timing-using-complete-routed-bank-rc).
 
+Native phase-release testing exposes a 60% duty clock-low margin regression.
+A matched two-buffer drive experiment is queued, and a physical parallel-buffer
+macro already passes DRC/LVS and independent fresh passive-RC verification.
+The proposed drive repair is not yet electrically proven; see the
+[clock-drive experiment](digital-clocking-v2.md#matched-native-clock-drive-experiment-for-the-60-low-phase-regression).
+
 Implemented v2 foundations include the machine-readable contract, conservative
 physical-delay reference algorithms, atomic code CDC, clock-loss watchdog,
 bounded DLL management FSM and training transmitter/receiver RTL. The RTL tests
