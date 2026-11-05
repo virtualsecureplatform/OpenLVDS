@@ -7431,3 +7431,46 @@ not a new qualification. For example:
 Full regression passes **2,126 tests without skips** in **387.615 s**
 (`build/balanced-placement-v129-full-tests.log`). Geometry work leaves every
 running native campaign and its immutable sources/fixtures unchanged.
+
+
+### Completed double-coarse points and measured-gang follow-up
+
+The three b2 cases in `strong_coarse_bank_v123/8d9e2e94f139b1a3`
+are complete, with no case errors and all original native/control/repeat/slew
+checks passing. The b3 cases remain in progress in the unchanged campaign.
+These are complete 20 ns native traces at SS/40 C, 100 ps input slew and
+20 fF load; no partial trace is used for timing decisions.
+
+| b2 point | Repeated rise / fall delay (ps) | Maximum output slew (ps) |
+| --- | ---: | ---: |
+| zero | 453.510670 / 498.541428 | 154.645343 |
+| fine31 | 691.311798 / 854.854163 | 243.348799 |
+| first coarse | 633.258320 / 687.408159 | 155.559728 |
+
+Rising/falling overlap is **+58.053478 / +167.446004 ps**, and the worst
+zero-code pulse retains **111.213640 ps** of fastest-quarter headroom.
+Strengthening the coarse stages resolves the earlier sparse overlap failure
+in this component model. It does not establish dense-code monotonicity,
+periodic operation, joint bank RC, all-PVT operation or PHY qualification.
+
+The completed `measured_gang_fine_v127/36cf5a7471a52929` comparison replaces
+the four group and final inverter pairs with their measured compound RC.
+Native/slew checks pass: repeated rise/fall delay is
+**692.500788 / 856.038786 ps**, maximum slew **244.222924 ps**. Relative to
+the matched b2 point, repeated delays increase by 1.188990/1.184623 ps.
+
+`probe_measured_gang_sparse_v131.py` completes that model's own three-point
+screen with two new zero/first-coarse runs and the unchanged, independently
+remeasured completed fine31 trace. Artifact
+`measured_gang_sparse_v131/58a9364cba76fa27` is running with two workers in
+the original six-engine dispatcher. All three points must pass native/slew,
+positive both-edge overlap and zero-quarter checks. Whole-bank RC and PHY
+flags remain false regardless of this sparse result. Source fixtures and
+helpers are frozen; healthy existing solvers remain untouched.
+
+The full software regression passes **2,129 tests without skips** in
+**383.636 s** (`build/measured-gang-sparse-v131-full-tests.log`), including
+rejection of failed consumed fine traces, negative overlap, first-pulse
+quarter failures and incomplete/incorrect case coverage. Input clock duty
+checks remain **40/50/60% at 390/400/410 MHz**, at fixed supplies with no
+voltage sweep and 0/25/40 C temperature coverage.

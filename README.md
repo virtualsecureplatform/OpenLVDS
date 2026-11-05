@@ -29,14 +29,17 @@ The completed balanced-drive pilot passes native/slew checks and has 111 ps
 zero-code quarter headroom, but rising coarse overlap still fails by 10.72 ps.
 Post-mux regeneration passes native/slew/zero screens but misses rising
 overlap by 17.27 ps. The root-only trial misses the zero-code quarter budget
-by 17.79 ps. A matched coarse-drive experiment is now running with fully
-extracted double/triple coarse-buffer components.
+by 17.79 ps. With fully extracted double-strength coarse buffers, the three
+initial points now pass native/slew checks and have positive rising/falling
+overlap of 58.05/167.45 ps. Triple-strength cases remain running.
 Canonical measured fine, inverter and stronger-coarse cell views pass layout
 and OpenDB checks. The model with measured group/final inverter wiring maps
 to 179 functional macros; its native inventories and named-pin graph agree.
 Both stronger-coarse balanced placements pass zero DRC and all 351-instance
 connectivity checks, with native mask previews available. Their routing and
-timing admission remain pending.
+whole-bank timing admission remain pending. The measured inverter-gang
+fine31 point passes at 244.22 ps maximum slew; its matching zero/coarse
+checks are running.
 Their exploratory 332-instance placement passes zero DRC and fixed-bus
 connectivity checks; whole-bank routing and timing qualification remain open.
 The physical parallel INV8 output master passes native geometry and complete

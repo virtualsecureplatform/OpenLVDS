@@ -93,9 +93,11 @@ DRC/LVS, junction and complete RC checks at
 `parallel_coarse_cells_v121/be7fd56d4ea74868`. Actual bank preflight preserves
 all fine/output/control circuitry and verifies 1,453/1,773 MOS, 42 MIMs and
 173 programming gates. Six native timing cases test the two strengths
-under unchanged gates and dispatcher limits. The first double-coarse fine31
-point passes native/slew/repeat screens at 691.311798/854.854163 ps and
-243.348799 ps maximum slew; zero/coarse admission remains outstanding.
+under unchanged gates and dispatcher limits. The double-coarse profile now has all three completed native points, with
+positive rising/falling overlap of 58.053478/167.446004 ps and zero-code
+quarter headroom of 111.213640 ps. All native/slew screens pass; triple-coarse
+cases remain running. These component-model results do not admit common bank
+wiring, periodic clocks, PVT or the PHY.
 Canonical middle-fine and stronger-coarse GDS/LEF views now pass fresh native,
 mask/junction and OpenDB checks at
 `clock_cell_views_v124/3557a1acd9b9ad4c`. The v125 integration model includes
@@ -110,11 +112,14 @@ actual 351-instance OpenDB checks and fixed-bus connectivity at
 `balanced_placement_v129/f53b50318fc8e365` (b3). Each has 179 functional macros
 and 43 tapped control rows; root outputs remain unrouted. Read-only native
 mask previews are available through `render_balanced_placement_v130.py`.
-A matched
-single-case fine31 diagnostic using those measured inverter gangs is running
-at `measured_gang_fine_v127/36cf5a7471a52929`, after independently remeasuring
-the completed b2 parent point. It uses one dispatcher lease and preserves
-all original native observations and the complete 20 ns fixture.
+The matched measured-inverter fine31 diagnostic is complete at
+`measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
+692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native
+and slew checks passing. New zero/first-coarse runs use the identical model
+at `measured_gang_sparse_v131/58a9364cba76fa27`, consuming the completed fine31
+trace as the third point. They preserve the complete 20 ns fixture and all
+original observations, with two dispatcher leases. This measured-gang model
+still needs its own three-point verdict; no whole-bank or PHY admission follows.
 
 The 0.76 um original width prototype separately passes its three initial
 endpoint cases with overlap 20.649958/10.736333 ps and max slew
@@ -122,9 +127,9 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-The full regression passes **2,126 tests without skips** in 387.615 s
-(`build/balanced-placement-v129-full-tests.log`), including physical graph and
-matched-diagnostic tests. Both CAD campaigns also reject injected metal,
+The full regression passes **2,129 tests without skips** in 383.636 s
+(`build/measured-gang-sparse-v131-full-tests.log`), including physical graph,
+matched-diagnostic and three-point gate tests. Both CAD campaigns also reject injected metal,
 label and duplicated-instance faults; these native layout checks supplement
 the software suite. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
