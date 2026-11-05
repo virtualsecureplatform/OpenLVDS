@@ -119,7 +119,12 @@ is represented by three temporary router ports while 94 already connected
 fine-bus terminals are detached. All eight root outputs remain available;
 all 351 placements, native connections, pin geometries/types and fixed buses
 are restored exactly. The initial v132 API failure is retained. Independent
-stored-database readback and injected native faults are being checked by v133.
+stored-database verification passes at
+`balanced_routing_interface_verification_v136/c4810dca76a4b101` (b2) and
+`balanced_routing_interface_verification_v136/adadda7948c4b82b` (b3): all six
+native database readbacks match and all eight injected faults are rejected.
+The first v133 movement-fault fixture is retained; OpenDB refused to move a
+FIRM instance, so the corrected fixture unlocks only its disposable copy.
 No routing or timing candidate admission is performed by these preparations.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are

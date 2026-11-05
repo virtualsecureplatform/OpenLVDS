@@ -7507,8 +7507,24 @@ pending, along with the measured-gang model's own three-point timing gate.
 The retained initial `balanced_routing_interface_v132/02f403995de1971d`
 failed because this OpenDB exposes `clearSpecial`, not `unsetSpecial`.
 Its code, immutable artifact and native error log remain intact; v134 corrects
-that API call in a new producer. The independent
-`verify_balanced_routing_interface_v133.py` follow-up rereads all three saved
-database stages in fresh OpenROAD processes and injects native missing-root,
-shifted-proxy-metal, supply-type and placement faults. Its verification is
-in progress; it cannot establish routed connectivity or electrical timing.
+that API call in a new producer. The independent stored-database verification now passes for both profiles:
+
+| Profile | Stored database artifact | Result |
+| --- | --- | --- |
+| b2 | `balanced_routing_interface_verification_v136/c4810dca76a4b101` | pass |
+| b3 | `balanced_routing_interface_verification_v136/adadda7948c4b82b` | pass |
+
+Each rereads the original placed, adapted router-input and restored databases
+in fresh OpenROAD processes. All six native snapshot classes match for every
+stage. Four deliberately corrupted native database copies are each rejected:
+a disconnected root output changes connectivity, shifted bus-proxy metal
+changes pin geometry, a lost supply type changes net semantics, and a moved
+native instance changes placement. Thus all six positive readbacks pass and
+all eight native faults are rejected across the two profiles.
+
+The initial v133 checks are retained at `252d8645846f40b9` (b2) and
+`c4bfca2124bb7dc1` (b3). OpenDB rejected their attempt to move a FIRM instance
+before a corrupted database could be saved. The corrected v136 fixture
+unlocks only the disposable copy, shifts it by 1 um and relocks it before
+snapshot/readback. Source geometry and healthy simulations are untouched.
+These checks establish the saved interface, not routed connectivity or timing.
