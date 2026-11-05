@@ -4949,3 +4949,156 @@ zero-code remeasurements also pass. Logs:
 `build/small-guard-bank-v19-two-zero-verification.log`,
 `build/tg-quad-cell-v20.log`, `build/tg-quad-cell-v21.log` and
 `build/tg-quad-cell-v22-verification.log`.
+
+### Actual TG RC closes the source-headroom question (2026-11-05)
+
+`tg_component_bank_v23.py` installs the complete independently verified native
+TG component in all twenty switch positions of the two smaller-guard banks.
+It compares original and wire-collapsed native geometry/connectivity only for
+binding; simulation retains every actual R/C. All unrelated component
+definitions, the 16 uniform taps, 31 fine units, guards, tail termination and
+bank connections remain intact. Native device coverage remains 903. Actual
+R-separated EN/ENB gates are mapped through the real component wiring: all
+forty must match saved native MOS gate terminals and the correct public
+one-hot targets. They supplement, rather than replace, the 93 fine-gate checks.
+
+Context `tg_component_bank_v23/dd51484b10ebd382` uses two workers under the
+unchanged six-engine dispatcher for two complete SS/40 C zero-code cases,
+fixed 1.8 V, 100 ps input slew, 20 fF load and two pulses in 20 ns. Each TG adds
+190 positive R/56 nonnegative parasitic C. Total expanded component wiring is
+12,601 R and 4,858/4,859 C for `fine3`/`both3`. SC control-cell/common/tail-cap
+routes remain unextracted; this is still not whole-bank RC.
+
+Full independent receipt
+`tg_component_bank_verification_v23/a3e55bc6d04fac5a` regenerates all libraries,
+native census and gate mappings, verifies translated decks/logs/raw record
+counts, then remeasures both complete traces:
+
+| Profile | Rise / fall delay (ps) | Fast-quarter headroom (ps) | Peak MOS difference (V) |
+| --- | ---: | ---: | ---: |
+| `fine3` | 632.810 / 811.766 | -202.011 | 1.880510 |
+| `both3` | 618.299 / 785.915 | -176.159 | 1.880506 |
+
+All actual MOS voltage checks, 93 fine gates, 40 TG gates, public/one-hot
+controls and repeated pulses pass. Worst TG-control deviations are
+41.423/41.839 mV, below the unchanged 180 mV requirement. Repeat differences
+are below 0.001 ps. Both fail the unchanged absolute fast-quarter budget.
+The 217.692 ps added falling delay in `both3` erases its previous 41.533 ps
+headroom. No range, calibration table or PHY admission follows from this
+two-case diagnostic; even a zero-code pass would not prove all six sparse codes.
+The pilot and its verifier terminate successfully with no numerical/reporting
+errors. Failed timing remains a circuit result.
+
+### Measured native-terminal timing diagnosis
+
+Restored component resistance separates the public tap/tree/selected wires
+from native MOS terminals. These passive public nodes are not automatically
+saved by the fixture. `diagnose_tg_component_path_v24.py` therefore measures
+actual saved terminals, with R-connectivity used only to identify each
+terminal's role. It does not reconstruct passive waveforms or call those
+measurements public-net delays. The selected zero-code path includes sixteen
+input-driver output terminals, both terminals at each side of each selected
+TG, sixteen fine-driver gates and sixteen fine-driver output terminals, plus
+public IN/OUT. Every requested saved vector and exactly one crossing in each
+direction per pulse are mandatory. Missing vectors, extra crossings or missing
+native fingers cannot silently shrink a timing band.
+
+Receipt `tg_component_path_diagnosis_v24/6e18a08567e9e556` binds the independently
+rechecked complete gate and reproduces its public input/output propagation.
+For the second `both3` falling pulse, measured intervals between native crossing
+bands are (ps):
+
+| Native-terminal interval | Lower / upper bound |
+| --- | ---: |
+| IN to input-driver output terminals | 122.621 / 128.686 |
+| First TG input terminals to its output terminals | 153.285 / 165.166 |
+| Root TG input terminals to its output terminals | 154.348 / 164.025 |
+| Fine-driver gates to its output terminals | 317.659 / 326.572 |
+
+Other intervals between those active boundaries account for the connecting
+segments. A few lower bounds can be slightly negative because different
+native-terminal crossing bands overlap; bounds are neither clipped nor
+interpreted as inferred public-node timing. This shows the two loaded TGs and
+fine driver dominate the restored-RC path.
+
+A separate conservative explicit-wire loading calculation counts every
+coupling C in full at both connected public ports. It gives 5.603 fF at A and
+4.363 fF at Z per TG, excluding native MOS capacitance, including 1.209 fF A-Z
+coupling. This is a diagnostic loading bound, not a replacement for the full
+RC transient (`build/tg-component-v21-port-capacitance.log`).
+
+### Legal NMOS-low-Vt isolation
+
+The next experiment retains every reference R/C while changing selected native
+device flavors. The pinned local `libs.tech/magic/sky130A.tcl` permits
+`nfet_01v8_lvt` at Lmin=0.15 um/Wmin=0.42 um. Its `pfet_01v8_lvt` defaults
+require Lmin=0.35 um, so it is not substituted into existing L0.15 PMOS devices.
+The broader experiment uses regular `pfet_01v8` in the coarse buffers, as in
+the previously physically proven regular-driver change.
+
+`nlvt_data_path_v25.py` defines two variants from the failed actual-RC `both3`
+bank, retaining topology, W/L, AD/AS/PD/PS, all R/C and all fine/control devices:
+
+| Profile | Native NMOS model changes | HVT-to-regular PMOS changes |
+| --- | ---: | ---: |
+| `tg_nlvt` | 20, TGs only | 0 |
+| `data_nlvt` | 196, TGs/input/fine drivers/16 coarse-buffer pairs | 160, coarse buffers only |
+
+Changed component model names are diagnostic names. Instance names, terminal
+census, 1.95 V domain limits, all 903 MOS observations and all 133 actual
+control-gate observations remain intact. The original implant layouts no
+longer prove physical equivalence for these components; retained interconnect
+RC is explicitly borrowed for flavor isolation. No capacitor or routing
+element is removed to obtain a result. A favorable candidate requires new
+implant-specific GDS/native/passive-RC proof and complete sparse-range checks,
+especially coarse overlap after speeding the coarse buffers.
+
+Prepared context `nlvt_data_path_v25/a937b3dd487bed57` binds the failed complete
+gate, regenerated actual component banks and both new model variants. Its two
+SS/40 C zero-code cases and independent verifier complete successfully under
+the unchanged dispatcher. Full receipt
+`nlvt_data_path_verification_v25/4a5573aa2eb7a558` independently verifies both
+complete numerical traces. The earlier available-case receipt
+`nlvt_data_path_verification_v25/e9bfa8b41b949c64` also binds both cases.
+
+| Profile | Rise / fall delay (ps) | Fast-quarter headroom (ps) | Peak MOS difference (V) |
+| --- | ---: | ---: | ---: |
+| `tg_nlvt` | 573.311 / 731.952 | -122.196 | 1.880508 |
+| `data_nlvt` | 543.525 / 647.174 | -37.418 | 1.869753 |
+
+All native voltage, public/fine/TG control and repeated-pulse checks pass. The
+maximum actual TG-control deviations are 43.036/50.824 mV. Both still fail
+quarter delay. The broader change recovers 138.741 ps of falling delay from
+the original 785.915 ps actual-component-RC path. This is evidence of useful
+drive-strength improvement, not a passing clock backend or physical proof for
+the changed implants.
+
+Native-terminal band measurements using the existing saved-terminal reader
+on the complete broader-flavor trace give about 124--134 ps across the first
+TG, 111--117 ps across the root TG, and 252--261 ps from fine-driver gates to
+its output terminals on the second falling pulse. This diagnostic retains the
+borrowed-RC scope (`build/nlvt-data-path-v25-terminal-bands.log`).
+
+The next physical experiment will shorten and balance A/Z TG routes: align
+the N/P signal contacts with a mirrored P device, use short local data tracks,
+and keep control/body escapes separate. Fresh native DRC/LVS, preserved
+junctions and measured extracted A/Z capacitance must establish that the new
+cell reduces loading. The favorable NMOS-LVT/data-buffer changes also require
+their own implant-specific component proofs. Restore those actual models and
+recheck zero delay/voltage/controls before complete sparse codes, including
+coarse overlap after changing buffer drive. No dense/PVT, code-update,
+periodic-duty, DLL/DCC or PHY gate is admitted by these zero-code diagnostics.
+
+Validation: the TG-RC restoration passes 1,977 regression tests in 390.917 s
+(`build/tg-component-bank-v23-full-tests.log`); native-terminal diagnosis passes
+the 1,980-test suite in 369.776 s (`build/tg-component-path-v24-full-tests.log`).
+The complete current suite, including the three legal-flavor/RC-preservation
+tests, passes all 1,983 tests without skips in 388.006 s
+(`build/nlvt-data-path-v25-full-tests.log`). Native complete-waveform gate and
+terminal-band remeasurement also pass, while the circuit quarter-period check
+fails. Logs: `build/tg-component-bank-v23-prepare.log`,
+`build/tg-component-bank-v23-pilot.log`,
+`build/tg-component-bank-v23-verification.log`, `build/tg-component-path-v24.log`,
+`build/nlvt-data-path-v25-prepare.log`, `build/nlvt-data-path-v25-pilot.log` and
+`build/nlvt-data-path-v25-verification.log` and
+`build/nlvt-data-path-v25-available.log`.

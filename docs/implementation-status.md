@@ -210,6 +210,39 @@ before spending on dense/PVT bank timing or whole-bank routing.
 All 1,972 regression tests pass. The original driver and wider-TG pilot/
 verifier services terminate successfully; the smaller-guard campaign continues.
 
+The actual-TG-RC gate is now measured, and it fails timing. In
+`tg_component_bank_v23/dd51484b10ebd382`, all twenty TGs use independently
+verified component RC. Every one of the 903 MOS, 93 fine gates and 40 actual
+R-separated TG gates remains observed. Independent full receipt
+`tg_component_bank_verification_v23/a3e55bc6d04fac5a` verifies both complete
+zero-code traces: `fine3` is 632.810/811.766 ps and `both3` is
+618.299/785.915 ps rising/falling. Their headroom is -202.011/-176.159 ps.
+Voltage, static controls and repeatability pass. Thus the earlier 41.533 ps
+headroom does not survive restored TG wiring. These are complete numerical
+results, not convergence failures or a relaxed quarter-period requirement.
+
+Native-terminal diagnosis
+`tg_component_path_diagnosis_v24/6e18a08567e9e556` measures saved transistor
+terminals rather than inferring unsaved passive tap/tree voltages. The `both3`
+falling intervals are roughly 153--165 ps and 154--164 ps across the two TGs,
+then 318--327 ps through the fine driver. New source-flavor diagnostic
+`nlvt_data_path_v25/a937b3dd487bed57` compares legal L0.15 NMOS-LVT only in the
+TGs versus TGs/data drivers/coarse buffers; the broader variant also changes
+coarse-buffer PMOS from HVT to regular at unchanged L0.15. Fine-unit and
+control devices, W/L/junctions and all explicit R/C are retained. This is
+borrowed-RC isolation for changed implants, not a new physical witness. Both
+two-worker zero-code cases and their verifier have completed successfully.
+Full independent receipt `nlvt_data_path_verification_v25/4a5573aa2eb7a558`
+measures TG-only NMOS-LVT at 573.311/731.952 ps and the broader data-path
+variant at 543.525/647.174 ps. Both pass native voltage, controls and repeatability,
+but quarter headroom remains -122.196/-37.418 ps. Thus the broader change
+recovers 138.741 ps of falling delay without yet satisfying timing. The next
+physical candidate shortens and balances the TG data routes; changed implants
+also need fresh GDS/native/RC proof before physical admission. Local PDK NMOS-LVT
+limits permit L0.15/W>=0.42; PMOS-LVT has Lmin0.35 and is not substituted at
+L0.15. All 1,983 regression tests pass. Whole-bank, dense/PVT and PHY gates
+remain open.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal
