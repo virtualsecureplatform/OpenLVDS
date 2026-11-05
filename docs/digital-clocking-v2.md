@@ -3298,3 +3298,16 @@ Independent consumer verification, repaired-cell settling admission, routed
 native timing/range/monotonicity, legal-code ROM, all fifteen PVT conditions and
 the complete clock/link qualification remain required. No timing, electrical
 qualification or PHY admission flag is set by this result.
+
+### Independent routed-bank RC consumer verification
+
+`verify_weighted_bank_rc_v2.py` produces receipt
+`weighted_bank_rc_verification_v2/b768f526ef43c1d8`, passing a new read of the
+actual final OpenDB and both power-grid checks. It reconstructs all 430 instance
+scopes and 2,651 native primitive calls, reproduces the exact native-reference
+bytes, independently regenerates the 58,762-resistor simulator model from the
+86,395-resistor raw extraction, and repeats strict flat LVS with a unique match.
+Both raw and reduced networks pass passivity, and all 24 public ports survive.
+The receipt's consumer validates its source chain, actual output hashes,
+regenerated reference/model and strict LVS log. This closes independent RC
+consumer verification for this bank variant; native timing and PHY remain open.
