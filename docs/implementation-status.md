@@ -14,14 +14,23 @@ control and repeated-pulse checks pass. Zero-code headroom is only **4.286 ps**;
 common/control/tail wiring remains unextracted, and dense codes, periodic
 clocks, all-PVT timing and the PHY remain unqualified.
 
-The named-pin physical netlist for all 156 components and 39 public pins now
-passes independent Yosys reimport and native connectivity/parameter equivalence
-(`tg_bank_netlist_verification_v43/5a1727fa9f7d09ed`). All 903 MOS, 65 MIMs,
-body/supply ties and the physical balancing-tail cell are preserved. Thirteen
-imported-JSON and two native-SPICE corruption controls are rejected. This is
-structural input for macro registration, placement, routing, whole-bank
-DRC/LVS and joint RC extraction; it transfers no electrical admission. The
-full pinned software regression passes **2,016 tests without skips**.
+The corrected named-pin physical netlist for all 156 components and 39 public
+pins passes independent Yosys reimport and native connectivity/parameter
+equivalence (`tg_bank_netlist_verification_v46/71ab47a14855ae22`, exporter v45).
+The fine-cell physical ports are explicitly adapted from legacy
+`NODE/EN/ENB/VDD/VSS` to `A/CTRL/CTRL_B/VPWR/VGND`; the capacitive data port and
+supplies are inouts. Registry preflight exposed incorrect direction/use roles
+for these legacy names in the earlier v42/v43 physical interface. Those frozen
+artifacts are retained, and v45/v46 supersedes them for physical integration.
+The native SPICE connectivity and measured timing were unaffected: the expanded
+signature remains `d78fc44432de65fe35486216c43f8d1a215f09024c43327b3892819c416cf5fc`
+for all 903 MOS and 65 MIMs with exact parameters and body ties. Thirteen
+imported-JSON and two native-SPICE corruption controls are rejected, including
+rewiring the actual canonical fine data pin. This is structural input for
+macro registration, placement, routing, whole-bank DRC/LVS and joint RC
+extraction; it transfers no electrical admission. The full software regression
+passes **2,025 tests without skips**, including the canonical fine-cell and
+physical adapter checks.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew
