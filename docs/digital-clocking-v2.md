@@ -7065,3 +7065,26 @@ subsequently added v112 substitution tests also pass separately
 (`build/post-mux-output-rc-v113-unit-tests.log`), and the actual-model native
 preflight passes (`build/post-mux-output-rc-v113-preflight-2.log`). Those
 software/structural checks do not substitute for the new native timing cases.
+
+
+### Completed balanced-drive verdict and measured-output campaign
+
+`balanced_drive_bank_v107/69899aef8f1d2f8f` is complete (three cases, zero
+errors). Its first-coarse repeated rise/fall delay is
+**703.115336/727.556813 ps**, maximum slew **156.522792 ps**, and all native
+checks pass. The completed comparison has rising overlap **-10.716291 ps**
+and falling overlap **+129.826301 ps**. Although zero-code quarter headroom
+and all endpoint slews pass, the rising fine span is smaller than the first
+coarse increment. This candidate fails the unchanged overlap gate and is
+not admitted. The outstanding common-regenerator comparison is still needed
+before choosing further sizing versus the new topology.
+
+The measured parallel-output campaign is prepared at
+`post_mux_output_rc_v113/13796ed50f568b43`, with three cases and at most two
+workers. The live service is `openlvds-post-mux-output-rc-v113-run`; its log
+is `build/post-mux-output-rc-v113.log`. The earlier automatic-launch service
+`openlvds-post-mux-output-rc-v113` failed before any native run because
+systemd expanded a shell parameter expression. That journal is retained;
+the separate live service uses the explicit prepared artifact path. No
+solver was stopped, restarted or retried. The source and prepared inputs
+remain frozen, and all new native runs use the original six-engine queue.

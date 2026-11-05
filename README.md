@@ -25,10 +25,10 @@ and component RC checks with measured junctions. Integrating that RC exposed
 root-mux loading as a timing bottleneck. A strengthened final stage meets the
 fine31 slew check, but quarter timing and overlap still fail. Balanced-drive
 and post-mux regeneration candidates are running with unchanged gates.
-Balanced-drive zero/fine31 native checks now pass, with 111 ps zero-code
-quarter headroom; coarse overlap is pending. The physical parallel INV8
+The completed balanced-drive pilot passes native/slew checks and has 111 ps
+zero-code quarter headroom, but rising coarse overlap still fails by 10.72 ps. The physical parallel INV8
 output master passes native geometry and complete component RC checks, and
-is being integrated into a fresh timing experiment. Full delay-range,
+is now included in a fresh timing experiment. Full delay-range,
 all-PVT, clocking integration and full-link
 qualification remain open; these results are separate from the legacy PHY.
 
