@@ -6784,3 +6784,42 @@ positive overlap **20.649958/10.736333 ps**, zero quarter headroom
 passing. This is only the original width prototype, whose new local
 routing/junctions are unqualified; it does not supersede the physical-RC
 failure above or qualify a full delay bank.
+
+
+### Root-drive architecture prototype (v97/v98)
+
+V96's completed zero-case diagnostic identifies the root TG interval as
+the largest contribution to the falling quarter failure. V97 duplicates
+the complete qualified TG component at each of the four root branches.
+Each branch keeps its same data/control/supply pins; its two TG cells are
+in parallel and introduce no additional serial stage. Every original
+component definition is retained. Removing the four added calls and
+normalizing the bank identity must reproduce the original v90 bank byte
+for byte. Native enumeration confirms **1,021 MOS and 37 MIMs**: the four
+added TG cells contain eight MOS devices. All eight new programming gates
+are observed at their true RC nodes, yielding **141 gates** (93 fine,
+48 TG) and 86 root controls. Three tests cover projection, all-four-branch
+wiring, wrong branch/control rejection and duplicate-application rejection.
+
+`parallel_root_bank_v98/d467256f060315e6` binds the complete v96 zero
+failure and unchanged v93 fine-cell RC; it admits only prototype work.
+Zero/fine31/first-coarse cases retain all original native safety, repetition,
+quarter, output-slew and overlap gates. The service
+`openlvds-parallel-root-bank-v98` uses two workers and the same six-engine
+budget. New root/common wiring remains unextracted and unqualified.
+
+Completed root-parallel zero results are repeated rise/fall
+**554.000517/644.940498 ps**, max OUT slew **198.805922 ps**, all native
+voltage/control/repeat checks passing. Falling zero still misses the
+quarter budget by **35.184401 ps**. Fine31 improves relative to v95 to
+**737.110991/912.440762 ps**, max OUT slew **286.136079 ps**, and native
+safety/repeat checks pass. The 250 ps output-slew gate still fails.
+These are useful improvements, not endpoint or electrical qualification.
+The full three-case comparison remains pending until first-coarse finishes.
+
+All **2,093** software tests pass without skips in 421.001 s
+(`build/parallel-root-bank-v98-full-tests.log`). The earlier measured-cell
+bank integration checkpoint passes 2,090 tests in 440.541 s
+(`build/moscap-component-rc-bank-v91-full-tests.log`). Actual v92/v93 native
+geometry, mask, junction and RC checks additionally exercise the routing
+revision; software regression alone is not physical evidence.
