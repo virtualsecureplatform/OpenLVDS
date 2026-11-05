@@ -18,8 +18,10 @@ under implementation: calibrated four-phase clock generation, symmetric DCC,
 RX deskew and explicit framed startup training. Its regenerated delay bank
 passes the complete routed SS/40°C zero-code screen with 64.8 ps quarter-cycle
 headroom. The v2 input-clock checks use 40/50/60% duty at 390/400/410 MHz.
-Full delay-range, all-PVT, clocking integration and full-link qualification
-remain open; these results are separate from the legacy PHY.
+The current bank still fails falling coarse/fine overlap and periodic
+output-slew/full-swing checks; split-loading and output-buffer experiments
+are in progress. Full delay-range, all-PVT, clocking integration and full-link
+qualification remain open; these results are separate from the legacy PHY.
 
 All project implementation and generated artifacts stay in this repository.
 `thirdparties/OpenPLL` is the pinned clock-source dependency; OpenSERDES was used

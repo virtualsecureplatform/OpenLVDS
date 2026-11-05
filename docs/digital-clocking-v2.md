@@ -6057,7 +6057,10 @@ and launched under `openlvds-regenerated-bank-sparse-v63.service` with two
 workers. Its task IDs 0–4 correspond to the five codes above, in that order.
 The inherited zero is the complete independently passed v62 receipt; no
 zero replay or result from the older component-only bank is substituted.
-All five fresh native results remain pending.
+All five fresh native cases complete without numerical errors. Independent
+receipt `regenerated_bank_sparse_verification_v64/d023831069df4d50`
+remeasures every full trace and reproduces the failed falling-overlap
+verdict; it rejects deliberately incorrect control and voltage observations.
 
 ```sh
 ./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
@@ -6081,3 +6084,170 @@ All **2,058** regression tests pass without skips in 362.081 seconds
 subset also passes independently (`build/regenerated-bank-sparse-v63-tests.log`).
 The prepared v63 producer/metric sources are now frozen. Any implementation
 fix requires a new version/context, preserving this run and all partials.
+
+
+### Falling-range failure and split fine-loading experiment
+
+The complete routed sparse screen is **not admitted**. All 951 native MOS
+voltage checks, physical controls, repeated pulses, sampled fine ordering,
+0-to-1 steps and 15-to-16 carry steps pass. The latter carry is
+17.777221 ps rising and 6.314924 ps falling. Coarse code 1/fine 0 measures
+741.740268 ps rising and 737.936783 ps falling on its repeated pulse.
+Coarse overlap is **+347.231887 ps rising / -18.544073 ps falling**.
+The zero fast-quarter headroom remains +64.800106 ps.
+
+The fine range from code 0 to 31 adds about 544.016 ps rising but only
+180.633 ps falling; the coarse falling step adds 199.177 ps. This identifies
+an asymmetric fine-range/coarse-step mismatch, not a native convergence,
+voltage or static-control failure. The positive-overlap requirement is
+retained. A small absolute falling gap does not waive it.
+
+`probe_regenerated_bank_dense_fine_v65.py` and its v66 independent verifier
+define 58 additional native SS40 fine-code cases at coarse 0/1, reusing the
+six complete verified sparse points for 64 total. The producer requires a
+passing independent sparse receipt. The current failed receipt cannot
+prepare or launch that expansion. Its five tests exercise every adjacent
+fine step, including reversals hidden between sparse points. Raw fine-step
+results are diagnostic; all-PVT common legal-code path admission and full
+coarse-range coverage remain separate requirements.
+
+The repair candidate moves fine units 19–30 from OUT to the inverted
+`selected` node before the final fine inverter. The first nineteen units
+remain on OUT. It retains all 31 controls, every qualified component model
+and parameter, 951 MOS devices and 68 MIMs. This tests whether moving some
+capacitive delay to the opposite signal polarity extends the falling range
+without increasing the rising fine steps. It is an architectural experiment,
+not a demonstrated fix.
+
+`probe_split_fine_component_v69.py` compares an unchanged component baseline
+with this twelve-unit split at (0,0), (0,31) and (1,0). Each of the six
+cases observes all 951 native MOS terminals, all 133 programming gates and
+86 root controls over the full 20 ns/two-pulse fixture. The candidate's MOS
+terminal map is regenerated after the signal-port changes; control and body
+connections remain unchanged. Three architecture tests reject altered
+original loading, missing units, changed pin orders and undeclared splits.
+The actual source-bank preflight confirms identical model counts for baseline
+and split. These are component-RC comparisons: moved common/control/power
+wiring and fresh physical junction qualification are not transferred. A
+component improvement must be followed by a new physical bank, DRC/LVS,
+joint extraction and native zero/range checks.
+
+### Periodic transport and output-slew experiment
+
+`probe_regenerated_bank_periodic_v67.py` is an independent four-case SS40
+experiment on the existing actual joint-RC bank, using its complete passing
+v62 zero receipt. It applies eight consecutive 410 MHz cycles at each of
+40/60 percent input duty and fine codes 0/31. The 25 ns native traces retain
+100 ps input slew, 20 fF load, nominal supplies, every MOS terminal, 639
+physical control observations and all 133 programming gates. The two-worker
+campaign uses priority 1 under the existing six-engine/180-second-aging
+policy. It does not consume a dense or legal-code admission.
+
+The periodic checker counts all input/output edges and 10/50/90 percent
+crossings, verifies their ordering and unwrapped epochs, records every high
+and low width, output duty, period error, delay repeatability and output
+slew. It validates actual input duty/frequency, all terminal voltage limits
+and static controls. Zero still requires the 410 MHz fast-quarter limit;
+nonzero programmable latency retains its separate treatment. Transport and
+the existing 250 ps downstream slew-domain limit are reported separately:
+a full-swing slow clock requires wider downstream qualification even if it
+transports every pulse. No corrected 50 percent DCC output or 256-cycle
+startup/calibration admission is claimed.
+
+Six periodic timing tests cover both input duties, wrong duty with matching
+edge counts, missing/half-swing pulses, wrong unwrapped epochs, zero quarter
+failure and an otherwise intact slow clock. The v68 independent verifier
+remeasures all four complete decks/logs/traces and rejects wrong control,
+voltage and input-duty observations. Its numeric failure receipts remain
+diagnostic evidence, never PHY admission.
+
+
+The periodic context is `regenerated_bank_periodic_v67/232298d3d25df60b`.
+All four native cases complete without numerical errors. Independent receipt
+`regenerated_bank_periodic_verification_v68/f108497064fd65ec` remeasures
+all full traces and rejects all three deliberate observation/limit/duty
+faults. At code zero, both duties transport eight full-swing pulses and pass
+quarter timing, but maximum output slew is **433.121 / 434.405 ps**, outside
+the current downstream 250 ps domain. Fast-quarter headroom is 60.233871 ps
+at 40 percent and 64.800106 ps at 60 percent. At fine code 31, all eight
+0.9 V crossings remain, but neither duty reaches the 1.62 V high threshold;
+at 60 percent most cycles also miss the 0.18 V low threshold. Delay spans
+also exceed the 20 ps repeat limit. Every native MOS voltage and static
+control check passes. This is an actual pulse-shape/interface failure, not
+solver convergence or a corrected-clock admission.
+
+Split context `split_fine_component_v69/2c940e2825524d42` is launched under
+`openlvds-split-fine-component-v69.service`. Baseline task IDs 0/1/2 and
+split12 task IDs 3/4/5 correspond to zero, full fine range and first coarse
+step. The producer and transformer are frozen for this context. Complete
+candidate comparisons remain pending; no current physical fix is claimed.
+
+### Output-buffer prototype retaining original routed-bank RC
+
+`probe_buffered_bank_v70.py` consumes the independently verified periodic
+failure and preserves the existing actual bank RC netlist byte-for-byte.
+A new native `sky130_fd_sc_hd__buf_1` or `buf_4` drives the 20 fF external
+load; the original fine-bank output becomes the private `fine_raw` node.
+The wrapper preserves logical polarity and explicit well/body supplies.
+Both standard cells already have registered physical masters, but their new
+placement, junction geometry and interconnect in this wrapper are not yet
+qualified. This is a hybrid prototype, not complete-wrapper extracted RC.
+
+The small-buffer prototype contains 955 MOS; the larger one contains 961.
+Both retain all original 951 actual bank MOS, all 68 MIMs, every original
+R/C element, all 133 programming gates and 639 control observations.
+Observation paths are regenerated through `XD:Xbank`, and the external load
+is applied only to the new final output. Two tests verify unchanged original
+RC, correct load isolation/body connections and rejection of unknown buffers
+or changed native interfaces. Actual source-model preflight verifies all
+955/961 terminals and all original control mappings.
+
+Each prototype measures (0,0), (0,31), (1,0) over the full 20 ns/two-pulse
+fixture. Comparisons retain positive zero quarter headroom, both coarse
+overlaps, all native voltage/control/repeat gates and output slew <=250 ps.
+The existing bank is still physically qualified only for its original
+geometry; no new complete-wrapper RC/electrical/PHY admission transfers.
+A promising buffer must get a new tapped placement, actual routing,
+DRC/LVS, joint RC, periodic and all-PVT checks before use.
+
+Context `buffered_bank_prototype_v70/6728d070d7815da5` is launched under
+`openlvds-buffered-bank-v70.service`, with two workers and the unchanged
+six-engine dispatcher. Its native/model producers are frozen. Task IDs
+0/1/2 are buf1 and 3/4/5 buf4, each in the order above. Results are pending.
+
+The dense pilot's current admission refusal is verified in
+`build/regenerated-bank-dense-v65-admission.log`: the failed falling-overlap
+receipt creates no campaign and launches no solver. The 2,063-test dense
+checkpoint passes in 364.927 s; the periodic checkpoint passes all 2,069
+tests in 366.336 s; the split checkpoint passes all 2,072 in 377.143 s,
+without skips. The final output-buffer regression passes all **2,074** tests without skips
+in 375.417 s (`build/buffered-bank-v70-full-tests.log`).
+
+
+The two repair experiments can be reproduced from their producers below.
+These prepared contexts already exist; do not rerun preparation or execution
+against them, overwrite their partials, or stop healthy solvers for slowness.
+
+```sh
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_split_fine_component_v69.py prepare \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_sparse_verification_v64/d023831069df4d50 \
+  --component-parent /work/OpenLVDS/build/diagnostics/regenerated_bank_v56/454ef5c8722f8a61
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_split_fine_component_v69.py run \
+  /work/OpenLVDS/build/diagnostics/split_fine_component_v69/2c940e2825524d42
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_buffered_bank_v70.py prepare \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_periodic_verification_v68/f108497064fd65ec \
+  --component-parent /work/OpenLVDS/build/diagnostics/regenerated_bank_v56/454ef5c8722f8a61
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_buffered_bank_v70.py run \
+  /work/OpenLVDS/build/diagnostics/buffered_bank_prototype_v70/6728d070d7815da5
+```
+
+Both use nominal 1.8 V, SS/40 C, 100 ps input slew, 20 fF load, two workers
+and the unchanged six-engine dispatcher. No supply sweep, new release
+admission or termination/restart of a healthy legacy solver is introduced.
+Full native repair comparisons, fresh physical implementation, common legal
+codes over all fifteen PVT points, clock-chain integration and the complete
+LVDS link remain unfinished.
