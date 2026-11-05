@@ -67,8 +67,10 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-All **2,102** software regression tests pass without skips in 365.215 s
-(`build/post-mux-regeneration-v109-full-tests.log`). Native architecture experiments
+The full regression passes **2,104 tests without skips** in 399.566 s
+(`build/parallel-output-cell-v111-full-tests.log`); the two subsequently added
+measured-output substitution tests also pass, alongside the native 981-MOS
+model/observation preflight. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
 healthy older solvers and failed results are retained. Remaining timing gates
 must pass before bank/common-RC, dense/update/periodic, all-PVT legal-code

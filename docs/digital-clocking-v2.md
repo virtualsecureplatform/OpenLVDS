@@ -7038,3 +7038,30 @@ maximum output slew is **154.649115 ps**. Taking the worst of both pulses
 leaves **111.167584 ps** of fastest-quarter headroom. Together with its
 completed fine31 result this clears zero timing and endpoint slew, but the
 first-coarse case remains pending, so coarse overlap is not yet established.
+
+
+`post_mux_output_rc_bank_v112.py` now replaces exactly the two final v108
+inverter calls with the complete qualified v111 compound RC. All other bank
+calls, the common regenerator and the fine-cell model remain unchanged. A
+native preflight confirms **981 MOS, 35 MIMs, 133 programming gates and 86
+root controls**, with rebuilt terminal paths through the compound. The two
+substitution tests reject swapped supplies, a wrong data node, missing or
+duplicated final instances and repeated compound insertion. The first
+preflight exposed an unavailable checksum helper before any formal campaign
+was created; its log is retained, and the corrected preflight passes.
+
+The new `probe_post_mux_output_rc_v113.py` retains the original SS/40 C
+zero/fine31/first-coarse fixture, safety/repetition checks, 250 ps slew bound,
+positive both-edge overlap and fastest-quarter gates. It binds all completed
+v111 geometry/extraction/proof files and regenerates the model during bound
+checks. Only the compound's internal connecting wires are newly qualified;
+complete bank interconnect remains unextracted. Dispatcher limits and the
+older running experiments remain unchanged.
+
+
+Validation: the full regression passes **2,104 tests without skips** in
+399.566 s (`build/parallel-output-cell-v111-full-tests.log`). The two
+subsequently added v112 substitution tests also pass separately
+(`build/post-mux-output-rc-v113-unit-tests.log`), and the actual-model native
+preflight passes (`build/post-mux-output-rc-v113-preflight-2.log`). Those
+software/structural checks do not substitute for the new native timing cases.
