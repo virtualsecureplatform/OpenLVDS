@@ -5,24 +5,23 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current architecture work (2026-11-05):
 
-The smaller-guard bank has an independently verified zero-code pass at SS/40 C:
-`both2` measures 511.218/605.470 ps rising/falling delay, with **4.286 ps**
-worst-pulse fast-quarter headroom and maximum native span 1.874598 V against
-1.95 V. All native controls and repeatability pass. Receipt
-`nlvt_guard2_bank_verification_v36/24018f4e84f767d6` retains fine2 as a timing
-failure (-13.461 ps); the preceding actual-component bank remains a timing
-failure (-22.940 ps). Both2 is running its five additional sparse codes in
-`nlvt_guard2_sparse_v41/72eaa0cf7a660134`, reusing the independently remeasured
-zero waveform with the exact same circuit. Routed-bank,
-periodic clock, all-PVT and PHY feasibility remain unproven.
+The both2 actual-component-RC bank now passes the complete six-point sparse
+SS/40 C screen in independent receipt
+`nlvt_guard2_sparse_verification_v41/834d4ff6707b3812`. Fine carry is
+17.422/7.449 ps rising/falling, coarse overlap is 376.347/96.290 ps, and
+maximum native span is 1.893185 V against 1.95 V. All voltage, internal/public
+control and repeated-pulse checks pass. Zero-code headroom is only **4.286 ps**;
+common/control/tail wiring remains unextracted, and dense codes, periodic
+clocks, all-PVT timing and the PHY remain unqualified.
 
-A physical 2x2 balancing-tail MIM now passes independent fresh-GDS DRC/LVS,
-exact native/routed masks, native dimensions and passive exact-RC reduction
-(`tail_mim2_verification_v40b/61f4fec25e77b5a7`). Its failed first M3-pad spacing
-layout and initial verifier software error are retained. This component is for
-future physical-bank assembly; its RC is not transferred into the existing
-native reference. The full pinned software regression passes **2,010 tests without skips**.
-Native sparse range and all later electrical gates remain open.
+The named-pin physical netlist for all 156 components and 39 public pins now
+passes independent Yosys reimport and native connectivity/parameter equivalence
+(`tg_bank_netlist_verification_v43/5a1727fa9f7d09ed`). All 903 MOS, 65 MIMs,
+body/supply ties and the physical balancing-tail cell are preserved. Thirteen
+imported-JSON and two native-SPICE corruption controls are rejected. This is
+structural input for macro registration, placement, routing, whole-bank
+DRC/LVS and joint RC extraction; it transfers no electrical admission. The
+full pinned software regression passes **2,016 tests without skips**.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew

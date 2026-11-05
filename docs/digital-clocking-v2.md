@@ -5394,3 +5394,77 @@ cover the physical tail's exact native model/dimensions/terminals, acceptance
 of only the complete passing both2 zero gate, matched five-code fixtures,
 zero reuse, missing/duplicate coverage, fine carry and coarse overlap. These
 software tests do not replace the running native range measurements.
+
+### Both2 completes the actual-component sparse range screen
+
+Campaign `nlvt_guard2_sparse_v41/72eaa0cf7a660134` completes all five new cases
+with zero numerical errors. Full independent receipt
+`nlvt_guard2_sparse_verification_v41/834d4ff6707b3812` combines their complete
+remeasured waveforms with the independently remeasured v36 zero waveform and
+passes the unchanged six-point sparse gate. The earlier available-case
+receipt `4ac28cb18981b66b` covered five points and correctly withheld complete
+sparse admission until coarse 1/fine 0 was present.
+
+| Coarse / fine | Second-pulse rise (ps) | Second-pulse fall (ps) |
+| --- | ---: | ---: |
+| 0 / 0, reused | 511.218245 | 605.469721 |
+| 0 / 1 | 523.812079 | 612.586428 |
+| 0 / 15 | 742.167045 | 715.795184 |
+| 0 / 16 | 759.589161 | 723.244529 |
+| 0 / 31 | 1039.565978 | 822.455452 |
+| 1 / 0 | 663.219172 | 726.165694 |
+
+All six voltage, internal/public control and repeatability screens pass. The
+15-to-16 fine carry is **17.422116/7.449345 ps** rising/falling, below the 20 ps
+limit. First coarse/fine overlap is **376.346806/96.289757 ps**, both positive.
+Maximum native terminal difference is **1.893185486 V** against 1.95 V. The
+conservative zero-code fast-quarter headroom remains **4.285820 ps**; the
+sparse screen does not prove every intermediate fine gap or every coarse
+boundary, and does not establish joint routed-bank feasibility.
+
+The native model still contains verified data-component RC but unextracted
+common/control/tail wiring. No dense legal-code table, periodic clock, PVT,
+full clock-island, link or PHY admission is transferred from this result.
+
+### Physical both2 bank netlist preserves the complete native graph
+
+Exporter `export_tg_bank_netlist_v42.py`, context
+`tg_bank_netlist_v42/d328eefbbdd965c5`, now supplies the named-pin physical
+Verilog, native interface blackboxes and native-only connectivity/LVS SPICE
+for the selected both2 bank. It consumes the complete passing zero receipt and
+independent physical tail-cell proof. The 39-port bank contains **156
+components of ten types**: both data drivers, sixteen coarse/balancing buffer
+pairs, twenty TGs, thirty-one fine units, all selector/fine-control standard
+cells and one physical balancing-tail MIM. Supply and body pins remain
+explicit. TG data pins and capacitive signal pins retain bidirectional
+interfaces, and all instances retain keep/dont_touch attributes.
+
+The native-only SPICE view removes routing R/C only for connectivity/LVS. Its
+expanded terminal/parameter multiset is identical to the reference bank:
+**903 MOS and 65 native MIMs**, including every original native parameter token,
+body tie and internal net. The bare 2x2 tail primitive is represented by the
+qualified fixed-size physical tail cell; its native primitive is unchanged.
+Named pin maps preserve the actual RC interfaces without relying on another
+file's positional supply-pin order. This SPICE view is not a timing model.
+
+Independent receipt `tg_bank_netlist_verification_v43/5a1727fa9f7d09ed`
+regenerates all source files exactly, repeats Yosys import and verifies every
+component pin and native primitive. Thirteen real imported-JSON corruption
+controls are rejected: missing tail components, wrong tail/fine/TG wiring,
+wrong body/ground ties, lost preservation, merged select nets, changed TG pin
+direction, changed tail blackbox semantics and an unexpected cell parameter.
+Two actual native-SPICE corruptions (wrong tail size and PMOS body tie) change
+the native signature and are rejected. All original native model counts are
+preserved: N-LVT 196, regular N 271, regular P 227 and HVT P 209.
+
+This is the physical bank's structural input. Macro geometry registration,
+placement, common/control/power routing, whole-bank DRC/LVS and fresh joint RC
+extraction are still required. The new tail RC is not inserted into prior
+native timing results. Neither the logical graph proof nor the sparse native
+pass qualifies routed timing or the PHY; only 4.29 ps of source-model timing
+headroom remains before those additional physical loads are measured.
+
+The complete pinned software suite passes **2,016 tests without skips** in
+373.264 s (`build/tg-bank-netlist-v42-full-tests.log`), including six added
+physical-graph/native-equivalence tests. Actual independent Yosys reimport and
+fifteen corruption controls are recorded separately in the v43 receipt.
