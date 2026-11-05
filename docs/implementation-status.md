@@ -39,8 +39,11 @@ custom masters pass fresh GDS import, zero DRC, strict native LVS and native
 dimension/junction checks. Manufacturing masks are preserved under translation,
 fine-cell GDS labels are canonical, and LEF includes native MIM routing
 keepouts. Physical standard-cell taps and well continuity still require bank
-insertion. Independent library geometry auditing is in progress. Whole-bank
-placement, routing and joint RC remain required before the next timing gate.
+insertion. Independent library geometry receipt
+`bank_cell_registry_verification_v48/b1813242cd69dc23` passes all twelve
+masters, merged-hierarchy mask comparison, fresh OpenDB import and six actual
+corruption controls. Whole-bank placement, routing and joint RC remain required
+before the next timing gate.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew

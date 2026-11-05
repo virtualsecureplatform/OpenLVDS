@@ -5516,3 +5516,45 @@ fine-port/native-equivalence tests and six adapter tests. This library result
 establishes no bank placement, routing, joint RC, timing or PHY admission.
 The next electrical gate remains a fresh joint-RC zero-code simulation, with
 only 4.286 ps of component-model timing headroom available.
+
+
+Independent library receipt
+`bank_cell_registry_verification_v48/b1813242cd69dc23` compares every original
+manufacturing mask against the inverse-translated registered masks, derives
+public alias anchors from original GDS labels, checks actual pin metal and
+canonical directions/power uses, protects all original routing rectangles,
+recomputes MIM keepout coverage, and checks the stock well-domain mappings.
+All twelve masters pass. The merged library has identical recursive masks and
+no hierarchy-name collisions. A fresh OpenDB import independently repeats all
+master and pin-rectangle comparisons. Six actual faults are rejected: incorrect
+fine-port direction, removed obstructions, a reverted legacy public GDS label,
+a deleted native MIM marker, a shifted registry pin rectangle and a wrong
+nwell domain. Fault files and rejection reasons remain in the receipt.
+
+The first formal independent wrapper, frozen v47 context
+`bank_cell_registry_verification_v47/70e488b7a4676547`, passed cell geometry
+checks but failed OpenDB startup because its local `library.lef` was absent.
+It is retained with its original code, Tcl and logs. New v48 copies the exact
+hash-bound combined abstract into the independent receipt before reimport;
+no cell geometry, model, fixture, simulation policy or timing gate changes.
+
+Reproduce a new library campaign and its independent audit in the CAD shell:
+
+```sh
+./scripts/env.sh --tools --ngspice python3 scripts/build_bank_cell_registry_v44.py campaign \
+  /work/OpenLVDS/build/diagnostics/tg_bank_netlist_verification_v46/71ab47a14855ae22
+./scripts/env.sh --tools --ngspice python3 scripts/verify_bank_cell_registry_v48.py \
+  /work/OpenLVDS/build/diagnostics/bank_cell_registry_v44/61876a666017a856
+```
+
+Completed or partial producer directories are immutable: the producer refuses
+to overwrite an existing campaign. Inspect and bind the existing receipt when
+reproducing this exact context. New producer changes require a new version.
+For subsequent physical work, place the critical zero-code chain and fine M3
+rails using the verified pin rectangles, insert actual standard-cell taps and
+fillers, then route every signal/control/power connection. Whole-bank DRC and
+strict native LVS must pass before joint extraction. Remeasure the complete
+zero-code waveform and all native terminal/control checks with that actual
+joint RC before expanding dense codes, all PVT and 40/50/60 percent periodic
+clock testing. The sparse component-RC pass supplies no substitute for this
+measurement.
