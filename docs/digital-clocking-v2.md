@@ -3156,3 +3156,41 @@ or failed high-data coverage, numerical failures and old-profile receipts.
 They also preserve the complete bank topology and all sixteen turn choices.
 `make test-full` passes 1,863 tests without skips in
 `build/weighted-bank-repaired-integration-v4-full-tests.log`.
+
+### Repaired fine cell integrated without moving global access rails
+
+The stronger native bit-4 cell is 45.38 um tall rather than 43.70 um, and
+its five public M3 access rails move upward by 1.68 um within the cell.
+`weighted_bank_repaired_fine_frames_v2.py` computes the common pin motion
+from the actual LEFs and moves only `fine4` downward by 1.68 um, from
+Y=224.80 to 223.12 um. Its top edge and every external access rectangle
+are preserved. The bottom extends into the existing empty gap; the
+complete placement passes the existing non-overlap check. Native antenna
+metadata is retained from the new geometry rather than copied from the
+smaller device.
+
+Frame `weighted_bank_repaired_fine_frames_v2/4c57007a2e3eb994` binds the
+complete repaired-bank network proof, the prior wide-power physical family
+and the actual stronger cell. Normalization adds only the zero-origin
+translation, exact PR boundary and native MIM M3 keepouts: every physical
+layer has zero XOR against the translated new native source and hierarchy/
+labels match. It is not an assertion that the old/new transistor geometry
+is unchanged. Two independent OpenROAD reads verify all 377 global pin
+rectangles identical across all 78 macros; all other macro boxes are
+unchanged, and the intended bit-4 body/placement change is recorded.
+Regression tests reject non-rigid pin motion, altered supply-pin geometry,
+changed public types and missing pins, while allowing regenerated antenna
+area metadata.
+
+`harden_weighted_bank_v16.py` consumes that frame and the prior successful
+bank placement checkpoint. It regenerates the original RTL/blackbox views
+without changing a public name, instance or logical attachment, then runs
+the normal row-preserving PDN/I/O/detailed-placement flow. Artifact
+`weighted_bank_bringup_v2/b2f5392bcbc09a9f` exits 0 and passes a fresh final
+OpenROAD reload: all 94 original instances placed, all 22 signal I/O pins
+shaped, original model/terminal/net/public-interface checks passing, all
+macros at their newly declared positions, legal placement and both supply
+connectivity checks passing. The earlier successfully placed cell variant
+remains intact. These are CAD bring-up results only; settling, whole-bank
+signal routes/GDS DRC/LVS/antenna/RC, native timing, code admission and PHY
+qualification remain open.
