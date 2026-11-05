@@ -4439,3 +4439,78 @@ two-worker policy; no healthy older solver was stopped or restarted. Logs are
 `build/dcdl-tg-tree-v5-verify.log`. Reference qualification still requires
 390/400/410 MHz at the approved 40%/60% endpoints, with fixed supplies and all
 15 process/temperature combinations.
+
+### Real MIM termination closes the sparse native TG screen (2026-11-05)
+
+`dcdl_tg_terminated_v6.py` retains the exact `double_direct` data/control graph
+and all 903 native MOS devices, adding one native 2x2 MIM from public
+`unused_tail` to VGND. Only the top model name and that passive instance change.
+The balancing buffer and its load on the final tap are retained. The source
+transform and all ten declared coarse/fine dimension combinations are tested
+for exact unchanged active connectivity. This is a distinct immutable revision;
+the original 24-case TG campaign and its evidence remain untouched.
+
+`probe_dcdl_tg_terminated_v6.py` requires the independently verified,
+timing/control-passing zero-code baseline with all voltage violations confined
+to the balancing buffer. It regenerates the bank and requires every mapped MOS
+name, model, limit and terminal connection to match the baseline exactly. It
+runs all six matched SS/40 C points, two full pulses per point over 20 ns,
+100 ps input, 20 fF load and fixed 1.8 V. Context
+`dcdl_tg_terminated_v6/36524d260790b5b9` completes with six numerical-error-free
+cases and no native voltage or control failures.
+
+The tail undershoot improves from -0.155849 V to -0.120544 V at zero code;
+the highest observed native MOS terminal difference across all six cases is
+1.931542 V, below the unchanged 1.95 V limit. Zero-code propagation remains
+428.019/520.509 ps rising/falling, with conservative 410 MHz quarter headroom
+89.247 ps. This matched result supports the passive termination as a repair to
+the measured unloaded-output fault in this source experiment.
+
+Repeated pulse delays (ps):
+
+| Coarse | Fine | Rise | Fall |
+| ---: | ---: | ---: | ---: |
+| 0 | 0 | 428.019 | 520.509 |
+| 0 | 1 | 438.210 | 525.758 |
+| 0 | 15 | 604.206 | 599.634 |
+| 0 | 16 | 617.185 | 604.912 |
+| 0 | 31 | 821.141 | 684.075 |
+| 1 | 0 | 594.557 | 634.977 |
+
+The sampled 0->1 and 15->16 adjacent steps are respectively
+10.191/5.249 ps and 12.978/5.278 ps rising/falling, both positive and below
+20 ps. Coarse-zero fine31 overlaps coarse-one fine0 by
+226.585/49.099 ps. All static true/complement controls and repeated-pulse
+checks pass. Unsampled adjacent steps and the other coarse codes are not
+proven by these sparse points.
+
+`verify_dcdl_tg_terminated_v6.py` independently regenerates the single-MIM
+change, verifies every consumed native deck/raw/log hash and successful record
+count, and remeasures all six complete traces. Receipt
+`dcdl_tg_terminated_verification_v6/f9ec6c58d7b7315d` verifies all six and
+reports `sparse_native_screen_passed=true`; dense-code, electrical and PHY
+admissions stay false. The earlier four-case partial receipt
+`dcdl_tg_terminated_verification_v6/7ced68e3c919d16f` remains retained.
+A second complete read-only recheck reproduces the same full receipt.
+Both pilot and full verifier finish normally; no prior solver was stopped.
+
+The complete current suite passes 1,943 tests without skips in 409.151 s
+(`build/dcdl-tg-terminated-v6-full-tests.log`). Tests include exact active
+graph preservation, real MIM connection/geometry, explicit tail-range reporting
+and rejection of an over-limit unused-tail MOS. Logs are
+`build/dcdl-tg-terminated-v6-prepare.log`,
+`build/dcdl-tg-terminated-v6-pilot.log`,
+`build/dcdl-tg-terminated-v6-available-verify.log`,
+`build/dcdl-tg-terminated-v6-verify.log` and
+`build/dcdl-tg-terminated-v6-recheck.log`.
+
+This is the first clean sparse native checkpoint for this TG topology, not a
+usable-PHY release. Its component wiring is still idealized and new TG junction
+geometry is estimated. The next electrical experiment must restore the actual
+verified buffer/inverter/fine RC, preserving the termination and native devices,
+to measure physical component loading before committing to bank routing. New TG
+PCell/GDS and passive-RC proofs, a real tail-cap route, fresh whole-bank
+extraction, dense/common legal codes, safe code updates, all 15 PVT points,
+390/400/410 MHz at 40%/60%, actual DCC/DLL integration and full-link qualification
+remain required. Neither the source headroom nor these six points establish
+those gates.

@@ -92,6 +92,20 @@ and all its evidence remain unchanged. New TG junctions are prelayout estimates
 and component wire parasitics are idealized, so no physical or PHY admission
 follows from these sparse results. The 24-case campaign continues.
 
+The native termination revision is now complete:
+`dcdl_tg_terminated_v6/36524d260790b5b9` adds one 2x2 MIM to `unused_tail`
+while retaining every MOS and active connection. All six SS/40 C sparse cases
+pass native voltage, control settling, repeatability, zero-code quarter budget,
+sampled fine ordering/gaps and first coarse overlap. Independent complete
+receipt `dcdl_tg_terminated_verification_v6/f9ec6c58d7b7315d` observes worst
+MOS stress 1.931542 V, zero-code 428.019/520.509 ps and coarse overlap
+226.585/49.099 ps rising/falling. This is a source architecture checkpoint:
+component parasitics remain idealized and new TG junctions are estimates.
+Dense codes, actual component and whole-bank RC, code updates, periodic clocks,
+all 15 PVT points and full PHY qualification remain open. The next electrical
+gate must restore the verified component RC before selecting physical bank
+routing or claiming those 89 ps of source headroom survive extraction.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal
