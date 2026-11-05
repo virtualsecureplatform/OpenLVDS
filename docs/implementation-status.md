@@ -74,8 +74,8 @@ edge-dependent fine range mostly to the common inverter. A root-only drive
 experiment is testing input-edge shaping without increasing coarse-tap
 loading or adding serial inversion. Its v117 zero case now passes native/slew
 checks but has rising delay 627.550649 ps, missing the quarter budget by
-17.794551 ps. Fine31 also passes native/slew; the coarse case keeps running.
-This root-only trial is not admitted.
+17.794551 ps. The complete three-case comparison also fails rising overlap by 31.570167 ps;
+falling overlap is +177.182354 ps. This root-only trial is not admitted.
 
 The exploratory post-mux placement at
 `post_mux_placement_v119/5092f682fb99bf91` now passes zero placement DRC,
@@ -94,6 +94,14 @@ DRC/LVS, junction and complete RC checks at
 all fine/output/control circuitry and verifies 1,453/1,773 MOS, 42 MIMs and
 173 programming gates. Six native timing cases test the two strengths
 under unchanged gates and dispatcher limits; no timing improvement is assumed.
+Canonical middle-fine and stronger-coarse GDS/LEF views now pass fresh native,
+mask/junction and OpenDB checks at
+`clock_cell_views_v124/3557a1acd9b9ad4c`. The v125 integration model includes
+measured group/final inverter-pair wiring; both native inventories and all
+173 programming gates are preserved. Its v126 canonical physical graph has
+179 functional macros and matches every named component connection and full
+native model/W/L inventory. These are structural preparations; their native
+timing and bank placement/routing/RC admission remain open.
 
 The 0.76 um original width prototype separately passes its three initial
 endpoint cases with overlap 20.649958/10.736333 ps and max slew
@@ -101,11 +109,11 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-The full regression passes **2,115 tests without skips** in 381.574 s
-(`build/post-mux-placement-v119-full-tests.log`), including the root-drive
-and new physical graph/rail alignment tests. Four subsequently added coarse-cell
-and chain projection/fault tests pass separately, as do both actual-model
-preflights. Native architecture experiments
+The full regression passes **2,121 tests without skips** in 366.669 s
+(`build/measured-gang-bank-v125-full-tests.log`), including the stronger-coarse
+and measured inverter-gang tests. Three subsequently added physical graph
+alias/body/profile/reference tests also pass, alongside both actual-model
+179-component graph and native reference checks. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
 healthy older solvers and failed results are retained. Remaining timing gates
 must pass before bank/common-RC, dense/update/periodic, all-PVT legal-code

@@ -31,7 +31,9 @@ Post-mux regeneration passes native/slew/zero screens but misses rising
 overlap by 17.27 ps. The root-only trial misses the zero-code quarter budget
 by 17.79 ps. A matched coarse-drive experiment is now running with fully
 extracted double/triple coarse-buffer components.
-Canonical measured fine/output cell views now pass layout and OpenDB checks.
+Canonical measured fine, inverter and stronger-coarse cell views pass layout
+and OpenDB checks. The model with measured group/final inverter wiring maps
+to 179 functional macros; its native inventories and named-pin graph agree.
 Their exploratory 332-instance placement passes zero DRC and fixed-bus
 connectivity checks; whole-bank routing and timing qualification remain open.
 The physical parallel INV8 output master passes native geometry and complete

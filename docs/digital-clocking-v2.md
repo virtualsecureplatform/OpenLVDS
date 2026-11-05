@@ -7284,3 +7284,68 @@ The new six-case matched-coarse experiment is now prepared and running at
 six-engine dispatcher. Its source/inputs are frozen; native outcomes,
 complete bank routing/RC, all-PVT legal codes and full clock/link admission
 remain outstanding.
+
+
+### Canonical matched-coarse views and measured inverter-gang integration
+
+`clock_cell_views_v124/3557a1acd9b9ad4c` completes/pass for three more
+canonical masters: the **middle-bus 1.26 um fine cell**, double coarse gang
+and triple coarse gang. It reuses the unchanged v114 normalization, mask
+and native qualification helpers with the completed v105/v121 evidence.
+Fresh native DRC/LVS, original junction/dimension preservation, every native
+mask under translation, actual public pin metal and OpenDB roles/geometry
+pass. Fine data/supplies are inouts; coarse A is input and X is output.
+
+| Master | Size (um) | Origin translation (um) | Native primitives |
+| --- | --- | --- | ---: |
+| `openlvds_fine_moscap_w126_middle_v124` | 12.4 x 15.85 | 0,+4.15 | 5 MOS + 1 MIM |
+| `openlvds_coarse_b2_registered_v124` | 15.64 x 3.6 | -2,-2 | 40 MOS |
+| `openlvds_coarse_b3_registered_v124` | 24.46 x 3.6 | -2,-2 | 60 MOS |
+
+These are standalone library additions; they do not alter the running v123
+models or admit a bank. All native GDS/library artifacts and original RC
+receipts remain intact.
+
+`measured_gang_bank_v125.py` supplies the next integration model. Each of the
+four paired group inverters and the paired final inverter becomes one
+complete measured v111 compound, including its actual local connecting RC.
+Both original output MIM shunts are retained in every pair. Exact reverse
+projection recovers every byte of each stronger-coarse parent. Native
+preflight preserves **1,453/1,773 MOS, 42 MIMs, 173 programming gates and 86
+root controls**, with all device terminal paths rebuilt. The remaining
+first/root TG gang wiring and common bank interconnect are unextracted.
+This helper has no native timing admission; a passing parent profile and
+fresh native timing with the new local wiring remain required.
+
+`balanced_physical_graph_v126.py` maps those models to **179 named physical
+functional macros** for either gang size. It folds each inverter pair into
+the v114 single-output master, maps the middle fine cell and coarse gangs
+to their new v124 canonical masters, and retains all original controls,
+root/leaf TG copies, body/supply connections and tail load. Actual-model
+preflight proves every canonical named-pin call against v125 and independently
+matches the full native model/W/L inventory of the native SPICE reference.
+The native reference rejects conflicting or recursive definitions and
+unstripped routing elements. No new placement, whole-bank native LVS,
+routing, joint RC or electrical admission is claimed by this graph.
+
+Both v125 projection/fault tests and the actual-model terminal preflight pass
+(`build/measured-gang-bank-v125-tests.log`,
+`build/measured-gang-bank-v125-preflight.log`). The two v126 actual-model
+179-component reference checks pass
+(`build/balanced-physical-graph-v126-preflight.log`), as do its three additional
+alias/body/profile/reference-fault tests. Full regression passes **2,121 tests
+without skips** in **366.669 s**
+(`build/measured-gang-bank-v125-full-tests.log`); the three v126 tests were
+added after that run began and pass separately.
+
+The root-only v117 pilot is now fully complete (three cases, zero errors):
+rising overlap **-31.570167 ps**, falling overlap **+177.182354 ps**, and
+fastest-quarter headroom **-17.794551 ps**. It remains rejected. The stronger
+coarse v123 campaign is still active; its partial raw traces are used only
+for progress monitoring, never timing admission.
+
+The existing runtime tooling provides no qualified shortcut for these native
+runs. The recorded Xyce check is parser-only and reports a BSIM4 version
+fallback; it proves neither waveform equivalence nor speed. The existing
+TICER quick-node RC tool is explicitly approximate and needs separate native
+waveform validation. Neither is substituted into frozen v123 qualification.
