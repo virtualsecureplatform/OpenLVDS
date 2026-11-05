@@ -6987,3 +6987,54 @@ rise/fall delay **692.399045/857.383113 ps**, maximum OUT slew
 slew checks. Its zero and first-coarse cases remain pending; this single
 point establishes neither positive quarter headroom nor coarse overlap.
 The post-mux v109 service is independently active under the same slot budget.
+
+
+### Physical parallel output master and common-regenerator result
+
+The first completed post-mux v109 point (task1, coarse0/fine31) has repeated
+rise/fall delay **783.495864/958.026134 ps**, maximum output slew
+**202.856371 ps**, and passing native terminal, control, repeated-delay and
+slew checks. Rising repeat difference is **0.171048 ps**. Zero and first-coarse
+cases remain outstanding; this result alone does not establish quarter
+headroom or positive overlap.
+
+`parallel_output_cell_v110.py` defines a standalone compound output master
+with two internally tapped, registered INV8 masters. Actual native M3 input,
+output and supply rails are joined across the two nonoverlapping footprints;
+the compound has one public output for later bank routing. Both inverter
+output MIM shunts and every native device remain present. The expected native
+inventory is **32 MOS + 2 MIM**. No serial inversion is added.
+
+`build_parallel_output_cell_v111.py` prepares a separate immutable geometry
+and extraction campaign from the verified v48 registry. It checks actual
+OpenDB connectivity/placement, stored GDS placement, native DRC/LVS and all
+junction parameters, then extracts the complete compound wiring and checks
+passivity, exact reduction regeneration, wire-collapsed topology and
+independent terminal-current witnesses. This qualifies only the standalone
+compound if those checks pass; new bank routing and native timing must still
+be measured. The original separate-inverter simulations retain their scope.
+The failed initial invocation used a nonexistent registry directory and
+created no artifact; its log is retained in
+`build/parallel-output-cell-v111-prepare.log`. The corrected invocation uses
+`bank_cell_registry_verification_v48/b1813242cd69dc23` and a separate log,
+`build/parallel-output-cell-v111-prepare-2.log`.
+
+
+The physical campaign is now **complete/pass** at
+`parallel_output_cell_v111/719aa3336298176d`. Placement/fixed-rail DRC and
+fresh native DRC are zero; strict native LVS and all 34 native parameter
+checks pass. Extraction retains **541 resistors and 183 capacitors**, reducing
+to **385 resistors** by eliminating 122 algebraic nodes while protecting 260
+nodes. All four independent terminal-current witnesses pass, with maximum
+normalized error **2.308135039091786e-5** (limit 1). The original raw and reduced
+files remain in `build/extracted/3746e5ecd68d8b46/openlvds_parallel_inv8_v110/`.
+Native transient equivalence and complete bank wiring/timing are still
+required; `electrical_qualification_passed` and `qualified_phy` remain false.
+
+
+The subsequently completed balanced-drive v107 zero-code case passes native
+and slew checks. Repeated rise/fall delay is **453.806932/498.587763 ps**;
+maximum output slew is **154.649115 ps**. Taking the worst of both pulses
+leaves **111.167584 ps** of fastest-quarter headroom. Together with its
+completed fine31 result this clears zero timing and endpoint slew, but the
+first-coarse case remains pending, so coarse overlap is not yet established.

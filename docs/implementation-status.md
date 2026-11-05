@@ -51,6 +51,15 @@ two serial inversions per path: 981 MOS, 35 MIMs, 133 programming gates.
 Both retain 86 root controls, complete qualified component models and the
 original timing/safety gates. New topology/gang/common wiring remains
 unextracted, and no complete native timing verdict exists for either yet.
+Balanced-drive zero code now passes at repeated 453.806932/498.587763 ps,
+with 111.167584 ps fastest-quarter headroom and 154.649115 ps maximum slew.
+Its fine31 point also passes native/slew checks; first-coarse overlap is pending.
+The post-mux fine31 point now passes native checks with 202.856371 ps maximum
+output slew and 0.171048 ps rising repeat difference. The standalone physical
+parallel INV8 output master now passes zero DRC, strict native LVS, all 34
+native parameter checks and complete component RC/reduction witnesses at
+`parallel_output_cell_v111/719aa3336298176d`. Its connecting wires are measured;
+new bank integration and native transient timing remain required.
 
 The 0.76 um original width prototype separately passes its three initial
 endpoint cases with overlap 20.649958/10.736333 ps and max slew
