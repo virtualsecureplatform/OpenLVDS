@@ -5956,3 +5956,29 @@ and all supplied junction dimensions. The 418 standard-cell devices whose
 source supplied only W/L now have actual measured junction geometry.
 Manufacturing-mask preservation and original-metal retention also pass.
 No joint-RC electrical qualification is transferred from component feasibility.
+
+
+The new extraction namespace is
+`build/extracted/43f480e0765d6198/openlvds_dcdl_c16_f32_regenerated_physical_v57`.
+Its raw netlist contains 31,081 resistors and 9,892 capacitors; exact
+star-mesh reduction retains 23,107 resistors, eliminates 7,480 algebraic
+nodes and protects 9,135 boundaries. All 39 ports and positive passive
+components are verified. The v60 mapper independently identifies all 331
+instances, 150 logical nets, 951 MOS devices, 133 programming gates and
+639 control-terminal observations on this extracted physical bank.
+
+All **2,050** regression tests pass without skips in 364.154 seconds
+(`build/regenerated-physical-v57-full-tests.log`), including six new
+observation-mapping checks for geometry, orientation, scale, missing aliases,
+physical shorts and public-port order. These software checks and the native
+physical proof do not establish routed transient timing.
+
+
+Joint-RC certificate
+`regenerated_bank_joint_rc_verification_v59/eb736007b7267e7e` passes all
+native topology/parameter checks and exact reduction regeneration. Its four
+independent Schur witnesses cover 9,134 non-ground protected boundaries,
+with maximum absolute current error 2.62830e-10 A and normalized error
+0.000336587 under the fixed tolerances. All 951 MOS junction geometries and
+68 MIMs match the actual native layout reference. This enables the fresh
+routed zero-code transient; it does not establish timing by itself.
