@@ -6631,3 +6631,12 @@ unqualified. The v87 physical/RC proof for other widths is **not**
 transferred to them. The measured new fine-cell RC must next enter a fresh
 bank model, followed by actual bank geometry/common-RC, dense and periodic
 40/60-percent screens, all-PVT legal-code and full clock/link integration.
+
+
+The complete software regression after the v86-v89 additions passes
+**2,085 tests without skips** in 387.620 s
+(`build/moscap-junction-repair-v89-full-tests.log`). Four junction repair
+and two narrowed-quantum tests are included. Actual compact native DRC/LVS,
+mask equality, measured junction/RC checks and independent passive witnesses
+supply the physical evidence described above; software tests alone do not
+admit electrical timing or the full PHY.

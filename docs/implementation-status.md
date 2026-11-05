@@ -5,6 +5,39 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current architecture work (2026-11-05):
 
+The regenerated delay bank passes the actual routed SS/40 C zero-code screen
+with 64.8 ps quarter-cycle headroom. Its falling coarse/fine overlap still
+fails by 18.544 ps, and periodic 410 MHz clocks at 40/60% duty fail output
+slew or full-swing checks. The calibrated clock chain and LVDS PHY remain
+unqualified. See [digital clocking v2](digital-clocking-v2.md) for the exact
+physical, native timing and independent verification receipts.
+
+Three smaller complementary gate-capacitor fine cells (0.42/0.84/1.26 um)
+now pass compact native GDS DRC/LVS and standalone distributed component RC.
+The RC extractor's zero source-junction fields on tied D/S/body capacitor
+MOS devices are reconstructed from independently measured separate-terminal
+primitive geometry. Placed masks and separate active regions, all native
+parameters, wire-collapsed topology and passive reduction are checked. Original
+extractions remain intact. These component results do not qualify bank wiring
+or timing.
+
+The 0.42 um component prototype fails coarse overlap by 14.425/32.485 ps
+rising/falling; the 0.84 um fine31 point misses the 250 ps output-slew domain
+at 251.810496 ps. Its zero-code delay remains 387.301482/418.066670 ps before
+new common routing. Two intermediate widths, 0.76/0.80 um, are running in
+`moscap_fine_component_v89/2be386aad63fa8a0`, with unchanged acceptance gates
+and two workers. No timing verdict exists for them yet. Their new geometry
+and local/common routing are not covered by the other widths' RC proofs.
+
+All **2,085** software regression tests pass without skips in 387.620 s
+(`build/moscap-junction-repair-v89-full-tests.log`). The next integration
+must incorporate measured fine-cell RC and regenerate programming-gate
+observations before actual bank/common-RC, dense/periodic, all-PVT legal-code
+and clock/link qualification. No voltage sweep is introduced; temperatures
+remain 0/25/40 C, and input-duty endpoints remain 40/60%.
+
+Earlier implementation checkpoints:
+
 The both2 actual-component-RC bank now passes the complete six-point sparse
 SS/40 C screen in independent receipt
 `nlvt_guard2_sparse_verification_v41/834d4ff6707b3812`. Fine carry is
