@@ -3756,3 +3756,93 @@ enabled and with default admissions closed (`build/rx-training-v3-admitted-synth
 and `build/rx-training-v3-default-synthesis.log`). These checks do not establish
 mapped area, physical timing or electrical admission. The full routed-bank
 SPICE pilot remains live; no retained native producer or gate was changed.
+
+### Complete RX control composition
+
+`openlvds_rx_control_v2` connects `openlvds_dll_control_v2` to
+`openlvds_rx_training_v3`. The request edge starts actual four-section DLL
+calibration and the same overall acquisition deadline. Real configuration
+mailboxes, separate physical-settle acknowledgements, signed/swapped pair
+measurements and the unwrapped period check remain in the calibration path.
+After lock, the DLL codes and measurement engine freeze while the deskew scanner
+performs each physical update, DCC restart/warmup and four-frame test. The final
+selected code is physically reapplied and revalidated before readiness; payload
+still waits for the end marker. Retraining disables outputs and initiates a new
+DLL calibration and complete scan, retaining the prior physical deskew word
+until the next safe source-clock commit.
+
+The interface distinguishes `source_clk` before deskew from `raw_reference`
+after deskew. `raw_phase0`/`raw_phase90` are actual DLL phases; `clock0`/`clock90`
+are actual DCC outputs. Source presence and post-deskew DLL-reference presence
+are separately observable. The physical backend still supplies both independent
+configuration/deskew settling grants, the admitted delay ROM, measurement routes,
+signed observer decisions and captured pairs. This wrapper generates no ideal
+clock or delay. ROM, DLL, deskew and DCC admissions default false. Invalid DLL
+code bounds, fewer than 64 confirmations, invalid vote/settle/trial dimensions
+and deadlines exceeding the 100 ms management budget fail closed.
+
+The composed bench `tb_rx_control_v2` uses actual calibration/configuration/
+measurement/launch, scanner, transaction, startup and TX/RX framing RTL, with
+clock-hold DCC topology and explicit test-only cell delays. Only external bank
+propagation, signed paths, arbiter, settling and eye mask are synthetic. Unlike
+the RX training-only bench, no external lock assignment can bypass calibration:
+every lock checks all 64 actual period confirmations. The test post-deskew
+reference also shifts with the physical code fixture, while the pre-deskew
+source continues independently. DLL codes, commits, measurement launches and
+period results must remain frozen throughout the scan and payload.
+
+The complete-control targeted run passes ten scenarios, with a separate passing
+reduced-confirmation rejection case (`build/rx-control-v2-targeted-tests.log`
+and `build/rx-control-v2-parameter-rejection.log`). Nominal fixture lock occurs
+at management age 111,190 (about 4.448 ms after the request), and RX readiness
+at age 119,926 (about 4.797 ms). Retraining repeats actual DLL calibration and
+the full scan. These durations describe the synthetic fixture, not native
+acquisition guarantees. Timeout fixtures retain all 64 confirmations and place
+the single overall deadline 200/1,000 management cycles after the measured
+nominal DLL lock; they respectively withhold deskew settling or interrupt a
+partially completed scan. They verify that no child deadline caused the failure.
+The first test attempt placed its fixed deadline before DLL lock; that fixture
+error and a too-short retrain test-runner timeout are retained in
+`build/rx-control-v2-initial-tests.log`. No hardware confirmation, warmup or
+100 ms limit was relaxed to make these tests pass.
+
+The final complete suite passes 1,895 tests without skips, including all eleven
+complete-controller scenarios (`build/rx-control-v2-full-tests.log`). Yosys
+process/optimization/check reports zero problems for the production dimensions
+with all admissions enabled and with defaults closed
+(`build/rx-control-v2-final-admitted-synthesis.log` and
+`build/rx-control-v2-final-default-synthesis.log`). These checks qualify control
+composition only; admitted native delay ROMs, electrical backend timing, mapped
+physical control timing and whole-PHY integration remain open.
+
+### Live routed-bank negative voltage observation
+
+A read-only bounded snapshot of routed pilot case 0 reaches 29.924282 ns of
+the required 60 ns with 14,984 complete records and 11,306 saved variables.
+`build/routed-live-prefix-observation-20261105T032426Z.json` binds the manifest
+and exact consumed payload (SHA-256
+`77d6123e8073f0d29c5c239be2ce3f8d21802f4310ccbf4cb81f7e360e6a11c0`).
+A separate host-handle attestation is retained beside it; the prefix helper's
+container PID namespace must not be used to interpret host-process liveness.
+The solver remains running and neither its fixture nor outputs are modified.
+
+The prefix is finite and monotonic, but already contains **40 MOS terminal-limit
+violations**: 24 native NFET and 16 native high-threshold PFET devices whose
+named terminals involve `turn0`. Re-reading the same hashed records produces
+`build/routed-prefix-terminal-detail-20261105T032633Z.json`. The worst is
+`XD:X2142` at 2.14456 ns, during the first input rise with all fine-control
+inputs at zero: `turn0.Y.t3` is 1.964222686 V and its local body terminal is
+-0.009396776 V, giving 1.973619462 V across terminals under the unchanged
+1.95 V bound. Thus this observation concerns the return-mux region during a
+clock transition, separately from the previously repaired fine-control charging
+problem. Feedthrough/load and local ground movement need isolation; the prefix
+alone does not establish the physical cause.
+
+The first two complete input slots each contain one input/output edge of each
+polarity. Code 0 rise/fall delays are 588.242695/609.203188 ps; code 1 gives
+589.255901/615.623132 ps. The conservative maximum-edge zero-code headroom
+against a 410 MHz quarter period is only about 0.553 ps. A repair that merely
+adds load therefore needs a joint delay/headroom check. These are bounded-prefix
+observations, not a complete timing/voltage pass, dense legal-code table, PVT
+qualification or PHY admission. Keep the full pilot and independent verifier
+running and retain the unchanged electrical gates before selecting a repair.

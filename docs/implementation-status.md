@@ -17,8 +17,12 @@ fresh passive RC extraction and independent strict flat native-device LVS.
 The matched four-case physical fine-control campaign is complete. Independent
 remeasurement passes both guarded DATA biases and retains the ideal-source
 comparisons as failures. The unchanged gate has admitted the complete routed
-model to its sparse timing pilot; no routed timing result is available yet. These
-results do not yet qualify delay range, legal-code ROMs, all-PVT clock timing
+model to its sparse timing pilot. A bounded live prefix already exposes 40
+terminal-limit violations in the return-mux region (observed peak 1.97362 V
+against 1.95 V), with very little conservative zero-code quarter-period
+headroom. The solver remains running; complete independent timing/voltage
+verification and repair are still required. These results do not yet qualify
+delay range, legal-code ROMs, all-PVT clock timing
 or the complete link. See the [routed-bank timing checkpoint](digital-clocking-v2.md#staged-native-timing-using-complete-routed-bank-rc).
 
 The matched two-buffer component experiment fixes the observed 60% duty
@@ -109,6 +113,14 @@ freezes. Fifteen composed scenarios and 480 delivered-phase loss cases at
 `openlvds_clock_startup_v3` exposes the existing loss decode to avoid an extra
 status-register delay. The eye/settling backend and cell delays are synthetic;
 full DLL-controller/RX-wrapper wiring and native qualification remain open.
+
+`openlvds_rx_control_v2` connects the actual DLL calibration/configuration/
+measurement controller to the RX training/scanning path. The pre-deskew source
+and post-deskew DLL reference remain separate physical inputs, with explicit
+backend routes, code-settling grants and captured pairs. One overall deadline
+covers actual DLL calibration, every deskew update/warmup, scanning and final
+revalidation. Model admissions default false. Native backend qualification and
+physical PHY integration remain open.
 
 The passive native clock-component checkpoint passes all 1,706 tests
 without skips using the `make test-full` environment; log:
