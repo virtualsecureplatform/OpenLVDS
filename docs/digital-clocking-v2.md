@@ -6050,3 +6050,34 @@ static sample while quarter-cycle admission remains restricted to zero.
 Sparse success does not establish dense monotonicity, common legal-code
 coverage, periodic 40/60 percent input clocking, dynamic update safety, the
 fifteen PVT points, or the complete LVDS PHY/link.
+
+
+Sparse context `regenerated_bank_sparse_v63/7b068b568ff8523c` is prepared
+and launched under `openlvds-regenerated-bank-sparse-v63.service` with two
+workers. Its task IDs 0–4 correspond to the five codes above, in that order.
+The inherited zero is the complete independently passed v62 receipt; no
+zero replay or result from the older component-only bank is substituted.
+All five fresh native results remain pending.
+
+```sh
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_regenerated_bank_sparse_v63.py prepare \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_joint_zero_verification_v62/808328fe636e91ce
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_regenerated_bank_sparse_v63.py run \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_sparse_v63/7b068b568ff8523c
+# After all five complete numerical tasks:
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/verify_regenerated_bank_sparse_v64.py \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_sparse_v63/7b068b568ff8523c
+```
+
+These commands document the immutable existing context; do not repeat
+prepare/run or overwrite its partial or completed evidence.
+
+
+All **2,058** regression tests pass without skips in 362.081 seconds
+(`build/regenerated-bank-sparse-v63-full-tests.log`). The new eight-test
+subset also passes independently (`build/regenerated-bank-sparse-v63-tests.log`).
+The prepared v63 producer/metric sources are now frozen. Any implementation
+fix requires a new version/context, preserving this run and all partials.
