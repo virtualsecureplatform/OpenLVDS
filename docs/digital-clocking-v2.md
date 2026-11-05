@@ -3556,3 +3556,39 @@ limit; its slope-error bound is 0.083620 V/ns. The original ideal-source
 waveform and this approximation are not asserted to be mathematically identical.
 Tests sample every interval at three interior locations, preserve the complete
 pulse epochs/slews and reject under-resolved tables rather than relaxing the bound.
+
+### Full-native source-representation convergence isolation queued
+
+`probe_dcdl_pwl_source_v2.py` prepares
+`dcdl_pwl_source_v2/974118b4fe0abc11` from retained failed return-mux case 2:
+SS/40 C, coarse 1, fine 0, 20 fF output load and 100 ps input slew. Preparation
+regenerates the original native component libraries, full sixteen-coarse/
+thirty-one-fine prototype and all 2,269 MOS witnesses. The copied library bytes
+are unchanged. Only the fixture title and the behavioral tanh input source's
+replacement by the bounded voltage-PWL representation differ; supplies, control
+levels, two pulse epochs, 20 ns stop, 2 ps maximum step, integration method,
+tolerances and saved terminal coverage remain intact. This legacy prototype
+still has source mux/control/common wiring; it is not the repaired routed bank.
+
+The one-worker diagnostic and independent verifier are active as
+`openlvds-dcdl-pwl-source-v2-pilot.service` and
+`openlvds-dcdl-pwl-source-v2-verify.service`, waiting under the unchanged six-engine
+dispatcher. No existing source, model, live solver or admission gate is modified.
+Its purpose is to test a numerical source-representation hypothesis; another
+abort is a valid negative outcome, not a reason to substitute a partial pass.
+
+`verify_dcdl_pwl_source_v2.py` regenerates libraries, native witnesses, both the
+prepared and translated solver decks, and the analytic source certificate.
+On a complete 20 ns run it independently remeasures the actual IN waveform
+against the certified error, midpoint and slew bounds, and repeats all original
+native pulse/control/terminal checks. Electrical measurement failures remain
+separate from numerical completion. On a terminal timestep abort it verifies
+the log, exact output hashes and incomplete raw-prefix time, publishing only a
+failure diagnosis. Missing/incomplete waveforms cannot gain a complete-trace
+or native pulse-screen verdict. The aborted baseline provides no full-trajectory
+timing equivalence or speedup comparison in either outcome.
+
+No numerical or electrical result is available yet. The repaired-bank settling
+gate, routed timing continuation, clock-drive experiment, ROM admission,
+all-PVT and PHY gates remain unchanged and open. The full software suite passes
+1,891 tests without skips in `build/dcdl-pwl-source-v2-full-tests.log`.
