@@ -5264,3 +5264,45 @@ to test whether lower driver loading recovers the remaining 22.94 ps while
 still passing the unchanged terminal-voltage gate. Complete sparse range,
 common wiring extraction, periodic duty, all-PVT and full-chain checks remain
 required after a passing zero gate.
+
+### Two actual 2x2-guard bank experiments are running
+
+Frozen campaign `nlvt_guard2_bank_v36/4421df67843ca5bf` now compares `fine2`
+and `both2`, using `nlvt_guard2_bank_v36.py` and the independently checked real
+component RC. Preparation independently regenerates the complete failed v32
+baseline and checks that the new guard derives from that same physical
+low-Vt INV8. All unrelated component definitions, native MOS model counts and
+all 133 internal fine/TG control observations are retained. Only the selected
+data drivers acquire the new physical guard model.
+
+| Profile | Changed driver guards | Native MOS / MIM | Expanded R | Expanded explicit C |
+| --- | --- | ---: | ---: | ---: |
+| fine2 | fine output: 3x3 to 2x2 | 903 / 65 | 12,641 | 4,883 |
+| both2 | input and fine output: 3x3 to 2x2 | 903 / 65 | 12,641 | 4,887 |
+
+The pilot and independent complete-waveform watcher run as
+`openlvds-nlvt-guard2-v36-pilot.service` and
+`openlvds-nlvt-guard2-v36-verify.service`. Both solvers have started. The six-engine
+dispatcher and two-worker campaign bound are unchanged; the three healthy
+original weighted-bank solvers remain active. No voltage or timing result is
+claimed for the smaller guard before complete independent remeasurement.
+
+Read-only reuse of v24's saved-terminal crossing methods on the SHA-bound
+complete v32 waveform is recorded in
+`actual_nlvt_terminal_bands_v37/b220e28fe6f0667a` and
+`build/actual-nlvt-bank-v32-terminal-bands.log`. The external delays reproduce
+the independent receipt within 1e-9 ps. The second falling pulse has native
+crossing-interval bounds of 122.930--129.429 ps at the input driver,
+118.260--128.507 ps at the first TG, 107.210--112.612 ps at the root TG and
+249.961--258.932 ps at the fine output driver. These bounds motivate reducing
+driver loading; they are not reconstructed passive-net delays or a new bank
+qualification. Overlapping crossing bands may give small negative boundary
+bounds, which remain unaltered.
+
+The full pinned regression for this checkpoint passes **2,003 tests without
+skips** in 368.813 s (`build/nlvt-guard2-bank-v36-full-tests.log`), including
+four new physical-guard checks and four bank-integration checks. These enforce
+native guard dimensions/connections, unchanged MOS geometry/body ties, exact
+driver selection and RC retention, matched fixture includes, and refusal to
+promote zero-code results to complete sparse or PHY admission. Passing the
+software suite does not qualify the running native experiments.

@@ -17,10 +17,11 @@ A new low-Vt INV8 with a native 2x2 output MIM guard passes independent
 fresh-GDS DRC/LVS, unchanged MOS/body masks and placements, native junction
 checks and exact passive-RC reduction
 (`nlvt_guard2_verification_v35/dd63e937c9f7ef52`). Two matched bank experiments
-are preparing to test that smaller guard on the fine driver alone or both
-data drivers. The PHY remains unqualified. The last committed full pinned
-regression passed 1,995 tests; the new component and integration checks are
-being included in a fresh full run.
+are running in `nlvt_guard2_bank_v36/4421df67843ca5bf`, testing that smaller
+guard on the fine driver alone or both data drivers; an independent waveform
+watcher is active. The PHY remains unqualified. The full pinned regression passes **2,003 tests
+without skips**, including the new physical-component and bank-integration
+checks. Native timing and voltage for the smaller guard remain unqualified.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew
