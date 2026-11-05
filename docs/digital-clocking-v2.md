@@ -5891,6 +5891,16 @@ is frozen; changes require a new version/context. Both campaigns use the same
 six-engine dispatcher, priority/aging policy, pinned ngspice, stable 1.8 V,
 SS/40 C fixture, 100 ps input slew, 20 fF load and full 20 ns/two-pulse window.
 Each new campaign has one solver worker. No healthy legacy solver was stopped.
-The complete feasibility waveform is still pending; live prefix observations
-cannot establish a complete gate pass. All **2,044** regression tests pass
-without skips in 362.785 seconds (`build/regenerated-bank-v56-full-tests.log`).
+The full feasibility waveform completed without solver errors in 1,350.839
+seconds. Both pulses pass: rise 464.149705/464.149350 ps and fall
+457.429079/457.429262 ps, giving **145.606393 ps** fast-quarter headroom.
+All 951 native voltage screens, 86 root controls and 133 actual programming
+gates pass. The maximum repeated-edge difference is 0.000355 ps.
+
+Independent complete-waveform receipt
+`regenerated_bank_zero_verification_v58/fcb469c9d1d31120` reproduces every
+reported result exactly and rejects both deliberate clock-as-static-control
+and wrong-voltage-limit faults. It retains the component-only scope: the
+new physical routing is still required before any joint-RC timing admission.
+The prior **2,044** regression tests passed without skips in 362.785 seconds
+(`build/regenerated-bank-v56-full-tests.log`).
