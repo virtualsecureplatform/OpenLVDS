@@ -112,6 +112,15 @@ actual 351-instance OpenDB checks and fixed-bus connectivity at
 `balanced_placement_v129/f53b50318fc8e365` (b3). Each has 179 functional macros
 and 43 tapped control rows; root outputs remain unrouted. Read-only native
 mask previews are available through `render_balanced_placement_v130.py`.
+Both placements also pass native router-interface roundtrip checks at
+`balanced_routing_interface_v134/3cdfa2a88b9de6ad` (b2) and
+`balanced_routing_interface_v134/b892336c2e21e16f` (b3). Exact existing metal
+is represented by three temporary router ports while 94 already connected
+fine-bus terminals are detached. All eight root outputs remain available;
+all 351 placements, native connections, pin geometries/types and fixed buses
+are restored exactly. The initial v132 API failure is retained. Independent
+stored-database readback and injected native faults are being checked by v133.
+No routing or timing candidate admission is performed by these preparations.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native

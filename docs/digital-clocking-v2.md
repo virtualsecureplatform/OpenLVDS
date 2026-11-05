@@ -7474,3 +7474,41 @@ rejection of failed consumed fine traces, negative overlap, first-pulse
 quarter failures and incomplete/incorrect case coverage. Input clock duty
 checks remain **40/50/60% at 390/400/410 MHz**, at fixed supplies with no
 voltage sweep and 0/25/40 C temperature coverage.
+
+
+### Reversible router access to the balanced-bank fixed buses
+
+Before routing a selected candidate, the router must see the already connected
+fine rails as physical metal. `prepare_balanced_routing_interface_v134.py`
+now verifies this interface in native OpenDB for both exploratory placements:
+
+| Profile | Interface artifact | Result |
+| --- | --- | --- |
+| b2 | `balanced_routing_interface_v134/3cdfa2a88b9de6ad` | pass |
+| b3 | `balanced_routing_interface_v134/b892336c2e21e16f` | pass |
+
+Three temporary router ports exactly represent the existing selected-node,
+VPWR and VGND metal3 rectangles. They add no manufactured access-pad metal.
+The 94 terminals already connected by those fixed buses are temporarily
+removed from the router's connectivity graph. All eight root outputs remain
+connected to `selected`; all other routable signal/control connections remain
+present. Native body-only terminals are disconnected only for routing.
+Supply pins temporarily use the same signal adapter as the earlier router
+flow; OUT already meets its real output rail and needs no regular route.
+
+Restoring the interface recovers the exact instance and public-port
+connectivity, 351 placements/master sizes, all master pin geometry and types,
+net types/status, and the three fixed-wire rectangles. Both native roundtrips
+pass. `router_input.odb` and `restored.odb` are retained separately. No global
+or detailed router is invoked, and no source placement or analog campaign
+is changed. Native route coverage, streamed-mask DRC/LVS and joint RC remain
+pending, along with the measured-gang model's own three-point timing gate.
+
+The retained initial `balanced_routing_interface_v132/02f403995de1971d`
+failed because this OpenDB exposes `clearSpecial`, not `unsetSpecial`.
+Its code, immutable artifact and native error log remain intact; v134 corrects
+that API call in a new producer. The independent
+`verify_balanced_routing_interface_v133.py` follow-up rereads all three saved
+database stages in fresh OpenROAD processes and injects native missing-root,
+shifted-proxy-metal, supply-type and placement faults. Its verification is
+in progress; it cannot establish routed connectivity or electrical timing.

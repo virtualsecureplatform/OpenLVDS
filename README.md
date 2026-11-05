@@ -39,7 +39,8 @@ Both stronger-coarse balanced placements pass zero DRC and all 351-instance
 connectivity checks, with native mask previews available. Their routing and
 whole-bank timing admission remain pending. The measured inverter-gang
 fine31 point passes at 244.22 ps maximum slew; its matching zero/coarse
-checks are running.
+checks are running. Both placements also pass reversible native router
+interface checks for their existing fine-data and supply buses.
 Their exploratory 332-instance placement passes zero DRC and fixed-bus
 connectivity checks; whole-bank routing and timing qualification remain open.
 The physical parallel INV8 output master passes native geometry and complete
