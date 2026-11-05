@@ -54,7 +54,9 @@ unextracted. The balanced-drive three-point pilot is complete with zero errors:
 zero code passes at repeated 453.806932/498.587763 ps, with 111.167584 ps
 fastest-quarter headroom. All three points pass native/slew checks, but rising
 coarse overlap fails by 10.716291 ps (falling overlap is +129.826301 ps).
-It is not admitted; the post-mux pilot remains incomplete.
+It is not admitted. The post-mux pilot is also complete: all native/slew
+checks pass and zero quarter headroom is 35.421664 ps, but rising overlap
+fails by 17.271380 ps (falling overlap +196.913000 ps).
 The post-mux fine31 point now passes native checks with 202.856371 ps maximum
 output slew and 0.171048 ps rising repeat difference. The standalone physical
 parallel INV8 output master now passes zero DRC, strict native LVS, all 34
@@ -62,7 +64,13 @@ native parameter checks and complete component RC/reduction witnesses at
 `parallel_output_cell_v111/719aa3336298176d`. Its connecting wires are measured;
 a fresh bank experiment now includes that measured component wiring at
 `post_mux_output_rc_v113/13796ed50f568b43`. Complete bank interconnect and
-native transient timing remain required.
+native transient timing remain required. Canonical zero-origin GDS/LEF
+views for the measured fine/output cells now pass fresh DRC/LVS, mask and
+junction preservation and actual OpenDB checks at
+`clock_cell_views_v114/5c1222c9bf8bb27b`. Post-mux stage traces isolate the
+edge-dependent fine range mostly to the common inverter. A root-only drive
+experiment is being prepared to test input-edge shaping without increasing
+coarse-tap loading or adding serial inversion.
 
 The 0.76 um original width prototype separately passes its three initial
 endpoint cases with overlap 20.649958/10.736333 ps and max slew
@@ -70,10 +78,10 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-The full regression passes **2,104 tests without skips** in 399.566 s
-(`build/parallel-output-cell-v111-full-tests.log`); the two subsequently added
-measured-output substitution tests also pass, alongside the native 981-MOS
-model/observation preflight. Native architecture experiments
+The full regression passes **2,110 tests without skips** in 376.969 s
+(`build/clock-cell-views-v114-full-tests.log`); the two subsequently added
+root-drive projection/rejection tests also pass, alongside the native
+989-MOS/141-gate preflight. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
 healthy older solvers and failed results are retained. Remaining timing gates
 must pass before bank/common-RC, dense/update/periodic, all-PVT legal-code

@@ -7088,3 +7088,82 @@ systemd expanded a shell parameter expression. That journal is retained;
 the separate live service uses the explicit prepared artifact path. No
 solver was stopped, restarted or retried. The source and prepared inputs
 remain frozen, and all new native runs use the original six-engine queue.
+
+
+### Canonical measured component views and completed post-mux diagnosis
+
+The original post-mux pilot `post_mux_regeneration_v109/d17437841aa23449`
+now completes three cases with zero errors. All native/slew screens pass.
+First-coarse repeated rising/falling delay is **800.767244/761.113134 ps**;
+zero-code fastest-quarter headroom is **35.421664 ps**. Rising overlap is
+**-17.271380 ps**, falling overlap **+196.913000 ps**. This candidate is not
+admitted. Fine31 adds **209.161431/408.790013 ps** to zero-code delay while
+the coarse step adds **226.432811/211.877013 ps**. This confirms an edge-dependent
+range mismatch, despite valid output slew and zero timing.
+
+`clock_cell_views_v114/5c1222c9bf8bb27b` completes/pass for the measured
+original-route 1.26 um fine cell and physical parallel INV8 output master.
+Both normalized GDS/LEF views have canonical zero origins, explicit pin
+aliases and MIM keepouts; every manufacturing mask is checked under the
+recorded translation. Fresh native DRC/LVS, native junction/dimension
+preservation and actual OpenDB master/pin geometry checks pass. Fine data
+and supply ports are inouts, and programming controls are inputs. The fine
+view is **12.4 x 15.85 um** (shift **0,+4.15 um**); the output view is
+**26.1 x 15.4 um** (shift **-2,-2 um**). Their public names are
+`openlvds_fine_moscap_w126_far_v114` and
+`openlvds_parallel_inv8_registered_v114`. These standalone additions do not
+modify the v44 registry, qualify new bank wiring or claim new RC/timing.
+
+`analyze_post_mux_stages_v115.py` supports the actual root/common/final
+stages, including the physically extracted output compound and first-coarse
+path. It selects actual saved MOS terminals by shortest positive wire
+resistance and remeasures every completed OUT delay. Its versioned receipts
+are stored in the existing `drive_stage_analysis_v102` namespace; their
+identity version is explicitly
+`post-mux-native-stage-delay-and-slew-attribution-v115.1`.
+The fine31 receipt is `bce11108b447a266`, zero is `8cf70b98ed50cd16`.
+For repeated rising input edges, the common inverter interval changes from
+**247.045 to 408.174 ps**; for falling inputs, **309.884 to 706.383 ps**.
+The passive mux intervals barely change with fine programming. These are
+nearest-terminal diagnostics, not exact boundary timing certificates.
+
+The measured-output v113 fine31 point separately passes all native/slew
+checks at repeated **784.138686/958.686706 ps**, maximum output slew
+**203.570656 ps**. Zero/coarse points remain outstanding. It retains its
+original scope and runs independently.
+
+`parallel_post_mux_roots_v116.py` prepares the next matched experiment:
+four additional complete measured root TG cells, unchanged leaf mux/coarse
+tap loads, retained measured fine/output cells and the same serial inversion
+count. Exact projection recovers the entire v112 parent model; native
+preflight confirms **989 MOS, 35 MIMs, 141 programming gates, 86 root
+controls**. New root gang/common interconnect remains unextracted.
+`probe_parallel_post_mux_roots_v117.py` binds the complete failed v109
+comparison, preserves original native/overlap/quarter/slew gates and uses
+the unchanged six-engine budget with at most two workers. Its role is to
+test input-edge shaping before changing the common inverter strength.
+
+
+The v115 first-coarse receipt is
+`drive_stage_analysis_v102/147fd71877ed46cd`. Its repeated rising input
+reaches the selected leaf at **150.182 ps / 200.822 ps slew**, versus
+**1.200 ps / 100.481 ps slew** for zero code. The following leaf/root/common
+intervals are **125.951/112.444/276.362 ps**, versus
+**93.586/102.547/247.045 ps** at zero. Thus the coarse path includes an
+edge-dependent propagation penalty beyond the tap delay itself. Root drive
+is an experimental knob for that penalty; no improvement is assumed until
+its native cases complete.
+
+The root-only preflight and two projection/fault tests pass
+(`build/parallel-post-mux-roots-v117-preflight.log`,
+`build/parallel-post-mux-roots-v117-tests.log`). Full regression passes
+**2,110 tests without skips** in **376.969 s**
+(`build/clock-cell-views-v114-full-tests.log`); the two root-only tests were
+added after that run began and pass separately. The new service
+`openlvds-parallel-post-mux-roots-v117` waits for the already running
+preparation process, checks the prepared manifest path, and then launches
+the frozen run. Preparation log is
+`build/parallel-post-mux-roots-v117-prepare.log`, native run log is
+`build/parallel-post-mux-roots-v117.log`. The launcher reads the preparation
+result with Python, avoiding shell-variable expansion by systemd, and opens
+the new run log exclusively. Existing campaigns remain intact.
