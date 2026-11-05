@@ -5988,8 +5988,15 @@ The fresh routed zero-code campaign is
 `regenerated_bank_joint_zero_v61/5eca4ab81fdfea2c`, launched under
 `openlvds-regenerated-joint-zero-v61.service`. It consumes the complete v59
 certificate and all actual device/control observations. The full 20 ns trace
-is pending. `verify_regenerated_bank_joint_zero_v62.py` independently
-remeasures the completed waveform and deliberately rejects clock-data
+completed without solver errors in 235.408481 seconds. Both pulses pass:
+rise 544.955992/544.955952 ps and fall 538.760084/538.760084 ps. Fast-quarter
+headroom is **64.800106 ps**. All 951 MOS voltage screens, 639 physical
+control observations and 133 programming gates pass; maximum terminal span
+is 1.864715115 V against 1.95 V. Maximum repeat difference is 0.0000402 ps.
+Independent receipt
+`regenerated_bank_joint_zero_verification_v62/808328fe636e91ce` passes:
+`verify_regenerated_bank_joint_zero_v62.py` exactly remeasures the completed
+waveform and deliberately rejects clock-data
 substitution and incorrect voltage limits; a failed timing verdict remains
 a valid diagnostic receipt. No live prefix can establish a pass.
 
@@ -6011,3 +6018,35 @@ six-engine dispatcher and one-worker campaign limit apply, with existing
 healthy native solvers retained. The reference-clock duty amendment remains
 40/60 percent input checks with 50 percent nominal; it does not relax the
 quarter-cycle timing or corrected-output requirements.
+
+
+### Fresh sparse continuation after routed regeneration
+
+`probe_regenerated_bank_sparse_v63.py` accepts only a complete passing v62
+routed-zero receipt and remeasures the inherited waveform before preparation.
+It copies the same full joint-RC netlist without changes and adds five SS/40
+codes: (coarse,fine) = (0,1), (0,15), (0,16), (0,31), (1,0). Each fresh
+case retains the full 20 ns/two-pulse native fixture, all 951 MOS terminal
+checks, 133 programming gates and 639 physical control observations.
+The campaign has at most two workers and uses the existing six-engine
+priority/aging dispatcher. All supplies stay nominal; no voltage sweep is
+introduced.
+
+The six-point comparison requires positive sampled fine ordering on both
+edges, adjacent 0-to-1 and 15-to-16 steps in (0,20] ps, positive coarse
+range overlap on both edges, settled controls, safe transistor voltages and
+repeatable pulses. The inherited zero must retain positive fast-quarter
+headroom. Programmable nonzero delays are measured without imposing the
+zero-code quarter-cycle ceiling on their deliberately added delay.
+`verify_regenerated_bank_sparse_v64.py` checks all five complete translated
+decks/logs/raw waveforms, remeasures every result, rejects deliberate wrong
+voltage/control observations, and regenerates the six-point comparison.
+Numerically complete failed comparisons remain diagnostic evidence.
+
+Eight new tests cover sparse admission failures and nonzero-code measurement,
+including rejection of an incorrect external control and moving internal
+programming gate. A synthetic 800 ps programmable delay is accepted as a
+static sample while quarter-cycle admission remains restricted to zero.
+Sparse success does not establish dense monotonicity, common legal-code
+coverage, periodic 40/60 percent input clocking, dynamic update safety, the
+fifteen PVT points, or the complete LVDS PHY/link.
