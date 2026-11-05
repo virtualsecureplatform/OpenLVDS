@@ -5664,3 +5664,62 @@ GDS DRC, strict LVS, exact joint RC and the complete zero-code waveform remain
 required. The available component-RC timing margin stays **4.286 ps** until
 those actual routed parasitics are measured. No 40/50/60 percent periodic clock,
 PVT, dense legal-code table or PHY admission is transferred by this result.
+
+
+### Routed native GDS preserves masks and passes fresh DRC/LVS
+
+`tg_bank_native_gds_v51/05d794b67900d80f` streams the complete v50 DEF with
+the pinned SKY130 KLayout technology/map and the original registered native
+GDS masters. It restores the two fixed fine power buses from the immutable v49
+plan. All original native routing geometry is retained; nonrouting manufacturing
+masks are identical to the placed source. The only additional shapes are
+routing/vias and the exact declared prBoundary die annotation. Public port
+metal is explicitly manufactured on drawing layers, and canonical text labels
+are restored at the fixed port locations.
+
+The mask audit caught two export details before the formal producer was
+prepared. DEF adds a die boundary on annotation layer 235/4; the checker now
+requires exactly the declared die boundary plus existing leaf boundaries.
+DEF pin-purpose polygons are also annotation, not a replacement for drawing
+metal. The producer removes only top-level pin-purpose duplicates, preserves
+native child-cell annotations, and draws the exact v49 public-pin rectangles
+on the correct metal drawing layers. Preliminary streamouts and logs remain
+under `build/bank-physical-preflight/streamout_v51*`.
+
+Fresh GDS import, full flattened Magic DRC and strict native Netgen LVS pass:
+**zero DRC**, **circuits match uniquely**, and all 39 public pins match. This
+proves native supply/body connectivity through the actual routed bank and its
+physical tap rows. There are still **903 MOS and 65 native MIMs**: 196 N-LVT,
+271 regular N, 227 regular P and 209 HVT P devices. Exact native model/dimension
+comparison also passes independently of the LVS topology report.
+
+All junction parameters supplied by the reference are preserved, allowing
+only drain/source exchange. The earlier standard-cell control reference gave
+W/L only for **418 MOS devices**; their actual AD/AS/PD/PS are now extracted
+and will be used in the joint timing model. Their new junction capacitance
+cannot be transferred backward into old component-RC timing results. The
+remaining **485 MOS** already had junction geometry in the reference, which
+matches the routed extraction. The checker fails if a partial/full junction
+class is ambiguous, instead of silently weakening the comparison.
+
+Native inventory expansion preserves every original device and numeric suffix;
+it never resizes or fingers a wide MOS. Decimal-exact SPICE conversion makes
+`790000u` equal to `0.79` without introducing binary floating-point mismatches.
+Five new tests cover hierarchy/private-net identity, numeric suffixes, wide
+native devices, actual junction dimensions, newly measured control junctions,
+and rejection of changed dimensions/junctions or invalid hierarchy. The final
+frozen-producer full software regression is in progress; the preceding placement
+checkpoint passed all 2,030 tests.
+
+```sh
+./scripts/env.sh --tools --ngspice python3 scripts/build_tg_bank_gds_v51.py campaign \
+  /work/OpenLVDS/build/diagnostics/tg_bank_route_v50/9c3f35cf80e72b04
+```
+
+This checkpoint is native GDS geometry/connectivity proof, not complete foundry
+signoff. Antenna, independent foundry checks and full release obligations
+remain. Joint distributed RC, passivity and exact reduction/topology proof,
+then the complete SS/40 zero-code terminal/control/timing screen, are required
+before expanding dense codes, periodic clocks, all fifteen PVT conditions or
+the complete clock/link chain. The component-model 4.286 ps timing margin is
+unchanged evidence; no routed-bank margin has yet been measured.

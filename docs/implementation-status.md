@@ -58,8 +58,20 @@ regular wires, the final router violation count is zero, and every instance,
 placement, public port, body connection and master pin geometry/type is
 preserved. The two fixed fine power buses are restored exactly after routing.
 Router checks are separate from full GDS DRC/LVS; physical streamout and fresh
-native qualification are now being tested. The full regression passes 2,030
+native qualification now pass in v51 below. The full regression passes 2,030
 tests without skips.
+
+
+The fully routed native GDS checkpoint now passes in
+`tg_bank_native_gds_v51/05d794b67900d80f`: zero flattened Magic DRC and a unique
+strict native LVS match. All manufacturing masks and native routing from the
+placed source are retained, and all 903 MOS/65 MIM model dimensions and every
+previously supplied junction parameter agree. Actual junctions are newly
+measured for 418 standard-cell control MOS whose earlier reference supplied
+W/L only. This is no timing transfer: joint RC extraction and a fresh zero-code
+native waveform remain the next gate. Antenna and independent foundry signoff
+also remain separate. Five new native-inventory tests pass; the full regression
+for the final frozen producer is running.
 
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
