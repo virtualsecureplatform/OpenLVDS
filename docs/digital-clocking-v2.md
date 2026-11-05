@@ -3530,3 +3530,29 @@ repair. A later integrated candidate must explicitly select the real shared-wire
 model and requalify native timing, voltage, reset and clock startup before any
 clock-island or PHY admission. `make test-full` passes 1,886 tests without skips
 in `build/clock-buffer-pair-v2-full-tests.log`.
+
+### Bounded voltage-PWL representation of the retained tanh input
+
+The input-representation hypothesis is separate from a hardware repair.
+Completed return-mux failures occur before input activity as well as between
+pulses; the reported source branch is not a proven root cause. The live native
+logs already confirm KLU is in use, so adding its option is not a new remedy.
+The existing Xyce parser receipt `xyce_compatibility/ba10c72ce84ed18a` records
+release 7.10.0 parsing successfully while substituting requested BSIM4 4.5 with
+4.6.1. That is parser capability, not native-model equivalence or a speed result.
+No engine, model version, numerical tolerance or existing solver is changed.
+
+`tanh_voltage_pwl_v2.py` represents the original two-pulse tanh input with a
+voltage PWL table. Each interpolation interval has an analytic error bound
+`max(abs(f'')) * h^2 / 8`, including the sparse tails; the first-derivative error
+is also bounded. The four 0.9 V midpoint epochs remain 2.1, 6.1, 12.1 and
+16.1 ns, and each 10--90% rise/fall remains exactly 100 ps in the generated
+table. No voltage clipping or waveform rescaling is applied.
+
+The selected representation has 9,753 points, with 0.5 ps spacing within
+600 ps of each transition and sparse samples elsewhere. Its certified maximum
+voltage interpolation bound is 10.452486 uV, below the fixed 50 uV representation
+limit; its slope-error bound is 0.083620 V/ns. The original ideal-source
+waveform and this approximation are not asserted to be mathematically identical.
+Tests sample every interval at three interior locations, preserve the complete
+pulse epochs/slews and reject under-resolved tables rather than relaxing the bound.
