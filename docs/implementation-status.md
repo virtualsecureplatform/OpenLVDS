@@ -38,8 +38,7 @@ masters plus tap/filler import into OpenDB with exact pin rectangles; all five
 custom masters pass fresh GDS import, zero DRC, strict native LVS and native
 dimension/junction checks. Manufacturing masks are preserved under translation,
 fine-cell GDS labels are canonical, and LEF includes native MIM routing
-keepouts. Physical standard-cell taps and well continuity still require bank
-insertion. Independent library geometry receipt
+keepouts. The library alone does not establish bank supply/body connectivity. Independent library geometry receipt
 `bank_cell_registry_verification_v48/b1813242cd69dc23` passes all twelve
 masters, merged-hierarchy mask comparison, fresh OpenDB import and six actual
 corruption controls. Whole-bank routing and joint RC remain required
@@ -53,9 +52,14 @@ match the intended graph. The assembled GDS with fixed fine data/supply buses
 passes zero DRC. Physical M3 component checks connect all 31 fine data rails
 to the output driver and join both fine supply rows without touching other
 named nets. This is partial routing; coarse/control/remaining supply routing,
-whole-bank native LVS and joint RC timing still remain. Global routing has
-been piloted; detailed-route adapter bring-up is in progress. The full
-regression passes 2,030 tests without skips.
+whole-bank native LVS and joint RC timing still remain. Routing bring-up also passes in
+`tg_bank_route_v50/9c3f35cf80e72b04`: all 145 non-preconnected nets have actual
+regular wires, the final router violation count is zero, and every instance,
+placement, public port, body connection and master pin geometry/type is
+preserved. The two fixed fine power buses are restored exactly after routing.
+Router checks are separate from full GDS DRC/LVS; physical streamout and fresh
+native qualification are now being tested. The full regression passes 2,030
+tests without skips.
 
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):

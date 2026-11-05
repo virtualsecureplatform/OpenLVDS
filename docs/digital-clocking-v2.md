@@ -5617,3 +5617,50 @@ component proof is separate from full native LVS. This checkpoint transfers
 no joint-RC, zero-code timing, dense-code, PVT, periodic-clock or PHY admission.
 The next timing measurement must use the actual complete joint RC, not the
 older component-RC prototype or ideal common buses.
+
+
+### Full both2 routing bring-up with explicit supply coverage
+
+`tg_bank_route_v50/9c3f35cf80e72b04` completes global and detailed routing
+from the frozen v49 ODB. **All 145 nets** other than preconnected IN/OUT have
+actual regular wires. Detailed routing ends with **zero reported violations**.
+This is router bring-up, not full GDS/native LVS, extraction or timing proof.
+
+The adapter treats metal supply terminals as ordinary routing terminals during
+routing and restores exact original power/ground types afterward. Well-only
+VNB/VPB terminals are temporarily excluded from metal routing, then reconnected
+to their original named domains. Their final physical body connections remain
+subject to complete native LVS. The two partially connected fine supply buses
+are temporarily removed from the routing database so global routing does not
+skip the entire supply nets; their exact v49 M3 rectangles are restored after
+routing. IN is already within the native input rail and OUT is already on the
+verified fixed fine bus, so both remain preconnected through the adapter.
+
+This distinction matters: the earlier retained preflight routed 143 signal
+nets with zero router violations, but saved-ODB inspection found **no regular
+wire for either supply**. The completed producer requires a wire for every one
+of the 145 remaining nets, including both supplies. A zero violation count
+alone cannot establish route completion. Other retained preflights exposed
+removed router options, incompatible supply pin/net types and a guide mismatch
+when IN was marked preconnected after global routing; the completed producer
+uses a consistent adapter before both routing stages.
+
+All 328 instance names, models, positions and logical terminal connections
+match v49 after routing. All 39 public port directions and supply types are
+restored. Before/after snapshots of every master pin's rectangle, layer,
+direction and use type are byte-identical. Each restored fine power bus and
+the fixed output bus retains its special-wire inventory. The producer does not
+resize cells, change native geometry or synthesize a timing model.
+
+```sh
+./scripts/env.sh --tools --ngspice python3 scripts/probe_tg_bank_route_v50.py campaign \
+  /work/OpenLVDS/build/diagnostics/tg_bank_floorplan_v49/0a60afeff47f241b
+```
+
+The native routed ODB is authoritative. Its DEF carries regular routes and the
+special OUT bus, but its regular-net supply buses remain separate special-wire
+objects in ODB and must also be preserved in GDS streamout. Whole-bank native
+GDS DRC, strict LVS, exact joint RC and the complete zero-code waveform remain
+required. The available component-RC timing margin stays **4.286 ps** until
+those actual routed parasitics are measured. No 40/50/60 percent periodic clock,
+PVT, dense legal-code table or PHY admission is transferred by this result.
