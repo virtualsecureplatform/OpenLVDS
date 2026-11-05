@@ -6550,3 +6550,45 @@ routing/isolated-junction revisions were additionally exercised by their
 actual native DRC/LVS runs and Python syntax checks. The existing v76
 campaign continues with two workers under the unchanged engine dispatcher;
 no healthy solver was stopped or restarted.
+
+
+### Native-mask-derived fine-cell junction reconstruction (v86/v87)
+
+`moscap_junction_reconstruction_v86.py` restores only zero junction
+fields on the two fine-cell MOS devices whose drain, source and body are
+all tied to their rail and whose gates share the private capacitor node.
+It obtains the actual AD/AS/PD/PS from the separate-terminal v85 native
+measurements. It requires a unique model/W/L/gate/body/D-S topology match,
+handles measured D/S exchange, and rejects nonzero parameter mismatches,
+missing measurements and asymmetric tied-terminal junctions. Every R/C
+line and the original extraction are retained unchanged. Four regression
+tests exercise successful restoration and negative topology/parameter/
+measurement cases, including asymmetric non-capacitor D/S exchange.
+
+`extract_moscap_fine_unit_v87.py` proves that the actual placed primitive
+masks match those measured by v85, except the explicitly added M1 gate
+escape. It checks all five MOS active regions are separate and root-cell
+additions contain only routing. This prevents transferring isolated
+junctions onto merged or changed diffusion. It reimports each compact
+v84 GDS and reruns native zero-DRC/unique-LVS, then preserves the original
+RC extraction and writes a separate corrected raw/reduced model and full
+measured-junction reference. Only the two gate-cap AS/PS pairs change.
+
+Each corrected model passes complete native dimensions/junction and
+wire-collapsed topology checks, exact reduction regeneration, passivity,
+five-port order and four independent terminal-current Schur witnesses:
+
+| Width | RC v87 context | Raw/reduced R | C | Eliminated nodes |
+| --- | --- | --- | --- | --- |
+| 0.42 um | `38a0ba6814879013` | 304 / 266 | 84 | 62 |
+| 0.84 um | `25e086284c91e731` | 338 / 292 | 91 | 74 |
+| 1.26 um | `348ca2c69a6af091` | 358 / 308 | 91 | 80 |
+
+The maximum normalized current errors for the four DC witnesses are
+4.114900e-7, 3.448065e-7 and 5.706095e-7 respectively, each below the
+unchanged normalized limit of one. These witnesses verify the passive
+reduction; native transient comparison remains required. Source code,
+parent evidence, original/corrected files, actual tool/runtime identities
+and PDK files are bound by hashes. All three reports admit standalone
+fine-cell geometry and component RC only. Complete bank interconnect,
+electrical timing and PHY admission remain false.
