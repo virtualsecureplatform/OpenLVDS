@@ -6437,3 +6437,42 @@ control and repetition screens passing. The first-coarse case measures
 -14.424553/-32.484737 ps. Thus this width fails the endpoint feasibility
 screen even though all three cases pass the native and output-slew gates.
 The other widths remain pending; these are component results only.
+
+
+### Gate-cap junction allocation mismatch retained (v79/v80)
+
+`extract_moscap_fine_unit_v79.py` reimports the 0.42 um cell's actual GDS,
+checks native DRC/LVS again, measures all five MOS junctions, and runs the
+unchanged distributed-RC extraction/reduction with the fixed 0.01 fF
+threshold. Context `moscap_fine_rc_v79/6a71737168810f8c` stops at the strict
+junction-preservation comparison. No component-RC certificate is issued.
+The retained extraction is
+`build/extracted/4b4c819aa5c2d8e3/openlvds_moscap_fine_w042_v77`:
+302 raw resistors, 83 capacitors, 258 reduced resistors and 63 algebraic
+nodes eliminated. Passivity and the five-port interface pass; these do not
+override the junction failure.
+
+The two gate-cap devices have `as=0 ps=0` in the RC netlist, while the
+ordinary native netlist assigns nonzero source area/perimeter. Their
+model, W/L, gate and rail connections remain present. The retained v80
+four-way experiment (`moscap_junction_partition_v80/e105380b67512c9b`)
+compares ordinary and RC output, each with default and distributed
+junction allocation, using copies of the original EXT files. Results:
+
+| Extraction | NMOS gate-cap AS/PS | PMOS gate-cap AS/PS |
+| --- | --- | --- |
+| ordinary, default | 0.3654 / 4.26 | 0.2436 / 2.84 |
+| ordinary, `-d` | 0.1218 / 1.42 | 0.1218 / 1.42 |
+| RC, default | 0 / 0 | 0 / 0 |
+| RC, `-d` | 0 / 0 | 0 / 0 |
+
+The RC `-d` experiment additionally zeros junctions on the other three
+MOS devices, so that option alone is not a repair. Magic documents that
+junction area/perimeter are allocated per node and that `-d` distributes
+them among attached devices; see the
+[official ext2spice command reference](https://github.com/RTimothyEdwards/magic/blob/master/doc/html/ext2spice.html).
+The local observation is a discrepancy between two extraction paths,
+not evidence that either allocation is a qualified physical model.
+The next fix must derive junctions from native device geometry with
+separate terminal identities and verify their mapping to RC terminals.
+No guessed area, blanket exception or waived junction check is admitted.
