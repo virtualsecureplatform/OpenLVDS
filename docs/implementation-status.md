@@ -143,6 +143,18 @@ and 42 MIM census, port order, model/W/L and reference-supplied junction fields.
 Both also reject duplicate-instance and altered-port-label GDS faults even
 when their flattened mask regions are unchanged. These diagnostics do not
 establish routed connectivity or repair raw-RC junction fields.
+A new mask-bound fine-section diagnostic completes for both banks at
+`measured_bank_fine_junctions_v140/a6b60e88a441469d` (b2) and
+`measured_bank_fine_junctions_v140/97fe2de6760931ca` (b3). All 31 sections,
+62 capacitor MOS, 93 programming MOS and 31 guard MIMs are identified by
+native topology and tied to independently measured primitive geometry.
+All 62 capacitor devices have per-device junction mismatches in ordinary
+whole-bank extraction: 120 zero fields and four nonzero fields per profile.
+Those fields were absent from the width/length-only fine schematic, so the
+earlier reference-supplied-parameter check did not admit them. No model is
+changed. A future bank RC repair needs this geometry/identity proof and full
+native LVS; directly reusing ordinary capacitor-junction fields or applying
+the single-cell zero-only fix would be invalid.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native
@@ -158,9 +170,9 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-The full regression passes **2,132 tests without skips** in 419.491 s
-(`build/measured-balanced-gds-v137-full-tests.log`), including physical graph,
-matched-diagnostic, three-point and native inventory gate tests. Both CAD campaigns also reject injected metal,
+The full regression passes **2,136 tests without skips** in 428.220 s
+(`build/measured-bank-fine-partition-v139-full-tests.log`), including physical
+graph, matched-diagnostic, three-point, inventory and fine-partition guard tests. Both CAD campaigns also reject injected metal,
 label and duplicated-instance faults; these native layout checks supplement
 the software suite. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;

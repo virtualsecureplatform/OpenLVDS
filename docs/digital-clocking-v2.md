@@ -7639,3 +7639,59 @@ tests without skips** in **419.491 s**
 inventory guard tests also pass independently in 0.686 s. The native timing
 runs remain in progress under the original six-engine dispatcher; neither
 these software checks nor the unrouted geometry diagnostics admit the PHY.
+
+
+### Identify all fine sections before whole-bank junction repair
+
+The native census check preserves every reference-supplied junction field;
+its fine-cell schematic supplies only W/L. A fresh mask-bound diagnostic now
+checks those fine capacitor junctions individually against their isolated
+native measurements:
+
+| Profile | Diagnostic artifact | Fine sections | Capacitor MOS | Zero / nonzero field mismatches |
+| --- | --- | ---: | ---: | ---: |
+| b2 | `measured_bank_fine_junctions_v140/a6b60e88a441469d` | 31 | 62 | 120 / 4 |
+| b3 | `measured_bank_fine_junctions_v140/97fe2de6760931ca` | 31 | 62 | 120 / 4 |
+
+Both analyses complete. All 62 capacitor MOS devices per bank differ from the
+per-device isolated junction measurements. Many source fields are zero;
+shared-rail area/perimeter accumulates on another device. Magic documents
+node-based area/perimeter attribution and the optional `-d` redistribution in
+its [ext2spice command reference](https://github.com/RTimothyEdwards/magic/blob/master/doc/html/ext2spice.html).
+The ordinary whole-bank extraction therefore cannot directly serve as the
+per-device capacitor-junction reference for future RC correction. Existing
+component timing decks remain unchanged and retain their qualified local
+component models.
+
+`measured_bank_fine_partition_v139.py` identifies all 31 private CAP nodes by
+native connectivity/model/dimensions, without depending on instance names.
+Each section must contain one tied-body N/P capacitor pair, an N/P pass gate,
+an N clear switch sharing the complementary control, and its 2 x 2 um guard
+MIM. Exactly 155 fine MOS and 31 guard MIMs are assigned to disjoint sections;
+all share the data/supply rails and have 31 independent control pairs. Missing,
+merged, incorrectly tied or extra devices, wrong controls and missing guards
+are refused. This partitions the same local topology in both full native
+schematics and both fresh ordinary layout extractions.
+
+`analyze_measured_bank_fine_junctions_v140.py` binds that diagnostic to actual
+GDS: isolated v85 primitive measurements, v105 primitive-mask/separate-active
+checks, the v124 canonical translation and original masks, all stored bank
+native hierarchy/placements, and separate active regions between all 31 fine
+instances. Fresh ordinary Magic extraction preserves the overall native census
+and port order. Every capacitor record retains its original values and measured
+geometry targets. No parameters, R/C, original extraction, waveform, route or
+admitted model are changed. No bank LVS, joint-RC or electrical pass follows
+from this diagnostic. The single-cell v86 correction cannot be applied blindly
+to these full-bank ordinary fields: four mismatches are nonzero.
+
+Four new unit tests pass, including incorrect capacitor ties, merged private
+nodes, wrong controls/bodies, altered guards and extra attached devices, and
+separate reporting of zero/nonzero allocation mismatches. Whole-bank native
+LVS and geometric provenance remain explicit prerequisites for a future repair.
+
+
+The complete software regression passes **2,136 tests without skips** in
+**428.220 s** (`build/measured-bank-fine-partition-v139-full-tests.log`),
+including the four new partition guards (also independently passing in 0.377 s).
+These tests supplement the completed native mask/extraction diagnostics; they
+provide no bank timing or PHY admission.
