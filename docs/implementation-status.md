@@ -3,7 +3,7 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
-Current architecture work (2026-11-04):
+Current architecture work (2026-11-05):
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew
@@ -11,6 +11,13 @@ DCDL, explicit startup training and an independent 25 MHz management clock.
 The existing LVDS analog I/O is retained. There is no background CDR, dual RX
 bank, FFE or PODL driver. Legacy wrappers remain the development baseline until
 the new physical clock islands and training integration qualify.
+
+The repaired weighted delay bank now passes whole-bank GDS physical checks,
+fresh passive RC extraction and independent strict flat native-device LVS.
+The complete routed model has sparse timing decks prepared, with execution
+held until the matched physical fine-control settling campaign passes. These
+results do not yet qualify delay range, legal-code ROMs, all-PVT clock timing
+or the complete link. See the [routed-bank timing checkpoint](digital-clocking-v2.md#staged-native-timing-using-complete-routed-bank-rc).
 
 Implemented v2 foundations include the machine-readable contract, conservative
 physical-delay reference algorithms, atomic code CDC, clock-loss watchdog,

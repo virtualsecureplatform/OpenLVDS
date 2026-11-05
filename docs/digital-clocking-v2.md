@@ -3311,3 +3311,46 @@ Both raw and reduced networks pass passivity, and all 24 public ports survive.
 The receipt's consumer validates its source chain, actual output hashes,
 regenerated reference/model and strict LVS log. This closes independent RC
 consumer verification for this bank variant; native timing and PHY remain open.
+
+### Staged native timing using complete routed-bank RC
+
+`probe_weighted_routed_v2.py` prepares
+`weighted_routed_v2/9bbfa0849b136d25` directly from the independent RC receipt.
+Its `bank.spice` is byte-for-byte identical to the verified simulator-facing
+model, retaining all 2,651 native primitive calls, all 24 public ports and the
+complete sixteen-choice coarse topology. Two SS/40 C cases select coarse 0/1
+and apply codes `[0,1,15,16,31,0]` with the prior 100 ps input transitions,
+20 ps control transitions, 20 fF output load, 2 ps maximum step and ITL4=100.
+These are isolated diagnostic pulses, not a periodic clock or all-PVT result.
+
+`weighted_routed_observation_v2.py` resolves actual native pin aliases from the
+flat extraction and groups the actual resistor-connected control nodes. It
+observes all 2,495 low-voltage MOS devices for every terminal pair, and all
+2,291 distributed nodes of 15 coarse and ten fine/complement control nets.
+Missing or disagreeing pin aliases, disconnected control components, control
+shorts and unknown native primitive types are rejected. This grouping changes
+observation metadata only; it neither shorts nor edits the simulated network.
+The model's four antenna diodes, 150 native MIM calls and two native resistor
+calls remain present.
+
+Execution requires the independent physical fine-control v4 receipt for the
+exact clock/fine/repair components selected by the routed physical source
+chain. The unrelated completed DCC receipt is rejected in
+`build/weighted-bank-routed-pilot-v2-negative-gate.log`, before creating a lock,
+run state, control-gate record or solver request. The matched repair campaign
+is still waiting on the shared dispatcher, so the routed pilot remains prepared
+and unstarted. Existing live solvers and dispatcher policy are unchanged.
+
+`verify_weighted_routed_v2.py` regenerates the full RC copy, native observations
+and each deck, checks every retained raw/deck/log hash, remeasures complete raw
+traces, and repeats the exact settling prerequisite before publishing a sparse
+screen. It reports missing/extra pulses, distributed control errors, terminal
+stress, LSB/carry direction and size, sampled monotonic order, coarse overlap,
+minimum-quarter headroom and code-zero repetition. A 20 ps repetition guard is
+an additional diagnostic screen; sparse success still cannot admit a dense
+code table, periodic clocks, all-PVT timing or the PHY.
+
+The full software suite passes 1,873 tests without skips in
+`build/weighted-bank-native-rc-consumer-v2-full-tests.log`. Three subsequently
+added raw-verifier assessment tests pass separately in
+`build/weighted-bank-routed-verifier-v2-tests.log`.
