@@ -140,6 +140,35 @@ six requested MOS models/W/L and positive junctions by fresh-GDS extraction
 the estimates but do not prove routed bank parasitics. No new physical
 equivalence or PHY admission has been established.
 
+The combined regular-PMOS/quad-TG zero code now passes the sparse SS/40 C
+quarter check at 506.645/608.136 ps rising/falling, but with only 1.620 ps
+headroom. Its first fine step is 12.361/6.131 ps and voltage/control checks
+pass. Independent receipt
+`tg_driver_experiment_verification_v9/0878bd2bb6e6f70e` verifies all first six
+cases. The further-widened N3.36/P6.72 TG experiment
+`tg_headroom_experiment_v12/6d996229830f90f6` uses one additional worker under
+the unchanged six-engine limit. Its independently verified zero code
+(`tg_headroom_experiment_verification_v12/15abc73b62202730`) gives
+501.308/608.113 ps: falling headroom improves by only 0.023 ps because added
+input-inverter loading consumes the TG-path gain. Fine range/carry/overlap
+measurements remain running. Further widening alone is not a sufficient margin
+repair; the next candidate is a smaller native driver shunt MIM, with unchanged
+transistor/fine-unit geometry and the same mandatory voltage/timing screens.
+
+The faster inverter now has its own physical component witness:
+`regular_clock_inverter_v14/7212db74b50b71f1` removes only HVTP (78/44), preserves
+all other mask regions, all sixteen native MOS geometries and the 4x4 guard MIM,
+and passes DRC, strict LVS and fresh passive distributed RC. Independent
+fresh-GDS proof `regular_clock_inverter_verification_v15/5d86129b463ae172`
+passes with negative mask controls. Exact network witness
+`regular_inverter_network_verification_v16/34538f13d3761d76` matches all 286
+electrical elements to the prior regular-PMOS diagnostic, allowing only element
+identifiers/order and the root model name to differ. This resolves the isolated
+inverter's borrowed-RC question; new TG/common/control wiring, whole-bank RC,
+dense/PVT timing and the PHY remain unqualified. The full suite passes all
+1,964 tests; original failed physical attempts and all running solvers are
+retained.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal

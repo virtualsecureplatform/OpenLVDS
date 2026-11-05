@@ -4697,3 +4697,109 @@ complete current suite passes all 1,959 tests without skips in 385.958 s
 inspection also completes successfully, with distinct D/G/S/B in every fresh
 extract and all recorded file hashes rechecked. Software and primitive checks
 do not turn either measured quarter-period failure into an electrical pass.
+
+### Combined driver result and physical inverter witness (2026-11-05)
+
+Available-case receipt
+`tg_driver_experiment_verification_v9/0878bd2bb6e6f70e` independently verifies
+the first six cases: zero and fine-one for all three variants. The combined
+regular-PMOS/quad-TG zero code is 506.645/608.136 ps rising/falling and passes
+the absolute fast-quarter check with only 1.620 ps headroom. Its first fine step
+is 12.361/6.131 ps, below the unchanged 20 ps limit. All six pass native voltage,
+public/distributed fine controls, one-hot decoding and repeatability. These
+are not complete sparse-profile, dense-code or routed-clock passes.
+
+The separate experiment in `tg_headroom_experiment_v12.py` doubles selector
+width again to N3.36/P6.72 while retaining the same regular-PMOS driver model,
+903 MOS devices, 93 actual fine-gate observations, six sparse codes and voltage/
+timing requirements. Prepared context
+`tg_headroom_experiment_v12/6d996229830f90f6` has one worker and shares the
+unchanged six-engine dispatcher. Its complete zero-code receipt
+`tg_headroom_experiment_verification_v12/15abc73b62202730` observes
+501.308/608.113 ps and 1.643 ps fast-quarter headroom, with voltage/control
+checks passing. The remaining fine/range cases in both campaigns continue.
+
+Matched second-pulse stage measurements from the complete native zero-code
+traces (ps):
+
+| Stage | Regular quad rise / fall | Regular oct rise / fall |
+| --- | ---: | ---: |
+| Input inverter | 81.644 / 134.380 | 92.885 / 166.189 |
+| Both TG levels | 142.046 / 200.461 | 129.535 / 171.050 |
+| Fine driver | 282.955 / 273.295 | 278.889 / 270.874 |
+| Total | 506.645 / 608.136 | 501.308 / 608.113 |
+
+Both saved pulses must have exactly one crossing of each node in the expected
+inversion direction. The increased input-inverter loading offsets almost all
+falling TG-path improvement. Widening again gains only 0.023 ps of falling
+headroom and therefore does not resolve the margin needed for common routing.
+Log: `build/tg-headroom-v12-stage-comparison.log`.
+
+The next candidate is reducing the native 4x4 output shunt MIM to 3x3 in the
+fine driver alone, then in both data inverters, retaining their MOS geometry
+and all thirty-one fine units. This seeks lower fixed delay without reducing
+fine range by strengthening the N driver. It is a hypothesis: capacitance
+reduction can worsen terminal overshoot and alter fine gaps, so every native
+terminal, repeated delay, carry and coarse-overlap check must still pass. A
+candidate then needs its own real MIM placement/routes and fresh RC. Do not
+remove a guard capacitor or select a smaller one merely to report a timing
+pass. Current source/model-specific receipts remain immutable.
+
+The regular-PMOS inverter itself now has a separate physical implementation.
+`build_regular_clock_inverter_v14.py` changes only HVTP mask (78/44) in the
+original guarded INV8 GDS, preserving the native hierarchy and public pin
+scope. All other mask regions are compared exactly. Its distinct core/top
+names avoid presenting the changed cell as an unchanged standard cell. Source
+regeneration changes exactly eight PMOS models to `pfet_01v8`, while all native
+finger dimensions, AD/AS/PD/PS, terminal connections, body taps and the 4x4 MIM
+remain. MOS D/S reordering is accepted only together with its corresponding
+junction parameters; missing fingers or changed gates/bodies/junctions cannot
+match the signature.
+
+Physical context `regular_clock_inverter_v14/7212db74b50b71f1` removes
+4.692 um2 of HVTP and passes DRC=0, strict native LVS, native-junction comparison,
+fresh flat distributed extraction and a new wire-collapsed strict RC topology
+LVS. Raw RC is 256 positive resistors/88 nonnegative capacitors; exact reduction
+retains 181 resistors/88 capacitors. No negative element is clipped or removed
+to admit the circuit. Native extraction still contains sixteen MOS and one
+intentional MIM.
+
+Two earlier attempts are preserved. The v11 flattened GDS
+(`regular_clock_inverter_v11/2f39d4f38336a553`) promotes VNB/VPB labels to top
+ports and changes boundary annotations on Magic export; mask/pin checks reject
+it despite DRC=0. The v13 revision
+(`regular_clock_inverter_v13/2805ae9572a765b4`) preserves hierarchy but saves
+only the root MAG, so a subsequent process cannot reload the custom children
+and writes an empty GDS. The v14 revision saves every imported child. Neither
+failed artifact or producer is edited or reused as passing evidence.
+
+Independent `verify_regular_clock_inverter_v15.py` reimports the actual v14
+GDS in fresh Magic processes, repeats DRC/LVS and native-junction/mask checks,
+verifies raw/reduced passivity and regenerates the exact reduced netlist
+byte-for-byte. Receipt
+`regular_clock_inverter_verification_v15/5d86129b463ae172` also rejects both
+an added M3 shape and a retained HVT marker as negative controls.
+
+`verify_regular_inverter_network_v16.py` binds that physical proof to the
+immutable regular-quad diagnostic context. Receipt
+`regular_inverter_network_verification_v16/34538f13d3761d76` proves an exact
+286-element bijection (17 native primitives, 181 R, 88 C): terminal tokens,
+native model/parameter tokens, and R/C values are identical. Only element
+identifiers, ordering and root model name differ; no numerical tolerance or
+approximate reduction is used. Changed resistance and missing-MOS controls
+are rejected. The unchanged diagnostic producer still records its original
+borrowed-RC scope; the new separate witness resolves that question for this
+isolated component. It does not establish new TG/common wiring, whole-bank RC,
+native waveform epochs, dense legal codes, periodic-duty/PVT or PHY admission.
+
+All 1,964 regression tests pass without skips in 409.614 s
+(`build/regular-inverter-headroom-full-tests.log`). Focused source/junction
+tests (three) and wider-selector tests (two) pass. Physical/RC/network proofs
+and their negative controls complete successfully. Additional logs:
+`build/regular-clock-inverter-v11.log`, `build/regular-clock-inverter-v13.log`,
+`build/regular-clock-inverter-v14.log`,
+`build/regular-clock-inverter-v15-verification.log`,
+`build/regular-inverter-network-v16.log`,
+`build/tg-driver-v9-first-fine-verification.log`,
+`build/tg-headroom-v12-prepare.log`, `build/tg-headroom-v12-pilot.log` and
+`build/tg-headroom-v12-zero-verification.log`.
