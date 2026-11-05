@@ -4803,3 +4803,149 @@ and their negative controls complete successfully. Additional logs:
 `build/tg-driver-v9-first-fine-verification.log`,
 `build/tg-headroom-v12-prepare.log`, `build/tg-headroom-v12-pilot.log` and
 `build/tg-headroom-v12-zero-verification.log`.
+
+### Complete sparse driver result and real smaller guard (2026-11-05)
+
+`tg_driver_experiment_v9/bf8c0a4abc4024a1` completes all eighteen numerical
+cases without errors. Full independent receipt
+`tg_driver_experiment_verification_v9/3098a005c74751d4` verifies every declared
+case. Only `regular_quad` passes its full sparse screen. Its complete delays
+are (ps):
+
+| Coarse | Fine | Rise | Fall |
+| ---: | ---: | ---: | ---: |
+| 0 | 0 | 506.645 | 608.136 |
+| 0 | 1 | 519.006 | 614.267 |
+| 0 | 15 | 740.325 | 712.456 |
+| 0 | 16 | 758.237 | 720.031 |
+| 0 | 31 | 1040.558 | 824.071 |
+| 1 | 0 | 722.119 | 775.406 |
+
+Peak native MOS difference is 1.883721 V. Fine 15->16 is 17.912/7.575 ps and
+coarse overlap is 318.439/48.665 ps rising/falling. All static controls and
+repeated pulses pass. HVT-quad still fails the quarter check and its rising
+carry (24.120 ps); regular-double fails quarter delay. The passing variant's
+1.620 ps headroom remains insufficient evidence that unextracted TG/common
+routes will fit. Sparse success does not prove dense codes or full PVT.
+
+The guard reduction now uses an actual physical component. In
+`build_small_guard_inverter_v17.py`, a retained native 3x3 MIM replaces the
+4x4 child of the independently verified regular inverter. Its C1 contact keeps
+the same position; C2 moves 0.5 um toward the signal plate. The M3 ground
+landing is extended over x=9.18..10.08 um, y=7.8..8.2 um to maintain a real
+connection. No active device, body mask or child placement moves. Root masks
+must equal their previous regions, with only the specified M3 rectangle added;
+all non-capacitor child mask regions remain identical.
+
+Context `small_guard_inverter_v17/535d866a9ab25197` passes DRC=0, strict native
+LVS, all sixteen MOS/junction comparisons, fresh passive RC and a separate
+strict RC topology LVS. Its native MIM is exactly 3x3. Extraction contains
+254 positive resistors and 89 nonnegative parasitic capacitors; exact reduction
+retains 181 resistors/89 capacitors. This is a new geometry and new RC model,
+not a changed MIM parameter inside the previous network.
+
+Independent `verify_small_guard_inverter_v18.py` reimports the actual GDS in
+fresh Magic processes, repeats physical/native checks, verifies raw/reduced
+passivity, and regenerates the reduced netlist byte-for-byte. Receipt
+`small_guard_inverter_verification_v18/da386f298106c21e` also rejects an extra
+root M1 shape and a changed MOS-child mask. Its pinned CAD Python is recorded
+separately from the scientific environment used by native simulations.
+
+`small_guard_bank_v19.py` replaces only the two old driver model references
+and their definitions, retaining all other components and bank connections:
+
+| Profile | Input driver guard | Fine driver guard |
+| --- | ---: | ---: |
+| `fine3` | Actual 4x4 RC | Actual 3x3 RC |
+| `both3` | Actual 3x3 RC | Actual 3x3 RC |
+
+`small_guard_component_families_v19.py` rechecks both physical evidence chains
+using the recorded CAD interpreter, while keeping NumPy/SciPy in their pinned
+scientific environment. It requires the exact regular-inverter network witness
+to name the same physical parent as the smaller guard. Extracted interfaces
+must match the original A/Y/VGND/VPWR order. Prepared context
+`small_guard_bank_v19/4403ce2a6170108c` includes twelve SS/40 C cases (six codes
+per profile), one worker, all 903 native MOS, all 93 actual fine gates and the
+explicit passive tail probe. All voltage, pulse, 20 ps gap/repeat, positive
+overlap and absolute-quarter requirements remain unchanged. TG/common/control/
+tail-cap routing is still unextracted.
+
+Independent first-case receipt
+`small_guard_bank_verification_v19/ec1f4863fd997a14` measures `fine3` zero code
+at 490.342/596.306 ps rising/falling, 13.450 ps fast-quarter headroom and peak
+MOS difference 1.883716 V. Public/distributed/one-hot controls and repeated
+pulses pass. Reducing the fine guard improves falling delay by 11.830 ps; it
+does not alone establish a routed-clock margin or fine/coarse coverage. The
+subsequent two-case receipt
+`small_guard_bank_verification_v19/cb1369375a76367b` independently verifies
+both zero codes:
+
+| Profile | Rise / fall delay (ps) | Fast-quarter headroom (ps) | Peak MOS difference (V) |
+| --- | ---: | ---: | ---: |
+| `fine3` | 490.342 / 596.306 | 13.450 | 1.883716 |
+| `both3` | 475.380 / 568.223 | 41.533 | 1.883659 |
+
+Both pass voltage, all static controls and repeatability. The 39.913 ps falling
+improvement over the original regular-quad zero code is measured with actual
+smaller-guard component RC. The remaining fine/range points continue; neither
+smaller-guard profile has a complete sparse pass yet.
+
+The wider-TG campaign also completes all six cases without errors. Independent
+receipt `tg_headroom_experiment_verification_v12/8aa510ce77538201` passes its
+entire sparse screen, with fine 15->16 of 17.904/7.702 ps and coarse overlap
+309.692/33.507 ps rising/falling. Its zero-code headroom remains 1.643 ps.
+The original quad-TG version has greater falling overlap (48.665 ps) and nearly
+the same zero-code falling delay, so the smaller-guard/physical-TG work retains
+quad sizing. Both completed native pilot/verifier pairs terminate with status
+zero; no healthy job is restarted or stopped to obtain these results.
+
+### Native compact TG component (2026-11-05)
+
+`build_tg_quad_cell_v21.py` uses the exact inspected N1.68/P3.36 native PCells,
+with separate body contacts, complementary controls and six public ports
+A/Z/EN/ENB/VPWR/VGND. N and P centers are 4 um apart. Narrow M1 escapes precede
+the larger M1/M2 via pads; M2 drops and short M3 tracks connect the signal,
+control and body nets. The original v20 placement
+(`tg_quad_cell_v20/b16df1b7693057c8`) passes LVS but has four met1.2 spacing
+violations at the gate-pad notches. That failed producer/layout is retained.
+The separate v21 revision raises gate escapes from 0.3 to 0.5 um.
+
+Context `tg_quad_cell_v21/78e1793488d080ca` passes DRC=0 and strict native LVS.
+The two extracted MOS preserve the expected controls, bodies, W/L and all
+junction parameters, including D/S symmetry. Fresh passive extraction contains
+213 resistors/56 capacitors; exact reduction retains 190 resistors/56 capacitors.
+A new collapsed-RC strict LVS passes.
+
+`verify_tg_quad_cell_v22.py` independently compares both child GDS mask regions
+to the original inspected primitive GDS, checks the two placements, reimports
+the component GDS for fresh DRC/LVS, verifies raw/reduced passivity and
+regenerates the exact reduced network. Receipt
+`tg_quad_cell_verification_v22/de62852aec6ea75c` passes. Native wrong-control/
+junction negative controls are rejected; focused tests also change a MOS gate
+or body while leaving the public port list intact.
+
+A read-only wire-connectivity map confirms that both actual R-separated TG
+gate nodes map to their intended EN/ENB controls
+(`build/tg-quad-cell-v22-control-access.log`). The physical TG RC is not yet
+consumed by a bank campaign. The next gate must replace all twenty source TGs
+with this verified component, generate observations for all forty actual TG
+gates plus the ninety-three fine gates, retain every native terminal, and
+measure the absolute zero-code delay first. Only a timing/voltage-passing
+complete component-RC bank should proceed to dense/PVT screening and common
+physical routing. No whole-bank RC, new calibration ROM, DLL/DCC or PHY gate
+is admitted by this component work.
+
+The smaller-guard implementation passes 1,970 regression tests in 417.586 s
+(`build/small-guard-v19-full-tests.log`). With the additional native-TG tests,
+the full current suite passes all 1,972 tests without skips in 363.239 s
+(`build/small-guard-tg-v22-full-tests.log`). Native component proofs and both
+zero-code remeasurements also pass. Logs:
+`build/small-guard-inverter-v17.log`,
+`build/small-guard-inverter-v18-verification.log`,
+`build/small-guard-bank-v19-prepare.log`,
+`build/small-guard-bank-v19-pilot.log`,
+`build/small-guard-bank-v19-verification.log`,
+`build/small-guard-bank-v19-zero-verification.log`,
+`build/small-guard-bank-v19-two-zero-verification.log`,
+`build/tg-quad-cell-v20.log`, `build/tg-quad-cell-v21.log` and
+`build/tg-quad-cell-v22-verification.log`.

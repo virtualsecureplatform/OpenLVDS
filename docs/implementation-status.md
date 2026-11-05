@@ -169,6 +169,47 @@ dense/PVT timing and the PHY remain unqualified. The full suite passes all
 1,964 tests; original failed physical attempts and all running solvers are
 retained.
 
+The eighteen-case driver/selector campaign is now complete with no numerical
+or reporting errors. Full independent receipt
+`tg_driver_experiment_verification_v9/3098a005c74751d4` passes all six sparse
+codes for `regular_quad`: voltage (peak 1.883721 V), controls, repeatability,
+quarter delay, sampled fine gaps and coarse overlap (318.439/48.665 ps
+rising/falling). The HVT-quad and regular-double variants remain failures.
+The passing variant still has only 1.620 ps zero-code headroom and no routed
+TG/common-wire qualification.
+
+The smaller guard is now real hardware, not a changed capacitor parameter in
+borrowed RC. `small_guard_inverter_v17/535d866a9ab25197` replaces the native
+4x4 MIM with 3x3 and extends its M3 ground landing, preserving all MOS/body
+masks, transistor junctions and child placements. DRC, strict native/RC LVS,
+passivity and fresh extraction pass. Independent fresh-GDS proof
+`small_guard_inverter_verification_v18/da386f298106c21e` also rejects changed
+root routing and changed MOS masks. Actual driver RC is used in the twelve-case
+`small_guard_bank_v19/4403ce2a6170108c` campaign (`fine3` and `both3`, one worker).
+Independent first-case receipt
+`small_guard_bank_verification_v19/ec1f4863fd997a14` measures `fine3` zero code
+at 490.342/596.306 ps, with 13.450 ps headroom, safe voltage and settled controls.
+The later two-case receipt
+`small_guard_bank_verification_v19/cb1369375a76367b` also verifies `both3`
+zero code at 475.380/568.223 ps, with 41.533 ps headroom and safe voltage/
+controls. Range, carry and coarse overlap for both smaller-guard profiles
+remain pending. The wider-TG campaign is now complete too: independent
+`tg_headroom_experiment_verification_v12/8aa510ce77538201` passes all six
+sparse codes but retains only 1.643 ps headroom and 33.507 ps falling overlap.
+
+The selected quad TG now also has a real component layout:
+`tg_quad_cell_v21/78e1793488d080ca` passes DRC/LVS and fresh passive RC with two
+native MOS, while retaining the inspected PCell junctions. Independent proof
+`tg_quad_cell_verification_v22/de62852aec6ea75c` verifies native child masks,
+placements, fresh-GDS DRC/LVS and exact reduction. The rejected v20 layout is
+retained (four M1 gate-pad spacing violations, LVS passed). This TG RC has not
+yet been substituted into the bank; whole-bank/PHY qualification remains open.
+The next gate must restore it, observe all forty actual TG gates in addition
+to the existing ninety-three fine gates, and recheck absolute zero-code delay
+before spending on dense/PVT bank timing or whole-bank routing.
+All 1,972 regression tests pass. The original driver and wider-TG pilot/
+verifier services terminate successfully; the smaller-guard campaign continues.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal
