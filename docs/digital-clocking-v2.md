@@ -5428,6 +5428,10 @@ full clock-island, link or PHY admission is transferred from this result.
 
 ### Physical both2 bank netlist preserves the complete native graph
 
+The initial v42/v43 physical interface described below is superseded by
+v45/v46 for integration; see the canonical-port correction below. Its native
+connectivity and timing evidence remain valid.
+
 Exporter `export_tg_bank_netlist_v42.py`, context
 `tg_bank_netlist_v42/d328eefbbdd965c5`, now supplies the named-pin physical
 Verilog, native interface blackboxes and native-only connectivity/LVS SPICE
@@ -5468,3 +5472,47 @@ The complete pinned software suite passes **2,016 tests without skips** in
 373.264 s (`build/tg-bank-netlist-v42-full-tests.log`), including six added
 physical-graph/native-equivalence tests. Actual independent Yosys reimport and
 fifteen corruption controls are recorded separately in the v43 receipt.
+
+
+### Canonical fine-cell ports and qualified physical library
+
+Registry preflight found that v42 used canonical direction rules with the fine
+cell's legacy `NODE/EN/ENB/VDD/VSS` names. The positional SPICE circuit was
+correct, but NODE and supplies had incorrect physical input roles. Frozen v42
+and v43 producers and receipts are preserved. Exporter v45 explicitly adapts
+these names to `A/CTRL/CTRL_B/VPWR/VGND`, makes A and supplies inouts, and
+canonicalizes the native component header and leaf terminals without changing
+private nodes, native models, parameters or bank connectivity.
+
+`tg_bank_netlist_v45/1ac226200bf5cce7` passes independent receipt
+`tg_bank_netlist_verification_v46/71ab47a14855ae22`: all 156 instances, 39
+public ports, 903 MOS and 65 MIMs are preserved. The native signature remains
+`d78fc44432de65fe35486216c43f8d1a215f09024c43327b3892819c416cf5fc`.
+All thirteen imported-JSON and two native-SPICE faults are rejected; the fine
+attachment fault now rewires its actual canonical A port.
+
+`bank_cell_registry_v44/61876a666017a856` registers ten functional masters,
+one standard well tap and one well continuity filler. Custom GDS origins are
+translated to positive normalized footprints; descendant names are scoped per
+master to avoid hierarchy collisions. All recursive manufacturing masks are
+unchanged under inverse translation. Public fine-cell GDS labels use the same
+explicit aliases as the graph. Custom LEF exposes one actual M3 access rail
+per pin, retains other original routing geometry as obstructions, and adds
+1.34 micrometre M3 and 0.3 micrometre M4 keepouts around native MIM markers.
+Only existing public M3 pin metal is exposed inside the M3 keepouts.
+
+All twelve masters and every pin rectangle, direction and power use pass
+actual OpenDB reimport at 1000 DBU/micrometre. Each of the five custom masters
+passes fresh normalized-GDS import, zero DRC and strict native LVS. Extracted
+native dimensions and actual junction parameters agree with the canonical
+reference, allowing only drain/source exchange. Standard-cell well-domain
+pins are explicitly mapped VNB to VGND and VPB to VPWR. Their domain mapping
+is a placement requirement: physical well taps and well continuity fillers
+must still be inserted and connected in the bank.
+
+The software regression passes 2,025 tests without skips in 367.683 seconds
+(`build/bank-cell-registry-v44-full-tests.log`). These include three canonical
+fine-port/native-equivalence tests and six adapter tests. This library result
+establishes no bank placement, routing, joint RC, timing or PHY admission.
+The next electrical gate remains a fresh joint-RC zero-code simulation, with
+only 4.286 ps of component-model timing headroom available.

@@ -32,6 +32,16 @@ extraction; it transfers no electrical admission. The full software regression
 passes **2,025 tests without skips**, including the canonical fine-cell and
 physical adapter checks.
 
+The normalized physical cell library
+(`bank_cell_registry_v44/61876a666017a856`) also passes: all ten functional
+masters plus tap/filler import into OpenDB with exact pin rectangles; all five
+custom masters pass fresh GDS import, zero DRC, strict native LVS and native
+dimension/junction checks. Manufacturing masks are preserved under translation,
+fine-cell GDS labels are canonical, and LEF includes native MIM routing
+keepouts. Physical standard-cell taps and well continuity still require bank
+insertion. Independent library geometry auditing is in progress. Whole-bank
+placement, routing and joint RC remain required before the next timing gate.
+
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew
 DCDL, explicit startup training and an independent 25 MHz management clock.
