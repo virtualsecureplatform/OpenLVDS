@@ -3242,3 +3242,36 @@ timing, code ROM and PHY admission remain open. The matched repaired-cell
 electrical control campaign remains required before full-bank simulation.
 `make test-full` passes all 1,863 tests without skips, recorded in
 `build/weighted-bank-powered-sites-v18-full-tests.log`.
+
+### Repaired-bank GDS physical checks
+
+`signoff_weighted_bank_v2.py` continues the accepted detailed-routing state
+in a separate artifact, binding every initial view and the original source/
+PDK/tool chain. Artifact `weighted_bank_signoff_v2/d7f594787b9c9899` runs the
+unchanged Classic steps from routing-obstruction removal through `Checker.LVS`.
+The actual step reports show zero critical disconnected pins, zero antenna
+violating nets/pins, zero Magic and KLayout DRC errors, zero illegal overlaps,
+zero GDS stream XOR differences and zero standard LVS errors; Netgen reports
+a unique match. Filler insertion adds 274 cells, making 430 total instances.
+A separate fresh filled-database read in `build/weighted-bank-filled-db-check-v2`
+passes both supply grids, all physical placements, original interfaces and
+declared macro positions. The generic disconnected-pin reporter emits one
+noncritical diagnostic for the ground-only shared MIM macro; its exact native
+port/connection checks remain enforced, with no ignore-list addition.
+
+This standard LVS stage does not replace fully expanded native-device LVS.
+Macro timing models are absent and the existing SDC excludes the native analog
+paths, so flow STA/RCX results do not qualify delay or code selection. The full
+software suite passes 1,865 tests without skips in
+`build/weighted-bank-full-signoff-v2-full-tests.log`; two additional targeted
+extraction-admission tests pass separately.
+
+`extract_weighted_bank_rc_v2.py` requires successful physical checks and exact
+bindings of all actual state/output files before extraction. It repeats final
+OpenDB interface/placement/power checks, expands every actual inserted and
+original instance through its own schematic scope, and requires fresh flat RC
+to match that native primitive reference under strict Netgen comparison.
+Both raw and simulator-facing reduced networks must pass elementwise passivity;
+all public terminals must survive. No extracted bank is admitted by route-only
+success or by standard macro-level LVS alone. Delay range, legal-code ROM,
+all-PVT clock timing and full PHY qualification remain open.
