@@ -5163,8 +5163,13 @@ wire-collapsed RC LVS. The inverter has 254 raw/181 reduced resistors and 89
 capacitors; the buffer pair has 276 raw/200 reduced resistors and 116
 capacitors. New marker areas are 3.4845 and 4.4238 um2 respectively; the buffer
 removes 5.9568 um2 of HVT-P marker. These are isolated component proofs and do
-not yet establish timing recovery. Independent fresh-GDS and exact-reduction
-verification is running before installing these models with the stacked TG.
+not yet establish timing recovery. Independent fresh-GDS and exact-reduction receipt
+`nlvt_data_components_verification_v30/3d570437cfccf466` now repeats zero DRC
+errors, strict LVS, actual native junction signatures and exact implant-only
+mask comparisons for both components. Both exact RC reductions regenerate
+byte-identically. A real extra-M2 GDS corruption is rejected for each macro.
+These component proofs can now support the next bank experiment with the
+stacked TG; bank timing remains unmeasured with these replacements.
 
 The full pinned regression passes **1,987 tests without skips** in
 `build/stacked-nlvt-tg-full-tests.log` (366.665 s), covering the stacked-TG

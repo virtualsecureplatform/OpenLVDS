@@ -12,8 +12,10 @@ loading falls to 4.191/3.912 fF from 5.603/4.363 fF. The failed first layout
 is preserved. This is a component checkpoint; bank timing has not yet been
 rerun with it. Real low-Vt inverter/buffer layouts now pass DRC/LVS, unchanged non-implant
 masks, native junction geometry and fresh passive RC in
-`nlvt_data_components_v29/54bfedf45e8a4ed0`. Independent fresh-GDS checks are
-running before these replace the remaining borrowed implant RC. The measured
+`nlvt_data_components_v29/54bfedf45e8a4ed0`. Independent fresh-GDS, native geometry, implant-only masks, exact RC
+reduction and altered-metal negative controls pass in
+`nlvt_data_components_verification_v30/3d570437cfccf466`. The next bank
+experiment is being prepared with these actual component models. The measured
 37.418 ps timing deficit remains open; the PHY remains unqualified.
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
