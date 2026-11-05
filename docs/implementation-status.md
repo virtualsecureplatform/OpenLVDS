@@ -24,7 +24,8 @@ headroom. A reproducible bounded-prefix diagnosis confirms 32 downstream gate
 stresses and eight return-device drain/source stresses. Two matched native
 extra-drive/optional-MIM diagnostics are queued under the unchanged dispatcher.
 Their new interconnections are ideal diagnostic connections; they cannot admit
-a physical repair. The original solver remains running; complete independent
+a physical repair. Original coarse 0 has now completed 60 ns numerically and
+awaits producer measurements; coarse 1 is running. Complete independent
 timing/voltage verification and repair are still required. These results do not yet qualify
 delay range, legal-code ROMs, all-PVT clock timing
 or the complete link. See the [routed-bank timing checkpoint](digital-clocking-v2.md#staged-native-timing-using-complete-routed-bank-rc).

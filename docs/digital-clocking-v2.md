@@ -3931,3 +3931,20 @@ coupling must decide whether it is legal and effective. Changed physical pin
 coordinates must then propagate through a newly routed full bank; old frames,
 routes or RC cannot qualify it. Do not edit the retained child/pair producers or
 substitute a removed coupling capacitor for the required physical proof.
+
+After that checkpoint, the original routed coarse-0 solver finishes its full
+60 ns transient: the terminal raw header declares 30,052 records, exactly that
+many whole real records are present with no partial tail, and the last time is
+60 ns. The solver log reports 2,776.247 s elapsed and no timestep abort. Its
+producer remains active calculating full electrical measurements; no case-0
+summary or full independent receipt exists yet. Coarse 1 is live as host PID
+1789676. This is numerical completion only, with the retained earlier terminal
+violations still negative evidence. Both new return-drive cases remain queued.
+
+The original full-waveform terminal loop scans many strided columns repeatedly
+in a roughly 2.72 GB raw file. If postprocessing remains slow, a new read-only
+streaming case diagnostic can reuse the bounded diagnosis's row-block/range
+calculation (max minus min equals the maximum of the six absolute terminal
+differences). It must preserve the existing producer and publish a separate
+receipt; it cannot overwrite a live campaign's summaries or bypass the required
+complete two-case gate.
