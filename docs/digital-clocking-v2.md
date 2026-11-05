@@ -5982,3 +5982,32 @@ with maximum absolute current error 2.62830e-10 A and normalized error
 0.000336587 under the fixed tolerances. All 951 MOS junction geometries and
 68 MIMs match the actual native layout reference. This enables the fresh
 routed zero-code transient; it does not establish timing by itself.
+
+
+The fresh routed zero-code campaign is
+`regenerated_bank_joint_zero_v61/5eca4ab81fdfea2c`, launched under
+`openlvds-regenerated-joint-zero-v61.service`. It consumes the complete v59
+certificate and all actual device/control observations. The full 20 ns trace
+is pending. `verify_regenerated_bank_joint_zero_v62.py` independently
+remeasures the completed waveform and deliberately rejects clock-data
+substitution and incorrect voltage limits; a failed timing verdict remains
+a valid diagnostic receipt. No live prefix can establish a pass.
+
+```sh
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_regenerated_bank_joint_zero_v61.py prepare \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_joint_rc_verification_v59/eb736007b7267e7e
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_regenerated_bank_joint_zero_v61.py run \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_joint_zero_v61/5eca4ab81fdfea2c
+# Run only after the solver and complete-waveform measurement finish:
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/verify_regenerated_bank_joint_zero_v62.py \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_joint_zero_v61/5eca4ab81fdfea2c
+```
+
+Do not repeat prepare/run for this existing campaign. The same frozen
+six-engine dispatcher and one-worker campaign limit apply, with existing
+healthy native solvers retained. The reference-clock duty amendment remains
+40/60 percent input checks with 50 percent nominal; it does not relax the
+quarter-cycle timing or corrected-output requirements.
