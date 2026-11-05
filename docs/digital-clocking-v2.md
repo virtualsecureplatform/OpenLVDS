@@ -6592,3 +6592,42 @@ parent evidence, original/corrected files, actual tool/runtime identities
 and PDK files are bound by hashes. All three reports admit standalone
 fine-cell geometry and component RC only. Complete bank interconnect,
 electrical timing and PHY admission remain false.
+
+
+### Intermediate gate-cap quantum campaign (v88/v89)
+
+The original 0.84 um zero-code case is now complete: repeated rise/fall
+delay 387.301482/418.066670 ps and maximum output slew 149.141859 ps.
+This is essentially the same off-state delay as 0.42 um. Its fine31 slew
+still fails at 251.810496 ps, while the 0.42 um candidate lacks overlap.
+The next finite experiment therefore tests 0.76 and 0.80 um gate-cap
+widths with all other circuit dimensions and the 250 ps gate unchanged.
+No usable width or common PVT code path is assumed in advance.
+
+`moscap_fine_bank_v88.py` changes only the two capacitor MOS widths and
+new bank/unit identities from the v75 0.84 um topology. All original
+switches and control guards remain. Native elaboration of each candidate
+confirms 1,013 MOS and 37 MIMs. Two tests check preservation of other
+primitives and reject incomplete/changed capacitor pairs and unknown
+profiles.
+
+`probe_moscap_fine_bank_v89.py` prepares six complete two-pulse fixtures:
+zero, fine31 and first coarse for each width. Preparation independently
+remeasures the **completed** v76 task4 raw trace and binds that case's
+immutable deck/log/trace/summary; it does not treat the still-running
+v76 campaign as a complete comparison. It also retains the prior full
+independent buffer-latency failure and original component-parent gates.
+
+Context `moscap_fine_component_v89/2be386aad63fa8a0` runs under
+`openlvds-moscap-fine-bank-v89.service`, using two workers, the unchanged
+six-engine dispatcher, priority zero and normal aging. It retains SS/40 C,
+1.8 V, 100 ps input slew, 20 fF load, full 20 ns traces, every MOS terminal
+pair, 133 programming gates, 86 root-control observations and repeated
+pulses. No healthy original solver was stopped or restarted.
+
+These two intermediate-width models are component feasibility prototypes:
+new fine-cell geometry/junctions and local/common routing remain
+unqualified. The v87 physical/RC proof for other widths is **not**
+transferred to them. The measured new fine-cell RC must next enter a fresh
+bank model, followed by actual bank geometry/common-RC, dense and periodic
+40/60-percent screens, all-PVT legal-code and full clock/link integration.
