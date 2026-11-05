@@ -42,8 +42,21 @@ keepouts. Physical standard-cell taps and well continuity still require bank
 insertion. Independent library geometry receipt
 `bank_cell_registry_verification_v48/b1813242cd69dc23` passes all twelve
 masters, merged-hierarchy mask comparison, fresh OpenDB import and six actual
-corruption controls. Whole-bank placement, routing and joint RC remain required
+corruption controls. Whole-bank routing and joint RC remain required
 before the next timing gate.
+
+The first complete both2 placement now passes in
+`tg_bank_floorplan_v49/0a60afeff47f241b`: 156 functional instances plus 86 taps
+and 86 fillers in 43 control groups, within 454.02 by 106.08 micrometres.
+Actual OpenDB coordinates, every logical terminal and all 39 public ports
+match the intended graph. The assembled GDS with fixed fine data/supply buses
+passes zero DRC. Physical M3 component checks connect all 31 fine data rails
+to the output driver and join both fine supply rows without touching other
+named nets. This is partial routing; coarse/control/remaining supply routing,
+whole-bank native LVS and joint RC timing still remain. Global routing has
+been piloted; detailed-route adapter bring-up is in progress. The full
+regression passes 2,030 tests without skips.
+
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew

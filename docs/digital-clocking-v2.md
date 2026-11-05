@@ -5558,3 +5558,62 @@ zero-code waveform and all native terminal/control checks with that actual
 joint RC before expanding dense codes, all PVT and 40/50/60 percent periodic
 clock testing. The sparse component-RC pass supplies no substitute for this
 measurement.
+
+
+### Tapped both2 placement and fixed fine buses
+
+`tg_bank_floorplan_v49/0a60afeff47f241b` consumes the independently verified
+v48 cell registry and the unchanged canonical v45 bank. The deterministic
+placement contains all **156 functional instances**, **86 actual well taps**
+and **86 fillers**. Thirty-one fine-control pairs and twelve selector/decoder
+pairs each occupy a contiguous physical row with a tap and boundary filler
+at each end. Every standard cell is on the actual 0.46 by 2.72 micrometre
+site grid; instantiated cells, rather than empty placement metadata rows,
+provide physical wells and their contacts. Body/supply mappings remain exact.
+
+The zero-code input inverter, first TG, root TG and fine inverter are adjacent.
+Thirty-one fine macros form one horizontal row at **12.6 micrometre pitch**.
+Their existing M3 data rails are connected to the fine output inverter by one
+fixed horizontal M3 bus. Two fixed M3 supply buses join their boundary-wide
+VPWR/VGND rails. KLayout checks that each is one physical conductor, that all
+31 fine rails (plus the output driver for OUT) belong to that conductor, and
+that it touches no other named native terminal. The bank extent is
+**454.02 by 106.08 micrometres**. The stored OpenDB includes all three fixed
+special-wire geometries; its DEF is a connectivity/placement view, and consumers
+must use the ODB/GDS to preserve these shapes through routing.
+
+Actual OpenDB reimport checks every instance, pin connection, public port and
+physical box, and OpenROAD's placement check passes. An explicitly initialized
+core area is essential: preliminary direct-DB attempts left it at zero and
+crashed OpenDP's grid checker. The completed producer initializes core and DEF
+units before the check. Earlier preflight outputs and crash logs remain under
+`build/bank-physical-preflight/assembly_v49*` and their corresponding logs.
+
+The first assembled GDS had 132 real DRC errors. Twelve arose from insufficient
+well spacing between adjacent coarse buffers. Increasing their horizontal gap
+to **1.6 micrometres** fixes those while keeping the first coarse load beside
+the input inverter. The remaining errors were the **0.2 micrometre gaps**
+between the boundary-wide fine supply rails. Connecting those same-net rails
+with the fixed power buses removes the gaps without widening the fine array.
+The final complete assembled GDS, including fixed fine buses and public pin
+metal, passes fresh flattened **zero DRC**. Source cell manufacturing geometry
+is retained; these three buses are additional bank interconnect.
+
+The full software regression passes **2,030 tests without skips** in 376.500 s
+(`build/tg-bank-floorplan-v49-full-tests.log`). Five new tests exercise actual
+site alignment, overlaps and die bounds, missing/duplicated tapped row members,
+physical row gaps, missing taps and wrong well-domain mappings.
+
+```sh
+./scripts/env.sh --tools --ngspice python3 scripts/build_tg_bank_floorplan_v49.py campaign \
+  /work/OpenLVDS/build/diagnostics/bank_cell_registry_verification_v48/b1813242cd69dc23
+```
+
+Existing complete/partial producer artifacts remain immutable. Native MOS/MIM
+counts and dimensions have not changed, but whole-bank native LVS is still
+withheld until all signal, control and remaining power routes exist. Physical
+tap presence alone does not prove supply-connected body ties. The fixed-bus
+component proof is separate from full native LVS. This checkpoint transfers
+no joint-RC, zero-code timing, dense-code, PVT, periodic-clock or PHY admission.
+The next timing measurement must use the actual complete joint RC, not the
+older component-RC prototype or ideal common buses.
