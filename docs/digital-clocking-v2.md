@@ -3275,3 +3275,26 @@ Both raw and simulator-facing reduced networks must pass elementwise passivity;
 all public terminals must survive. No extracted bank is admitted by route-only
 success or by standard macro-level LVS alone. Delay range, legal-code ROM,
 all-PVT clock timing and full PHY qualification remain open.
+
+### Fresh routed weighted-bank RC and strict native topology
+
+`weighted_bank_rc_v2/6329bc664bdd5ab3` completes successfully from the clean
+repaired-bank physical artifact. Its fresh final-database check passes original
+interfaces, all physical placements, macro positions and both supply grids.
+The actual 430 routed instances expand to 2,651 native primitive calls, including
+the four inserted antenna diodes; empty filler/tap schematic scopes remain
+represented in the per-instance count record.
+
+Flat GDS extraction produces 86,395 resistors and 18,445 capacitors, all passing
+the positive-element passivity screen. Exact positive-conductance star-mesh
+reduction leaves 58,762 resistors and preserves all 24 public ports. A separate
+reread of the simulator-facing reduced netlist also passes passivity. Strict
+Netgen comparison after comment-aware resistor collapse reports a unique match
+against the fully expanded native reference. The extraction namespace is
+`build/extracted/5c5dd057603db840/openlvds_weighted_bank_physical_v2`.
+
+This establishes fresh whole-bank passive RC and native DC topology only.
+Independent consumer verification, repaired-cell settling admission, routed
+native timing/range/monotonicity, legal-code ROM, all fifteen PVT conditions and
+the complete clock/link qualification remain required. No timing, electrical
+qualification or PHY admission flag is set by this result.
