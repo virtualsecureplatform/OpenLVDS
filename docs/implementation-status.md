@@ -132,6 +132,17 @@ independently remeasures all three traces and checks the identical model hash
 before preparing any route. Actual route coverage, native GDS DRC/LVS, joint
 RC and electrical timing remain pending; the service does not stop or restart
 existing solvers.
+The v137 native GDS stage is prepared behind that route: original native masks,
+hierarchy/labels/351 placements, fresh full-bank DRC/LVS and the exact native
+MOS/MIM census/dimensions/junction parameters are all mandatory. Both placement
+hierarchy preflights pass with 27 used native cells each, and all three new
+inventory guard tests pass. Its service waits for the exact routing process;
+no routed-bank GDS or joint-RC result is claimed. Fresh ordinary Magic
+extraction of both unrouted placements preserves the exact 1,453/1,773 MOS
+and 42 MIM census, port order, model/W/L and reference-supplied junction fields.
+Both also reject duplicate-instance and altered-port-label GDS faults even
+when their flattened mask regions are unchanged. These diagnostics do not
+establish routed connectivity or repair raw-RC junction fields.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native
@@ -147,9 +158,9 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-The full regression passes **2,129 tests without skips** in 383.636 s
-(`build/measured-gang-sparse-v131-full-tests.log`), including physical graph,
-matched-diagnostic and three-point gate tests. Both CAD campaigns also reject injected metal,
+The full regression passes **2,132 tests without skips** in 419.491 s
+(`build/measured-balanced-gds-v137-full-tests.log`), including physical graph,
+matched-diagnostic, three-point and native inventory gate tests. Both CAD campaigns also reject injected metal,
 label and duplicated-instance faults; these native layout checks supplement
 the software suite. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;

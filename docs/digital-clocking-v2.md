@@ -7572,3 +7572,70 @@ The manual equivalent is:
 ```
 
 Do not run a duplicate while the service or an existing route artifact is active.
+
+
+### Strict full-bank native GDS stage prepared after routing
+
+`build_measured_balanced_gds_v137.py` prepares only from a complete, unchanged
+v135 routing receipt with zero final router violations and reproduced native
+connection/coverage checks. It streams the routed DEF using the exact measured
+canonical library and restores every fixed bus and original public pin. The
+existing native-mask XOR checker limits added manufacturing geometry to
+routing/vias; an additional hierarchy check compares every used native cell's
+own masks, child-instance arrays/transforms and labels against that library.
+All 351 placed native instance multiplicities and transforms must also match.
+Flattened-mask equality alone cannot hide an overlapping duplicate instance.
+
+Fresh Magic import/DRC and strict native Netgen LVS use the full 179-component
+reference from the verified placement. `measured_bank_native_inventory_v138.py`
+separately requires the exact **1,453 MOS / 42 MIM** (b2) or **1,773 MOS / 42 MIM**
+(b3) census, public port order, native device model/W/L and all reference-supplied
+junction parameters. Only the existing D/S-exchange allowance is retained.
+A native parameter or junction mismatch is retained as a failure; no device
+resizing, junction repair or weaker census is introduced to pass this stage.
+These requirements remain separate from topology LVS and joint RC extraction.
+
+A read-only check of both existing placement GDS files passes the new hierarchy
+checker: **351 native instances and 27 used native hierarchy cells** each.
+This is a placement-format preflight, not a routed-bank qualification. Log:
+`build/measured-balanced-gds-v137-placement-hierarchy-preflight.log`.
+Both complete unrouted placements also have fresh ordinary Magic device
+extractions. The b2 census is exactly 1,453 MOS plus 42 MIMs, and b3 is
+1,773 MOS plus 42 MIMs. Public port order, all native model/W/L classes and
+all reference-supplied junction parameters match. Each extraction also records
+junction parameters for 573 devices whose schematic supplied only W/L. This
+is a geometry/census diagnostic with no routing, LVS or joint RC claim; no
+junction fields are repaired, and it does not waive the separate raw-RC
+junction checks. Receipts and original extraction files remain under
+`build/reports/measured_balanced_gds_v137/unrouted_native_census_b2/` and
+`unrouted_native_census_b3/`. The b2 wrapper hit a string-versus-Path error
+while hashing its receipt after extraction; the original log is retained and
+only receipt generation was recovered, without rerunning the extraction.
+
+Four additional actual GDS faults are rejected across both placements: an
+overlapping duplicate native instance and a changed native port label per
+profile. Their flattened mask regions are explicitly unchanged, demonstrating
+why hierarchy/label checks are needed beyond mask XOR. Corrupt copies and
+source/output hash receipts are retained under
+`build/reports/measured_balanced_gds_v137/hierarchy_faults_b2/` and
+`hierarchy_faults_b3/`; log `build/measured-balanced-gds-v137-hierarchy-faults.log`.
+
+Three synthetic inventory guard tests pass: both exact profile censuses,
+refusal of a missing device/wrong profile/changed port order, and detection of
+model-dimension or junction changes despite unchanged counts. Synthetic devices
+provide admission-guard coverage, not electrical or layout evidence.
+
+`openlvds-measured-balanced-gds-v137.service` waits for the exact existing v135
+routing process instance, then requires a passing native routing receipt before
+starting this stage. A timing or routing failure leaves GDS qualification
+unadmitted. No GDS qualification artifact or routed native pass is claimed yet.
+Joint RC, dense/update/periodic timing, all-PVT legal codes, clock-chain recovery
+and the complete LVDS PHY still require their own evidence.
+
+
+Full regression for the prepared native GDS/inventory stage passes **2,132
+tests without skips** in **419.491 s**
+(`build/measured-balanced-gds-v137-full-tests.log`). The three new native
+inventory guard tests also pass independently in 0.686 s. The native timing
+runs remain in progress under the original six-engine dispatcher; neither
+these software checks nor the unrouted geometry diagnostics admit the PHY.
