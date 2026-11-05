@@ -42,7 +42,7 @@ Native voltage/control/repetition checks pass. Quarter timing and overlap
 still fail; these prototypes are not qualified delay banks.
 
 Stage diagnostics after root strengthening show comparable group-inverter
-and root-mux delay. Two new candidates are now running. Balanced drive
+and root-mux delay. Two completed candidates test different repairs. Balanced drive
 parallels the first muxes and group inverters along with root/final cells,
 using a newly qualified 1.26 um middle-bus fine cell: 1,133 MOS, 42 MIMs,
 173 programming gates. Post-mux regeneration moves branch inversion after
@@ -63,14 +63,16 @@ parallel INV8 output master now passes zero DRC, strict native LVS, all 34
 native parameter checks and complete component RC/reduction witnesses at
 `parallel_output_cell_v111/719aa3336298176d`. Its connecting wires are measured;
 a fresh bank experiment now includes that measured component wiring at
-`post_mux_output_rc_v113/13796ed50f568b43`. Complete bank interconnect and
-native transient timing remain required. Canonical zero-origin GDS/LEF
+`post_mux_output_rc_v113/13796ed50f568b43`. Its three native timing cases
+are complete: v113 passes native/slew checks but
+still fails rising overlap by 17.157387 ps, with 34.921845 ps quarter headroom.
+Complete bank interconnect remains unextracted. Canonical zero-origin GDS/LEF
 views for the measured fine/output cells now pass fresh DRC/LVS, mask and
 junction preservation and actual OpenDB checks at
 `clock_cell_views_v114/5c1222c9bf8bb27b`. Post-mux stage traces isolate the
 edge-dependent fine range mostly to the common inverter. A root-only drive
-experiment is being prepared to test input-edge shaping without increasing
-coarse-tap loading or adding serial inversion. Its v117 service is now running;
+experiment is testing input-edge shaping without increasing coarse-tap
+loading or adding serial inversion. Its v117 service is now running;
 fine31 passes native/slew checks, while zero/coarse timing is pending.
 
 The exploratory post-mux placement at
@@ -81,6 +83,15 @@ the taller fine cell's global public rails and proves the 33-terminal
 `fine_slow` bus. Whole-bank routing/native LVS/joint RC and timing admission
 remain outstanding; this placement does not select a failed/pending candidate.
 
+A matched coarse-drive experiment is being prepared for the balanced bank:
+its first muxes were doubled while coarse buffers retained their original
+strength. Double/triple native coarse-buffer gangs now pass standalone
+DRC/LVS, junction and complete RC checks at
+`parallel_coarse_cells_v121/be7fd56d4ea74868`. Actual bank preflight preserves
+all fine/output/control circuitry and verifies 1,453/1,773 MOS, 42 MIMs and
+173 programming gates. Six native timing cases will test the two strengths
+under unchanged gates and dispatcher limits; no timing improvement is assumed.
+
 The 0.76 um original width prototype separately passes its three initial
 endpoint cases with overlap 20.649958/10.736333 ps and max slew
 247.110212 ps. Its new local geometry/RC remains unqualified; it cannot
@@ -89,7 +100,9 @@ its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
 The full regression passes **2,115 tests without skips** in 381.574 s
 (`build/post-mux-placement-v119-full-tests.log`), including the root-drive
-and new physical graph/rail alignment tests. Native architecture experiments
+and new physical graph/rail alignment tests. Four subsequently added coarse-cell
+and chain projection/fault tests pass separately, as do both actual-model
+preflights. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
 healthy older solvers and failed results are retained. Remaining timing gates
 must pass before bank/common-RC, dense/update/periodic, all-PVT legal-code

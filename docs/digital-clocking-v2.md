@@ -7205,3 +7205,65 @@ is `parallel_post_mux_roots_v117/6f3fc0e3d32ae2f6`. Its first completed point,
 fine31, passes native/repetition/slew checks with repeated delay
 **853.340040/1007.707305 ps**, maximum slew **206.034047 ps**. Zero and first
 coarse remain outstanding, so no complete timing verdict exists yet.
+
+
+### Match coarse drive to the balanced bank's tap loading
+
+The fully measured parallel-output bank v113 is now complete (three cases,
+zero errors). All native/slew checks pass, but rising overlap is
+**-17.157387 ps**, falling overlap **+197.028110 ps**, and fastest-quarter
+headroom **34.921845 ps**. Adding actual local final-stage wiring does not
+resolve the rising-range mismatch; this candidate remains unadmitted.
+
+The balanced v107 bank doubles the first-mux TGs at every tap while retaining
+the original coarse buffer strength. Increasing coarse drive is therefore a
+matched-load experiment for its **-10.716291 ps** rising overlap: reduce the
+coarse increment while retaining the fine quantum and final stage. This is a
+hypothesis to test with actual models, not a transferred timing improvement.
+
+`parallel_coarse_cells_v121/be7fd56d4ea74868` completes/pass for both native
+coarse buffer gangs built by `parallel_coarse_cell_v120.py`. Profile b2 has
+two qualified BUF4-pair masters (**40 MOS**), b3 has three (**60 MOS**), with
+no added MIMs. Native component masks are retained, every true input/output/
+supply rail is joined, and the output is one public port. Standalone placement
+and fresh native DRC/LVS are zero/pass, all junction/dimension checks pass,
+and complete connecting RC is extracted and certified:
+
+| Gang | Raw R | C | Reduced R | Maximum normalized witness error |
+| --- | ---: | ---: | ---: | ---: |
+| b2 | 577 | 231 | 420 | 0.000381408 |
+| b3 | 878 | 345 | 642 | 0.000215195 |
+
+Both four-witness terminal-current checks pass (limit 1); exact reduction
+regeneration and wire-collapsed native topology are verified. Raw/reduced
+files remain under `build/extracted/02110cbd2828212f/` and
+`build/extracted/77fb10a73763431f/`. These are component qualifications, not
+transient or whole-bank admission.
+
+`strong_coarse_bank_v122.py` replaces all **15 coarse buffers plus the tail
+load buffer** with the complete measured b2/b3 gang. The middle-bus 1.26 um
+fine cell, leaf/group/root drive, final stage and all controls are retained.
+Exact projection recovers every byte of the original balanced bank, and the
+actual-model preflight confirms **1,453/1,773 MOS**, **42 MIMs**, **173
+programming gates** and **86 root controls**. Device terminal observations
+are rebuilt through the new coarse RC; no coarse clock-data gate is treated
+as a static programming control. New common/coarse bank wires remain ideal
+until a fresh bank extraction. The initial preflight incorrectly supplied an
+already transformed observer; its retained failure log precedes the passing
+`build/strong-coarse-bank-v123-preflight-2.log`, which uses the original v56
+observer as the producer does.
+
+`probe_strong_coarse_bank_v123.py` prepares six SS/40 C cases: zero, fine31
+and first coarse for each gang size. It binds the complete safe failed v107
+comparison, full v121 proofs and original fine-cell evidence. Repeated-delay,
+terminal/control, 250 ps slew, positive both-edge overlap and fastest-quarter
+gates are unchanged. Service `openlvds-strong-coarse-bank-v123` waits for its
+live preparation process and then launches the immutable artifact. Logs are
+`build/strong-coarse-bank-v123-prepare.log` and
+`build/strong-coarse-bank-v123.log`; the original six-engine/at-most-two-worker
+limits remain. No healthy older simulation is stopped or restarted.
+
+The two new coarse-cell geometry/reference tests and two coarse-chain
+projection/fault tests pass separately after the 2,115-test full regression
+(`build/strong-coarse-bank-v123-tests.log`). Passing component and structural
+checks do not establish the six native timing outcomes or PHY qualification.
