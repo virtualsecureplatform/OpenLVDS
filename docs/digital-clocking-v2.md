@@ -3109,3 +3109,50 @@ claimed while these transients are pending. The existing whole-bank gate
 and prior failed measurements remain unchanged. The regression suite
 passes 1,856 tests without skips in
 `build/weighted-fine-repair-v2-full-tests.log`.
+
+### Repaired full-bank candidate and matching control-proof gate
+
+`probe_weighted_direct_v4.py` prepares the full sixteen-choice direct-port
+bank with the verified wide-power NAND2B pair and stronger bit-4 fine RC.
+Artifact `weighted_direct_v4/c466d6eb048d9e82` retains both coarse 0/1
+pilots, all six LSB/carry/repeat words [0,1,15,16,31,0], the original 60 ns
+fixtures, fixed 1.8 V, 100 ps data input, 20 ps control, 20 fF load, 2 ps
+maximum step and ITL4=100. Its native topology has all 94 original root
+instances; no input/output buffer, coarse choice or fine bit is removed.
+Only the top-level model identity changes; the selected component RC is
+updated explicitly through typed independent receipts.
+
+`wide_guard_pair_rc_families_v2.py` requires the wide-power pair's distinct
+verification revision and checks both raw and reduced passivity, native
+source/GDS identity and strict topology. The old narrow-rail receipt
+cannot stand in for it. The fine family similarly selects exactly the
+independently verified stronger bit-4 cell and retains the other four.
+
+`weighted_bank_control_gate_v3.py` requires the independent v4 fine-control
+receipt for the exact clock, original-fine-family and repair identities.
+Both guarded DATA biases must pass settling and terminal screening, and
+all four declared cases must finish without numerical errors. Reference
+driver passes cannot replace a failed guarded high-data result. A direct
+negative run with an unrelated completed receipt is rejected before any
+execution state, control admission file or SPICE worker is created. The
+full-bank candidate remains **prepared and unstarted** while the new
+control proof is pending. The previous gate and artifacts are unchanged.
+
+`verify_weighted_bank_repair_network_v2.py` produces
+`weighted_bank_repair_network_v2/40bd36174ccc813b`. It regenerates every
+selected candidate library/order/MOS witness and compares the complete
+native leaf multiset against the full physical root hierarchy, including
+all connections, parameters and multiplicities. The proof retains 38,162
+resistors, 16,993 capacitors and 2,647 native primitive calls, all 94 root
+instances and 24 public ports. No passive clipping, favorable node
+selection or dimension normalization is used. This is structural/native
+component identity, not intercell RC, timing, code-ROM or PHY admission.
+The independent full-bank verifier is updated to require the same repair
+identity and to remeasure complete regenerated waveforms before reporting
+sparse feasibility.
+
+Regression checks reject mismatched repair/clock/fine identities, missing
+or failed high-data coverage, numerical failures and old-profile receipts.
+They also preserve the complete bank topology and all sixteen turn choices.
+`make test-full` passes 1,863 tests without skips in
+`build/weighted-bank-repaired-integration-v4-full-tests.log`.
