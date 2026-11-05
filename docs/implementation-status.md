@@ -21,19 +21,40 @@ parameters, wire-collapsed topology and passive reduction are checked. Original
 extractions remain intact. These component results do not qualify bank wiring
 or timing.
 
-The 0.42 um component prototype fails coarse overlap by 14.425/32.485 ps
-rising/falling; the 0.84 um fine31 point misses the 250 ps output-slew domain
-at 251.810496 ps. Its zero-code delay remains 387.301482/418.066670 ps before
-new common routing. Two intermediate widths, 0.76/0.80 um, are running in
-`moscap_fine_component_v89/2be386aad63fa8a0`, with unchanged acceptance gates
-and two workers. No timing verdict exists for them yet. Their new geometry
-and local/common routing are not covered by the other widths' RC proofs.
+The measured fine-cell RC is now integrated into a fresh bank model with
+all native programming-gate observations rebuilt. The original-route bank
+has repeated zero delay 593.519200/661.131259 ps; falling delay exceeds the
+609.756098 ps quarter budget. Fine31 slew is 395.098036 ps and its rising
+repeat difference is 101.623783 ps. Native voltage and control checks pass.
+Stage diagnostics identify the root mux as the largest delay interval.
 
-All **2,085** software regression tests pass without skips in 387.620 s
-(`build/moscap-junction-repair-v89-full-tests.log`). The next integration
-must incorporate measured fine-cell RC and regenerate programming-gate
-observations before actual bank/common-RC, dense/periodic, all-PVT legal-code
-and clock/link qualification. No voltage sweep is introduced; temperatures
+Moving the private capacitor bus between the device rows passes new native
+geometry and RC checks, reducing its external wire capacitance from
+14.01067 to 6.48771 fF while increasing data-port capacitance from 3.61526
+to 4.63909 fF. That route improves fine31 slew to 351.881531 ps but worsens
+zero falling delay to 726.678695 ps; both timing gates still fail.
+
+Two qualified TG cells in parallel at each root branch improve zero to
+554.000517/644.940498 ps and fine31 slew to 286.136079 ps, with native
+voltage/control/repeat checks passing. Falling quarter and fine31 slew
+still fail. The next prototype, `parallel_final_bank_v101/23efdf678be2ab7e`,
+adds a second complete qualified inverter cell in parallel at the existing
+final stage, including its output shunt. It has 1,037 MOS, 38 MIMs,
+141 programming-gate probes and 86 root controls. New gang/common wiring
+is unextracted, and no timing/PHY qualification is transferred.
+
+The 0.76 um original width prototype separately passes its three initial
+endpoint cases with overlap 20.649958/10.736333 ps and max slew
+247.110212 ps. Its new local geometry/RC remains unqualified; it cannot
+supersede the measured-RC bank failures. The 0.80 um campaign also retains
+its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
+
+All **2,096** software regression tests pass without skips in 387.221 s
+(`build/parallel-final-bank-v101-full-tests.log`). Native drive experiments
+use the unchanged six-engine dispatcher and at most two workers per campaign;
+healthy older solvers and failed results are retained. Remaining timing gates
+must pass before bank/common-RC, dense/update/periodic, all-PVT legal-code
+and full clock/link qualification. No voltage sweep is introduced; temperatures
 remain 0/25/40 C, and input-duty endpoints remain 40/60%.
 
 Earlier implementation checkpoints:

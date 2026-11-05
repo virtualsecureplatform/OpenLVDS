@@ -21,8 +21,10 @@ headroom. The v2 input-clock checks use 40/50/60% duty at 390/400/410 MHz.
 The current bank still fails falling coarse/fine overlap and periodic
 output-slew/full-swing checks. Split-loading and output-buffer comparisons
 are complete. Three compact gate-capacitor fine cells now pass native geometry
-and component RC checks with measured junctions; intermediate-width timing
-experiments are running. Full delay-range, all-PVT, clocking integration and full-link
+and component RC checks with measured junctions. Integrating that RC exposed
+root-mux loading as a timing bottleneck. Parallel-root and final-inverter
+drive experiments are running with unchanged timing gates. Full delay-range,
+all-PVT, clocking integration and full-link
 qualification remain open; these results are separate from the legacy PHY.
 
 All project implementation and generated artifacts stay in this repository.
