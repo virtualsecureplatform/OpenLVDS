@@ -4514,3 +4514,98 @@ extraction, dense/common legal codes, safe code updates, all 15 PVT points,
 390/400/410 MHz at 40%/60%, actual DCC/DLL integration and full-link qualification
 remain required. Neither the source headroom nor these six points establish
 those gates.
+
+### Restored component RC: safe voltage, insufficient timing (2026-11-05)
+
+`tg_component_rc_families_v7.py` restores the exact verified flat paired-buffer,
+guarded-inverter and fine-unit RC models around the terminated TG bank. Each
+restored model must reduce to the exact parameter-preserving source model used
+by v6; no native instance, model, junction/MIM parameter or unrelated TG/control
+definition changes. All extracted R/C elements are retained byte-for-byte at
+the component level. The complete bank restores 8,801 resistors and 3,737
+explicit parasitic capacitors: 16 buffer pairs at 200 R/116 C, two inverters at
+181 R/88 C and 31 fine units at 169 R/55 C.
+
+`probe_dcdl_tg_component_rc_v7.py` binds the complete passing v6 sparse receipt
+and all original CAD/RC witnesses. It keeps the bank source, 903 MOS devices,
+2x2 tail termination and six SS/40 C conditions fixed. Actual R-separated
+switch/clamp gates are mapped through the fine-unit wire connectivity: all
+93 gates are checked against their true/complement word targets, not just the
+public buffer outputs. Context
+`dcdl_tg_component_rc_v7/e84805cb2ff2a439` completes all six 20 ns simulations.
+These are verified component parasitics, not whole-bank RC: new TG junctions
+remain estimated, and TG/control/common/tail-cap routes are unextracted.
+
+The first producer inherited v6's request for the passive public node
+`XD:unused_tail`, but its fixture saved only actual MOS terminals. Once real
+buffer output resistance separates that public node from the transistor
+drains, the public node is not automatically saved. The six numerical runs
+therefore end in the known reporting error `Missing requested native vectors`.
+The frozen producer, decks, raw traces, original error summaries and state are
+retained unchanged. Its `errors=6` denotes that reporting fault, not six
+ngspice convergence failures.
+
+`measure_tg_component_rc_v8.py` retains every active-terminal pulse/voltage and
+control check and explicitly reports the unavailable public-tail range as
+null; it does not infer that voltage from nearby nodes. Every balancing-buffer
+MOS remains in the 1.95 V screen. The same helper adds the explicit public probe
+to future fixtures without changing a bound deck or rerunning this campaign.
+Tests reproduce the separation between a real transistor drain and its passive
+public output and require missing active terminals to remain fatal.
+
+`recover_tg_component_rc_v8.py` requires the exact retained reporting failure,
+regenerates all restored libraries/witnesses, checks successful native logs,
+translated decks and complete raw record counts, reproduces the old failure,
+then rereads all active terminal/control measurements. Consumed hashes are
+checked before/after. Complete receipt
+`dcdl_tg_component_rc_recovery_v8/c051828d34e445bb` verifies all six traces;
+the earlier three-case receipt
+`dcdl_tg_component_rc_recovery_v8/ef6edae6f791e0bd` remains retained. No SPICE
+job or source artifact is changed by recovery. All admissions remain false.
+
+Repeated complete-waveform delays (ps):
+
+| Coarse | Fine | Rise | Fall |
+| ---: | ---: | ---: | ---: |
+| 0 | 0 | 681.361 | 755.655 |
+| 0 | 1 | 699.661 | 763.005 |
+| 0 | 15 | 1,007.004 | 872.481 |
+| 0 | 16 | 1,031.167 | 880.117 |
+| 0 | 31 | 1,409.160 | 958.918 |
+| 1 | 0 | 890.956 | 909.959 |
+
+All six pass native voltage (global peak 1.891679 V), public and distributed
+control settling, one-hot controls, repeated pulses and coarse overlap
+(518.204/48.959 ps rising/falling). Zero-code fast-quarter headroom is
+-145.899 ps. Fine 0->1 is 18.299/7.349 ps, but fine 15->16 is
+24.162/7.636 ps, failing the rising 20 ps maximum. The component-RC sparse
+screen therefore fails even though voltage, control and range overlap pass.
+
+First zero-code stage delays (ps), matching each inverter's opposite edge:
+
+| Stage | Source rise/fall | Component RC rise/fall |
+| --- | ---: | ---: |
+| Input inverter | 58.682 / 113.444 | 76.975 / 152.278 |
+| Both TG levels | 151.201 / 230.503 | 189.059 / 284.375 |
+| Fine driver to output | 218.136 / 176.563 | 415.328 / 319.002 |
+
+The loaded fine driver accounts for most added delay, while the input and
+selector also contribute. The next circuit experiment must improve driver and
+selector strength while preserving enough falling fine range for the measured
+coarse step. Evaluate faster/stronger native CMOS data drivers with explicit
+new-device/layout scope; do not reuse the old source headroom, waive the
+quarter/gap limits, or remove verified parasitics to declare a fix. Full dense,
+PVT, periodic-clock and PHY gates remain open.
+
+The original restoration tests pass in the 1,949-test suite
+(`build/dcdl-tg-component-rc-v7-full-tests.log`, 407.887 s). The full current
+suite, including the passive-probe recovery and corrected future-fixture tests,
+passes 1,953 tests without skips in 420.905 s
+(`build/dcdl-tg-component-rc-v8-reader-full-tests.log`). Native electrical timing
+failures remain separate from those software checks.
+
+Logs: `build/dcdl-tg-component-rc-v7-prepare.log`,
+`build/dcdl-tg-component-rc-v7-pilot.log`,
+`build/dcdl-tg-component-rc-v8-available.log`,
+`build/dcdl-tg-component-rc-v8-recovery.log` and
+`build/dcdl-tg-component-rc-v8-recheck.log`.

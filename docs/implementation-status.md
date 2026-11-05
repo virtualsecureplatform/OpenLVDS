@@ -106,6 +106,19 @@ all 15 PVT points and full PHY qualification remain open. The next electrical
 gate must restore the verified component RC before selecting physical bank
 routing or claiming those 89 ps of source headroom survive extraction.
 
+That component-RC gate is now measured. All six native simulations complete,
+and independent recovery
+`dcdl_tg_component_rc_recovery_v8/c051828d34e445bb` passes voltage (worst
+1.891679 V), all 93 distributed fine-gate observations, one-hot controls,
+repeatability and coarse overlap. Timing fails: zero-code 681.361/755.655 ps
+rising/falling leaves -145.899 ps fast-quarter headroom, and rising fine
+15->16 is 24.162 ps against the 20 ps maximum. Added delay is concentrated at
+the loaded fine driver. The original reporter omitted a passive public tail
+probe; its failures remain retained, while recovery checks every actual MOS
+terminal and reports the unsaved public-node range as unavailable. No solver
+was rerun or restarted. This bank still needs faster data-path drive and a new
+native screen before physical bank routing, dense/PVT or PHY admission.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal
