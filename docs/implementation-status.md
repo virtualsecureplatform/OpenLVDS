@@ -72,8 +72,10 @@ junction preservation and actual OpenDB checks at
 `clock_cell_views_v114/5c1222c9bf8bb27b`. Post-mux stage traces isolate the
 edge-dependent fine range mostly to the common inverter. A root-only drive
 experiment is testing input-edge shaping without increasing coarse-tap
-loading or adding serial inversion. Its v117 service is now running;
-fine31 passes native/slew checks, while zero/coarse timing is pending.
+loading or adding serial inversion. Its v117 zero case now passes native/slew
+checks but has rising delay 627.550649 ps, missing the quarter budget by
+17.794551 ps. Fine31 also passes native/slew; the coarse case keeps running.
+This root-only trial is not admitted.
 
 The exploratory post-mux placement at
 `post_mux_placement_v119/5092f682fb99bf91` now passes zero placement DRC,
@@ -83,13 +85,14 @@ the taller fine cell's global public rails and proves the 33-terminal
 `fine_slow` bus. Whole-bank routing/native LVS/joint RC and timing admission
 remain outstanding; this placement does not select a failed/pending candidate.
 
-A matched coarse-drive experiment is being prepared for the balanced bank:
+A matched coarse-drive experiment is running for the balanced bank at
+`strong_coarse_bank_v123/8d9e2e94f139b1a3`:
 its first muxes were doubled while coarse buffers retained their original
 strength. Double/triple native coarse-buffer gangs now pass standalone
 DRC/LVS, junction and complete RC checks at
 `parallel_coarse_cells_v121/be7fd56d4ea74868`. Actual bank preflight preserves
 all fine/output/control circuitry and verifies 1,453/1,773 MOS, 42 MIMs and
-173 programming gates. Six native timing cases will test the two strengths
+173 programming gates. Six native timing cases test the two strengths
 under unchanged gates and dispatcher limits; no timing improvement is assumed.
 
 The 0.76 um original width prototype separately passes its three initial

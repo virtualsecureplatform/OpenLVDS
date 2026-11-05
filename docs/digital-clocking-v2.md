@@ -7267,3 +7267,20 @@ The two new coarse-cell geometry/reference tests and two coarse-chain
 projection/fault tests pass separately after the 2,115-test full regression
 (`build/strong-coarse-bank-v123-tests.log`). Passing component and structural
 checks do not establish the six native timing outcomes or PHY qualification.
+
+
+The v117 root-only zero case now also completes: repeated rise/fall delay
+**627.550649/598.286996 ps**, maximum slew **137.871215 ps**, with passing
+native/control/repetition/slew checks. Its fastest-quarter headroom is
+**-17.794551 ps**. Minimum rising delay increases **52.716396 ps** relative
+to the measured-output v113 parent, so this trial fails the zero-code gate
+regardless of the still-running coarse case. All healthy simulations remain
+intact; stronger root drive cannot be assumed to reduce total delay when it
+also adds junction/wire loading.
+
+The new six-case matched-coarse experiment is now prepared and running at
+`strong_coarse_bank_v123/8d9e2e94f139b1a3`. The live service is
+`openlvds-strong-coarse-bank-v123`, with two workers under the unchanged
+six-engine dispatcher. Its source/inputs are frozen; native outcomes,
+complete bank routing/RC, all-PVT legal codes and full clock/link admission
+remain outstanding.

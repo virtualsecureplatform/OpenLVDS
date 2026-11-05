@@ -28,7 +28,9 @@ and post-mux regeneration pilots complete with unchanged gates.
 The completed balanced-drive pilot passes native/slew checks and has 111 ps
 zero-code quarter headroom, but rising coarse overlap still fails by 10.72 ps.
 Post-mux regeneration passes native/slew/zero screens but misses rising
-overlap by 17.27 ps. A root-only drive experiment is running.
+overlap by 17.27 ps. The root-only trial misses the zero-code quarter budget
+by 17.79 ps. A matched coarse-drive experiment is now running with fully
+extracted double/triple coarse-buffer components.
 Canonical measured fine/output cell views now pass layout and OpenDB checks.
 Their exploratory 332-instance placement passes zero DRC and fixed-bus
 connectivity checks; whole-bank routing and timing qualification remain open.
