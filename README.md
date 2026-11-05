@@ -28,8 +28,10 @@ and post-mux regeneration pilots complete with unchanged gates.
 The completed balanced-drive pilot passes native/slew checks and has 111 ps
 zero-code quarter headroom, but rising coarse overlap still fails by 10.72 ps.
 Post-mux regeneration passes native/slew/zero screens but misses rising
-overlap by 17.27 ps. A root-only drive experiment is being prepared.
+overlap by 17.27 ps. A root-only drive experiment is running.
 Canonical measured fine/output cell views now pass layout and OpenDB checks.
+Their exploratory 332-instance placement passes zero DRC and fixed-bus
+connectivity checks; whole-bank routing and timing qualification remain open.
 The physical parallel INV8 output master passes native geometry and complete
 component RC checks, and
 is now included in a fresh timing experiment. Full delay-range,

@@ -70,7 +70,16 @@ junction preservation and actual OpenDB checks at
 `clock_cell_views_v114/5c1222c9bf8bb27b`. Post-mux stage traces isolate the
 edge-dependent fine range mostly to the common inverter. A root-only drive
 experiment is being prepared to test input-edge shaping without increasing
-coarse-tap loading or adding serial inversion.
+coarse-tap loading or adding serial inversion. Its v117 service is now running;
+fine31 passes native/slew checks, while zero/coarse timing is pending.
+
+The exploratory post-mux placement at
+`post_mux_placement_v119/5092f682fb99bf91` now passes zero placement DRC,
+exact 160-component/989-MOS graph mapping, actual 332-instance OpenDB checks,
+14-master mask preservation and all fixed bus connectivity checks. It preserves
+the taller fine cell's global public rails and proves the 33-terminal
+`fine_slow` bus. Whole-bank routing/native LVS/joint RC and timing admission
+remain outstanding; this placement does not select a failed/pending candidate.
 
 The 0.76 um original width prototype separately passes its three initial
 endpoint cases with overlap 20.649958/10.736333 ps and max slew
@@ -78,10 +87,9 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-The full regression passes **2,110 tests without skips** in 376.969 s
-(`build/clock-cell-views-v114-full-tests.log`); the two subsequently added
-root-drive projection/rejection tests also pass, alongside the native
-989-MOS/141-gate preflight. Native architecture experiments
+The full regression passes **2,115 tests without skips** in 381.574 s
+(`build/post-mux-placement-v119-full-tests.log`), including the root-drive
+and new physical graph/rail alignment tests. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
 healthy older solvers and failed results are retained. Remaining timing gates
 must pass before bank/common-RC, dense/update/periodic, all-PVT legal-code

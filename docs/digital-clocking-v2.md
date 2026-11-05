@@ -7167,3 +7167,41 @@ the frozen run. Preparation log is
 `build/parallel-post-mux-roots-v117.log`. The launcher reads the preparation
 result with Python, avoiding shell-variable expansion by systemd, and opens
 the new run log exclusively. Existing campaigns remain intact.
+
+
+### Post-mux placement feasibility with canonical measured masters
+
+`post_mux_placement_v119/5092f682fb99bf91` completes/pass for the doubled-root
+post-mux topology, using the frozen v117 component model as a connectivity
+reference. This is an exploratory placement result, not candidate admission.
+`post_mux_bank_physical_v118.py` maps the fine cell and parallel final driver
+to their actual v114 physical masters, proves every named component call,
+control and body connection against the measured model, and compares the
+complete native model/W/L inventory. Every RC subcircuit is collapsed only
+within its own local namespace. The graph has **160 functional components,
+989 MOS and 35 MIMs**.
+
+The new fine cell's origin moves downward **4.25 um**, preserving every global
+public data/control/supply rail while accommodating its lower capacitor row.
+The common inverter and final compound are separate cells connected through
+`fine_slow`; both root TG copies fit in the space freed by branch inverters.
+The final compound moves past the fine row, and OUT is on its actual output
+rail. The die is **475.64 x 108.8 um**, with **332 placed instances** and
+**43 tapped control rows**. All OpenDB connections, placements, master sizes
+and public pins are verified. The merged 14-master GDS library preserves
+every source mask and hierarchy; actual OpenDB pin roles/shapes are checked.
+
+Placement/fixed-bus DRC is **zero**. Actual metal checks find one connected
+component per fine supply bus (31 required rails each) and per `fine_slow`
+data bus (**33 required rails**: common output, 31 fine inputs, final input),
+with no other named terminal shorted. The placement is unrouted; whole-bank
+native LVS, joint RC and electrical/PVT/link admission remain false. Failed
+and running timing prototypes are not promoted by this placement result.
+
+Three new alias/body/tail/duplicate and global-rail alignment tests pass.
+Full regression passes **2,115 tests without skips** in **381.574 s**
+(`build/post-mux-placement-v119-full-tests.log`). The live v117 timing campaign
+is `parallel_post_mux_roots_v117/6f3fc0e3d32ae2f6`. Its first completed point,
+fine31, passes native/repetition/slew checks with repeated delay
+**853.340040/1007.707305 ps**, maximum slew **206.034047 ps**. Zero and first
+coarse remain outstanding, so no complete timing verdict exists yet.
