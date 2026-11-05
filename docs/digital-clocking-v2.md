@@ -6691,3 +6691,39 @@ slew **247.110212 ps**. Native voltage/control/repetition and output-slew
 screens pass. Zero and first-coarse cases remain pending, so there is no
 complete overlap or candidate-admission result yet. That prototype does
 not contain the newly measured local fine-cell RC.
+
+
+### Shorter private-capacitor route (v92/v93)
+
+The first compact fine cell routes its private CAP bus at y=7.9 um,
+above both transistor rows. V92 moves only this bus to y=-0.6 um between
+the rows. Its five native MOS devices, 2x2 ENB guard MIM, public buses,
+placement and all circuit dimensions remain unchanged. The 0.84 um cell
+in `moscap_fine_physical_v92/1f87d2ee03bce2f2` passes fresh zero-DRC and
+strict native LVS. No running prior solver or frozen model was changed.
+
+V93 qualifies its native masks, separate active regions, measured junction
+reconstruction and distributed RC using the same gates as v87. Receipt
+`moscap_fine_rc_v93/8bb07237ea872417` passes with 338 raw resistors,
+87 capacitors, 286 reduced resistors, 78 algebraic nodes eliminated and
+86 protected nodes. All six native primitives and full measured junctions
+remain verified. Four independent passive terminal-current witnesses pass;
+maximum normalized current error is 8.224375e-7 against a limit of one.
+
+A diagnostic groups the corrected raw resistors into logical nets and sums
+explicit capacitors between each net and other logical nets. This excludes
+native nonlinear MOS capacitance and capacitance internal to one logical
+net, and is not a transient timing prediction:
+
+| Interconnect aggregate (fF) | Original v87 | Short route v93 |
+| --- | --- | --- |
+| Private CAP to other nets | 14.01067 | 6.48771 |
+| NODE data port to other nets | 3.61526 | 4.63909 |
+| CAP to NODE coupling | 0.43029 | 1.11500 |
+
+The private-node reduction comes with increased data-node/coupling load;
+it is not automatically a timing improvement. Diagnostic input paths and
+values are retained in `build/fine-routing-preflight/cap_bus_comparison.json`.
+Both complete original and corrected extraction artifacts remain intact.
+This qualification applies to the isolated 0.84 um cell, not the whole bank,
+common route, clock chain, all-PVT code map or PHY.
