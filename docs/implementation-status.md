@@ -100,9 +100,12 @@ and 39 ps afterward. Explicit wire capacitance rises 19.840 to 31.658 fF on
 the first mux node, 21.375 to 32.894 fF on the selected node and 102.766 to
 119.425 fF on OUT. The repair experiment relocates input inversion to four
 first-level mux-output regenerators, reusing the qualified INV2 component.
-The separate component-RC feasibility candidate has 951 MOS and 68 MIMs;
+The separate component-RC feasibility campaign
+`regenerated_bank_v56/454ef5c8722f8a61` is running with 951 MOS and 68 MIMs;
 its new common/control/power routing remains unqualified and cannot replace
-the complete routed failure or supply timing admission.
+the complete routed failure or supply timing admission. Its complete 20 ns
+waveform remains pending. The updated regression passes all **2,044 tests
+without skips** in 362.785 seconds.
 
 
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):

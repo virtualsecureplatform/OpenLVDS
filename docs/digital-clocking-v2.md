@@ -5864,3 +5864,33 @@ new canonical netlist, placement/routing, fresh GDS DRC/LVS and actual joint RC,
 then another complete SS/40 zero screen. Three new architecture tests check
 branch rewiring/native inventory, both clock polarities through all four root
 selections, and rejection of missing or changed original branches.
+
+
+The executable feasibility candidate is
+`regenerated_bank_v56/454ef5c8722f8a61`, run by
+`openlvds-regenerated-bank-v56.service`. It consumes the original complete,
+verified both2 component model and the independently remeasured routed
+timing-only failure. The input inverter is removed, all original tap0 loads
+are driven from IN, and four identical qualified INV2 components drive the
+root TG branches. All remaining component definitions/parameters and all
+133 actual programming-gate probes are retained. This adds 48 MOS and three
+MIMs; input/output logic polarity is unchanged.
+
+```sh
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_regenerated_bank_v56.py prepare \
+  /work/OpenLVDS/build/diagnostics/nlvt_guard2_bank_v36/4421df67843ca5bf \
+  --failure-evidence /work/OpenLVDS/build/diagnostics/joint_bank_zero_verification_v54/a41613b9a7864021
+./scripts/env.sh --tools --ngspice build/tools/exact-rc-venv/bin/python \
+  scripts/probe_regenerated_bank_v56.py run \
+  /work/OpenLVDS/build/diagnostics/regenerated_bank_v56/454ef5c8722f8a61
+```
+
+Never overwrite or rerun a live/prepared experiment. Existing producer code
+is frozen; changes require a new version/context. Both campaigns use the same
+six-engine dispatcher, priority/aging policy, pinned ngspice, stable 1.8 V,
+SS/40 C fixture, 100 ps input slew, 20 fF load and full 20 ns/two-pulse window.
+Each new campaign has one solver worker. No healthy legacy solver was stopped.
+The complete feasibility waveform is still pending; live prefix observations
+cannot establish a complete gate pass. All **2,044** regression tests pass
+without skips in 362.785 seconds (`build/regenerated-bank-v56-full-tests.log`).
