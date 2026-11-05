@@ -3413,3 +3413,40 @@ safety, legal-code or PHY gate is passed. This negative result does not alter
 the separate guarded repaired-bank source, prepared routed timing pilot,
 settling prerequisite or healthy solvers. The two additional diagnostic tests
 pass in `build/dcdl-iteration-inter-pulse-failure-v3-final-tests.log`.
+
+### Routed-pair phase counter: low-clock margin regression
+
+The routed-pair counter campaign `static_phase_clock_release_v6/d88c3462d0e8e585`
+now completes all four SS/40 C, 410 MHz, 40/60% duty and stop-level cases with
+zero numerical errors. Its failed read-only verifier had the same startup
+missing-state race as v7; restarting only that failed verifier after the
+running pilot's state existed produces independent receipt
+`static_phase_release_verification_v6/873bb7ac75a7b2ee`. Every declared raw
+waveform is verified, but the combined profile fails. The two 40% cases pass;
+the 60% cases fail the phase qualification screen. This is retained negative
+electrical evidence, not a numerical abort or a missing case.
+
+`diagnose_static_phase_levels_v2.py` produces
+`static_phase_level_diagnosis_v2/45e90e9ca55898dd` for case 2 and its exact
+passing o1 component baseline. It verifies all case output hashes, regenerates
+both native fixtures and independently remeasures both complete 26 ns traces.
+The actual intermediate and arming event orders pass in both models. The
+failure is the delivered clock voltage when the three low-phase state
+outputs cross their decision threshold:
+
+| State | Passing baseline CLK | Routed-pair CLK | Baseline margin to CLK leaving 0.18 V low region | Routed-pair margin |
+| --- | ---: | ---: | ---: | ---: |
+| low0 | 0.037997 V | 0.224060 V | 62.777 ps | -19.827 ps |
+| low1 | 0.017285 V | 0.184179 V | 76.852 ps | -1.888 ps |
+| armed | 0.052317 V | 0.233408 V | 56.027 ps | -23.942 ps |
+
+The near-event CLK samples show the next rising transition already in progress
+at the routed-pair assertions. All three violate the unchanged CLK <0.18 V
+low-phase condition. Terminal voltage remains within the 1.95 V screen, peaking
+at 1.945427 V, versus 1.941526 V in the passing baseline. This distinguishes
+late low-phase qualification from reordered counter events and terminal-stress
+failure for this case. It directs the next circuit experiment toward native
+clock-drive/fanout and local clock-path timing, with the level and voltage limits
+retained. Stronger drive is a hypothesis requiring a matched native experiment;
+it is not an accepted fix. Whole-counter RC, actual DCC first events, hardware
+warmup, all-PVT and PHY qualification remain separate open gates.
