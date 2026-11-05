@@ -86,6 +86,25 @@ next complete SS/40 C zero-code transient; no routed timing or PHY admission
 exists yet. The earlier component-model headroom remains only 4.286 ps.
 
 
+The complete first routed SS/40 C zero screen is now measured and independently
+rechecked (`joint_bank_zero_v53/6c3374a3e635505d`, receipt
+`joint_bank_zero_verification_v54/a41613b9a7864021`). It **fails timing**:
+603.996/725.646 ps rising/falling, with **-115.890 ps** conservative quarter
+headroom. All 903-MOS voltage checks, all 93 fine/40 TG programming gates,
+639 control-terminal observations and repeatability pass. Peak native span is
+1.867242 V. All 2,041 regression tests pass without skips.
+
+Complete-trace diagnosis `joint_bank_zero_diagnosis_v55/36ad887c243c85e0`
+finds roughly 81 ps of added falling-edge latency before the final inverter
+and 39 ps afterward. Explicit wire capacitance rises 19.840 to 31.658 fF on
+the first mux node, 21.375 to 32.894 fF on the selected node and 102.766 to
+119.425 fF on OUT. The repair experiment relocates input inversion to four
+first-level mux-output regenerators, reusing the qualified INV2 component.
+The separate component-RC feasibility candidate has 951 MOS and 68 MIMs;
+its new common/control/power routing remains unqualified and cannot replace
+the complete routed failure or supply timing admission.
+
+
 The selected next architecture is [calibrated digital clocking v2](digital-clocking-v2.md):
 four-section TX and RX DLLs with symmetric rising-event DCCs, one RX deskew
 DCDL, explicit startup training and an independent 25 MHz management clock.

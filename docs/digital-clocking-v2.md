@@ -5781,3 +5781,86 @@ fine/TG programming-gate levels, public controls and pulse repeatability must
 pass. The component-RC sparse receipt supplies no routed timing admission.
 Dense codes, periodic 40/50/60 percent duty, 390/400/410 MHz, all fifteen PVT
 conditions, complete clock islands and link/PHY qualification remain required.
+
+
+### Actual routed zero screen fails timing while voltage/control gates pass
+
+Campaign `joint_bank_zero_v53/6c3374a3e635505d` completes the unchanged SS/40 C,
+100 ps input-slew, 20 fF load, isolated two-pulse test using the entire v52
+joint-RC model. No component RC is substituted and no supply grid is idealized.
+There are 3,650 requested voltage vectors, including every terminal of all
+903 native MOS devices. Placement-to-Magic matching covers all 328 instances;
+extraction equivalences and resistor connectivity map all 147 logical nets.
+Both sets of actual programming gates (93 fine and 40 TG) and 639 native
+terminal observations across all 86 control nets are mandatory.
+
+| Result | First pulse | Second pulse |
+| --- | ---: | ---: |
+| Rising delay (ps) | 603.996188 | 603.996104 |
+| Falling delay (ps) | 725.645929 | 725.645928 |
+
+Both pulses and all expected crossings are present. The unchanged 410 MHz
+quarter bound is 609.756098 ps; worst headroom is **-115.889832 ps**. Rising
+and falling delay repeats differ by only 0.0000837/0.0000010 ps. All native
+terminal limits pass, with maximum **1.867242103 V** against 1.95 V. Every
+mapped public/internal/programming control passes its unchanged tolerance.
+Thus the actual routed bank has a timing failure, rather than a convergence,
+missing-pulse, voltage-limit or control-programming failure.
+
+Independent receipt `joint_bank_zero_verification_v54/a41613b9a7864021`
+requires the complete 20 ns trace, remeasures all metrics exactly, hashes the
+original raw evidence and rejects two actual waveform-analysis corruptions:
+using clock data as a static control and applying an incorrect native voltage
+limit. The frozen source campaign and all failed timing evidence are retained.
+Six new tests reject wrong physical positions/orientations, missing instances,
+wrong Magic scale, missing extraction aliases, resistor shorts between distinct
+logical controls and changed public-port order. Full regression passes **2,041
+tests without skips** in 367.781 seconds.
+
+### Complete stage/load diagnosis and branch-regeneration repair
+
+Diagnosis `joint_bank_zero_diagnosis_v55/36ad887c243c85e0` compares complete
+second-pulse traces with the prior complete both2 component-RC zero case. It
+uses actual MOS endpoints and extraction aliases, not a renamed ideal wire.
+
+| Falling-input event observed at | Component-RC maximum (ps) | Joint-RC maximum (ps) |
+| --- | ---: | ---: |
+| Input inverter output | 114.499 | 133.626 |
+| First TG output | 241.025 | 294.483 |
+| Root TG input | 243.560 | 297.715 |
+| Root TG output | 355.515 | 436.411 |
+| Fine inverter gate | 357.523 | 438.646 |
+| Fine inverter output | 605.690 | 725.870 |
+| Public OUT | 605.470 | 725.646 |
+
+The additional falling latency reaches **81.123 ps before the fine inverter**
+and **120.176 ps at OUT**. Explicit wire capacitance grows as follows; this
+comparison excludes intrinsic nonlinear MOS/MIM capacitance:
+
+| Logical net | Component explicit C (fF) | Joint explicit C (fF) |
+| --- | ---: | ---: |
+| IN | 5.726 | 7.127 |
+| tap0 | 18.356 | 29.021 |
+| tree0_0 | 19.840 | 31.658 |
+| selected | 21.375 | 32.894 |
+| OUT | 102.766 | 119.425 |
+
+This supports testing regeneration between the two TG levels. The candidate
+removes the input INV2, drives the coarse line directly from IN, and inserts
+one identical qualified INV2 after each of the four first-level mux outputs.
+Their outputs feed the four root TG inputs. The final fine inverter remains.
+Every selected path still has two inversions, all selectors/fine units remain,
+and no transistor is resized. Three additional copies of the existing INV2
+produce **951 MOS and 68 MIMs** in total. The candidate must independently
+requalify edge delays, voltage limits, sparse/dense ranges and all subsequent
+gates; old code maps and timing cannot transfer across this change.
+
+A separate native **component-RC feasibility** experiment screens the proposed
+architecture before its new physical bank is built. It preserves qualified
+component RC and checks all 951 MOS terminals and all 133 programming gates,
+but has no new common/control/power routing proof. A component pass cannot
+repair the actual joint-RC failure. The required physical continuation is the
+new canonical netlist, placement/routing, fresh GDS DRC/LVS and actual joint RC,
+then another complete SS/40 zero screen. Three new architecture tests check
+branch rewiring/native inventory, both clock polarities through all four root
+selections, and rejection of missing or changed original branches.
