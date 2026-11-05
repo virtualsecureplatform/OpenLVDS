@@ -4154,3 +4154,55 @@ two-worker dispatcher policy remain unchanged. Logs are
 `build/uniform-tree-v3-verify.log`. Periodic qualification still uses the
 approved 40%/60% endpoints at 390/400/410 MHz; isolated pulse screening does
 not replace those checks.
+
+### Native mux private-node access before tree routing (2026-11-05)
+
+The initial label-only native inspection
+`mux_tree_access_v3/9a5718f9054d70d3` fails exact-source private-port matching:
+the reused clock-cell probe assumed n-diffusion at every source coordinate.
+The native muxes also have private p-diffusion nodes. All original masks,
+source, extraction, mismatches and the producer remain retained unchanged.
+
+The separate `inspect_mux_tree_access_v4.py` selects the actual diffusion layer
+containing each private coordinate. It rejects missing or ambiguous diffusion
+and never treats overlapping upper metal as an electrical connection. The new
+context `mux_tree_access_v4/25a5825516d981ea` passes unique exact-source LVS
+with all 13 mux4_4 and six mux2_4 private nodes exposed and distinct. No native
+masks, transistor sizes or placements changed. The existing LI search, which
+requires a rectangle at least 0.17 um in both dimensions, finds candidates for
+five mux4 and four mux2 private nodes. Complete private-node access remains
+false; missing candidates do not prove that no possible custom contact/route
+can be built.
+
+`verify_mux_tree_access_v4.py` independently reimports the pinned native GDS,
+requires byte-identical native Magic geometry, regenerates exact source and
+labels, extracts again and repeats strict unique LVS. Receipt
+`mux_tree_access_verification_v4/bd92d6d6bb512d60` confirms all native masks,
+private-net separation and candidate observations. It keeps complete LI access,
+electrical and PHY admissions false. This receipt supports subsequent native
+tree layout work, not a timing or voltage repair. Inspect native transient
+stress before deciding whether particular private nodes require shunts; nodes
+without proven existing access would require new contact/layout proofs.
+
+Logs: `build/mux-tree-access-v3.log`, `build/mux-tree-access-v4.log` and
+`build/mux-tree-access-v4-verify.log`. Tests reject native-mask/property changes,
+missing or duplicate label sections, absent/ambiguous diffusion and accidental
+selection of unrelated overlapping metal. The preceding uniform-tree full
+regression passes 1,917 tests (`build/uniform-tree-v3-full-tests.log`); three
+subsequently added sparse-comparison tests also pass in the focused run.
+
+The earlier bounded-PWL source diagnostic
+`dcdl_pwl_source_v2/974118b4fe0abc11` is now terminal, with
+`numerically_completed=false`. Its retained log reports timestep too small at
+0.805081 ns (2.5e-24 s attempted step, reported node `ve29#branch`), before
+the first 2.1 ns input midpoint. Recorded solver wall time is 5,421.915 s.
+This does not establish the reported branch as the circuit root cause, native
+equivalence or a speedup. It does show that the certified source-representation
+change alone did not restore a complete transient through that legacy bank.
+The separate uniform-tree campaign is still live and is not restarted or
+modified on the basis of this older diagnostic.
+
+The expanded regression passes 1,922 tests in 379.092 s with no skips
+(`build/mux-tree-access-v3-full-tests.log`). The two layer-selection tests added
+after that run started also pass independently. Fresh real-GDS reimport and
+exact-source LVS succeed for both mux cells in the independent receipt above.

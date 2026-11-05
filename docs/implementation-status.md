@@ -48,6 +48,16 @@ cells and ideal common wiring still require physical implementation and fresh
 joint extraction. This sparse experiment cannot qualify dense legal codes,
 updates, periodic 40%/60% clocks, all-PVT timing or the PHY.
 
+Fresh native mux GDS/private-node inspection now passes exact-source LVS for
+both mux4_4 (13 distinct private nodes) and mux2_4 (six). Independent reimport,
+extraction and repeated LVS receipt
+`mux_tree_access_verification_v4/bd92d6d6bb512d60` confirms unchanged native
+masks and identical access observations. The existing LI candidate search finds
+usable-size rectangles for only five mux4 nodes and four mux2 nodes; complete
+private-node routing access is not proven. The failed first n-diffusion-only
+label probe remains retained. This is a physical-access result, without mux
+voltage, RC, timing or PHY qualification.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal
