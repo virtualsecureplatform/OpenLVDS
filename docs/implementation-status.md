@@ -126,6 +126,12 @@ native database readbacks match and all eight injected faults are rejected.
 The first v133 movement-fault fixture is retained; OpenDB refused to move a
 FIRM instance, so the corrected fixture unlocks only its disposable copy.
 No routing or timing candidate admission is performed by these preparations.
+The v135 routing producer now refuses incomplete native evidence and unrouted
+coverage. Its active service waits for the exact v131 coordinator, then
+independently remeasures all three traces and checks the identical model hash
+before preparing any route. Actual route coverage, native GDS DRC/LVS, joint
+RC and electrical timing remain pending; the service does not stop or restart
+existing solvers.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native

@@ -7528,3 +7528,47 @@ before a corrupted database could be saved. The corrected v136 fixture
 unlocks only the disposable copy, shifts it by 1 um and relocks it before
 snapshot/readback. Source geometry and healthy simulations are untouched.
 These checks establish the saved interface, not routed connectivity or timing.
+
+
+### Routing gated by the exact measured-gang native model
+
+`route_measured_balanced_bank_v135.py` connects the verified router interface
+to the next physical step. Preparation requires a completed v136 interface
+receipt and a complete, error-free v131 campaign. It independently remeasures
+the consumed fine31 trace and both new native traces, reproduces their results,
+checks positive both-edge overlap, zero-quarter headroom and all native/slew
+gates, then matches the entire component-model byte hash to the placement's
+canonical measured-gang model. A different model/profile or incomplete/failed
+native campaign cannot prepare a routing artifact. Native timing outputs,
+producer/helper sources, simulator/PDK lineage and tool binaries are bound.
+
+The router uses the exact fixed-metal proxies proved above, restores all
+native body/control/data and public/master supply types, removes the temporary
+ports and restores the original bus rectangles. Every required signal,
+control and supply net, including IN and `selected`, must have a regular wire.
+Actual native connection/placement/pin/bus snapshots must be preserved, and
+the detailed router must report zero final violations. This is only router
+coverage: native streamed GDS DRC/LVS, joint RC and full timing remain separate
+mandatory gates. The original 40/50/60% periodic checks are not relaxed.
+
+Actual refusal checks pass: the still-incomplete native campaign is rejected
+before route preparation, and the passing native interface roundtrip alone
+is rejected as unrouted (`Missing regular route: IN`). Script generation
+retains full restoration and ODB/DEF outputs. No positive routing result is
+claimed yet. Logs are `build/measured-balanced-route-v135-pending-gate.log`
+and `build/measured-balanced-route-v135-unrouted-refusal.log`.
+
+The active `openlvds-measured-balanced-route-v135.service` waits for the exact
+existing v131 coordinator process instance. After it exits, the service enters
+the full admission check; it creates and routes a fresh artifact only if all
+those checks pass. It does not interrupt, restart or change any native solver,
+lease budget, original fixture, timestep or temperature/supply requirement.
+The manual equivalent is:
+
+```sh
+./scripts/env.sh --tools --ngspice python3 scripts/route_measured_balanced_bank_v135.py campaign \
+  build/diagnostics/balanced_routing_interface_verification_v136/c4810dca76a4b101 \
+  --timing build/diagnostics/measured_gang_sparse_v131/58a9364cba76fa27
+```
+
+Do not run a duplicate while the service or an existing route artifact is active.
