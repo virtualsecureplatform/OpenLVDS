@@ -66,6 +66,19 @@ components and reject eight actual imported-graph corruption controls. Checked-i
 Verilog/blackboxes compile for all declared dimensions. This is a placement and
 routing input, without routed geometry, parasitic or electrical admission.
 
+The first complete uniform-bank RC case now fails at coarse/fine zero:
+1.66/2.50 ns rising/falling delay versus a 610 ps fast-quarter budget, and
+2.311 V worst MOS terminal difference versus 1.95 V. Both complete pulses and
+control settling pass. A matched diagnostic preserves all 875 MOS devices,
+their extracted junction parameters and all native MIMs while deliberately
+removing component routing R/C. Its zero-code case still fails at 1.12/2.03 ns
+and 2.342 V. Complete-waveform receipt
+`uniform_zero_diagnosis_v4/2961120aa3611ff5` verifies both traces and locates
+about 1.54 ns of idealized falling delay in the two mux4 levels. This candidate
+is not selected for full-bank routing. The next circuit experiment must replace
+the mux4 data path with a native transmission-gate tree and a separately sized
+fine-bank driver; all existing timing and voltage limits remain unchanged.
+
 The matched two-buffer component experiment fixes the observed 60% duty
 clock-low margin regression in all four SS/40 C cases. Independent remeasurement
 passes phase ordering, low-level arming, stopped-clock clearing and terminal

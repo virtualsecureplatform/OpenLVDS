@@ -4257,3 +4257,104 @@ The complete current suite passes 1,928 tests without skips in 372.869 s
 (`build/uniform-tree-netlist-v3-full-tests.log`), including every mux-access
 and structural-view test. The actual Yosys reimport and all eight retained
 graph corruption controls pass in the independent receipt above.
+
+### Complete uniform-bank zero-code failure and parasitic isolation (2026-11-05)
+
+Case zero of `dcdl_uniform_tree_v3/486381e17636fb87` completes the full 20 ns
+and both isolated pulses with no numerical error. Coarse/fine zero has repeated
+rising/falling delays 1,656.670/2,500.423 ps, conservative fast-quarter headroom
+-1,890.667 ps, and 24 MOS voltage violations with peak 2.310979 V. Both source
+pulses and internal control settling pass. No quarter-delay or voltage gate
+is relaxed to admit this bank. Other healthy cases continue unchanged.
+
+Using the original schematics as the only comparator would also remove their
+extracted MOS junction parameters. Instead,
+`uniform_tree_parasitic_isolation_v4.py` deliberately idealizes the two verified
+flat component models: collapse positive extracted wire resistors, remove
+nonnegative explicit parasitic capacitors, and preserve every native primitive
+instance, model and complete parameter list, including AD/AS/PD/PS and every
+native MIM. Public ports cannot be merged; unknown active elements and native
+resistor devices are rejected. The native switch/clock topology, data/control
+stimulus, device census and voltage limits remain fixed. This diagnostic
+removes physical parasitics and cannot provide physical timing equivalence or
+be consumed as an admitted RC model.
+
+`probe_uniform_parasitic_v4.py` prepares distinct immutable context
+`dcdl_uniform_parasitic_v4/01316b2624a9d75c`, retaining the full native bank and
+all 875 MOS devices. Each of 18 buffer instances removes 233 explicit wire
+resistors and 88 parasitic capacitors; each of 31 fine instances removes 169
+resistors and 55 parasitic capacitors. All 98 native MIM devices remain. The
+ten matched SS/40 C, 100 ps, 20 fF, fixed-1.8 V, 20 ns cases use the unchanged
+six-engine dispatcher with at most two campaign workers. The first preparation
+attempt rejected the extractor's dollar-delimited floating-cap comments before
+creating any artifact; its log is retained. The parser was corrected and tested
+before the immutable successful context was created.
+
+The idealized zero-code case also completes both pulses but fails: repeated
+rising/falling delays 1,118.379/2,031.964 ps, headroom -1,422.208 ps, 28 MOS
+violations and peak 2.342269 V. Control settling passes. Native source mux
+devices remain unchanged in both fixtures. Removing the component routing R/C
+therefore does not recover this architecture's quarter-period budget or voltage
+margin.
+
+`diagnose_uniform_zero_v4.py` regenerates the idealized library from its exact
+native RC parent, checks both final case summaries, saved-vector completeness,
+translated decks, raw/log record counts, both full native remeasurements and
+consumed-file hashes before/after. It consumes only terminal case-zero files
+while the two campaigns may be active on other cases; no parent state, lock or
+raw file changes. Receipt `uniform_zero_diagnosis_v4/2961120aa3611ff5` passes,
+including a second full read-only recheck. All admissions remain false.
+
+Measured first falling-edge stage delays (ps):
+
+| Stage | Component RC | Idealized component wiring |
+| --- | ---: | ---: |
+| Input to first tap | 306.769 | 217.808 |
+| First tap to mux level zero | 691.161 | 675.748 |
+| Mux level zero to selected fine node | 1,066.313 | 861.834 |
+| Selected node to output | 436.154 | 276.574 |
+
+The two native mux4 levels alone account for about 1.54 ns in the idealized
+falling path; their hidden series-node devices also include the highest stress
+observations. This identifies a data-path architecture problem beyond the
+component wire parasitics; the exact transistor-level voltage mechanism still
+needs targeted diagnosis. The structurally verified mux4 bank is retained as a
+failed candidate and is not selected for a new routed bank.
+
+The next native circuit experiment replaces the mux4 data path with a balanced
+transmission-gate tree, static one-hot controls and a separately sized fine-bank
+driver, retaining the equal fine capacitors and declared bank dimensions.
+Measure base delay, all six MOS terminal differences, coarse coverage and fine
+ordering before committing to physical tree routing. This is a new experiment,
+not a demonstrated fix. No descriptor, voltage, quarter-range, dense-code,
+all-PVT, periodic 40%/60% or PHY requirement changes.
+
+Logs: `build/uniform-parasitic-v4-prepare.log` (failed pre-artifact attempt),
+`build/uniform-parasitic-v4-prepare-recheck.log`,
+`build/uniform-parasitic-v4-pilot.log`, `build/uniform-zero-diagnosis-v4.log`
+and `build/uniform-zero-diagnosis-v4-recheck.log`.
+
+Inspecting the worst RC-model sample identifies root mux PMOS
+`XD:Xmux1_0:X18` (native `pfet_01v8_hvt`): at 19.691737 ns its D/G/S/B
+voltages are -0.102021/1.793795/2.208958/1.800000 V. The 2.310979 V maximum
+is drain-to-source stress across two oppositely displaced internal nodes.
+Its source is native private node `a_373_413#`, which is MID8 in the verified
+mux4 access map and has no existing LI candidate meeting the current size
+filter. This is a measured sample and a physical-access limitation, not proof
+of the complete capacitive-coupling mechanism. It explains why neither a stable
+external supply nor an assumed label-only guard insertion resolves the observed
+terminal stress. A new data path must be measured against the same limit.
+
+The idealized producer's completed fine-one case also indicates that replacing
+only the selector is insufficient: its repeated 0->1 delay step is 33.211 ps
+rising and 40.349 ps falling, above the 20 ps adjacent-gap requirement. This is
+a sparse diagnostic observation, not a physical or dense-code qualification.
+The new fine-bank driver must address that load sensitivity as well as the
+selector's base delay and terminal stress.
+
+The full current suite passes 1,933 tests without skips in 411.770 s
+(`build/uniform-parasitic-v4-full-tests.log`). New tests retain MOS junction
+parameters/native MIMs and reject public-terminal shorts, negative R/C,
+unexpected active/hierarchical/resistor devices and broken wire aliasing. The
+matched two-waveform native checkpoint and its full recheck both pass their
+evidence checks while retaining the electrical failures.
