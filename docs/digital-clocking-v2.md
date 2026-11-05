@@ -6928,3 +6928,54 @@ remain unqualified, and all electrical/PHY admission flags stay false.
 The complete regression after v103-v107 passes **2,099 tests without skips**
 in 362.623 s (`build/balanced-drive-bank-v107-full-tests.log`). Native v104/v105
 geometry/junction/RC checks independently cover the new isolated fine cell.
+
+
+### Regeneration after the passive mux (v108/v109)
+
+V108 is a topology alternative to sizing the existing branch structure.
+It removes the four branch inverters, reconnects the root TG inputs directly
+to the first-mux outputs, and adds one common inverter after the root mux.
+The 31 measured fine-cell data ports load this inverter's output
+`fine_slow`, rather than the passive mux node `selected`. The existing final
+inverter and its parallel copy also take `fine_slow` as input.
+
+```mermaid
+flowchart LR
+  IN --> T[Coarse taps, tap0 direct]
+  T --> M0[First mux level]
+  M0 --> M1[Root mux]
+  M1 --> R[Common inverter]
+  R --> F[Final inverters in parallel]
+  F --> OUT
+  R --- C[31 switched fine loads]
+```
+
+Every selected path still contains two serial inversions and remains
+noninverting. The original TG controls and all fine programming controls
+are unchanged. Exact inverse graph projection restores the entire v90
+model, including the native tail MIM statement and all qualified component
+RC. Three tests cover projection, direct root/fine connections, retention
+of the tail primitive and refusal of wrong root/common-inverter wiring.
+Actual native preflight confirms **981 MOS, 35 MIMs, 133 programming-gate
+observations** and 86 root controls. Every new common/final inverter MOS
+terminal is observed; obsolete branch-inverter observations are removed.
+
+`post_mux_regeneration_v109/d17437841aa23449` binds the completed post-root
+loading diagnostic and the complete qualified original-route 1.26 um fine
+cell `moscap_fine_rc_v87/348ca2c69a6af091`. Its zero/fine31/first-coarse
+SS/40 C pilot retains the original 20 ns/two-pulse stimulus, all terminal
+stress and static-control/repeat checks, <=250 ps output slew, both coarse
+overlaps and fast-quarter headroom. It does not claim a bank placement or
+common-route extraction. Electrical and PHY admission remain false.
+
+`openlvds-post-mux-regeneration-v109` and the balanced-drive service retain
+at most two workers each under the unchanged six-engine budget, priority
+and aging policy. No healthy prior solver is stopped or restarted. The
+comparison is intended to distinguish a sizing repair from removing the
+fine load from the passive-mux output. Timing results, physical bank/common
+RC, dense/update/periodic 40/60% duty, all-PVT common codes and full-link
+qualification remain required.
+
+The complete regression passes **2,102 tests without skips** in 365.215 s
+(`build/post-mux-regeneration-v109-full-tests.log`). Passing software and
+component proofs do not admit either architecture electrically.
