@@ -6979,3 +6979,11 @@ qualification remain required.
 The complete regression passes **2,102 tests without skips** in 365.215 s
 (`build/post-mux-regeneration-v109-full-tests.log`). Passing software and
 component proofs do not admit either architecture electrically.
+
+
+The first completed v107 balanced-drive point (task1, fine31) has repeated
+rise/fall delay **692.399045/857.383113 ps**, maximum OUT slew
+**244.301471 ps**, and passing native voltage/control/repetition and output
+slew checks. Its zero and first-coarse cases remain pending; this single
+point establishes neither positive quarter headroom nor coarse overlap.
+The post-mux v109 service is independently active under the same slot budget.
