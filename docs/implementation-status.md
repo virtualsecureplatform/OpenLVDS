@@ -155,6 +155,16 @@ earlier reference-supplied-parameter check did not admit them. No model is
 changed. A future bank RC repair needs this geometry/identity proof and full
 native LVS; directly reusing ordinary capacitor-junction fields or applying
 the single-cell zero-only fix would be invalid.
+Both writer comparisons complete at
+`measured_bank_junction_writer_v141/72df769d07c6686b` (b2) and
+`measured_bank_junction_writer_v141/d817d4c0605b061d` (b3). Flat/hierarchical
+policies retain the 62 capacitor mismatches; distributing area makes 31 P
+capacitors match but leaves 31 N capacitors wrong and changes other native
+junction fields. All three policies preserve topology/W/L, but none is a
+valid physical repair. A separate check confirms every junction field of
+all 93 pass/clear switches matches its measured primitive in both profiles.
+A geometry-proven selective capacitor correction remains required for future
+whole-bank RC; no extraction defaults or admitted models are changed.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native

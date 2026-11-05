@@ -7695,3 +7695,49 @@ The complete software regression passes **2,136 tests without skips** in
 including the four new partition guards (also independently passing in 0.377 s).
 These tests supplement the completed native mask/extraction diagnostics; they
 provide no bank timing or PHY admission.
+
+
+### Compare junction writer policies against the measured geometry
+
+`compare_measured_bank_junction_writers_v141.py` compares three writer options
+on a byte-identical copy of each v140 ordinary flattened `.ext` file. It does
+not repeat layout extraction or edit any admitted model. Both comparisons
+complete:
+
+| Profile | Artifact |
+| --- | --- |
+| b2 | `measured_bank_junction_writer_v141/72df769d07c6686b` |
+| b3 | `measured_bank_junction_writer_v141/d817d4c0605b061d` |
+
+Both profiles give the same result:
+
+| Writer | Capacitor devices differing from measured geometry | Zero field mismatches | Nonzero field mismatches | Existing reference-supplied junctions |
+| --- | ---: | ---: | ---: | --- |
+| `-J flat` | 62 | 120 | 4 | preserved |
+| `-J hier` | 62 | 120 | 4 | preserved |
+| `-d -J flat` | 31 | 0 | 124 | changed; rejected |
+
+All six outputs preserve the original native topology, ports, models and W/L.
+The distributed mode makes the 31 P capacitors match but leaves all 31 N
+capacitors wrong and changes junction fields elsewhere. No writer option is
+accepted as a repair. The source `.ext` hashes are unchanged, and each output
+and per-device comparison is retained separately. This experiment leaves
+bank LVS, joint-RC and electrical admission false.
+
+An additional read-only comparison checks all three programming switches per
+section against the same isolated native measurements. All 31 N pass, 31 P
+pass and 31 clear switches match every junction field in both ordinary
+extractions. The mismatch is confined to the 62 identified capacitor MOS in
+those fine sections. Full records, input/source hashes and original/target
+values are retained at
+`build/reports/measured_bank_fine_junctions_v140/all_fine_role_junctions.json`
+(log `build/measured-bank-fine-roles-v140.log`).
+
+The next RC correction must use the measured geometry and proven section
+identities to correct only capacitor fields in a separate output. It must
+retain the original extraction, prove non-capacitor parameters and every R/C
+unchanged, and reproduce full native LVS, reduction and independent Schur
+witnesses. A completed routed bank with native LVS is still required before
+that correction can qualify an actual bank RC model. Current timing runs,
+fixtures, solver settings, six-engine queue and clock/supply/temperature gates
+remain untouched.
