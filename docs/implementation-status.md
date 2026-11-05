@@ -20,8 +20,12 @@ comparisons as failures. The unchanged gate has admitted the complete routed
 model to its sparse timing pilot. A bounded live prefix already exposes 40
 terminal-limit violations in the return-mux region (observed peak 1.97362 V
 against 1.95 V), with very little conservative zero-code quarter-period
-headroom. The solver remains running; complete independent timing/voltage
-verification and repair are still required. These results do not yet qualify
+headroom. A reproducible bounded-prefix diagnosis confirms 32 downstream gate
+stresses and eight return-device drain/source stresses. Two matched native
+extra-drive/optional-MIM diagnostics are queued under the unchanged dispatcher.
+Their new interconnections are ideal diagnostic connections; they cannot admit
+a physical repair. The original solver remains running; complete independent
+timing/voltage verification and repair are still required. These results do not yet qualify
 delay range, legal-code ROMs, all-PVT clock timing
 or the complete link. See the [routed-bank timing checkpoint](digital-clocking-v2.md#staged-native-timing-using-complete-routed-bank-rc).
 

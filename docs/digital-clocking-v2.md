@@ -3846,3 +3846,88 @@ adds load therefore needs a joint delay/headroom check. These are bounded-prefix
 observations, not a complete timing/voltage pass, dense legal-code table, PVT
 qualification or PHY admission. Keep the full pilot and independent verifier
 running and retain the unchanged electrical gates before selecting a repair.
+
+### Reproducible return-net diagnosis and native drive/shunt isolation
+
+`diagnose_weighted_routed_prefix_v2.py` regenerates the whole-bank RC and native
+MOS/control observations from the independently verified extraction, checks the
+matched physical fine-control gate and actual translated solver deck, and binds
+an explicit number of complete raw records. It excludes changing raw point-count
+metadata and partial tail bytes from the consumed payload. Append-only growth
+therefore cannot change the observation; any change to a consumed record,
+semantic vector header, static source or native witness is rejected. It never
+acquires a solver lease or changes the live producer's lock/state/output files.
+
+`weighted_routed_prefix_diagnosis_v2/94a76e509964d699` reproduces the original
+14,984-record observation, including all 2,495 native MOS devices and all six
+terminal differences per device. An explicit recheck passes after the raw file
+has grown (`build/weighted-routed-prefix-diagnosis-v2-recheck.log`). The 40
+violations involve `turn0.Y`: 32 have that net as their highest-voltage gate
+terminal (downstream merge loading), and eight involve return-mux drain/source
+terminals. This distinction avoids assigning every affected device to the
+return-mux itself merely from a shared extracted net name. The worst difference
+remains 1.973619462 V during the first input rise at all-zero fine controls.
+All complete-waveform, electrical, legal-code-table and PHY admission flags stay
+false in this bounded diagnosis.
+
+The original whole-bank RC includes `C304 turn0.Y IN 10.827f`; the separately
+verified native guard-pair RC includes `C13 Y B 10.5944f`. Their comparable size
+makes coupling within the macro a strong isolation target. It does not prove
+that public-bus geometry, rather than another part of the extracted macro,
+causes all of the transient. Extra drive also brings extra native coupling, so
+the effect must be measured rather than inferred from a driver-strength label.
+
+`probe_routed_return_drive_v2.py` prepares
+`routed_return_drive_v2/9863a48a58472c31`. It retains every byte of the original
+flat bank's R/C/native-device statements and adds one complete independently
+verified wide-power NAND2B guard-pair RC at the existing `turn0` input/control/
+output anchors. Magic pin aliases are checked against the actual model nodes.
+All 2,495 original MOS witnesses remain identical; 36 native boost MOS witnesses
+are added with separate private nodes and all four true terminals. Case 0 adds
+only this pair; case 1 also adds an explicit source native 2x2 MIM at the return
+output. No PDK transistor, existing parasitic, electrical limit or control source
+is resized, removed or relaxed.
+
+Both cases retain SS/40 C, fixed 1.8 V, 100 ps tanh input slew, original solver
+settings and the 2 ps maximum step. The retained 60 ns stimulus is clipped to
+an explicitly diagnostic 8 ns stop, covering the same complete first rising/
+falling pulse before the first code change. External controls remain zero;
+distributed control settling must satisfy the original 0.18 V bound. A candidate
+must independently pass pulse integrity, every MOS terminal's 1.95 V limit and
+positive conservative 410 MHz quarter-period headroom. Tests separately reject
+overvoltage, delay/headroom failure, quiet internal-control error and an
+incomplete trace that already contains the apparent pulse.
+
+`verify_routed_return_drive_v2.py` waits for both complete numerical-error-free
+8 ns cases, regenerates the actual pair/bank/decks/native witnesses, rereads each
+raw trace and rechecks the exact original prefix. Comparisons use the original
+bounded first-pulse window and report voltage, affected-device counts and delay
+headroom independently. Any numerical abort or missing evidence cannot produce
+a complete-waveform receipt. Even a passing first-pulse diagnostic cannot admit
+a physical repair: new shared interconnections and the optional source-MIM
+routing are ideal here. New geometry, DRC/LVS, fresh joint RC, full-code and
+periodic-clock/PVT tests are still required.
+
+The pilot and observer are active as
+`openlvds-routed-return-drive-v2-pilot.service` and
+`openlvds-routed-return-drive-v2-verify.service`, with at most two workers under
+the unchanged six-engine priority/aging dispatcher. Healthy existing solvers
+are retained. No new electrical result is available yet; the native bank/PHY
+gates remain closed.
+
+The full suite passes 1,902 tests without skips in
+`build/routed-return-drive-v2-full-tests.log`. The prepared producer is now
+immutable; later changes require a new version/context. The queued scientific
+experiments have no numerical or electrical outcome yet.
+
+A complementary physical isolation candidate should retain the native gate
+masks, stack-guard MIM dimensions and body-contact row while separating the
+public B/Y escape routes. In the current child builder, the signal M3 rows are
+0.72/1.40/2.08 um and VPWR is at 3.6 um. A new child/context can test moving Y
+above that rail, for example to 5.0 um, so the existing PG metal lies between
+B and Y. This is a proposed geometry experiment, not a proven shield: native
+mask identity, DRC/LVS, pin-access/obstruction checks and fresh extracted B-Y
+coupling must decide whether it is legal and effective. Changed physical pin
+coordinates must then propagate through a newly routed full bank; old frames,
+routes or RC cannot qualify it. Do not edit the retained child/pair producers or
+substitute a removed coupling capacitor for the required physical proof.
