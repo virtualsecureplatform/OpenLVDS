@@ -3592,3 +3592,27 @@ No numerical or electrical result is available yet. The repaired-bank settling
 gate, routed timing continuation, clock-drive experiment, ROM admission,
 all-PVT and PHY gates remain unchanged and open. The full software suite passes
 1,891 tests without skips in `build/dcdl-pwl-source-v2-full-tests.log`.
+
+### Repaired guarded fine-cell charging: completed bias evidence
+
+Guarded cases 0/1 of `weighted_fine_control_v4/bf80210dbae10cb1` complete
+numerically and pass settling and terminal stress at DATA=0 and DATA=1.8 V.
+`diagnose_weighted_fine_repair_bias_v2.py` creates
+`weighted_fine_repair_bias_diagnosis_v2/2604c09df777f191` by regenerating the
+old/repaired native libraries and independently remeasuring all four completed
+guarded traces. It verifies that only the bit-4 fine-cell RC block differs;
+the remaining library bytes, source/guarded wrappers, port orders and stimulus
+specifications match. All output/raw/deck hashes are bound.
+
+At DATA=1.8 V, largest-plate errors at codes 31 and 16 improve from about
+0.22605 V to 0.007501 V under the unchanged 0.18 V bound. All fourteen repaired
+plate nodes enter and remain within that bound after 0.9775 ns, versus
+1.5955 ns for all thirteen old nodes. Thus the repaired guarded cases meet the
+original 1.5 ns settling deadline with about 0.5225 ns margin. The largest
+remaining cap error across either repaired bias is 0.067718 V. Maximum MOS
+terminal difference is 1.895252 V, below the unchanged 1.95 V limit.
+
+This diagnoses the intended guarded DC-bias repair; it is not a four-case
+campaign receipt. The two source-driver comparisons remain queued, and the
+original independent four-case settling gate and routed-bank follow-up are
+unchanged. No active-clock, whole-bank delay/ROM, all-PVT or PHY admission follows.
