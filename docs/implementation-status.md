@@ -51,13 +51,14 @@ configuration therefore fails the required overlap gate independently of
 its still-pending zero case. Two stronger-discharge
 N16 variants also pass zero DRC, unique LVS and fresh local RC. P20/N16 now
 passes both complete fine31 40/60% duty endpoints (2.08/12.76 ps period
-error, about 232.8 ps maximum slew); zero/coarse and broader validation
-remain pending. Its incomplete zero prefix now contains all eight expected
-clock crossings and already violates the quarter-period budget by 205.629 ps
-(815.385 ps worst delay), despite 225.178 ps output slew. The older P20/N10
-zero prefix similarly exceeds the budget by 265.838 ps. These are retained
-necessary-condition failures, not completed native safety/transport receipts;
-both original solvers continue. A separate v263 candidate replaces only the native BUF8
+error, about 232.8 ps maximum slew); coarse and broader validation
+remain pending. Its complete zero trace now confirms the quarter-period
+budget failure by 205.629 ps (815.385 ps worst delay), despite passing all
+1479-MOS native safety, control, period, repetition and 225.178 ps slew checks.
+Complete stage analysis measures 296/345 ps rise/fall crossing differences
+from fine node through the BUF8 to OUT. The older P20/N10 zero prefix
+similarly exceeds the budget by 265.838 ps, but its original solver remains
+live. Neither branch is admitted. A separate v263 candidate replaces only the native BUF8
 regenerator with two instances of the qualified regular P20/N16 inverter,
 preserving overall polarity and the existing isolation stage. Its four native
 checks prioritize zero delay, both duty endpoints and coarse overlap. New

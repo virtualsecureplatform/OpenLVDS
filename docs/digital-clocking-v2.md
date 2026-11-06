@@ -11126,3 +11126,42 @@ recomputation, and retention of a characterized reversal without legal-table
 admission. Synthetic records exercise algorithms only. No v294 production
 manifest or native dense waveform exists yet; the v263 pilot and physical/
 transport prerequisites remain pending.
+
+### Completed P20/N16 zero confirms the quarter-budget failure
+
+Case 2 of `discharge_isolated_fine_bank_v220/9e4d0f5b90541807` finishes
+naturally with no solver/measurement error. All eight complete rising/falling
+histories reproduce the retained v293 prefix: worst delay **815.385080 ps**,
+quarter headroom **−205.628982 ps**, and maximum slew **225.177821 ps**.
+All **1479 MOS** native terminal checks, **173 programming gates**, controls,
+input/output pulses, period and repetition checks pass. The quarter-budget
+and aggregate clock-interface gates fail. This P20/N16/BUF8 configuration
+cannot satisfy the required zero-code interface, independently of its pending
+first-coarse reference. The other family/cases remain running or queued;
+the full eight-case parent is not complete.
+
+The unchanged v262 complete-trace analyzer produces
+`isolated_bank_stage_latency_v262/eadfccf881b86d2a`, logged at
+`build/discharge-zero-stage-v262-completed.log`. It validates the complete
+25 ns trace, hashes, native observations, all eight matched crossings and
+telescoping sums. Measured crossing-difference ranges are:
+
+| Interval | Rising (ps) | Falling (ps) |
+| --- | ---: | ---: |
+| IN to selected | 233.741–237.334 | 278.062–278.080 |
+| selected to fine_node | 155.472–155.793 | 192.270–192.273 |
+| fine_node to OUT through BUF8 | 296.211–296.216 | 345.034–345.036 |
+
+These differences support evaluating the already-queued v263 replacement;
+they are not intrinsic delays or predictions for that revised circuit.
+Native routed/PVT/clock-chain admission remains false. A full independent
+native-metric recheck is running at
+`build/discharge-zero-native-recheck-v220.log`; it has no new solver and is
+not yet claimed complete.
+
+The dispatcher releases the finished zero's slot 1 and assigns it to the
+older `finite_support_bank_replay_v225_3` ticket under its existing aging
+policy. That native solver starts as host PID **2031596**; the original five
+engines remain live. No ticket, priority, model or global budget is edited.
+The v263 pilot remains queued and its physical/electrical followups continue
+waiting behind the complete original gates.
