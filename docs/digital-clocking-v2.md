@@ -12631,3 +12631,58 @@ the buffer campaign is live checking its captured inputs before launching
 SPICE. The six-lease budget is unchanged. V201's final coarse case and
 the other healthy solvers continue; no partial waveform or failed result
 is discarded, and the bank/PHY remain unqualified.
+
+### First matched-buffer pair: timing gain and REQUEST overvoltage
+
+V306 cases 0/1 complete without solver errors at SS/0 C, 410 MHz,
+60% duty and low stopped-clock level. Both retain the original 26 ns
+capture, 100 ps RCLK and **20 ps REQUEST** edges, fixed 1.8 V supply,
+counter logic and 64 native downstream-load MOS.
+
+| Measurement | Original buffers (644 MOS) | Matched P20/N16 pairs (844 MOS) |
+| --- | ---: | ---: |
+| Minimum low-phase headroom (ps) | 17.579720 | 234.257990 |
+| Minimum low-phase voltage margin (mV) | 40.781073 | 178.552631 |
+| Maximum native terminal difference (V) | 1.901941287 | 1.962007599 |
+| Original point checks | Pass | Fail: terminal stress |
+
+All matched timing/phase-order and stopped-clock clear/reassert checks
+pass, but the unchanged **1.950 V** terminal limit fails. This is a
+timing improvement with an electrical failure, not a usable counter.
+It does not establish behavior at SS40 or other matrix points.
+
+Separate full native replays reproduce every original metric for both
+points, preserving the matched failure. Reports:
+`build/reports/matched_counter_native_replay/20261106T232151Z/summary.json`
+and `20261106T232849Z/summary.json`. Units
+`openlvds-counter-baseline-native-replay-v306` (invocation
+`5a83144e95a14326ac7beb36fb117ae3`) and
+`openlvds-counter-matched-native-replay-v306` (invocation
+`5b9c8dd991624e35aab17cafa2ff8c75`) exit successfully. The retained script
+is `build/replay-matched-counter-native-v306-20261106.py`; these are
+reproductions with the original measurement functions and selected
+case/library/fixture/code hashes, not requalification of all historical
+parent inputs or independent replacement algorithms.
+
+Exact-sample diagnosis
+`build/reports/matched_counter_stress/20261106T232941Z/summary.json`
+reproduces all **80** failing native peaks: 36 MOS in each REQUEST
+buffer's final inverter and eight in the first low-phase setter pair.
+At **23004.500000 ps**, during REQUEST reassertion, the first REQUEST
+inverter's output/final-inverter gate reaches 1.961381705 V; local body
+is −0.000625894 V, giving the worst **gate/body** difference
+1.962007599 V. CLK buffers do not fail. At 23173.466533 ps the setter's
+worst drain/body difference is 1.951217340 V. Unit
+`openlvds-counter-matched-stress-diagnosis-v306`, invocation
+`cc468c5c29914a48ba668c603597adab`, exits successfully; log:
+`build/counter-matched-stress-diagnosis-v306.log`.
+
+The next controlled change is a qualified P10/N8 first inverter only
+in each REQUEST buffer, with the P20/N16 final REQUEST and both CLK
+buffers retained. Smaller first-stage feedthrough and slower internal
+transitions may reduce these peaks while retaining startup margin;
+that is a native-test hypothesis, not an established repair. No input
+edge is slowed and no limit is relaxed. The existing 24-case campaign
+continues unchanged, with all partial/failed evidence retained and the
+six-lease budget unchanged. Whole-counter RC, all-PVT and PHY remain
+unqualified.
