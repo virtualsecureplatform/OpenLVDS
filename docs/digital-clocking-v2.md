@@ -10618,3 +10618,43 @@ new sources remain frozen by their manifests or live continuation guards.
 The complete native v269 pilot and v263 bank experiment have no completed
 cases at this verification point; the six existing healthy SPICE engines
 and original timing/qualification gates remain unchanged.
+
+### Regular-pair native graph and physical placement (v272–v273)
+
+`regular_regenerated_bank_physical_v273.py` maps the immutable v263 DUT
+to its exact canonical native masters. It removes only the previous BUF8
+call and adds the two qualified regular P20/N16 inverter calls, retaining
+all other component/programming/supply connections. The graph has
+**181 functional instances, 353 physical instances, 1529 MOS and 43 MIM**.
+The corrected v246 hierarchical native reference is used by named pin
+order; the earlier v238 driver supply-port ordering is explicitly rejected.
+Every used definition order must match the graph, and native model/width/
+length inventories must match the actual v263 component library.
+
+The two new actual masters sit beside the existing isolation stage. The
+31 fine cells and their complete tapped control rows move by exactly
+**52 HD sites (23.92 um)**; all other coarse/mux/selector/isolation placements
+remain unchanged. The die becomes **528.54 × 130.56 um**. All 43 tapped
+groups remain complete. The fixed M3 fine fanout now joins the 31 fine
+input rails, while the new stages have actual M4 A/Y accesses and an M4
+public OUT pin. Local driver data/supply interconnect remains unrouted.
+The fixed-bus audit checks actual metal components, every required native
+rail and accidental contacts to other named nets.
+
+`prepare_regular_regenerated_placement_v272.py` binds the qualified source
+placement, corrected native reference, physical libraries, immutable DUT,
+tools and complete imported helper closure. It merges unchanged native
+masks/labels/hierarchy, constructs actual OpenDB/GDS placement and checks
+fixed buses/DRC without consuming pending timing rows. The prepared artifact
+is `regular_regenerated_placement_v272/82dc7493ef40f70d`, running under
+`openlvds-regular-regenerated-placement-v272`, invocation
+`2ea12a90ac614b13a1b9bd3e5db6b464`, with log
+`build/regular-regenerated-placement-v272.log`. No SPICE slot is added.
+
+Four new graph/supply-order/inventory/actual-master placement tests pass in
+`build/regular-regenerated-physical-v273-tests.log`. The four existing v239
+physical tests and three v263 native-candidate tests also pass in
+`build/regular-regenerated-original-physical-tests.log` and
+`build/regular-regenerated-original-native-tests.log`. Placement feasibility
+does not qualify whole-bank connectivity, shared RC, timing selection,
+dense/all-PVT transport, DCC/full-clock or PHY operation.
