@@ -8862,3 +8862,41 @@ stimuli and terminal/timing limits. The v185 follower admits this matrix only
 after the exact pilot and actual setter receipt pass. The campaign is running,
 with two workers under the unchanged global six-engine dispatcher. Two v183,
 two v184 and one v185 tests pass; they do not establish a PVT or PHY pass.
+
+
+### Actual sparse pass, periodic failure and node-history diagnosis (2026-11-06)
+
+`unguarded_bank_joint_sparse_v169/37905e3782c6ef2f` completes both new cases
+and consumes passing zero. Fine31 repeated rise/fall delay is
+738.791196/887.485393 ps, maximum slew 226.502704 ps. First-coarse repeated
+delay is 680.934707/719.968034 ps, maximum slew 154.736474 ps. Both-edge
+overlap and all native static checks pass. The six-point boundary screen
+`unguarded_bank_joint_boundaries_v175/55ae7a2668149a24` also passes: conservative
+adjacent gaps at fine0/1 and fine15/16 are at most 8.606885 ps rising and
+12.164752 ps falling. This is sampled evidence, not a dense legal-code table.
+
+Continuous periodic campaign v174 `99ccbf8a9c9b09ef` is running. Its first
+three fine31/410 MHz cases (40/60/50% duty) fail the unchanged 20 ps period and
+repeatability gates, while full-swing pulses, terminal safety, controls and
+250 ps output slew pass. At 40% duty, rising delay changes from 742.416 to
+425.482 ps; at 60%, from 742.416 to 343.381 ps. Steady output duty reaches
+52.300% and 81.329%, respectively. All startup cycles remain in the verdict.
+
+Read-only `diagnose_bank_periodic_history_v186.py` reproduces complete-case
+metrics and binds all 32 actual final-inverter gate observations through the
+native geometry/extraction aliases. Report
+`build/reports/bank_periodic_history_v186/summary.json` shows fine31 initially
+at 1.80272 V, but after eight cycles its internal cycle maximum is only
+1.284998/1.103659/1.213408 V at 40/60/50% duty. The zero-code comparison
+reaches 1.76805 V. Output regeneration hides the internal incomplete swing;
+it does not remove history-dependent phase error. Last-four-cycle settling
+alone is not admission and cannot waive the startup/repetition limits.
+
+Next architecture experiment: isolate the fine capacitance from the mux with
+a dedicated native driver and a noninverting output buffer, preserving total
+polarity. Compare both-edge fine span/first-coarse overlap, zero quarter
+headroom, internal recovery, complete periodic history, terminal safety and
+output slew before choosing a geometry. Native component RC can screen this
+hypothesis; new common wiring still needs actual GDS, DRC/LVS, fresh RC and
+unchanged full-bank/dense/update/all-PVT/PHY gates. Healthy existing campaigns
+continue with their original frozen sources, matrices and dispatcher limits.

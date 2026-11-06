@@ -30,13 +30,16 @@ passes DRC/LVS, exact 32-MOS parameters and fresh RC at
 `unguarded_bank_gds_v164/53b0a015a681410b`. Fresh whole-bank RC passes at
 `unguarded_bank_joint_rc_v171/82a3dfbf3d1494ac`, followed by a passing actual
 native zero at 486.850/522.734 ps rise/fall delay, 153.913 ps maximum slew and
-87.021 ps fastest-quarter headroom. Fine31/first-coarse timing is running;
-periodic and sampled-boundary followups remain gated on the complete sparse pass. The calibrated clock chain, dense/common legal tables, all-PVT
+87.021 ps fastest-quarter headroom. Fine31/first-coarse and six sampled boundary points pass. The running periodic
+screen exposes a fine31 history-dependent timing failure despite acceptable
+output swing, voltage and slew. Actual internal-node observations show the
+loaded mux node failing to restore its rail between edges. Fine-stage isolation
+requires a new architecture experiment. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
-0/25/40 C across all five process corners. The prepared periodic producer and
-its downstream gate remain closed until actual routed sparse timing passes.
+0/25/40 C across all five process corners. The periodic campaign runs under the unchanged global six-engine dispatcher;
+its failures are retained and do not admit the bank.
 See [digital clocking v2](digital-clocking-v2.md) for the implementation contract
 and exact receipts.
 
@@ -44,9 +47,10 @@ The independent 90-condition counter PVT screen completed with six SS/50%
 terminal-stress failures. Enlarging setter guards leaves a stopped-low reset
 body excursion at SS0. A new physical substrate-contact row for storage
 passes zero DRC, unique LVS, exact native parameters and fresh component RC.
-Its integrated pilot passes both stopped levels at 0 C (1.92563 V peak) and
-25 C (1.92307 V); 40 C continues. Native 3 um setter geometry, shared clock
-wiring and repeated all-PVT validation remain open. No repaired whole clock
+Its integrated pilot passes both stopped levels at all three temperatures.
+The actual 3 um setter master/pair also passes DRC/LVS and fresh component RC.
+Both actual repairs pass the six-case SS pilot; the 90-case PVT screen is
+running. Shared clock wiring and whole-clock validation remain open. No repaired whole clock
 assembly or PHY is qualified.
 
 Earlier clocking experiments remain useful diagnostic evidence:
