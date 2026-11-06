@@ -40,13 +40,14 @@ its downstream gate remain closed until actual routed sparse timing passes.
 See [digital clocking v2](digital-clocking-v2.md) for the implementation contract
 and exact receipts.
 
-The independent counter PVT sweep exposed six terminal-stress failures at SS,
-50% duty, both stopped levels at 0/25/40 C. Local 1.25/1.5 um output-guard
-prototypes pass all four SS/40 C cases. The completed eight-case cold pilot
-has six stress failures; 1.5 um passes at 25 C but still fails at 0 C. Actual
-samples locate setter output/body overshoot and inherited storage-gate stress.
-A 2/3 um guard hypothesis across all three SS temperatures is running. No
-repaired counter or full clock assembly is qualified.
+The independent 90-condition counter PVT screen completed with six SS/50%
+terminal-stress failures. Enlarging setter guards leaves a stopped-low reset
+body excursion at SS0. A new physical substrate-contact row for storage
+passes zero DRC, unique LVS, exact native parameters and fresh component RC.
+Its integrated pilot passes both stopped levels at 0 C (1.92563 V peak) and
+25 C (1.92307 V); 40 C continues. Native 3 um setter geometry, shared clock
+wiring and repeated all-PVT validation remain open. No repaired whole clock
+assembly or PHY is qualified.
 
 Earlier clocking experiments remain useful diagnostic evidence:
 

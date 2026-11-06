@@ -8755,3 +8755,75 @@ followup case counts. Services:
 `openlvds-unguarded-bank-periodic-followup-v176.service`,
 `openlvds-unguarded-bank-boundary-followup-v176.service`; state/logs under
 `build/reports/unguarded_bank_followup_v176/{periodic,boundaries}/`.
+
+
+### Physical storage body-contact row and integrated counter pilot
+
+The complete v156 baseline has all 90 conditions (86 new plus four inherited),
+zero numerical errors and all fifteen PVT conditions. Six SS/50%-duty cases
+fail terminal stress; other reported timing/clock-low-phase checks pass. The
+12-case v168 larger-guard comparison also completed with no numerical errors.
+Only cases 0 and 6 fail: SS0, stopped-low, for 2/3 um setter guards. The 3 um
+failure at 21866.5 ps has output/source 1.919102358 V and body -31.232885 mV,
+producing 1.950335244 V. Read-only diagnosis is at
+`build/reports/counter_terminal_peaks_v166/ss0_guard3_stop0.json`.
+
+`build_counter_storage_bodytap_v178.py` adds eleven mirrored native
+`tapvpwrvgnd_1` contacts below the unchanged guarded storage NAND. Dedicated
+metal/vias connect the row's ground and separate lower nwell supply rails.
+Every original child MOS/body/MIM mask and placement stays intact; storage
+output/stack MIM sizes remain 3x3/2x2 um. This is a physical body-return
+change, with no idealized short or transistor resize in the simulation model.
+
+The actual preflight passes zero DRC and unique LVS. An initial literal root-
+mask comparison exposed parent-level psdm.drawing (94/20) joins generated
+between abutting native taps. An independent row-only CIF witness reproduces
+those joins and the declared supply wiring exactly. The final proof compares
+the complete new root against old-root union row-witness masks, all unchanged
+native child masters, and exactly eleven new mirrored placements. Native MOS
+mask mutations are rejected by a focused test. The original preflight log and
+mask diagnosis remain retained; no formal source was changed after capture.
+Logs: `build/counter-bodytap-v178-{preflight,cif-mask-preflight,mask-diagnosis,tests}.log`.
+The pinned KLayout layer reference identifies 94/20 as psdm.drawing
+(`build/counter-bodytap-v178-layer-reference.log`).
+
+Formal component `counter_storage_bodytap_v178/df8d96b9f7a21c6c` is complete
+and passes: zero DRC, unique LVS, exact 8-NFET/8-HVT-PFET/two-MIM native
+parameters including all original junctions, unchanged five-port order, fresh
+passive RC and native topology. Extraction
+`build/extracted/590fd1892d9268de/openlvds_nand2_4_o3_bodytap_v178/` has 421 raw
+resistors, 79 explicit capacitors, 317 reduced resistors and 102 eliminated
+algebraic nodes. Four independent current witnesses pass with 124 boundary
+nodes, no floating components and 5.138112158e-13 A maximum error.
+
+Read-only positive-R shortest-series-path bounds for NFET body-to-VGND reduce
+from 4895.446 to 1882.578 ohm; the PFET-to-VPWR maximum remains 1287.873 ohm.
+These are path upper bounds, not effective resistance or a transient proof.
+Report: `build/reports/counter_bodytap_return_v178/summary.json`.
+
+`probe_counter_storage_bodytap_v179.py` uses that exact component RC only at
+`Xlow0_q`, retaining the 3 um setter-guard hypothesis and every other original
+macro/library byte. It regenerates all real RC-separated MOS observations;
+non-storage device/terminal/limit witnesses must remain identical, and all
+sixteen new storage MOS are required. The six SS0/25/40, 50%-duty, both-stopped-
+level cases retain the complete 26 ns / 1 ps fixture, two native BUF8 clock
+drivers and every original timing/stress limit. Six completed 3 um source
+traces are remeasured before preparation. Two tests cover output-only model
+retargeting, wrong interface/selection refusal and the complete new-body-probe
+fixture without stimulus changes.
+
+Formal pilot `counter_storage_bodytap_v179/bc546eafad4dca34` is running with
+two workers under the unchanged global dispatcher. Both SS0 cases pass with
+**1.925630488 V** maximum terminal difference, restoring the previously failed
+stopped-low reset condition without a waiver. Both SS25 cases also pass at
+**1.923070932 V**; SS40 cases remain running. Component physical/RC admission
+is specific to storage: setter-guard geometry and shared inter-component wires
+remain unqualified. A passing six-case pilot still requires a native 3 um
+setter master/pair and fresh RC, then repeated integrated timing/all-PVT and
+whole-clock physical closure.
+
+The broad regression ran 2,201 tests in 406.372 s: **2,195 passed**, six KLayout
+tests skipped in scientific Python. All six pass in their separate CAD runs;
+the two new storage CAD tests and two integration tests pass. Seven inherited
+periodic/boundary recipe tests pass against v174/v175 as well. Broad log:
+`build/bodytap-and-native-followups-v179-full-tests.log`. No PHY admission follows.
