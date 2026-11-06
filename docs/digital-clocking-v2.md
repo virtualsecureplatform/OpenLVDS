@@ -10322,3 +10322,31 @@ executed successfully with no remaining skips in
 `build/isolated-bank-all-cad-skips-tests.log`. The three newly added v259 tests
 were run separately after the broad suite's discovery. No new routed-native
 transport result is inferred from these test or coordinator receipts.
+
+### Completed isolated-bank stage diagnosis (v262)
+
+The older INV8-based v190 zero-code case has now completed naturally. All
+eight pulses, terminal/control safety, period, repetition and output slew
+checks pass, but maximum delay is 877.533 ps: fastest-quarter headroom is
+**−267.777 ps**, so this architecture is not admitted. Its first-coarse case
+also completes with passing individual interface gates. Neither result is a
+measurement of the current P20/N16 zero/coarse cases, which remain running.
+
+`analyze_isolated_stage_latency_v262.py` records the completed v190 zero
+and both completed v220 P20/N16 fine31 duty endpoints in
+`isolated_bank_stage_latency_v262/a2218f77de7397eb`. It checks original native
+outputs, decks and libraries, validates the full 25 ns trace and all requested
+MOS voltages, and matches all eight rising/falling total delays to their
+recorded values. Opposite selected-node polarity is explicit. Every
+input→selected→fine-node→output crossing difference telescopes to the
+recorded input/output delay within 0.000001 ps. Two tests exercise this
+polarity, all eight sums, missing internal edges and changed reference delays.
+
+For v190 zero, the fine-node→OUT difference is 367.969–367.985 ps on rising
+edges and 388.917–388.919 ps on falling edges. For the current P20/N16
+fine31 endpoints it is approximately 368–369 ps rising and 477–478 ps falling.
+The native BUF8 output stage is therefore a useful next architecture target.
+These signed 0.9 V crossing differences are not intrinsic cell delays and
+do not predict timing after changing loading, cell topology or routing.
+The diagnostic changes no traces or circuit parameters and grants no
+electrical, PVT or PHY qualification.

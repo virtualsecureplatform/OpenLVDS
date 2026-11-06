@@ -35,7 +35,12 @@ screen passes only 10 cases and exposes a fine31 history-dependent timing failur
 output swing, voltage and slew. Actual internal-node observations show the
 loaded mux node failing to restore its rail between edges. The first native INV1 isolation cases restore mux swing but lose output
 pulses. A stronger native INV8/NAND2_8 pilot is running; complete INV8 endpoint
-traces still fail slew or period/history limits. Two new balanced regular-P/N
+traces still fail slew or period/history limits. Its completed zero-code case
+also misses the fastest-quarter budget by 267.777 ps despite passing native
+safety, pulse, slew and repetition checks. Read-only stage-crossing analysis
+identifies 368–389 ps between the loaded fine node and output in that zero
+case; this is a measured crossing difference, not an intrinsic cell delay.
+Two new balanced regular-P/N
 drivers now pass physical closure and fresh local RC. Their measured-bank
 P20/N10 fine31 endpoints now complete: 40% passes, while 60% still fails
 period/history despite passing native safety and slew. Two stronger-discharge
