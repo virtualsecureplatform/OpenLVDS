@@ -10571,3 +10571,30 @@ Full regression runs as `openlvds-fast-clear-full-regression-20261106`,
 invocation `732cf56d24394f11876b29f49b3fc3f6`, logging to
 `build/fast-clear-full-regression-20261106.log`. Native timing, all-PVT,
 joint DCC, whole-clock/management warmup and PHY remain unqualified.
+
+### Native fast-clear replay prepared; complete internal slew diagnosis (v271)
+
+The exact completed v268 RC now feeds
+`fast_clear_counter_shared_rc_v269/12b91a2b04a05d8c`: twelve native cases,
+644 complete MOS observations, unchanged original fixtures and at most two
+workers under the existing six-engine dispatcher. The v270 coordinator is
+`running_transient`; the v265 full matrix still waits for all twelve cases
+to pass. A prepared/running replay is not a counter timing pass.
+
+The bank's separate `analyze_fine_node_slew_v271.py` analysis addresses
+whether regenerator removal is supported by existing evidence. It consumes
+the unchanged complete v262 receipt, reproduces its source traces, requires
+eight ordered 10/50/90% crossings per polarity and reproduces the original
+output-slew metric within 0.000001 ps. The receipt is
+`fine_node_slew_v271/d3f9bdcaa0e1cc5e`, logged at
+`build/fine-node-slew-v271.log`. In the P20/N16 fine31 40% duty case,
+fine_node rising slew is **729.802–730.544 ps**, falling slew
+**558.886–559.582 ps**. At 60%, the ranges are **730.706–732.584 ps**
+and **524.315–524.457 ps**. The actual regenerated OUT remains within
+the 250 ps domain (about 232.8 ps worst slew). This supports retaining
+regeneration while testing the v263 faster pair. A bypass changes loading
+and is **not tested or qualified** by these observations; no new circuit
+timing prediction or admission is inferred. Two tests cover all eight edge
+histories, slew-domain decisions and missing-pulse rejection, at
+`build/fine-node-slew-v271-tests.log`. They run separately after the broad
+suite's discovery; the frozen sources and active solver jobs are unchanged.

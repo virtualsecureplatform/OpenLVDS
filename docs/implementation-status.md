@@ -152,6 +152,8 @@ The exact-invocation v270 coordinator is preparing the unchanged twelve-case
 native pilot. An actual RC-consumption test verifies all retained output
 hashes and maps all 644 block/load MOS terminals into that original fixture.
 Counter timing remains unqualified; the original failed traces remain.
+The twelve-case replay is now prepared as
+`fast_clear_counter_shared_rc_v269/12b91a2b04a05d8c` and its runner is live.
 The full routed-counter matrix producer (v264) and exact-owner continuation
 (v265) are implemented and live behind that twelve-case gate: 270 conditions
 cover all 15 PVT points, three frequencies, three duties and both stopped
