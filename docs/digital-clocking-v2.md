@@ -11701,3 +11701,32 @@ and three synthesis test names remain in
 `build/mapped-control-v298-skip-names.json`; this run uses that unchanged
 selection. These checks validate software/backend machinery and do not
 provide pending routed-bank, full-clock or PHY electrical evidence.
+
+### Full post-table and eligibility regression complete
+
+The broad `make test-full` run completes under
+`openlvds-common-table-regression-v304`, invocation
+`73b7cff1b5084be382f21c3b11bb2f22`, with status 0:
+**2540 tests in 837.895 s, 51 tool-dependent skips**, logged at
+`build/common-table-full-regression-v304.log`. This includes the three
+v299 counter checks, five v300 stage checks, fourteen v301/v302 full-range
+checks and twelve v303/v304 eligibility checks added since the earlier
+2506-test discovery. The full suite retains the original analog, native
+fixture, RTL, CDC, training, failure-path and qualification-flow checks.
+
+All **51 skipped CAD/synthesis checks pass separately with no skips** in
+103.957 s at `build/common-table-v304-skips.log`, as recorded above. A fresh
+discovery-only audit independently counts 2540 tests and confirms the exact
+51 skipped names match the separately executed set. Its name list and log
+are `build/common-table-v304-skip-names.json` and
+`build/common-table-v304-skip-audit.log`; helper
+`build/audit-common-table-v304-skips.py` runs no tests or simulations.
+Both regression units are terminal with MainPID 0 and ExecMainStatus 0.
+Only documentation changed during this run; implementation/configuration
+sources remain those of `bdb10b7`.
+
+The six regular-pair physical/transport/PVT/dense/full-range/eligibility
+coordinators retain 449 unique unchanged captured inputs at this checkpoint.
+These successful software/backend checks do not supply the pending zero,
+coarse/fine overlap, routed-bank native timing, all-PVT code curves,
+selected-clock/update, physical ROM, DCC/full-clock or PHY admission.

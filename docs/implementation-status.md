@@ -161,10 +161,12 @@ The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
-The latest broad run passes **2506 tests with 51 tool-dependent skips**; all
-**51 CAD/synthesis checks pass separately with no skips**. Three fast-counter
-diagnostic tests added after discovery also pass separately. These tests verify the build,
-RTL and qualification machinery; they do not admit pending native timing.
+The latest broad run passes **2540 tests with 51 tool-dependent skips**; all
+**51 CAD/synthesis checks pass separately with no skips**. A fresh discovery
+audit confirms the skipped names exactly match those executed separately.
+This includes the new counter/stage, full-range and universal-eligibility
+tests. These tests verify the build, RTL and qualification machinery;
+they do not admit pending native timing.
 
 The isolated fine-stage drivers and BUF8 have canonical physical integration
 views (v236): all three pass zero DRC, native LVS, unchanged manufacturing
@@ -190,7 +192,7 @@ transport screens after those gates pass. The observation mapper covers all
 1479 MOS, 173 programming gates and both isolated data nets. Actual isolated-bank
 shared RC remains pending; eight RC/handoff tests pass using a native-device
 fixture rather than a routed-bank qualification receipt. The broad regression
-passes 2506 tests with all 51 tool-dependent skips executed separately; 15 targeted
+passes 2540 tests with all 51 tool-dependent skips executed separately; 15 targeted
 observation/transport tests also pass. Actual routed transport remains pending. Both finite-input fine31 endpoint comparisons now preserve
 the original P20/N10 pass/failure results; full four-case parity is still open. Whole-bank routing, LVS and shared-wire
 RC for this architecture remain open.
