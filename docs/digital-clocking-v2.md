@@ -11789,3 +11789,55 @@ the 0.18-versus-0.9 V distinction, late-event wrapping rejection,
 incomplete/nonfinite traces and the bound four-case native receipt. These
 five read-only diagnostic tests were added after the passing 2540-test broad
 regression; no new circuit or counter/PVT/DCC/PHY admission is granted.
+
+### Matched CLK/REQUEST regular-buffer experiment (v306)
+
+`probe_counter_matched_buffers_v306.py` implements the next circuit
+comparison from the fixed-epoch low-window diagnosis. It assembles the exact
+22-macro fast-clear counter logic using qualified component RC, including
+all six strong body-contact storage gates and both NAND8 high-phase setters.
+Both original CLK buffers and both original REQUEST buffers are replaced,
+as a group, by positive buffers built from two qualified P20/N16 regular
+inverters. The first inverter drives a private intermediate node and the
+second drives the original X port. Clock and REQUEST receive the same
+replacement topology; the four original pin maps and positive polarity remain.
+
+The paired baseline uses the original BUF8 masters on the same component
+assembly. Both assemblies use ideal shared wiring. The old routed counter
+supplies proven source topology and native downstream loads, while its
+shared-wire extraction is not reused for changed buffer geometry. This is
+a component-level hypothesis; any survivor needs fresh integrated physical,
+LVS/RC and native timing qualification before replacing the existing counter.
+
+Native mapping verifies **644 baseline MOS / 844 matched MOS**. The four
+old buffers contain 88 MOS; their four replacement pairs contain 288.
+Every non-buffer native model/terminal/voltage-limit record and all 64 MOS
+in the three downstream DCC loads remain identical. The original mask-load
+capacitor and load calls remain intact. The unused original component
+counter definition is also byte-preserved. Required source, storage-bodytap
+RC and P/N driver receipts are validated and bound in the new manifest.
+
+Coverage is **24 paired cases**: original/matched at SS0 and SS40,
+410 MHz, 40/50/60% duty, both stopped levels. The first pair is the 60%
+stopped-low condition that exposed the new arming failure. Baseline and
+matched runs share the original 26 ns protocol, 100 ps clock input slew,
+3.4 ns REQUEST assertion, 21 ns drop, 23 ns reassertion, fixed 1.8 V supply,
+all native terminal observations and all original clear/phase/order gates.
+The fixed-epoch 0.18 V low-window measurement supplements those checks.
+No threshold, original timing boundary or numerical setting is relaxed.
+
+Each condition retains separate baseline and matched gate results, minimum
+low-window time and voltage margin. The campaign uses two priority-0 workers
+under the unchanged global six-engine budget. Partial/failed runs cannot
+restart. All shared-counter, all-PVT, whole-clock, warmup and PHY admission
+flags remain false, even if every component hypothesis point passes.
+Other clock frequencies, the 25 C condition, remaining process corners and
+REQUEST-phase robustness still require their later full qualifications.
+
+All **six targeted tests pass** in 0.525 s at
+`build/counter-matched-buffers-v306-tests.log`: complete paired coverage,
+actual native component assembly and preservation, two-inverter positive
+polarity, malformed role/model/port rejection, original full native fixture
+preservation, retained baseline failures and rejection of missing evidence.
+These tests establish the implementation/assembly, not measured repair of
+the short-low-phase failure.
