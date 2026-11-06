@@ -12158,3 +12158,25 @@ at this checkpoint. The six native engines remain occupied, and the
 tapered-bank continuation remains live awaiting complete original zero-code
 evidence. The original zero-code solver PID 2036551 is directly confirmed
 live; no native case is restarted or replaced by these software/CAD checks.
+
+### Integrated regression failure isolated and RX bench elaboration fixed
+
+The v311 integrated run terminates after **2564 tests in 882.277 s** with
+**15 failures and 51 skips**, confirmed by terminal unit state
+MainPID 0 / ExecMainStatus 1. Every failure is an elaboration failure in
+one of the 15 modes of
+`test_composed_rx_scan_and_physical_transaction_protocol`: the tools
+environment's Icarus rejects the reference to `commits` before its integer
+declaration in `tb/tb_rx_training_v3.v`. No other failing test or error is
+reported. The complete failed log remains unchanged at
+`build/common-table-full-regression-v311.log`; this run is not a pass.
+
+The bench counter declaration is moved above `good_code`, preserving its
+initial values and the protocol logic. The bench is checked against the
+live coordinator guards and native producer manifests before editing;
+none captures it. Existing frozen sources and native runs remain intact.
+Both RX training tests now pass without skips in **38.162 s**, including
+all 15 protocol modes and warmup/clock-loss checks at 390/400/410 MHz
+(`build/rx-training-v3-declaration-order-tests.log`). A fresh integrated
+run remains required before claiming an integrated pass. The exact 51 CAD
+checks already passed and are unaffected by this declaration-order fix.

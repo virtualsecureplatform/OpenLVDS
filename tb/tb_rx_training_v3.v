@@ -18,10 +18,10 @@ module tb_rx_training_v3;
     wire clock90=native90 && !stop90;
     wire [3:0] failure;
     wire [1:0] tx_pair,rx_data;
+    integer settle_count=0,commits=0,commands=0,dll_requests=0;
     wire good_code=MODE!=14 && deskew>=20 && deskew<=90 && !(MODE==13 && commits>COUNT);
     reg settled=0;
     reg [15:0] settled_sequence=0;
-    integer settle_count=0,commits=0,commands=0,dll_requests=0;
     wire [15:0] delay_lo=index*10;
     openlvds_rx_training_v3 #(.CODE_WIDTH(7),.CODE_COUNT(COUNT),.CODE_MODEL_ADMITTED(MODE!=3),
         .DESKEW_MODEL_ADMITTED(MODE!=4),.DCC_MODEL_ADMITTED(MODE!=5),.TIMEOUT_CYCLES(LIMIT)) dut(
