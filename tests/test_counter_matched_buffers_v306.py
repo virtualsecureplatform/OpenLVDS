@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 from copy import deepcopy
 import json
+import hashlib
 from pathlib import Path
 import sys
 import unittest
@@ -88,6 +89,22 @@ class CounterMatchedBuffersTests(unittest.TestCase):
     def test_absent_diagnosis_cannot_prepare_or_dispatch_hypothesis(self):
         with patch.object(p,'require_diagnosis',side_effect=ValueError('Complete native cause required')):
             with self.assertRaises(ValueError):p.prepare(Path('/counter'),Path('/bank'),Path('/missing'))
+
+    def test_prepared_native_context_binds_all_twenty_four_original_protocol_decks(self):
+        folder=p.ROOT/'build/diagnostics/counter_matched_buffers_v306/f9b748a6ac5c2ee2'
+        if not folder.exists():self.skipTest('Prepared matched-buffer native context required')
+        m=json.loads((folder/'manifest.json').read_text());i=m['identity']
+        self.assertEqual(folder.name,hashlib.sha256(json.dumps(i,sort_keys=True).encode()).hexdigest()[:16])
+        self.assertEqual(i['specs'],p.specifications());self.assertEqual(i['max_workers'],2);self.assertEqual(i['priority'],0)
+        self.assertEqual({k:len(v) for k,v in i['devices'].items()},dict(baseline=644,matched=844))
+        self.assertFalse(m['qualified_phy']);self.assertFalse(i['preservation']['new_shared_wire_rc_qualified'])
+        self.assertEqual(len(m['tasks']),24)
+        for name,digest in m['libraries'].items():self.assertEqual(p.sha(folder/name),digest)
+        self.assertEqual(p.sha(Path(p.__file__)),i['inputs']['scripts/probe_counter_matched_buffers_v306.py'])
+        for task in m['tasks']:
+            s=task['spec'];deck=folder/task['id']/'bench.cir'
+            self.assertEqual(p.sha(deck),task['deck_sha256'])
+            self.assertEqual(deck.read_text(),p.fixture(folder/s['buffer_variant'],s,i['devices'][s['buffer_variant']]))
 
 
 if __name__=='__main__':unittest.main()

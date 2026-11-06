@@ -168,6 +168,18 @@ This includes the new counter/stage, full-range and universal-eligibility
 tests. These tests verify the build, RTL and qualification machinery;
 they do not admit pending native timing.
 
+Counter startup has distinct clear and low-phase timing constraints. The
+fast-clear branch passes its two completed SS0/410 MHz/50% stopped-level
+cases. A completed predecessor 60% case clears correctly but misses the
+original low0 voltage window by 90.188 ps; the repaired 50% cases retain
+17.560 ps low0 headroom. The matched CLK/REQUEST buffer experiment (v306)
+now compares 24 paired SS0/40, 40/50/60% cases with qualified component RC
+and ideal shared wiring: 644 baseline MOS and 844 replacement-buffer MOS,
+all other logic and downstream loads preserved. Its seven tests pass and
+the persistent runner has started from
+`counter_matched_buffers_v306/f9b748a6ac5c2ee2`. No prototype result or new
+physical counter, all-PVT, DCC/full-clock or PHY admission exists yet.
+
 The isolated fine-stage drivers and BUF8 have canonical physical integration
 views (v236): all three pass zero DRC, native LVS, unchanged manufacturing
 masks/junction parameters and OpenDB interface checks. Their new bank placement

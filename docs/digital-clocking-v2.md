@@ -11834,10 +11834,23 @@ flags remain false, even if every component hypothesis point passes.
 Other clock frequencies, the 25 C condition, remaining process corners and
 REQUEST-phase robustness still require their later full qualifications.
 
-All **six targeted tests pass** in 0.525 s at
-`build/counter-matched-buffers-v306-tests.log`: complete paired coverage,
+All **seven targeted tests pass** in 0.545 s at
+`build/counter-matched-buffers-v306-completed-tests.log`: complete paired coverage,
 actual native component assembly and preservation, two-inverter positive
 polarity, malformed role/model/port rejection, original full native fixture
-preservation, retained baseline failures and rejection of missing evidence.
+preservation, retained baseline failures, rejection of missing evidence and
+the actual prepared context's native census, library/source hashes and all
+24 exact protocol decks.
 These tests establish the implementation/assembly, not measured repair of
 the short-low-phase failure.
+
+Preparation completes at
+`counter_matched_buffers_v306/f9b748a6ac5c2ee2`, with 2769 captured inputs,
+four variant library files and 24 bound decks. Preparation log:
+`build/counter-matched-buffers-v306-prepare.log`. The persistent runner is
+started as `openlvds-counter-matched-buffers-v306`, PID 2058158, invocation
+`d223439a755e49afbbe6a3aed19b866e`; log:
+`build/counter-matched-buffers-v306-run.log`. At this checkpoint it is
+validating the captured context before acquiring its two simulation leases.
+No prototype waveform or repair verdict exists yet. Existing campaigns,
+dispatcher tickets and the six-engine budget are unchanged.
