@@ -43,7 +43,12 @@ case; this is a measured crossing difference, not an intrinsic cell delay.
 Two new balanced regular-P/N
 drivers now pass physical closure and fresh local RC. Their measured-bank
 P20/N10 fine31 endpoints now complete: 40% passes, while 60% still fails
-period/history despite passing native safety and slew. Two stronger-discharge
+period/history despite passing native safety and slew. Its first-coarse
+reference now also completes and passes individual interface checks, but
+the complete histories give rising overlap of −3.063 ps at 40% and
+−69.849 ps at 60%; conservative falling overlap is +63.006 ps. This older
+configuration therefore fails the required overlap gate independently of
+its still-pending zero case. Two stronger-discharge
 N16 variants also pass zero DRC, unique LVS and fresh local RC. P20/N16 now
 passes both complete fine31 40/60% duty endpoints (2.08/12.76 ps period
 error, about 232.8 ps maximum slew); zero/coarse and broader validation

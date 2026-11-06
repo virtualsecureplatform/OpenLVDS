@@ -10834,3 +10834,37 @@ capacitor topology. Together with three geometry/reference tests, four
 inventory tests, three route-gate tests and four original inventory tests,
 all **18 targeted tests** pass. Existing native SPICE campaigns and the
 six-engine dispatcher remain unchanged; complete v263 timing is still required.
+
+### Completed older P20/N10 first-coarse reference and overlap diagnosis (v281)
+
+Case 3 of `balanced_isolated_fine_bank_v201/742b7d3b91c0b3b7` completes
+naturally: SS40, 410 MHz, 50% duty, first-coarse/fine0. All eight pulses,
+native terminal/control, period, repetition and 250 ps output-slew gates
+pass (maximum slew 225.130 ps). Rising delays span 851.336128–854.280354 ps;
+falling delays span 1065.547801–1065.563958 ps. The dispatcher reuses the
+released slot for a queued campaign without interrupting another solver.
+
+`analyze_completed_bank_overlap_v281.py` consumes this complete coarse
+reference and both complete P20/N10 fine31 duty endpoints, independently
+binding original manifests/libraries/output hashes, validating the full
+25 ns traces and native terminal observations, and reproducing all eight
+crossing-delay histories through the frozen v262 reader. The diagnostic is
+`completed_bank_overlap_v281/e25f79acb2473627`, logged at
+`build/completed-bank-overlap-v281.log`. It never reads the running zero
+waveform or treats a three-point necessary-condition check as a four-point
+pilot or PHY admission.
+
+The necessary rising overlap is **−3.063377 ps at 40% duty** and
+**−69.849204 ps at 60%**, using minimum complete fine31 delay minus maximum
+complete first-coarse delay. Falling overlap remains positive, with worst
+margin **+63.005732 ps**. Thus this older P20/N10 component configuration
+cannot satisfy the current conservative overlap requirement; the separate
+60% history/period failure also remains. Passing one coarse reference or
+comparing only average/first edges would not establish a usable boundary.
+These values do not predict overlap for P20/N16 or the v263 regular pair.
+
+Four tests pass at `build/completed-bank-overlap-v281-completed-tests.log`:
+positive overlap cannot admit an unsampled zero, average-positive histories
+with a cross-history gap fail, incomplete/mixed/nonfinite cases are rejected,
+and the actual completed evidence hashes and numerical result reproduce.
+The original gate, waveforms and ongoing zero/other campaigns remain unchanged.
