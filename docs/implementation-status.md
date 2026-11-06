@@ -135,8 +135,7 @@ PREPARE falls 38.597 ps after external request reassertion, while RESET_N
 clears with 195.177 ps headroom. Startup ordering and all native safety
 checks still pass. Complete read-only diagnosis reproduces both original
 traces and their gates at `strong_counter_clear_diagnosis_v266/06bdfd120dd71fed`.
-The remaining pilot cases continue and full PVT remains pending. The
-remaining cases continue and whole-clock validation remains open. No repaired whole clock
+The remaining pilot cases continue; full PVT and whole-clock validation remain open. No repaired whole clock
 assembly or PHY is qualified.
 
 A new fast-clear physical candidate changes only the two high-phase setter
@@ -148,6 +147,11 @@ in replay. `fast_clear_counter_physical_v267/5f2c400d640d10fb` is routing.
 The exact-invocation v270 coordinator waits for physical closure, then fresh
 RC qualification and the unchanged twelve-case native pilot. This candidate
 has no physical, RC or timing pass yet; the original failed traces remain.
+The full routed-counter matrix producer (v264) and exact-owner continuation
+(v265) are implemented and live behind that twelve-case gate: 270 conditions
+cover all 15 PVT points, three frequencies, three duties and both stopped
+levels, with twelve pilot cases consumed and remeasured rather than rerun.
+No full-matrix SPICE case starts before the native pilot passes.
 
 Earlier clocking experiments remain useful diagnostic evidence:
 

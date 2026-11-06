@@ -10490,3 +10490,38 @@ pass. All 14 existing stronger-storage counter regression tests also pass
 in the configured science/PDK environment at
 `build/fast-clear-counter-original-regression-env.log`. Actual physical,
 RC, timing, full-clock and PHY admission remain pending for this revision.
+
+### Complete routed-counter PVT/frequency/duty continuation (v264–v265)
+
+`probe_strong_counter_clock_matrix_v264.py` consumes only a complete passing
+v269 twelve-case pilot, rechecking every original raw/deck/library hash and
+remeasuring each complete 644-MOS trace. The full matrix has **270 unique
+conditions**: five process corners × 0/25/40 C × 390/400/410 MHz ×
+40/50/60% duty × both stopped levels. Its twelve identical pilot points
+are consumed and **258 new native cases** remain. Fixed 1.8 V, original
+26 ns/seven-clock stimulus, 1 ps maximum step, REQUEST protocol and every
+original timing/native-terminal/clock-low-margin gate are retained. The
+seventh falling input edge at every allowed frequency/duty precedes the
+original request-clear event, so the complete stop/clear test remains.
+
+The original counter subblock's actual qualified shared RC and all 644
+device observations remain in every case. The matrix report checks unique
+full coverage, all native gates, all device safety results, and finite
+nonnegative clock-low margins; individual points never grant all-PVT or
+PHY admission. At most two workers use priority two in the existing
+six-engine/180-second-aging dispatcher. No existing ticket or budget is
+changed. Full management warmup, joint DCC events, whole-clock and PHY
+remain unqualified even after a passing counter matrix.
+
+`openlvds-fast-clear-counter-clock-followup-v265`, invocation
+`dd1b6259db334436b1799658fd3366f9`, is live with **127 guarded inputs** at
+`build/reports/fast_clear_counter_clock_followup_v265/initial/state.json`,
+currently `waiting_for_native_pilot`. It follows the exact v270 invocation
+and artifact bindings, rejects changed code/owners, and launches the matrix
+only after the complete passing v269 pilot. The handoff independently
+rechecks all 270 unique conditions and each original timing/644-device
+safety gate. Eight tests cover the complete product and pilot subset,
+original full stimulus, each required gate, missing/duplicate/failed cases,
+wrong RC/context/owner handoffs and falsely passing aggregate reports.
+Their log is `build/strong-counter-clock-matrix-v264-tests.log`.
+The coordinator is waiting; neither pilot nor matrix is yet admitted.
