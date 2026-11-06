@@ -11952,3 +11952,33 @@ source SHA-256
 The official latest-release query returns `Release-7.10.0` (2025-07-21).
 This is a source-capability check, not a new simulation, speed result or
 model-equivalence proof. No simulator, PDK, tolerance or live campaign changes.
+
+### Regular-pair zero-code live diagnostic: remaining latency deficit
+
+On 2026-11-06 at 19:43 UTC, the original v263 zero-code solver PID 2036551
+is still live. The unchanged v293 observer retains a startup-through-24.238515 ns
+prefix at `build/reports/regular-regenerated-zero-prefix-v293-20261106-next`.
+The capture binds the live process, original task/deck and manifest, source
+waveform inode/size, and copied time/IN/OUT vectors. The selected-vector SHA-256
+is `a582ba2182c8e79bc6320c30b16f1626cf2341aa8cb940c1fabfa035a2a47356`.
+
+All eight rising and falling input/output crossings, including 10%/90%
+output crossings, are present in this prefix. Rising delay is
+578.604356–582.518987 ps; falling delay is 666.773205–666.790063 ps.
+Consequently the zero-code quarter-period headroom at 410 MHz is
+**−57.033965 ps**. Maximum output slew is 80.096506 ps, maximum period
+error is 3.914782 ps, and rising/falling delay-history spans are
+3.914630/0.016858 ps. This is direct evidence of a remaining zero-latency
+deficit despite the improved edge restoration; the passing fine31 duty
+endpoints do not resolve it.
+
+The original run has not completed its 25 ns waveform or full native
+terminal/control checks. This diagnostic cannot admit or fully reject the
+component on electrical safety, and it does not qualify shared-wire RC,
+PVT, the DLL or PHY. Keep the solver and frozen continuation inputs intact.
+After natural completion, replay the complete zero-code result with v300
+to locate the remaining stage delays before selecting a latency repair;
+the pending first-coarse result must still establish fine/coarse overlap.
+Do not proceed to physical qualification on the strength of the fine31
+endpoint passes. No source, solver setting, acceptance limit or queue budget
+is changed by this observation.
