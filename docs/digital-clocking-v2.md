@@ -9236,3 +9236,42 @@ Live job `openlvds-counter-shared-rc-v194` is preparing the new actual-RC
 campaign, then queues at most two native workers under the unchanged global
 six-engine budget. Run log: `build/repaired-counter-shared-rc-v194-run.log`.
 No earlier healthy simulation is stopped or restarted.
+
+
+### Compact balanced fine-driver primitives and retained routing attempts
+
+`balanced_driver_pcells_v195/508ff6e991c53541` completes all four native
+primitive inspections with zero DRC. N10/N12 use 0.65 um fingers; P20/P24
+use regular 1.0 um fingers; all L are 0.15 um. Extracted counts and widths
+match exactly. All gates resolve to G and all bodies to B. Connected gates
+are explicitly enabled in the pinned PDK (`conn_gates=1`); every repeated
+access label is retained. Native Tcl inspection logs:
+`build/balanced-driver-pcell-options-v195.log`,
+`build/balanced-driver-pcell-fingers-v195.log`.
+
+These support two deliberately asymmetric inverter sizing hypotheses:
+P20/N6.5 and P24/N7.8 total widths, both P/N=3.0769. They are attempts to
+improve the observed fine-node charge/discharge recovery; no timing benefit
+or all-PVT balance has been established. Primitive inspection is not a
+routed inverter, LVS, local RC or bank admission.
+
+The first layout producer v196 `d6bcddc075ec0d7a` stops before routing on an
+incorrect MIM layer assumption. The actual native terminal labels are
+`mimcapcontact` for top C1 and `via3` for bottom C2. The frozen failed code,
+MIM geometry and exception are retained. V197 `5872d759c638b6a6` corrects
+that mapping and escapes the two plates separately; both unit tests use the
+actual retained MIM coordinates and reject plate-contact crossings.
+
+V197 completes both layouts and extracts the intended native model counts,
+but **neither is admitted**: P20/N10 has 66 Metal1 spacing violations and
+failed LVS; P24/N12 has 80 and failed LVS. The detailed reports localize
+small notches between the new gate bar and native M1 gate straps, plus a
+body/source landing gap. LVS identifies one unconnected end diffusion per
+finger bank: the PDK exposes the even-array end contact physically but does
+not label it. Subsequent routing must use an actual contact-geometry witness
+and close this terminal; no ideal net alias or spacing waiver is allowed.
+All v195/v196/v197 unit tests pass in their stated software/topology scope;
+these do not override the failed physical results. Run logs:
+`build/balanced-driver-pcells-v195-run.log`,
+`build/balanced-fine-driver-v196-run.log`,
+`build/balanced-fine-driver-v197-run.log`.
