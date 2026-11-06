@@ -7955,3 +7955,31 @@ replacing the native qualification chain. Six new unit tests cover fixtures,
 comment-token preservation and binary RAW normalization/refusals. The full
 regression passes 2,152 tests without skips in 383.427 s; log
 `build/route-v149-xyce-v151-full-tests.log`.
+
+
+### Complete measured three-point pass and native IN routing access
+
+The completed v131 receipt `58a9364cba76fa27` passes the full measured-component
+zero/coarse/fine31 gate with zero errors. Repeated zero delay is
+454.505/499.630 ps and first-coarse delay is 634.430/688.577 ps.
+Maximum output slew is 155.151/156.084 ps respectively. Both-edge overlap
+is +58.070/+167.461 ps, with 110.126 ps fastest-quarter zero headroom.
+This supersedes the preceding pending-zero status; common bank routing and
+whole-bank parasitics remain unqualified.
+
+The admitted v135 route `69468efeccab2222` failed DRT-0074 at public IN:
+its 0.2 by 0.4 um box was too narrow for router access. The retained source
+is unchanged. New v149 uses the entire existing native first-TG A rail
+(1.4 by 0.4 um) temporarily, verifies that its rectangle is covered by
+actual placement GDS metal, and restores the original public pin exactly.
+All original native timing, placement, interface and snapshot gates remain.
+
+The v149 receipt `419626d5e67d2da3` cleared the IN access failure and is
+actively routing, with five persistent violations at the latest observation.
+No route pass is claimed. Native GDS v150 and the still-unprepared joint-RC
+v144 producer now target this route family. The waiting GDS, joint-RC and
+zero-screen chain requires complete passing upstream receipts; failed routing
+cannot admit physical extraction or a native waveform. The full regression
+listed above includes these new producers. Detailed routing, actual native
+DRC/LVS, whole-bank RC and all remaining periodic/PVT/link requirements are
+still mandatory. Duty checks stay 40/50/60% at 390/400/410 MHz.
