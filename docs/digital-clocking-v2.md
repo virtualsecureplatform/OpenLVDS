@@ -12540,3 +12540,48 @@ experiment. It does not transfer numerical bounds to that different
 644/844-device assembly or establish its success. The original 26 ns
 waveforms and failing gates remain intact; no circuit, whole-clock RC,
 PVT or PHY admission follows from this diagnosis.
+
+### Absolute RX deskew epoch observer
+
+The required RX deskew span is **3064.102564 ps**, longer than the
+2439.024390–2564.102564 ps clock period. The frozen v67 periodic observer
+requires every delay to be less than one period and also applies a
+zero-code quarter-period gate. Those clock-bank rules cannot qualify a
+long RX deskew line. The RX DLL remains a separate quarter-period role.
+
+`scripts/rx_deskew_periodic_timing_v316.py` adds a dedicated timing observer
+requiring the explicit role `rx_deskew`; DLL, RX-DLL and TX roles are
+rejected. It pairs every input/output edge by absolute startup index,
+with no modulo operation, discarded cycles or period-limited delay.
+All delays must be positive. Complete startup-to-stop traces, low initial
+and final states, all input/output full-swing pulses and the original
+stimulus, pulse-order, **20 ps** period/history and **250 ps** downstream
+slew gates remain required. A capture that ends before the delayed pulses
+arrive fails. This module does not replace any running producer or
+change v67's DLL checks.
+
+Eight targeted tests pass without skips, including 27 frequency/duty/delay
+combinations (390/400/410 MHz, 40/50/60%, 0.2/1.2/3 periods), rejection of
+leading/zero delay, missing/extra pulses, incomplete startup/tails,
+incorrect input timing and invalid traces. They retain the original
+period/history/slew failures and verify that clock roles cannot use the
+multi-period exception. Log:
+`build/rx-deskew-periodic-timing-v316-tests-complete-tail.log`.
+
+Independent I/O replay
+`build/reports/rx_absolute_timing_v316/20261106T222013Z/summary.json`
+reproduces all original timing fields for both complete v263 fine31
+40/60% native traces, and every existing field is identical under the
+new observer. Exact selected case/library/code hashes are retained;
+unit `openlvds-rx-absolute-timing-v316-replay`, invocation
+`52b9670b48884a5c8d148d5d848475eb`, exits successfully. Log:
+`build/rx-absolute-timing-v316-native-replay.log`.
+
+This closes the software measurement restriction, not the physical RX
+deskew requirement. The multi-period test traces are synthetic, and the
+two native replay traces have sub-period delays. No multi-period native
+RX bank, RX span/codebook, terminal/control, whole-bank RC, all-PVT or
+PHY admission is established. Native RX qualification must combine this
+timing observer with the actual enlarged bank's independently mapped
+terminal/control checks and a sufficiently long capture. No new native
+RX campaign is queued before a viable physical bank is established.
