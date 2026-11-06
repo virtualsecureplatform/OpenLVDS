@@ -8520,3 +8520,74 @@ identity for both candidate libraries and generated all eight complete decks.
 Service `openlvds-counter-output-guards-cold-v163.service` is launched; log
 `build/counter-output-guards-cold-v163-run.log`. It shares the unchanged global
 six-engine limit with the baseline/hot pilot; queued work does not add engines.
+
+
+### Local final-output integration and fresh bank RC preparation
+
+`unguarded_bank_variant_v164.py` clones only the final parallel output master
+and its INV8 child. Four coarse regenerators keep the original guarded master.
+The original GDS cells, MOS/body masks, root routing and placements remain
+identical; only `u_fine_compound` at (58.78, 33.76) um uses the new master.
+The replacement's flattened masks match the qualified v162 component under
+the original registration translation (-2, -2) um. Actual-bank preflight passes
+(`build/unguarded-bank-v164-preflight.log`). The reference preserves every
+native device/net/parameter/port except the two named final-output MIMs,
+producing exactly 1,453 MOS and 40 MIMs. Two synthetic full-census tests pass,
+including refusal of wrong output selection, guard terminals/dimensions and
+missing MOS. No global rerouting is needed because all routed wire masks
+remain unchanged; fresh native DRC/LVS is mandatory.
+
+Formal native artifact `unguarded_bank_gds_v164/53b0a015a681410b` is running
+under `openlvds-unguarded-bank-gds-v164.service`; log
+`build/unguarded-bank-v164-run.log`. This producer checks the final Magic-written
+GDS as well as its input candidate, then requires unique native LVS and strict
+model/dimension/junction parameters. It does not admit timing or joint RC.
+
+`verify_unguarded_bank_joint_rc_v165.py` adds fresh extraction and the full
+original/passive/corrected reduction, native topology, junction and current-
+witness gates for that revision. `unguarded_bank_inventory_v165.py` requires
+exactly 1,453 MOS and 40 MIMs; the original 42-MIM census remains untouched.
+`unguarded_bank_junctions_v165.py` retains the complete v142 reconstruction
+body, changing only its explicit census dependency. All 62 capacitor-MOS
+repairs, unchanged non-capacitor devices/passives, idempotence and all 155
+geometry-bound fine-MOS junction checks remain mandatory.
+
+Observation metadata derives only the new final-output model name from the
+original graph/placement; all coordinates, named nets and other instances stay
+intact. This lets actual Magic aliases identify the replacement without
+fabricated nodes or ignored devices. Three focused tests pass for the strict
+40-MIM repair boundary, rejection of the original 42-MIM census, unchanged
+original repair behavior, idempotence and output-only metadata retargeting.
+The v167 zero producer retains the original full native stimulus and 250 ps
+slew/fastest-quarter gates, and admits only completed v165 joint RC.
+
+
+The v164 native bank artifact is now **complete/passed**: zero Magic DRC,
+unique LVS, 1,493 native primitives (1,453 MOS plus 40 MIM), exact native
+parameters and final-GDS output-only mask/placement checks. The qualified
+v162 output-component translation check also passes on the final native GDS.
+Independent negative mask checks reject added routed metal, changing a coarse
+regenerator to the unguarded master, and a native MOS-mask mutation
+(`build/unguarded-bank-v164-negative-masks.log`).
+
+Fresh v165 RC qualification is launched under
+`openlvds-unguarded-bank-rc-v165.service`; log
+`build/unguarded-bank-v165-run.log`. The v170 host coordinator follows that
+specific existing unit invocation, verifies a matching v164 parent and passing
+RC result, then prepares/runs v167 zero and v169 fine31/first-coarse screens
+sequentially. It refuses failed numerical/electrical gates, ambiguous artifact
+handoffs, producer replacement or termination before completion. It never
+starts/restarts the RC producer or repeats a prior timing artifact. Three
+coordinator tests pass. The coordinator uses the unchanged one/two-worker
+point-screen recipes and existing global six-engine dispatcher.
+
+Coordinator service: `openlvds-unguarded-bank-chain-v170.service`; state and
+per-stage logs: `build/reports/unguarded_bank_chain_v170/initial/`; top log:
+`build/unguarded-bank-chain-v170.log`. Dense, boundary, periodic, all-PVT and
+clock/PHY qualification remain separate gates.
+
+The broad regression ran 2,185 discovered tests in 459.780 s: **2,181 passed**,
+four KLayout tests skipped in scientific Python. Those four v160/v162 tests
+pass in their separate CAD runs. The additional v165 metadata test, two v168
+guard tests and three v170 coordinator tests pass separately. Broad log:
+`build/unguarded-bank-v165-full-tests.log`.
