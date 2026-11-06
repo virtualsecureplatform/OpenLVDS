@@ -9836,3 +9836,40 @@ the two CAD component tests. These checks do not substitute for the queued
 native timing cases. The global six-engine budget and healthy solvers stay
 unchanged. Exact stage logs are under
 `build/reports/strong_storage_counter_followup_v235/initial/`.
+
+
+### Isolated fine-stage integration views (v236/v237)
+
+The P20/N16 and P24/N16 drivers use real M4 input/output accesses. The
+previous canonical-view adapter only admitted M3 public rails and therefore
+could not represent this architecture faithfully. The separate mixed-access
+adapter v237 selects each pin on its declared native metal layer, retains
+all other LEF routing shapes as obstructions, applies MIM keepouts on M3/M4,
+and translates the entire native hierarchy without changing masks.
+Existing frozen adapters and campaigns remain unchanged.
+
+`isolated_fine_cell_views_v236/b040d127238a22fa` completes for all three
+integration masters:
+
+| Master | Native primitives | DRC | Native LVS |
+| --- | ---: | ---: | --- |
+| `openlvds_discharge_p20n16_registered_v236` | 37 (36 MOS + 1 MIM) | 0 | pass |
+| `openlvds_discharge_p24n16_registered_v236` | 41 (40 MOS + 1 MIM) | 0 | pass |
+| `openlvds_buf_8_o4_registered_v236` | 24 (22 MOS + 2 MIM) | 0 | pass |
+
+Each master passes fresh canonical GDS DRC/LVS, full native parameter and
+junction preservation against its original extraction, mask XOR under the
+recorded translation, zero-origin LEF checks, actual-metal pin coverage,
+and independent OpenDB dimensions/directions/rectangles. Both custom driver
+interfaces retain M4 A/Y accesses; BUF8 retains M3 A/X accesses. The driver
+sources are bound to the qualified v219 local-RC evidence. The BUF8 source
+is the exact native physical master used by the v220 component experiment.
+These views do not replace component RC with a new extraction or admit a
+whole-bank timing result.
+
+The next physical integration must retarget all 31 native fine NODE pins
+from `selected` to `fine_node`, replace the old final parallel inverter with
+`selected -> P20/N16 -> fine_node -> BUF8 -> OUT`, and route/extract all new
+shared wires. Preserve coarse cells, programming gates, native bulk ties,
+and original public ports. The current pilot's zero/coarse evidence and
+full frequency/duty gate remain required independently of these views.
