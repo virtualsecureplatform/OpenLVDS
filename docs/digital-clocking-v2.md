@@ -9495,3 +9495,66 @@ and **85.43191 fF on low0**, excluding native transistor/MIM capacitance.
 These are diagnostic DC wire-group incidences, not effective transient
 loads or delay fits. Original report:
 `build/reports/counter_passive_loading_v211/original.json`.
+
+### Compact and direct-feedback counter RC results (v203/v212/v214)
+
+The compact counter's fresh distributed RC
+`compact_repaired_counter_rc_v203/c60f0bb7a9d44547` passes all original
+native parameter/topology, passivity, repeatable reduction and four
+independent terminal-current gates. It retains **494 primitives: 223 NFET,
+223 HVT PFET and 48 MIM**, with zero inferred junction additions. Extraction
+has 8,818 raw R/2,484 C, reduced to 6,503 R; the maximum current witness
+error is 5.9615e-11 A under the unchanged tolerances. Its original 12-case
+native transient matrix is captured at
+`compact_counter_shared_rc_v204/9100c53e30cb5c5a`. The source-bound v209
+continuation has advanced to running that matrix; timing remains unproven.
+
+Read-only v211 comparison against the original whole-counter RC finds only
+modest parasitic reductions: CLK 281.59299 -> 270.06447 fF, request_i
+329.15744 -> 304.26803 fF, low0 85.43191 -> 84.67419 fF. First-loop feedback
+low0_qb actually rises from 61.19984 to 63.39657 fF. Geometric spine shortening
+therefore does not establish adequate feedback timing. These numbers are DC
+wire-group parasitic incidence, excluding native MOS/MIM capacitance and
+preserving coupling; they are not a delay fit.
+
+`build_direct_feedback_counter_v212.py` separately replaces only low0_qb's
+two M3 spines and M5 bus with a direct **44.04 um Metal4** connection from
+the actual native low0_q.B access at (121.98,11.40) to low0_b.Y at
+(165.34,12.08) um. Both native landing rails are required, fanout must remain
+exactly those two pins, and no other placement, bus or native cell changes.
+No ideal alias or new observation port is used. Two planning tests verify
+the exact native terminals and reject changed fanout, nets or access layers.
+
+`direct_feedback_counter_physical_v212/60b8e6502370d672` passes **zero DRC,
+unique LVS, all native masters and all 21 placements**. Fresh shared RC
+`direct_feedback_counter_rc_v214/9c287896fada51dc` also passes with every
+native model/dimension/junction retained, 8,817 raw R/2,501 C and 6,505
+reduced R. All four independent current witnesses pass. In its actual
+extraction, low0_qb parasitic incidence falls from **63.39657 to 37.23466 fF**
+(about 41%); low0 and low0_sn fall to 82.00067/86.77585 fF. Other global
+loads are essentially unchanged. The original 12-case full-native replay
+is captured at `direct_feedback_counter_shared_rc_v215/550943a12dc2ddf4`,
+with all 510 counter/load MOS and every original numeric/event gate retained.
+`openlvds-direct-feedback-counter-followup-v216` is verified live, after
+passing the exact physical and RC handoffs. Eight targeted tests pass.
+Neither counter variant has a passing native timing receipt yet.
+
+### Balanced fine-driver endpoint evidence and selective N strengthening
+
+Both complete P20/N10 v201 endpoint traces now finish naturally. At
+410 MHz, SS40, fine31, **40% duty passes** the original clock-interface gate:
+maximum slew 232.766356 ps, period error 1.195652 ps and rise/fall history
+spans 1.198424/0.116895 ps. **60% still fails timing**: slew 233.058721 ps
+passes, but period error is 67.197173 ps and rise/fall spans are
+67.984250/2.069925 ps. Both cases pass all native terminal and programming
+control checks. Zero/coarse and the P24/N12 family remain in the original
+live campaign; no complete bank or clock-matrix admission follows.
+
+The actual last-cycle fine node is -0.001839..1.677715 V at 40% and
+0.169153..1.801068 V at 60%, with full restored selected-node swing. The
+short low phase leaves a discharge/history limitation. A read-only prefix
+inspection through 24 ns first exposed this result in
+`build/balanced-fine-driver-live-prefix-diagnosis-v213.log`. It explicitly
+marks incomplete trace and unverified terminal safety and is not a
+qualification receipt; the later complete 25 ns v201 reports independently
+confirm the timing values and safety checks above.
