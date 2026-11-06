@@ -123,6 +123,14 @@ prepares 61 new cases only after the complete v288 clock screen passes.
 All 11 dense producer/handoff tests pass; v295 is live waiting for v289.
 Raw fine-step reversals or excessive gaps remain explicit characterization
 results. No dense result, common legal table or full-range admission exists.
+The full current TX range producer (v301) is now implemented: 512 raw codes
+at all 15 PVT, 7680 reference-clock cases at 410 MHz/50% duty. It consumes
+106 matching remeasured sparse/dense conditions and requires 7574 new cases
+only after both prerequisite screens pass. Its v302 handoff requires both
+exact parent jobs and a common routed-bank lineage. Fourteen targeted tests
+pass. No full-range native campaign or timing result exists yet; selected
+clock checks, other bank dimensions, RX range, updates and physical ROM
+remain required before any table or PHY admission.
 The common sequence selector (v296) is now implemented and passes 12
 algorithm tests. It requires complete raw-code intervals across all 15 PVT
 and both edges, finds one shared ordering, prefers 10 ps gaps, enforces the

@@ -11521,3 +11521,55 @@ with a bounded native tail reaching 0.660769 ns; the four regular-pair
 follow-ups are live and all 430/436/438/439 captured input hashes remain
 unchanged at this checkpoint. Remaining complete pilot results still gate
 routing, shared RC and broader timing qualification.
+
+### Full current TX raw range and common-order handoff (v301–v302)
+
+`probe_regular_regenerated_full_range_v301.py` implements the next
+characterization stage for the existing **16-coarse × 32-fine TX candidate**:
+512 raw codes at each of fifteen process/temperature points, **7680 cases**,
+410 MHz/50% duty, fixed supplies, 100 ps input slew, 20 fF output loading,
+eight complete pulse histories and the unchanged 25 ns fixture. This is a
+reference-clock raw table. Selected/boundary codes must subsequently pass
+the full 390/400/410 MHz and 40/50/60% duty checks; those obligations remain.
+
+Preparation requires complete passing v291 sparse-PVT and v294 dense
+screens, with the exact same v288 ancestor, native bank, PDK/model and
+simulator. Every consumed parent waveform and all its original native
+metrics are independently reproduced. Three shared SS40 traces must agree
+exactly rather than silently replacing one another. The new matrix reuses
+45 matching sparse conditions plus 61 additional dense conditions, **106
+total**, and requires **7574 new cases**. It cannot use another bank's results.
+
+New cases retain all 1529 MOS/173 programming-gate observations and every
+original native/slew/history/period gate. Each acquired lease guards the
+manifest, bank, runtime sources, CAD binary and PDK; all donor inputs are
+hashed before and after the campaign. Decks are generated from bound specs
+as workers reach them. Failed/partial campaigns are preserved and cannot
+restart. Two priority-2 workers share the existing six-engine dispatcher.
+The `verify` action rereads all completed native traces and reproduces each
+original result, every conservative interval and the common-order proposal.
+
+For each PVT/edge/code, the interval contains all eight delays, including
+startup. All thirty complete 512-code curves feed the existing v296 common
+selector, which must find one ordering meeting TX quarter coverage and the
+20 ps maximum gap (10 ps preferred). A missing ordering is retained as a
+characterization result. Raw-code reversals are not hidden by averages or
+separate per-corner code orders. The output keeps table admission false.
+Other TX dimensions, RX range, configuration area/power selection, selected
+clock sweeps, update safety, physical ROM and full-chain/PHY admission remain
+separate gates; this candidate is not declared the final configuration.
+
+`run_regular_regenerated_full_range_v302.py` waits for both exact v292/v295
+job invocations, checks their captured sources and shared periodic lineage,
+then runs prepare/run/verify in order. An incomplete, failed, restarted,
+foreign or changed donor cannot dispatch the new campaign. No full-range
+native artifact exists while those prerequisite campaigns remain pending.
+
+All **14 targeted tests pass** in 3.251 s at
+`build/regular-regenerated-full-range-v301-v302-final-tests.log`. They cover
+complete 7680-condition coverage, 106-case reuse, native fixture preservation,
+actual selector integration using synthetic intervals, one-corner range
+failure, incomplete/duplicate/foreign conditions, missing startup histories,
+native safety failures, full donor remeasurement, changed waveform/runtime
+inputs and both-coordinator handoff/lineage rejection. These are software
+and synthetic tests; they do not provide new native timing evidence.
