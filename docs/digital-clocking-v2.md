@@ -10726,3 +10726,22 @@ The three original v240 interface tests also pass in the CAD environment
 at `build/regular-regenerated-router-original-tests.log`. Database
 restoration and fault rejection do not qualify whole-bank routing/LVS,
 shared RC, native timing, DCC/full-clock or PHY operation.
+
+### Stored regular-pair interface verification completed
+
+`regular_regenerated_routing_verification_v275/13aea70be0ae4a65` now
+completes successfully. Rereading each of placed, router-input and restored
+databases reproduces all six record classes exactly. All **ten** injected
+faults are rejected with nonempty native-record differences, including the
+new stage0-output/stage1-input bypasses, missing final M4 output and shifted
+M4 public output. Both actual v274/v275 services terminate with exit status
+zero; original placement and interface artifacts are retained unchanged.
+
+A saved-evidence regression checks every output hash, recomputes all three
+positive database comparisons and all ten recorded fault differences,
+and verifies that routing/RC/electrical/PHY admission remains false. All
+**seven** new interface/evidence tests pass in
+`build/regular-regenerated-router-v274-completed-tests.log`; the three
+existing v240 tests also pass, for **ten targeted tests**. These receipts
+prepare a future timing-gated route; they do not replace the pending v263
+native zero/overlap/duty screens or qualify actual shared-wire transport.

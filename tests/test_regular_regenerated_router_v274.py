@@ -101,5 +101,27 @@ class RegularPairRouterTests(unittest.TestCase):
         self.assertTrue(report['result']['all_three_m4_driver_paths_retained'])
         self.assertFalse(report['routed']);self.assertFalse(report['joint_rc_extracted']);self.assertFalse(report['qualified_phy'])
 
+    def test_actual_three_saved_databases_and_all_ten_corruptions_reproduce(self):
+        parent=interface.ROOT/'build/diagnostics/regular_regenerated_routing_verification_v275/13aea70be0ae4a65'
+        if not (parent/'summary.json').exists():self.skipTest('Completed stored-database verification unavailable')
+        report=json.loads((parent/'summary.json').read_text());identity=json.loads((parent/'manifest.json').read_text())['identity']
+        reference=interface.ROOT/identity['parent']
+        self.assertEqual(json.loads((parent/'state.json').read_text()),dict(status='complete',passed=True,qualified_phy=False))
+        self.assertTrue(report['stored_database_verification_passed'])
+        self.assertTrue(all(interface.sha(parent/n)==h for n,h in report['files'].items()))
+        self.assertEqual({r['database'] for r in report['positive_controls']},{'placed','router_input','restored'})
+        for name,prefix in [('placed','before'),('router_input','adapted'),('restored','after')]:
+            self.assertEqual(stored.differences(parent/name,reference,prefix),[])
+        expected={'missing_m4_driver_output','m4_driver_bypasses_isolation','missing_root_output','proxy_metal_shift',
+                  'lost_native_supply_type','moved_native_instance','regular_stage0_output_bypasses_pair',
+                  'regular_stage1_input_bypasses_pair','missing_final_m4_output','public_m4_output_shift'}
+        self.assertEqual({r['fault'] for r in report['negative_controls']},expected)
+        for row in report['negative_controls']:
+            self.assertTrue(row['rejected']);self.assertTrue(row['differing_native_records'])
+            prefix='after' if row['fault'] in {'lost_native_supply_type','moved_native_instance','public_m4_output_shift'} else 'adapted'
+            self.assertEqual(stored.differences(parent/row['fault'],reference,prefix),row['differing_native_records'])
+        for flag in ('routed','joint_rc_extracted','electrical_qualification_passed','qualified_phy'):
+            self.assertFalse(report[flag])
+
 
 if __name__=='__main__':unittest.main()

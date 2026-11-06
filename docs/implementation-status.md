@@ -64,8 +64,9 @@ LVS/RC and timing admission remain open for this revised architecture.
 The revised router-interface preflight also passes exact native restoration
 at `regular_regenerated_routing_interface_v274/b41db4edac628761`: 93 fixed
 terminals, all eight root outputs and all three M4 stages retained. Stored
-database and ten-fault verification is running separately; no routing has
-been performed.
+verification at `regular_regenerated_routing_verification_v275/13aea70be0ae4a65`
+also passes: all three databases reproduce six native record sets and ten
+injected native/geometry/type faults are rejected. No routing has been performed.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
