@@ -10543,3 +10543,31 @@ restarting it and prepares fresh RC at
 timing are still pending. The v265 270-condition continuation remains gated
 on the complete twelve-case native pilot; physical closure grants no timing
 or PHY pass.
+
+### Fresh fast-clear shared RC qualified; native replay preparation
+
+`fast_clear_counter_rc_v268/d058dcd53f23d60f` now completes successfully.
+Its fresh extraction namespace is
+`build/extracted/44979bcef3d9dc0f/openlvds_repaired_clock_counter_v191`.
+Original extraction is retained: **12018 resistors, 3184 capacitors**;
+exact reduction retains **9306 resistors**, eliminating 2810 algebraic
+nodes. All seven public ports and **630 native primitives** (290 NFET,
+290 HVT PFET, 50 MIM) retain exact native parameters/topology. Elementwise
+passivity and regenerated exact reduction pass. Four independent clamped
+terminal-current witnesses pass with maximum absolute discrepancy
+**2.0869350692e−10 A** (0.209 nA) against the 1 nA absolute tolerance;
+normalized error is 0.000418856 and no floating components are present.
+
+The v270 coordinator consumes the exact completed RC receipt and advances
+to `preparing_transient`. Its v269 native replay still uses all 580 block
+MOS and the original 64 load MOS, with the complete original 26 ns test
+and strict clear-before-external-reassert gate. A new actual-artifact test
+checks every RC/output hash, the independent proof gates, the 644-device
+mapping and every D/G/S/B probe; changing the original load capacitor is
+rejected. All six chain tests pass at
+`build/fast-clear-counter-chain-qualified-rc-tests.log`. This consumption
+test was added after the full-regression discovery and executed separately.
+Full regression runs as `openlvds-fast-clear-full-regression-20261106`,
+invocation `732cf56d24394f11876b29f49b3fc3f6`, logging to
+`build/fast-clear-full-regression-20261106.log`. Native timing, all-PVT,
+joint DCC, whole-clock/management warmup and PHY remain unqualified.

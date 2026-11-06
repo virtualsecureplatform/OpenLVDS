@@ -145,10 +145,13 @@ buffers, clock drivers and three direct low-phase feedback routes are retained.
 It has 580 block MOS/50 MIM (630 primitives), plus the original 64 load MOS
 in replay. `fast_clear_counter_physical_v267/5f2c400d640d10fb` now passes
 zero DRC, unique LVS, exact native masters and all 22 macro placements.
-The exact-invocation v270 coordinator has advanced to fresh RC qualification
-at `fast_clear_counter_rc_v268/d058dcd53f23d60f`, followed by the unchanged
-twelve-case native pilot. RC and timing remain unqualified; the original
-failed traces remain.
+Fresh RC now passes at `fast_clear_counter_rc_v268/d058dcd53f23d60f`:
+all 630 native primitives, exact parameters/topology, passive reduction and
+four independent terminal-current witnesses (maximum error 0.209 nA).
+The exact-invocation v270 coordinator is preparing the unchanged twelve-case
+native pilot. An actual RC-consumption test verifies all retained output
+hashes and maps all 644 block/load MOS terminals into that original fixture.
+Counter timing remains unqualified; the original failed traces remain.
 The full routed-counter matrix producer (v264) and exact-owner continuation
 (v265) are implemented and live behind that twelve-case gate: 270 conditions
 cover all 15 PVT points, three frequencies, three duties and both stopped

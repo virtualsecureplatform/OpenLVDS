@@ -65,5 +65,35 @@ class FastClearChainTests(unittest.TestCase):
         self.assertEqual({k:census[k] for k in report['native_census']},report['native_census'])
         self.assertTrue(all(rc.sha(parent/n)==h for n,h in report['files'].items()))
 
+    def test_actual_qualified_shared_rc_maps_every_block_and_load_terminal(self):
+        qualified=rc.ROOT/'build/diagnostics/fast_clear_counter_rc_v268/d058dcd53f23d60f'
+        parent=rc.ROOT/'build/diagnostics/counter_native_repairs_v183/15c6a8caf6163935'
+        if not (qualified/'summary.json').exists():self.skipTest('Qualified fast-clear shared RC unavailable')
+        report=json.loads((qualified/'summary.json').read_text())
+        self.assertEqual(json.loads((qualified/'state.json').read_text()),dict(status='complete',passed=True,qualified_phy=False))
+        self.assertTrue(report['fast_clear_counter_shared_wire_rc_qualified'])
+        self.assertTrue(all(rc.sha(qualified/n)==h for n,h in report['files'].items()))
+        self.assertTrue(all(rc.sha(rc.ROOT/n)==h for n,h in report['extracted_files'].items()))
+        proof=report['rc_proof']
+        for gate in ('component_rc_passed','exact_reduction_regenerated','native_topology_verified'):
+            self.assertIs(proof[gate],True)
+        current=proof['independent_terminal_current_witness']['proof']
+        self.assertIs(current['passed'],True);self.assertEqual(current['witnesses'],4)
+        block=rc.ROOT/report['extraction']['netlist']
+        self.assertEqual(rc.sha(block),report['extraction']['netlist_sha256'])
+        cells,module=transient.libraries((parent/'cells.spice').read_text(),(parent/'pair.spice').read_text(),block.read_text())
+        old=json.loads((parent/'manifest.json').read_text())['identity']['devices']
+        devices=transient.observations(cells,module,old)
+        self.assertEqual(len(devices),644)
+        self.assertEqual(sum(d['name'].startswith('XD:XR:') for d in devices),580)
+        with patch.dict(os.environ,PDK_ROOT='/pdk'):
+            deck=transient.fixture(Path('/fixture'),transient.specifications()[0],devices)
+        for device in devices:
+            for node in device['terminals']:
+                if node!='0':self.assertIn('V('+node+')',deck)
+        with self.assertRaisesRegex(ValueError,'load inventory'):
+            transient.libraries((parent/'cells.spice').read_text(),
+                (parent/'pair.spice').read_text().replace('Cmask_load mask_load VGND 20f','Cmask_load mask_load VGND 10f'),block.read_text())
+
 
 if __name__=='__main__':unittest.main()
