@@ -7928,3 +7928,30 @@ v144 joint-RC process, then requires its complete passing receipt before
 preparing or running a native case. It uses one priority-0 worker in the
 original six-engine dispatcher. No new actual joint-RC timing artifact is
 claimed yet, and all existing healthy solvers/fixtures remain intact.
+
+
+### Explicit Xyce full-transient diagnostic completed (v147–v151)
+
+The original ngspice source receipt remains unchanged. The explicit Xyce
+7.10.0 diagnostic uses the same completed v127 fine31 component model,
+20 ns stimulus and 2 ps maximum step, with a separate solver lease.
+The first v147 attempt (`8f1182c5b1a9aacf`) failed parsing Magic inline
+`$` comments and is retained. The v151 adapter removes only those annotations
+from a separate library copy and verifies every circuit token is preserved.
+The v148 RAW adapter changes vector aliases only; binary sample bytes remain
+identical and are hashed. No existing campaign switches backend.
+
+The completed v151 receipt `c56394893ba9a692` has zero errors and passes
+terminal, control, repetition and output-slew screens. Repeated rise/fall
+delay is 686.510/849.356 ps, maximum slew 242.207 ps. Corresponding edge
+differences from ngspice are about -6.0/-6.7 ps. Solver wall time is
+339.912 s versus the recorded ngspice 874.538 s (2.573 times), which is an
+observed comparison, not a standardized performance benchmark.
+
+Xyce reports a BSIM4 4.5 to 4.6.1 substitution and a low-V PFET pbswgd
+clamp. Therefore model equivalence, backend qualification and PHY admission
+remain false. The evidence supports further backend investigation without
+replacing the native qualification chain. Six new unit tests cover fixtures,
+comment-token preservation and binary RAW normalization/refusals. The full
+regression passes 2,152 tests without skips in 383.427 s; log
+`build/route-v149-xyce-v151-full-tests.log`.
