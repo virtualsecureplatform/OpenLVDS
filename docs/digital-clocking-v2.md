@@ -9873,3 +9873,42 @@ from `selected` to `fine_node`, replace the old final parallel inverter with
 shared wires. Preserve coarse cells, programming gates, native bulk ties,
 and original public ports. The current pilot's zero/coarse evidence and
 full frequency/duty gate remain required independently of these views.
+
+
+### Native isolated-bank placement (v238/v239)
+
+`isolated_fine_placement_v238/da8cd048ac28c378` completes with placement
+DRC count **0**. The complete 180-component physical graph is independently
+matched to the immutable P20/N16 pilot DUT definition, including every named
+component pin. Native dimension inventories also match: **1479 MOS + 43 MIM**.
+This is placement feasibility, without electrical admission.
+
+The four coarse/mux branches, coarse delay chain, selector rows and public
+input remain at their previous physical positions. All 31 fine unit NODE pins
+move from `selected` to `fine_node`. The previous final parallel INV8 is
+replaced by the registered P20/N16 inverter and registered BUF8:
+`selected -> fine_isolate -> fine_node -> fine_regenerate -> OUT`.
+The fine array and its complete control rows move by exactly **49 HD sites
+(22.54 um)**. Each moved control row retains both native well taps, boundary
+fillers, original member order, site alignment and supply/body assignments.
+The extra space accommodates both new native cells without overlapping any
+canonical cell footprint. Public E pins and supplies move with the relevant
+array boundary; OUT remains physically attached to the output regenerator.
+
+The merged GDS library preserves all native masks, labels and instance arrays,
+with retained negative controls for mask, label and multiplicity corruption.
+Actual OpenDB records reproduce every planned instance pin/net, placement,
+master size and public interface. An independent check against stored GDS
+proves the three fixed buses each form one physical M3 component, touch every
+required native rail and short no different named public terminal. The fine
+bus reaches all 31 native units and BUF8 A. The new driver's M4 Y connection
+to this bus and its M4 A connection to the eight selected root outputs still
+require regular routing. Thus neither ideal shared wires nor placement DRC
+can be used as evidence for whole-bank LVS/RC or periodic timing.
+
+The v240 router-interface preflight represents only actual existing M3 fixed
+bus metal, verifies exact OpenDB restoration, and checks that both M4 driver
+terminals remain connected to their intended nets. Tests reject a fine unit
+left on `selected`, a driver input bypassing isolation, and altered native
+fine programming connections. Routing still requires native geometry/LVS,
+fresh shared RC, original timing/safety gates and full frequency/duty checks.

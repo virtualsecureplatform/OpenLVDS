@@ -47,11 +47,15 @@ the complete 27-case frequency/duty/sparse-code screen of any passing family; ba
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
 
-The isolated fine-stage drivers and BUF8 now also have canonical physical
-integration views (v236): all three pass zero DRC, native LVS, unchanged
-manufacturing masks/junction parameters and OpenDB interface checks. The
-new adapter preserves the custom drivers' actual M4 A/Y accesses. Whole-bank
-placement, routing and shared-wire RC for this architecture remain open.
+The isolated fine-stage drivers and BUF8 have canonical physical integration
+views (v236): all three pass zero DRC, native LVS, unchanged manufacturing
+masks/junction parameters and OpenDB interface checks. Their new bank placement
+(v238) also passes zero DRC and exact OpenDB placement/connectivity checks.
+The physical graph matches all 180 native component calls (1479 MOS, 43 MIM),
+including the isolated fine node and unchanged programming gates. The reversible
+router-interface preflight also passes, retaining all native connections and
+actual M4 driver access. Whole-bank routing, LVS and shared-wire RC for this
+architecture remain open.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
 0/25/40 C across all five process corners. The periodic campaign runs under the unchanged global six-engine dispatcher;
