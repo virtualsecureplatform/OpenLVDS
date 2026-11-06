@@ -10950,3 +10950,33 @@ The v263 and v269 native pilots still have no completed cases at this
 handoff. Six existing native engines remain live; their slots, solver
 configuration and campaigns are unchanged. Actual revised-bank route,
 native GDS, shared RC and electrical transport results remain pending.
+
+### Read-only live native-tail observations (v290)
+
+`capture_native_live_tail_v290.py` now retains a bounded window of complete
+binary frames from an explicitly live ngspice PID. It binds command line,
+process start ticks, exact raw path and file device/inode, checks the same
+process identity after reading, and preserves hashed header/window bytes.
+Incomplete trailing bytes are excluded; malformed, nonfinite or nonmonotonic
+windows fail. It does not alter the solver, decks or original raw file and
+always marks its evidence incomplete and unqualified. Three tests pass at
+`build/native-live-tail-v290-tests.log`, including partial-frame handling and
+rejection of a non-solver PID.
+
+Six captures at `build/reports/native_live_tail_v290/20261106T152107Z` verify
+the existing native engines were live. Old P20/N10 zero PID 1990963 reaches
+**24.609153 ns**, and current P20/N16 zero PID 2005259 reaches
+**24.631215 ns**, against their 25 ns stops. Neither trace is complete.
+The remaining tails reach 1.437862 ns (weak-bank case 6), 1.752736 ns
+(P20/N16 first coarse), 0.728486 ns (weak-bank case 7), and 0.183196 ns
+(finite-support old-bank zero). Median accepted steps in these bounded
+windows are 0.03125 ps, except the first-coarse window at 0.0625 ps.
+
+The finite-support window has input exactly zero and maximum observed
+voltage change below 8.6e-11 V, yet still uses tiny steps. This demonstrates
+that nonzero analytic input tails are not necessary for the slow behavior;
+it does not identify the numerical root cause or demonstrate a physical
+oscillation. Full waveform parity and elapsed-time benefit remain unproven.
+The original and finite-support campaigns continue with unchanged settings.
+Native completion, safety, timing and full-link admission must still come
+from the complete guarded readers and original gates.
