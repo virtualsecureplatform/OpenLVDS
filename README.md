@@ -32,7 +32,7 @@ prototypes are running; boundary and periodic qualification remain gated.
 
 Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
 dense common legal codes, complete delay range, all PVT, calibrated clock-chain
-integration and full-link qualification remain open. All 2,170 regression tests
+integration and full-link qualification remain open. All 2,175 regression tests
 pass; software and physical/RC passes do not establish electrical PHY release.
 Retained experiment results and exact receipts are in the implementation status
 and digital-clocking notes.

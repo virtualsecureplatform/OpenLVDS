@@ -8334,3 +8334,50 @@ rise/fall slew reaches about 2694.284/1236.344 ps, versus 912.709/425.226 ps at
 zero. Output rises in 265.033 ps. The final driver contains two native 2x2 MIM
 output guards; their loading is a specific circuit-repair candidate. Original
 traces and the failed geometry/RC receipt remain unchanged.
+
+
+### Output-compensation repair hypotheses and independent counter failure
+
+`output_guard_variants_v159.py` identifies exactly the two native 2x2 output-
+to-ground MIM guards through the actual extracted aliases/resistor connectivity.
+The targets are X1150 and X1214. The `shared` hypothesis retains X1150; `none`
+removes both. All 1,453 MOS cards, every other native device and every explicit
+resistor/parasitic-capacitor record remain byte-identical. Counts become
+41/40 native MIMs from the original 42. The external 20 fF load is unchanged.
+Preflight: `build/reports/measured_output_guards_v159/preflight.json`.
+
+`probe_measured_output_guard_variants_v159.py` requires and remeasures the exact
+failed sparse receipt: zero/coarse/overlap and all voltage/control/repetition
+checks passed, with fine31 slew alone failing. It prepares six full native
+cases: zero, fine31 and first-coarse for each variant; both fine31 cases run
+first. Complete 20 ns/two-pulse/2 ps fixtures and all native observations remain.
+No transistor parameter, fine-code range, voltage or acceptance limit changes.
+Formal artifact `measured_output_guard_variants_v159/64e4e009d2cc37ad` is running
+two priority-0 workers within the original six-engine dispatcher.
+
+Both fine31 hypotheses now pass their complete native point checks. Shared-
+guard repeated rise/fall delay is 717.467176/885.486614 ps with **243.774619 ps**
+maximum slew; unguarded delay is 702.905625/872.785218 ps with **222.248210 ps**
+maximum slew. Zero/coarse cases remain live. These are circuit hypotheses on
+retained baseline wire RC: changed MIM geometry/interconnect has no new layout
+qualification, and all bank/electrical/PHY admission flags remain false. A
+successful candidate still requires a new native output master, fresh whole-bank
+GDS DRC/LVS, exact native inventory/junction/RC proof and repeated timing/PVT.
+
+Five tests cover exact intended guard removal including continuation cards,
+retained MOS/passive bytes, rejection of wrong aliases/geometry/counts, fixed
+load/full-fixture retention, both zero epochs and refusal to promote hypotheses.
+The full regression passes **2,175 tests without skips** in **385.700 s**
+(`build/measured-output-guard-v159-full-tests.log`).
+
+The independent v156 counter sweep also exposes two terminal-stress failures:
+SS/40 C, 50% duty, both stopped-clock levels (cases 24/25). Timing, phase order,
+arming and stopped-clock checks pass; the worst terminal difference is
+**1.950384417 V** against the unchanged **1.95 V** limit. Read-only full-trace
+analysis locates output Y near 1.947594 V with local body return near -2.790 mV
+at about 4003.5 ps. The private stack node is positive at the worst event; this
+is output overshoot plus body-return excursion, not a negative private node.
+Its two output guards are native 1x1 MIMs X22/X25. Diagnosis records are under
+`build/reports/counter_stack_stress_v156/`. The baseline sweep continues without
+restart. Its full PVT gate remains false; a separate local output-guard/body-
+return repair must retain the original timing and terminal limits.
