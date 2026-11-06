@@ -9603,3 +9603,66 @@ artifacts remain intact. Logs:
 `build/discharge-fine-driver-v218-run.log`,
 `build/discharge-fine-driver-rc-v219-run.log`, and
 `build/discharge-isolated-fine-v220-run.log`.
+
+### Strong-discharge bank full clock-matrix continuation (v221/v222)
+
+`probe_discharge_fine_clock_matrix_v221.py` extends only passing v220
+variants to all **390/400/410 MHz x 40/50/60% x zero/fine31/first coarse**
+conditions. It consumes the four exact pilot traces and runs the 23 missing
+cases per admitted variant. All eight pilot cases must finish without
+measurement exceptions, the original comparison must reproduce, and each
+admitted family must pass all four clock-interface points with conservative
+both-edge overlap. Missing/nonfinite histories, a failed zero/60% point or
+lost overlap block admission. Full-matrix overlap is measured across all
+frequencies and duties, with every native voltage, control and timing gate
+retained. This is SS40 component RC, not dense/common-table, whole-bank,
+all-PVT or PHY qualification.
+
+`openlvds-discharge-fine-clock-followup-v222` captures the exact live v220
+invocation, manifest and v221 runner hash. It waits on
+`discharge_isolated_fine_bank_v220/9e4d0f5b90541807`; no family is admitted
+yet. The downstream producer still independently checks all native source
+bytes and remeasures inherited traces. It uses two workers under the same
+global six-engine dispatcher. Four tests verify all 27 combinations per
+family, four consumed plus 23 missing cases, complete-source admission and
+refusal of lost coverage/history/overlap or contradictory passing flags.
+State: `build/reports/discharge_fine_clock_followup_v222/initial/state.json`.
+
+### Counter feedback reduction does not fix phase propagation
+
+Both first SS0/50% compact v204 traces finish and raise the unchanged
+`Sticky arm rising-event count`. Independent full-510-MOS diagnosis passes
+terminal safety at **1.942486188/1.896884300 V** stop0/1. Low0 still has an
+extra startup pulse at 5150.240--5522.347 ps, then stable assertion at
+7090.012 ps. Armed likewise produces a first pulse at
+12446.922--12715.484 ps and asserts again at 14371.959 ps. RESET_N rises
+at 15362.360 ps, after five qualifying clocks rather than the required
+three. Those are functional timing failures, not numerical convergence.
+
+The direct-first-feedback v215 traces also finish with the same original
+arm-count failure. Their independent terminal peaks are lower,
+**1.929363244/1.896790751 V**, but low0 still pulses twice and armed still
+pulses at 12344.020--12837.930 ps before stable assertion at 14368.235 ps.
+The 41% feedback parasitic reduction therefore does not establish usable
+phase timing. Every failed trace and remaining live simulation is retained.
+
+`diagnose_counter_routes_v227.py` accepts only the declared v194/v204/v215
+source versions and contexts, a complete 26 ns native waveform with all
+510 MOS, matching task/deck/library/raw hashes and explicit functional-event
+failure classes. It does not accept a convergence failure as complete data.
+Its source-binding test rejects mismatched contexts, inventory and error
+classes. Reports: `build/reports/compact_counter_diagnosis_v227/` and
+`build/reports/direct_feedback_counter_diagnosis_v227/`.
+
+Additional structural native-path tracing
+(`build/counter-native-phase-paths-v228.log`) unions only metal resistors to
+identify actual gate/output accesses independently of flattened instance
+numbers. In the direct route, local low0 set input falls at 4617.815 ps,
+local Q crosses at 5128.390 ps, and the feedback does not fall until the
+next stable event at 7435.178 ps. At low2, set falls at 11495.708 ps but
+local Q crosses only at 12328.363 ps, after the local clock has risen; its
+feedback first falls at 14810.822 ps. Set returns high at 12609.981 ps,
+ending the first incomplete latch transition. The first-loop feedback
+shortcut advances the first local low0 Q by only 4.53 ps. Further repair must
+address setter/storage propagation and complete feedback closure in the
+available low phase; routing capacitance alone is insufficient evidence.
