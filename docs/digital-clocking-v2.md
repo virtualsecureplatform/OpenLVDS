@@ -9769,3 +9769,70 @@ all 27 frequency/duty/code combinations, dense/common legal tables, actual
 whole-bank wiring, all-PVT or PHY admission. The original pilot and its
 source-bound full-matrix continuation remain active; no missing cases are
 counted as passing.
+
+### Stronger whole-counter storage and REQUEST drive (v230--v235)
+
+The new counter retains the six alternating phase stages and original
+clock/load connections, but replaces all six Q storage macros with the
+qualified guarded NAND8 body-contact cell, adds one parallel native BUF8 on
+REQUEST, and connects all three low-phase feedback loops directly in M4.
+The previous single REQUEST buffer and NAND4 storage were late in the
+complete cold traces; the first feedback-only change advanced first low0 Q
+by less than 5 ps and did not retain the first arm transition. The stronger
+variant addresses storage slew, REQUEST arrival and feedback closure
+together. No event is filtered or reclassified.
+
+V230 `strong_storage_counter_physical_v230/440453f9805feca9` passes unique
+LVS and all expected native master/placement witnesses but fails **six M4
+notch DRC violations**, two at each low-phase feedback corner. Its source,
+GDS and failure reports remain frozen. NAND8's input-B access is 80 nm
+higher than the prior NAND4's. With a 0.3 um vertical wire joining a 0.4 um
+via pad, the remaining notch gap is only 0.25 um rather than 0.33 um.
+
+V234 `strong_storage_counter_physical_v234/a3c3c8188cdb61a3` widens only the
+short vertical feedback stems to 0.4 um, matching their pads; horizontal
+wires remain 0.3 um to preserve the adjacent REQUEST escape spacing. It now
+passes **zero DRC, unique LVS, all 19 native masters, 13 identical duplicate
+masters and every one of the 22 placements**. GDS SHA-256 is
+`5449069d8566fbdca8cb3580cc745453b50cf8895fea100b78d35585d695e5aa`.
+The source graph independently checks exactly the six intended storage
+substitutions and one duplicate REQUEST driver; all other logical cells and
+pins remain unchanged. No ideal interconnect alias is introduced.
+
+Fresh shared RC `strong_storage_counter_rc_v231/27f229d3dc27ee16` passes
+native topology/parameter/junction checks, passivity, exact regenerated
+reduction and all four independent current witnesses. Its actual inventory
+is **274 NFET + 274 HVT PFET + 50 MIM = 598 primitives**. Extraction has
+11,634 raw R/3,073 C and 9,021 reduced R; 2,705 nodes are eliminated. Maximum
+absolute current-witness error is 1.3708e-10 A, below the unchanged 1e-9 A
+absolute plus 1e-8 relative tolerances. No floating components or inferred
+junction additions are admitted.
+
+`strong_storage_counter_shared_rc_v232/efea3a7d04b05ec7` captures the original
+12 SS0/40 x 40/50/60% x both-stopped-level cases, with the same original
+stimulus, downstream loads, event counts, phase/clear/reassert windows and
+voltage limits. **All 612 MOS are observed:** 548 in the routed block plus
+the original 64 load MOS. The actual fresh RC and complete probe coverage
+are tested independently of the producer's preparation. Native timing is
+pending; the block is not a qualified whole clock or PHY.
+
+The first v233 coordinator refuses startup after its failing v230 producer
+has already exited; it starts no RC or SPICE work. The replacement v235
+handles both an explicitly captured live invocation and an already-complete
+physical receipt after collection, while rejecting any changed invocation
+or missing/incomplete source. Completed state/summary bytes are additionally
+bound before downstream handoff; the RC producer still rechecks the complete
+physical source. Tests verify that a collected complete source can be read
+without treating a vanished incomplete producer as live or following a
+restart. `openlvds-strong-storage-counter-followup-v235` is verified active
+and has advanced through passing physical/RC gates to native replay.
+
+The broad regression run passes **2,301 tests, 17 skipped** in 479.685 s;
+all **17 CAD-only skips pass separately**. Logs:
+`build/strong-storage-counter-full-tests.log` and
+`build/strong-storage-cad-skips-tests.log`. Later solid-stem/admission and
+actual fresh-RC checks pass as **14 targeted whole-counter tests**, alongside
+the two CAD component tests. These checks do not substitute for the queued
+native timing cases. The global six-engine budget and healthy solvers stay
+unchanged. Exact stage logs are under
+`build/reports/strong_storage_counter_followup_v235/initial/`.

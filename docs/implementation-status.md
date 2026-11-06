@@ -39,8 +39,10 @@ traces still fail slew or period/history limits. Two new balanced regular-P/N
 drivers now pass physical closure and fresh local RC. Their measured-bank
 P20/N10 fine31 endpoints now complete: 40% passes, while 60% still fails
 period/history despite passing native safety and slew. Two stronger-discharge
-N16 variants also pass zero DRC, unique LVS and fresh local RC; their new
-bank pilot runs under the same dispatcher, with a gated continuation for
+N16 variants also pass zero DRC, unique LVS and fresh local RC. P20/N16 now
+passes both complete fine31 40/60% duty endpoints (2.08/12.76 ps period
+error, about 232.8 ps maximum slew); zero/coarse and broader validation
+remain pending. The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
@@ -78,7 +80,12 @@ feedback parasitics from 63.4 to 37.2 fF; its full native replay runs
 separately under the same six-engine dispatcher. The first two cold/50%
 traces of both new routes fail the unchanged sticky-arm event count while
 passing native terminal safety. Native path diagnosis confirms late
-setter/storage propagation remains; feedback routing alone does not fix it. The
+setter/storage propagation remains; feedback routing alone does not fix it.
+A new 22-macro variant now uses six guarded body-contact NAND8 storage
+cells, two REQUEST buffers and three direct low-phase feedbacks. It passes
+zero DRC, unique LVS and fresh 598-primitive shared RC; the original timing
+replay with all 612 counter/load MOS observed is queued. No timing pass is
+inferred from physical or RC closure. The
 remaining cases continue and whole-clock validation remains open. No repaired whole clock
 assembly or PHY is qualified.
 
