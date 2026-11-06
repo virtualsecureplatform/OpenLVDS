@@ -10804,3 +10804,33 @@ is used while retaining all 93 fixed terminals, and missing intermediate
 regular wire is rejected by the coverage checker. Coverage-record tests
 use explicit synthetic route records rather than claiming a real route.
 No route manifest or routing process is created while v263 remains pending.
+
+### Geometry-bound regular-pair fine-junction reference (v279–v280)
+
+`prepare_regular_regenerated_reference_v279.py` completes at
+`regular_regenerated_junction_reference_v279/56daa1af193011cf`, invocation
+`f7664cf9d90543d7812db24726491e9f`. It consumes the exact completed v276
+geometry/ordinary extraction and prepares a **separate**
+`measured_reference.spice`. `regular_regenerated_junctions_v280.py` changes
+only the **62 capacitor MOS / 124 differing junction fields**, selecting
+devices by the proven native fine topology and symmetric measured primitive
+geometry. All **155 fine MOS** (62 capacitors and 93 programming devices)
+then match the measured junction values. All 1572 native primitives retain
+their models/dimensions and every non-capacitor native/passive record is
+unchanged. Original extraction is retained byte for byte.
+
+The correction regenerates deterministically and is **byte-idempotent**;
+a second application changes zero devices. This is measured reference data
+for a future native LVS/RC qualification, not an alteration of the original
+extraction or evidence of whole-bank routing, LVS, shared RC, timing or PHY
+admission. Those flags remain false.
+
+All four correction/published-reference tests pass at
+`build/regular-regenerated-junctions-v280-completed-tests.log`. They check
+every untouched source card, all 155 measured fine junctions, original
+evidence/output hashes, deterministic reconstruction, repeated-byte identity,
+passive/comment preservation, and rejection of missing geometry or changed
+capacitor topology. Together with three geometry/reference tests, four
+inventory tests, three route-gate tests and four original inventory tests,
+all **18 targeted tests** pass. Existing native SPICE campaigns and the
+six-engine dispatcher remain unchanged; complete v263 timing is still required.

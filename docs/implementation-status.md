@@ -73,6 +73,11 @@ native instances and 31 separate fine active regions are verified, with the
 expected 1529 MOS/43 MIM census. All 62 capacitor MOS retain the known
 per-device junction allocation mismatch in the preserved raw extraction;
 this diagnostic does not qualify shared RC or whole-bank LVS.
+The separate measured reference now completes at
+`regular_regenerated_junction_reference_v279/56daa1af193011cf`: only 62
+capacitor MOS/124 fields change, all 155 fine MOS match measured junctions,
+all other native/passive bytes remain, and correction is byte-idempotent.
+The original extraction remains intact; this is not a routed LVS/RC receipt.
 The revised routing producer (v278) is implemented behind the complete
 four-point v263 native gate. It retains all 93 fixed-bus terminals and
 requires the new `restored_b` route; no route has been prepared or launched.
