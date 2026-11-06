@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 from copy import deepcopy
+import json
 import os
 from pathlib import Path
 import sys
@@ -52,6 +53,17 @@ class FastClearChainTests(unittest.TestCase):
         self.assertEqual(follow.RC,rc.CONTEXT);self.assertEqual(follow.TRANSIENT,transient.CONTEXT)
         with self.assertRaisesRegex(ValueError,'physical artifact'):
             follow.require_source(follow.ROOT/'build/diagnostics/strong_storage_counter_physical_v234'/('a'*16))
+
+    def test_actual_closed_native_gds_has_exact_new_inventory_and_witnesses(self):
+        parent=rc.ROOT/'build/diagnostics/fast_clear_counter_physical_v267/5f2c400d640d10fb'
+        if not (parent/'summary.json').exists():self.skipTest('Closed fast-clear physical artifact unavailable')
+        report=json.loads((parent/'summary.json').read_text())
+        rc.require_physical(json.loads((parent/'state.json').read_text()),report)
+        reference=parent/rc.NAME/(rc.NAME+'.lvs.spice')
+        census=rc.census(reference.read_text())
+        self.assertEqual(census['ports'],rc.physical.PORTS)
+        self.assertEqual({k:census[k] for k in report['native_census']},report['native_census'])
+        self.assertTrue(all(rc.sha(parent/n)==h for n,h in report['files'].items()))
 
 
 if __name__=='__main__':unittest.main()

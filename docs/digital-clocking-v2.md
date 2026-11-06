@@ -10525,3 +10525,21 @@ original full stimulus, each required gate, missing/duplicate/failed cases,
 wrong RC/context/owner handoffs and falsely passing aggregate reports.
 Their log is `build/strong-counter-clock-matrix-v264-tests.log`.
 The coordinator is waiting; neither pilot nor matrix is yet admitted.
+
+### Fast-clear physical closure completed
+
+`fast_clear_counter_physical_v267/5f2c400d640d10fb` completes with **zero
+Magic DRC, unique LVS**, all 19 native masters preserved (13 identical
+duplicates reconciled), and exact placement witnesses for all 22 macros.
+Its actual LVS has all 290 NFET/290 HVT PFET/50 MIM primitives and original
+seven ordered ports. An additional test consumes that completed artifact,
+checks every retained output hash, requires every native-master witness,
+and independently counts its actual LVS devices. All five chain tests pass
+in `build/fast-clear-counter-chain-v268-v270-tests.log`.
+
+The v270 coordinator follows that exact completed invocation without
+restarting it and prepares fresh RC at
+`fast_clear_counter_rc_v268/d058dcd53f23d60f`. RC certification and native
+timing are still pending. The v265 270-condition continuation remains gated
+on the complete twelve-case native pilot; physical closure grants no timing
+or PHY pass.
