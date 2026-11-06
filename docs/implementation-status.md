@@ -131,6 +131,15 @@ exact parent jobs and a common routed-bank lineage. Fourteen targeted tests
 pass. No full-range native campaign or timing result exists yet; selected
 clock checks, other bank dimensions, RX range, updates and physical ROM
 remain required before any table or PHY admission.
+The separate v303 eligibility evaluator retains all 7680 measured results,
+including failed raw codes, and searches only codes passing every original
+check at every PVT. This corrects v301's blanket all-raw-pass prerequisite
+without dropping coverage or relaxing any selected-code limit. Its v304
+follow-up handles only a complete original campaign or its specific
+all-raw-pass rejection; source/model/waveform/measurement failures remain
+fatal. Twelve targeted tests pass, including the actual timing function's
+out-of-epoch rejection and common ROM proposal compatibility. No native
+eligibility receipt exists yet; selected-clock and update safety remain open.
 The common sequence selector (v296) is now implemented and passes 12
 algorithm tests. It requires complete raw-code intervals across all 15 PVT
 and both edges, finds one shared ordering, prefers 10 ps gaps, enforces the

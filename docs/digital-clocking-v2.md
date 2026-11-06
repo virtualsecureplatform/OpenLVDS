@@ -11603,3 +11603,57 @@ old output buffer, summing to 36.614285 ps. Falling contributions sum to
 −0.663036 ps. This is evidence of the remaining history failure in this
 specific sizing branch, not an inference about the pending revised-bank
 zero/coarse tests. Neither sizing branch supplies bank or PHY admission.
+
+### Complete raw coverage with universal code eligibility (v303–v304)
+
+Review identifies an overly strict condition in v301: it requires every raw
+code to pass before proposing any common table. Raw codes whose measured
+delay exceeds one reference period correctly fail the existing native epoch
+check. A complete characterization should retain those failures while the
+common table uses only codes that pass every original check at every PVT.
+This is the filtering already allowed by the common-order architecture;
+no selected-code limit or raw coverage requirement changes.
+
+`select_native_eligible_sequence_v303.py` therefore consumes all **7680**
+original results, with no missing, duplicate, foreign, errored or nonfinite
+records. All 1529 MOS, 173 programming gates and 86 logical controls must
+have explicit observations at each point, and the original reference
+stimulus and whole-bank RC binding must pass. A measured native failure is
+retained with its original failed gates, failing PVT and observed edge
+counts. It receives no invented valid delay interval. A missing waveform or
+measurement error cannot be relabelled as a measured code failure.
+
+A code is eligible only if **all fifteen PVT** pass every original native,
+voltage/control, pulse, epoch, period/history and 250 ps slew check. One
+failing corner excludes that raw code from every curve. The unchanged v296
+interval graph searches this common subset and the original independent
+common-code validator checks the proposed ordering, 30 edge/PVT curves,
+TX quarter range and 20 ps maximum gap (10 ps preferred). All eight startup
+and repeated edges remain in each selected interval. A missing path remains
+an explicit failed proposal. The existing v297 exporter accepts this schema
+with native count 512 and table admission zero.
+
+Verification binds the unchanged v301 native source and independently
+reproduces its original results and report, including failures. Original
+raw traces and v301/v302 failure receipts remain intact. The separate v304
+coordinator follows the exact v302 invocation after complete zero-error
+native collection. It accepts either the original successful terminal state
+or only the exact original all-raw-pass rejection at the end of `verify.log`.
+Any other source, model, waveform, owner or measurement failure remains
+fatal. Actual evaluation still independently checks all bound data; the
+specific log handoff cannot itself admit a code or table.
+
+All **12 targeted tests pass** in 15.582 s at
+`build/native-eligible-sequence-v303-v304-tests.log`. A synthetic 3000 ps
+delay through the actual periodic timing function preserves eight pulses
+but fails the original 410 MHz epoch check; the code is retained and excluded
+while an eligible quarter-range sequence remains available. Other checks
+cover one-corner exclusion, complete measured missing output, missing/error/
+duplicate/nonfinite inputs, observation counts, invalid source conditions,
+no eligible path, ROM proposal compatibility and narrowly scoped handoff
+rejection. These tests are not native circuit qualification.
+
+Selected/boundary clock sweeps, safe updates (including avoiding unsafe
+intermediate codes), physical ROM, other bank dimensions, RX range and full
+clock/link admission remain mandatory. No raw result is discarded and no
+electrical, epoch, repetition or slew limit is weakened for selected codes.
