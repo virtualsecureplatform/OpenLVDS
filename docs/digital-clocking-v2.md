@@ -10446,3 +10446,47 @@ crossings, not equipotential-net substitutions or intrinsic cell delays.
 Two tests retain the strict original deadline, reject missing crossings,
 and show that a late clear fails despite low final voltage. No timing
 limit, waveform or circuit parameter is changed by this diagnosis.
+
+### Stronger high-phase setters and fresh validation chain (v267–v270)
+
+`build_fast_clear_counter_v267.py` responds to the measured late set-input
+restoration by changing **only high1_set and high2_set** from native
+`openlvds_nand2_4_o3_shunted_v2` to the already qualified
+`openlvds_nand2_8_shunted_v2` used by release_set. All 22 macro pin maps,
+six stronger storage cells, two REQUEST buffers, two clock drivers and the
+three direct low-phase feedback routes remain. The new schematic census
+is **290 native NFET, 290 native HVT PFET, 50 MIM = 630 primitives**.
+Replanning uses the actual qualified native access geometry; no cell
+dimension or pin-access approximation is substituted. Larger input loading
+can affect startup, so the original phase counts/half-phase timing gates
+remain mandatory. No timing improvement is inferred before native replay.
+
+`fast_clear_counter_physical_v267/5f2c400d640d10fb` is routing under
+`openlvds-fast-clear-counter-physical-v267-science`, invocation
+`f57972f850eb4c48a6ca9c648692960a`. The initial CAD-only interpreter failed
+before producing an artifact because the source closure requires NumPy;
+its log remains `build/fast-clear-counter-physical-v267.log`. The live
+science-environment run retains the separate log
+`build/fast-clear-counter-physical-v267-science.log` and delegates CAD tools
+through the existing environment. No healthy simulation was stopped.
+
+`qualify_fast_clear_counter_rc_v268.py` requires fresh zero-DRC/native-LVS
+closure and the exact 630-primitive inventory before extracting actual
+shared RC. It retains original raw/reduced netlists, strict native
+parameters/topology, passive-element and exact-reduction checks, plus
+independent Schur terminal-current witnesses. `probe_fast_clear_counter_shared_rc_v269.py`
+then observes **all 644 block/load MOS** using the original complete 26 ns,
+1 ps, seven-clock, REQUEST-clear/reassert fixture and all original gates.
+Its twelve SS0/40, 410 MHz, 40/50/60% duty/stopped-level cases are unchanged.
+
+`openlvds-fast-clear-counter-followup-v270`, invocation
+`c55b7671baee4faf94f4ad949f9d6290`, is live at
+`build/reports/fast_clear_counter_followup_v270/initial/state.json` with
+seven captured inputs, following the exact physical invocation into v268
+and v269 only after each gate passes. Changed source/owner, failed or
+incomplete handoffs stop it while preserving evidence. Two candidate
+topology/census/access tests and four RC/inventory/stimulus/handoff tests
+pass. All 14 existing stronger-storage counter regression tests also pass
+in the configured science/PDK environment at
+`build/fast-clear-counter-original-regression-env.log`. Actual physical,
+RC, timing, full-clock and PHY admission remain pending for this revision.

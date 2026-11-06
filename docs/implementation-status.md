@@ -139,6 +139,16 @@ The remaining pilot cases continue and full PVT remains pending. The
 remaining cases continue and whole-clock validation remains open. No repaired whole clock
 assembly or PHY is qualified.
 
+A new fast-clear physical candidate changes only the two high-phase setter
+NAND4 cells to the qualified native NAND8 model already used by the release
+setter. All pin maps, phase logic, six stronger storage cells, both REQUEST
+buffers, clock drivers and three direct low-phase feedback routes are retained.
+It has 580 block MOS/50 MIM (630 primitives), plus the original 64 load MOS
+in replay. `fast_clear_counter_physical_v267/5f2c400d640d10fb` is routing.
+The exact-invocation v270 coordinator waits for physical closure, then fresh
+RC qualification and the unchanged twelve-case native pilot. This candidate
+has no physical, RC or timing pass yet; the original failed traces remain.
+
 Earlier clocking experiments remain useful diagnostic evidence:
 
 An earlier regenerated delay bank passes the actual routed SS/40 C zero-code screen
