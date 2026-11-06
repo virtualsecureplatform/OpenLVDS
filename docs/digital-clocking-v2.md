@@ -11450,3 +11450,43 @@ three synthesis checks. Unit `openlvds-mapped-control-skips-v298`, invocation
 `742189477a1e45af86ee8e28189f9c82`, exits with status 0. These complete
 build/control/backend checks do not substitute for pending native bank,
 PVT, coupled clock-chain or PHY admission.
+
+### Complete regular-pair stage/history diagnosis (v300)
+
+The completed v263 case 1 (SS40, 410 MHz, 60% input duty, coarse 0/fine 31)
+is independently remeasured by `analyze_regular_regenerated_stages_v300.py`.
+All original native metrics reproduce exactly, including the 1529 MOS,
+173 programming gates, 87.893506 ps maximum output slew and 16.003190 ps
+maximum period error. Receipt
+`regular_regenerated_stages_v300/7fdc7c6bbf871949` binds the full 25 ns raw
+trace, original sources/decks/libraries and analysis helper closure; log:
+`build/regular-regenerated-stages-v300-completed.log`.
+
+The analysis pairs all eight 0.9 V crossings at input, selected, fine_node,
+restored_b and output, accounting for both internal inversions. Signed stage
+differences sum to each original end-to-end delay. First-minus-last stage
+differences also sum exactly to the observed history change:
+
+| Section | Rising first-minus-last (ps) | Falling first-minus-last (ps) |
+| --- | ---: | ---: |
+| Input to selected (mux) | +1.169126 | +0.033470 |
+| Selected to fine_node (isolation/fine loads) | +15.058012 | −0.418844 |
+| Fine_node to restored_b (first regenerator) | −0.156399 | +0.007653 |
+| Restored_b to output (second regenerator) | −0.016071 | −0.000375 |
+| Total | +16.054668 | −0.378096 |
+
+Thus the remaining first-cycle rising variation in this trace is primarily
+across the isolation/fine-load section. The new two-inverter regenerator's
+combined first-minus-last contribution is −0.172470 ps. These are signed
+crossing differences under this exact loading/history, not intrinsic gate
+delays or predictions for zero/coarse codes. No startup edges are dropped.
+The rising history span retains only 3.945332 ps of the original 20 ps limit.
+
+Five targeted tests cover both inversions, signed history telescoping,
+missing/altered crossings, invalid startup/time/sample data and a direct
+eight-edge replay of the bound completed native waveform. Results are logged
+at `build/regular-regenerated-stages-v300-completed-tests.log`. Shared new
+wire RC, the complete four-case pilot, both-duty overlap, all-PVT timing and
+the PHY remain unqualified. The next decision still requires the zero,
+40% fine and coarse native results before routing; no solver/model change
+or replacement campaign is introduced by this diagnosis.
