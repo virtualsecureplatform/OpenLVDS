@@ -11490,3 +11490,34 @@ wire RC, the complete four-case pilot, both-duty overlap, all-PVT timing and
 the PHY remain unqualified. The next decision still requires the zero,
 40% fine and coarse native results before routing; no solver/model change
 or replacement campaign is introduced by this diagnosis.
+
+### Completed P24/N12 sizing comparison at 40% duty
+
+V201 case 4 completes with no simulator error: P24/N12 isolation, old BUF8
+output, SS40, 410 MHz, 40% input duty, coarse 0/fine 31. The original
+individual native/control/pulse/period/history/250 ps slew screens pass.
+Recorded maximum slew is 231.356619 ps, maximum period error 0.579640 ps,
+and rising/falling history spans are 0.581392/0.199876 ps. This is one
+completed point, not a complete family or bank admission.
+
+The unchanged v262 analysis independently replays all eight input/internal/
+output crossings and reproduces the recorded complete end-to-end delays.
+Receipt `isolated_bank_stage_latency_v262/22d94c40ae927d7f` binds the
+1479-MOS case and native waveform; log:
+`build/balanced-p24n12-fine40-stage-v262-completed.log`.
+
+| Section | Rising crossing difference (ps) | Falling crossing difference (ps) |
+| --- | ---: | ---: |
+| Input to selected | 234.462820–236.171252 | 281.489544–281.554329 |
+| Selected to fine_node | 226.044099–227.400299 | 294.868103–295.014217 |
+| Fine_node to output | 352.120123–352.347782 | 524.866851–524.877753 |
+
+The old output buffer remains a substantial part of this code's measured
+latency. This comparison does not establish a faster zero code, range
+overlap or another circuit's timing; the regular-pair pilot remains the
+lead architectural experiment. No active simulation or captured source
+closure is changed. Its zero-code solver is verified live at PID 2036551,
+with a bounded native tail reaching 0.660769 ns; the four regular-pair
+follow-ups are live and all 430/436/438/439 captured input hashes remain
+unchanged at this checkpoint. Remaining complete pilot results still gate
+routing, shared RC and broader timing qualification.
