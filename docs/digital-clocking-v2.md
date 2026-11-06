@@ -11934,3 +11934,21 @@ the pending 60% results. The full twelve-case pilot, 270-condition clock/PVT
 matrix, matched-buffer component experiment, actual DCC first event,
 warmup/full-clock and PHY admission remain required. No new tests or source
 changes are needed for these replays of existing validated analyzers.
+
+### Current upstream Xyce model-version audit
+
+On 2026-11-06, the current official Xyce master is checked at commit
+`e5b7b9bb5b221630c66654c059fc2d33524f5b21` (2026-10-19). Its bulk-BSIM4
+implementation still registers levels 14/54 and maps requested versions
+below 4.6.1 to 4.6.1 in `Model::checkAndFixVersion_`; the version dispatcher
+then selects the 4.6.1 equations. Thus the current source retains the
+4.5-to-4.6.1 substitution observed in the earlier native benchmark.
+See the [pinned upstream implementation](https://github.com/Xyce/Xyce/blob/e5b7b9bb5b221630c66654c059fc2d33524f5b21/src/DeviceModelPKG/OpenModels/N_DEV_MOSFET_B4.C#L8632).
+
+Snapshot and audit metadata are retained at
+`build/reports/xyce_source_compatibility_audit/20261106T193243Z`, with
+source SHA-256
+`bc2132e803e171ee9d11fada00342a319ad469abb74ed9885a0b744d12afcb23`.
+The official latest-release query returns `Release-7.10.0` (2025-07-21).
+This is a source-capability check, not a new simulation, speed result or
+model-equivalence proof. No simulator, PDK, tolerance or live campaign changes.
