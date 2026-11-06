@@ -9311,3 +9311,38 @@ assertion at **7097.122 ps**. The local clock is high during that first pulse
 too late. Both stopped-level cases have that extra initial pulse. No startup
 pulse is discarded or relabelled as passing. Remaining cases continue;
 full terminal/clock-window diagnosis is needed before the next counter fix.
+
+### Balanced drivers pass fresh local RC (v199)
+
+`balanced_fine_driver_rc_v199/283d6def6a1944c7` qualifies both exact v198
+GDS files, without modifying their geometry. P20/N10 has 942 raw resistors,
+416 capacitors and 910 reduced resistors; P24/N12 has 1,123, 495 and 1,085.
+Both preserve the A/Y/VGND/VPWR interface, all 31/37 native primitives,
+models, dimensions and actual junction parameters. Strict wire-collapsed
+native LVS, elementwise passivity, exact repeatable reduction and all four
+independent terminal-current witnesses pass. Maximum absolute current errors
+are 1.4211e-14 and 1.5988e-14 A, below the original tolerances. These are
+local RC receipts, not bank timing or all-PVT admission. The producer binds
+its complete imported local helper closure and numerical runtime and refuses
+existing extraction namespaces. Two CAD admission tests pass against the
+actual native inventories and reject changed models, ports or physical gates.
+Log: `build/balanced-fine-driver-rc-v199-run.log`.
+
+### Preserve safety diagnosis when the phase-event measurement fails (v200)
+
+`diagnose_shared_counter_v200.py` independently checks all six terminal
+pairs on each of the 510 MOS in a completed v194 waveform. It accepts the
+specific retained alternating-phase event-count failure, verifies the raw,
+deck and library hashes, validates complete 26 ns native data, and retains
+both rising and falling monitor events. It does not filter startup pulses
+or change any qualification gate. Exact worst-pair voltage, sample time and
+D/G/S/B voltages are retained for every device.
+
+Both first SS0/50% cases pass the native terminal screen independently:
+stop0 maximum **1.9408724303 V** (X224 S/B, 22162.076 ps), stop1 maximum
+**1.8982170193 V** (X100 D/B, 23001.574 ps), each below 1.95 V. Thus the
+extra initial low0 pulse remains a functional timing failure even where
+these two traces pass terminal safety. Other PVT/duty cases are not inferred
+from these two. Reports:
+`build/reports/shared_counter_diagnosis_v200/stop0.json` and `stop1.json`.
+Two tests cover an otherwise hidden body excursion and nonfinite data.
