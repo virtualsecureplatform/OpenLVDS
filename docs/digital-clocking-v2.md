@@ -8272,3 +8272,29 @@ without skips** in **417.453 s**
 (`build/xyce-measured-joint-zero-v157-full-tests.log`). Dense/common tables,
 complete delay range, update and periodic/PVT timing, calibrated clock islands
 and full-link qualification remain open.
+
+
+### Xyce whole-bank diagnostic complete; native sparse timing running
+
+The explicit v157 diagnostic `393ca0567c27a29f` completes one full case with
+zero errors. Its exploratory checks pass, while native-zero/backend/model
+admission remains false. Repeated rise/fall delays are 481.257640/527.015273 ps,
+maximum slew 172.724198 ps and fastest-quarter headroom 82.740824 ps.
+Relative to the admitted ngspice zero trace, repeated edges are earlier by
+5.238950/5.926088 ps and maximum slew is 1.639784 ps smaller. Xyce reports the
+BSIM4 4.5 to 4.6.1 substitution and 101 warning occurrences; full logs and both
+original/normalized binary traces are retained.
+
+Recorded solver wall times are 446.112 s for Xyce and 533.212 s for ngspice
+(ratio 1.195). This is a case-specific observation under concurrent workloads,
+with differing backend/model interpretation and no standardized performance or
+model-equivalence claim. It does not replace the passing native receipt.
+
+Actual native sparse receipt `measured_balanced_joint_sparse_v153/5ea04b57af7cb8cf`
+is prepared and running its full fine31 and first-coarse cases from the same
+qualified whole-bank RC. Their complete safety, repeatability, 250 ps slew and
+both-pulse overlap checks remain required. The v156 counter expansion has
+completed its first twelve fresh cases without errors or native failures:
+FF/0 C and FS/40 C, all three duty points and both stopped-clock levels.
+The other native/PVT conditions and complete clock-island/PHY qualification
+remain pending.
