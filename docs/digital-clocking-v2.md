@@ -10262,3 +10262,63 @@ fine programming, and bypassed isolation. Three zero-screen tests pass for
 unchanged waveform/solver/full terminal probes, compiled CAD admission code,
 and preserved complete-sample/quarter/slew/native gates. No real routed
 zero-code simulation is started before qualified joint RC exists.
+
+
+### Routed overlap and full approved clock-input matrix (v260/v261)
+
+The v260 sparse producer consumes and remeasures a complete passing v258
+zero trace before running fine31 and first-coarse on the identical qualified
+RC bank. All native terminal/control/programming-gate probes and both complete
+pulse epochs remain. The quarter-period limit belongs to the admitted zero
+code; fine/coarse points still require their full native safety, repetition
+and 250 ps slew screens. Fine31 must exceed coarse1 in both edge polarities.
+The new conservative check also requires the minimum fine31 delay across the
+two histories to exceed the maximum coarse1 delay. Positive per-epoch overlap
+alone cannot mask a crossover between histories.
+
+Only a complete passing sparse result admits v261's **27 cases**: zero,
+fine31 and coarse1 at every **390/400/410 MHz x 40/50/60% duty** combination.
+Each case uses all eight input/output cycles, 25 ns full observation, the
+original 100 ps tanh input and unchanged solver/electrical limits. The existing
+native periodic measurement checks pulse count/full swing, unwrapped epochs,
+ordering/widths, original 20 ps period/history limits, zero quarter budget,
+all 1479 MOS terminal differences, actual controls/173 programming gates,
+and the 250 ps output slew domain.
+
+The matrix comparison requires every expected spec and every complete
+8-edge history. It requires conservative fine31/coarse1 overlap and positive
+progress from zero across the frequency/duty histories, as well as every
+original per-case current-interface gate. It remains SS40 sparse clock
+transport; common dense tables, updates, all-PVT, corrected DCC output and
+PHY are explicitly unqualified. Five tests pass for complete matrix coverage,
+missing histories, lost original gates, reordered cases, cross-history/cross-
+frequency overlap failures, and the generated complete eight-cycle fixture.
+
+### Native transport automatic continuation live (v259)
+
+`run_isolated_bank_transport_followup_v259.py` is live as
+`openlvds-isolated-bank-transport-followup-v259`, recording its handoffs in
+`build/reports/isolated_bank_transport_followup_v259/initial/state.json`.
+It follows the current RC coordinator invocation
+`d320209dd1a04aaf8ee00594ae00f052` with **273 guarded inputs** (including the
+scientific source closure), and its running PID/invocation were verified at
+`waiting_for_joint_rc`. It requires the explicit passing v255 artifact, then
+runs v258 zero, v260 sparse, and v261 periodic stages serially. Any changed
+owner/input, failed stage, missing native safety/gate coverage or incomplete
+handoff stops this continuation without restarting producers. Complete errors
+and failed waveforms remain retained by each producer.
+
+The campaigns retain the existing six-engine dispatcher and priority policy:
+one zero worker, at most two sparse/periodic workers, with the stages serial.
+No routed-bank SPICE test is started before its required RC/timing gates.
+Three host tests pass for complete native coverage, every matrix gate,
+positive overlap and incomplete/wrong-context RC handoffs. Together with the
+mapper, zero and sparse/periodic tests, all **15 targeted tests** pass.
+
+`make test-full` passes **2362 tests, 32 skipped** in
+`build/isolated-bank-transport-full-tests.log`. All **32** interpreter-related
+skips are enumerated in `build/isolated-bank-cad-skip-names.json` and separately
+executed successfully with no remaining skips in
+`build/isolated-bank-all-cad-skips-tests.log`. The three newly added v259 tests
+were run separately after the broad suite's discovery. No new routed-native
+transport result is inferred from these test or coordinator receipts.

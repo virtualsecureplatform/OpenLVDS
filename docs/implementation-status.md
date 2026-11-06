@@ -65,10 +65,14 @@ corrected, all 155 fine MOS match the measurements, and correction is byte
 idempotent. This does not qualify shared-wire RC. The regular-route producer
 requires that corrected reference evidence and waits for the complete native
 pilot's zero/overlap/duty gates. The streamed native GDS and fresh shared-wire RC qualifiers are implemented.
-Two exact-owner coordinators are live to advance through routing, native GDS
-checks and RC qualification after those gates pass. Actual isolated-bank
+Exact-owner coordinators are live to advance through routing, native GDS,
+RC qualification, and the newly implemented zero/overlap/27-case clock
+transport screens after those gates pass. The observation mapper covers all
+1479 MOS, 173 programming gates and both isolated data nets. Actual isolated-bank
 shared RC remains pending; eight RC/handoff tests pass using a native-device
-fixture rather than a routed-bank qualification receipt. Both finite-input fine31 endpoint comparisons now preserve
+fixture rather than a routed-bank qualification receipt. The broad regression
+passes 2362 tests with all 32 CAD skips executed separately; 15 targeted
+observation/transport tests also pass. Actual routed transport remains pending. Both finite-input fine31 endpoint comparisons now preserve
 the original P20/N10 pass/failure results; full four-case parity is still open. Whole-bank routing, LVS and shared-wire
 RC for this architecture remain open.
 
