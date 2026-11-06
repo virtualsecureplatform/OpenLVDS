@@ -11437,9 +11437,16 @@ native cases reproduce their positive margins and complete native counts.
 The source/helper closure and native outputs are captured in the separate
 receipt; original failed and passing traces remain intact.
 
-The broad regression for the mapped controllers is running under
+The broad regression for the mapped controllers completes successfully under
 `openlvds-mapped-control-regression-v298`, invocation
 `7800ba5b893b45cd90c01b60d58961ef`, logged at
 `build/mapped-control-full-regression-v298.log`. It predates v299 discovery;
-the three v299 tests above pass separately. No full-regression completion or
-new physical/clock/PHY admission is claimed while that job is running.
+the three v299 tests above pass separately. The main run passes **2506 tests
+in 807.300 s**, with **51 tool-dependent skips**, and exits with status 0.
+All **51 skipped checks pass separately without skips in 101.469 s** at
+`build/mapped-control-v298-skips.log`. Exact names are retained in
+`build/mapped-control-v298-skip-names.json`; they comprise 48 CAD checks and
+three synthesis checks. Unit `openlvds-mapped-control-skips-v298`, invocation
+`742189477a1e45af86ee8e28189f9c82`, exits with status 0. These complete
+build/control/backend checks do not substitute for pending native bank,
+PVT, coupled clock-chain or PHY admission.

@@ -144,9 +144,9 @@ The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
-The latest broad run passes **2461 tests with 48 CAD skips**; all **48 CAD
-checks pass separately with no skips**. Four live-prefix diagnostic tests
-added after discovery also pass separately. These tests verify the build,
+The latest broad run passes **2506 tests with 51 tool-dependent skips**; all
+**51 CAD/synthesis checks pass separately with no skips**. Three fast-counter
+diagnostic tests added after discovery also pass separately. These tests verify the build,
 RTL and qualification machinery; they do not admit pending native timing.
 
 The isolated fine-stage drivers and BUF8 have canonical physical integration
@@ -173,7 +173,7 @@ transport screens after those gates pass. The observation mapper covers all
 1479 MOS, 173 programming gates and both isolated data nets. Actual isolated-bank
 shared RC remains pending; eight RC/handoff tests pass using a native-device
 fixture rather than a routed-bank qualification receipt. The broad regression
-passes 2461 tests with all 48 CAD skips executed separately; 15 targeted
+passes 2506 tests with all 51 tool-dependent skips executed separately; 15 targeted
 observation/transport tests also pass. Actual routed transport remains pending. Both finite-input fine31 endpoint comparisons now preserve
 the original P20/N10 pass/failure results; full four-case parity is still open. Whole-bank routing, LVS and shared-wire
 RC for this architecture remain open.
@@ -239,7 +239,7 @@ zero DRC, unique LVS, exact native masters and all 22 macro placements.
 Fresh RC now passes at `fast_clear_counter_rc_v268/d058dcd53f23d60f`:
 all 630 native primitives, exact parameters/topology, passive reduction and
 four independent terminal-current witnesses (maximum error 0.209 nA).
-The exact-invocation v270 coordinator is preparing the unchanged twelve-case
+The exact-invocation v270 coordinator prepared and runs the unchanged twelve-case
 native pilot. An actual RC-consumption test verifies all retained output
 hashes and maps all 644 block/load MOS terminals into that original fixture.
 Counter timing remains unqualified; the original failed traces remain.
