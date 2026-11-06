@@ -11854,3 +11854,43 @@ started as `openlvds-counter-matched-buffers-v306`, PID 2058158, invocation
 validating the captured context before acquiring its two simulation leases.
 No prototype waveform or repair verdict exists yet. Existing campaigns,
 dispatcher tickets and the six-engine budget are unchanged.
+
+### Both regular-pair fine31 duty endpoints complete
+
+V263 case 2 completes naturally at SS40, 410 MHz, coarse 0/fine 31,
+40% duty. All original 1529-MOS/173-programming-gate safety/control,
+full-swing pulse, epoch, period/history, 250 ps slew and interface checks
+pass. The completed metrics are:
+
+| Metric | 40% duty (case 2) | 60% duty (case 1) |
+| --- | ---: | ---: |
+| Maximum output slew (ps) | 87.992487 | 87.893506 |
+| Maximum period error (ps) | 1.966312 | 16.003190 |
+| Rising history span (ps) | 1.968144 | 16.054668 |
+| Falling history span (ps) | 0.477180 | 0.378276 |
+| Rising delay interval, all eight edges (ps) | 731.255083–733.223227 | 715.200416–731.255083 |
+| Falling delay interval, all eight edges (ps) | 734.967300–735.444480 | 777.297015–777.675291 |
+
+The unchanged v300 analyzer independently remeasures **all original native
+metrics** in both complete traces, then reproduces all eight input,
+selected/fine/restored/output crossings in each direction. Combined receipt:
+`regular_regenerated_stages_v300/7481cc36631a6493`; log:
+`build/regular-regenerated-duty-endpoints-v300-completed.log`.
+
+At 40%, signed rising first-minus-last contributions are −1.806027 ps at
+the mux, +0.391813 ps across isolation/fine loads, −0.403599 ps through
+the first regenerator and −0.150199 ps through the second, summing to
+−1.968012 ps. The falling sum is +0.473214 ps. These remain signed loaded
+crossing differences rather than intrinsic cell delays. The 60% trace
+retains its previously reproduced 16.054668 ps rising history change,
+chiefly 15.058012 ps across isolation/fine loads. No histories are averaged
+or startup edges discarded.
+
+This completes both duty endpoints of the current component pilot. The
+explicit zero-code quarter-period budget and coarse/fine overlap still
+require their own complete native results. The zero solver remains live;
+the coarse task has a live priority-0 dispatcher ticket. Routing and all
+broader timing/physical/PHY admission remain gated. The new matched-buffer
+counter runner has also completed initial validation and holds two live
+priority-0 queue tickets for its first paired 60% condition. No existing
+ticket, solver setting or global budget is changed by either observation.

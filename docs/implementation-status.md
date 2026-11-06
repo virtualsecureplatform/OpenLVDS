@@ -66,10 +66,12 @@ checks prioritize zero delay, both duty endpoints and coarse overlap. New
 shared wiring and timing are unqualified; existing campaigns continue.
 The prepared artifact is `regular_regenerated_bank_v263/7fa8c46ce9db679e`;
 its persistent runner is live under the unchanged dispatcher.
-Its first complete point (fine31, 60% duty, SS40/410 MHz) passes all 1529-MOS
-native, pulse, period, repetition and interface checks, with 87.894 ps maximum
-slew and 16.003 ps period error. Zero, 40% duty and coarse overlap remain
-required; no complete v263 component or physical admission follows.
+Both complete fine31 points (40% and 60% duty, SS40/410 MHz) pass all
+1529-MOS native, pulse, period, repetition and interface checks. Maximum
+slew is 87.992/87.894 ps and maximum period error is 1.966/16.003 ps
+respectively. Independent full-metric replay reproduces both traces.
+Zero and coarse overlap remain required; no complete v263 component or
+physical admission follows.
 Its physical backend is now implemented separately: 181 functional/353
 physical instances, exact native graph and 1529-MOS/43-MIM inventory,
 corrected native supply-port reference, 52-site fine-array/control-row
