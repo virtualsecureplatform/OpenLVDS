@@ -12686,3 +12686,49 @@ edge is slowed and no limit is relaxed. The existing 24-case campaign
 continues unchanged, with all partial/failed evidence retained and the
 six-lease budget unchanged. Whole-counter RC, all-PVT and PHY remain
 unqualified.
+
+### REQUEST-only first-stage taper implementation (v317)
+
+`scripts/probe_request_taper_counter_v317.py` implements the controlled
+follow-up to the completed v306 REQUEST overvoltage diagnosis. Both
+REQUEST wrappers become qualified **P10/N8 -> P20/N16** positive buffers;
+both CLK wrappers remain P20/N16 -> P20/N16. It reuses the actual
+P10/N8 component from v309's DRC/LVS/native-RC/independent-current proof,
+without changing its model, geometry or extracted network.
+
+Only the two REQUEST first-stage instances change: 72 MOS are replaced
+by 36, giving **808 total MOS**. Every other native terminal map,
+original noncore macro, final REQUEST stage, CLK stage and native MIM
+count is preserved. The expected benefit is less first-stage
+feedthrough into the final REQUEST gates, with slower internal edges;
+neither reduced peak voltage nor retained timing margin is established
+before the new native waveforms complete. The smaller setter peak also
+remains a separate measured acceptance requirement.
+
+Preparation requires the unchanged complete first v306 pair, exact
+reproduction of both full native measurements, and reproduction of all
+80 diagnosed failed terminal samples, including device/model, all four
+terminal voltages, peak, pair and time. The four new points are
+**SS0/SS40, 410 MHz, 60% duty, both stopped levels**. All retain the
+original 26 ns capture, 100 ps RCLK, 20 ps REQUEST edges, 1.8 V supply,
+Gear/tolerances, downstream loads and every native point check. No new
+voltage sweep, threshold relaxation or waveform filtering is introduced.
+
+The campaign uses one worker at priority 1 under the unchanged global
+six-lease dispatcher. Canonical identity binds both generated library
+hashes. All historical input hashes are checked before and after the
+campaign; each lease checks every captured input except historical
+diagnostic `.raw` files, which are not simulator inputs to the new DUT.
+Circuit/code/model/geometry/proof files remain guarded at every lease.
+This avoids occupying a SPICE slot to repeatedly hash historical raw
+waveforms. Existing running/failed/complete state cannot be restarted;
+all case artifacts and failure rows are retained.
+
+Eight targeted tests pass without skips in **19.525 s**. They verify
+actual qualified component bytes, 808-device topology and unchanged
+terminal maps, supply/namespace rejection, all four original fixtures
+and native probes, isolated-failure prerequisite, exact full-data cause
+replay, all-point safety/low-window gates, guard coverage and restart
+protection. Log: `build/request-taper-counter-v317-tests.log`.
+This is software validation only; no new native result, routed-counter
+RC, all-duty/frequency/PVT, DCC or PHY qualification follows.
