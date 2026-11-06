@@ -16,11 +16,12 @@ import re
 import subprocess
 import sys
 import verify_isolated_fine_routing_interface_v241 as stored
+import analyze_isolated_fine_junctions_v246 as geometry
 
 interface=stored.interface
 ROOT=interface.ROOT
 sha=interface.sha
-VERSION='isolated-fine-bank-four-point-gated-native-fixed-bus-route-v242.1'
+VERSION='isolated-fine-bank-four-point-gated-native-fixed-bus-route-v242.2'
 CONTEXT='isolated_fine_bank_route_v242'
 BODY='''make_tracks
 set_routing_layers -signal met1-met5 -clock met1-met5
@@ -106,19 +107,31 @@ def tcl(parent,out,c):
     return text
 
 
-def prepare(evidence,timing):
+def prepare(evidence,timing,junctions):
     ei=stored.bound(evidence);r=json.loads((evidence/'summary.json').read_text())
     if (json.loads((evidence/'state.json').read_text())!=dict(status='complete',passed=True,qualified_phy=False)
         or not r['stored_database_verification_passed'] or any(sha(evidence/n)!=h for n,h in r['files'].items())):
         raise ValueError('Require complete unchanged stored-database router interface verification')
     parent=ROOT/ei['parent'];ii,pi=interface.bound(parent);placed=ROOT/ii['parent'];gate=native_gate(timing)
+    gi,gpi=geometry.bound(junctions);gr=json.loads((junctions/'summary.json').read_text())
+    if (gi['parent']!=str(placed.relative_to(ROOT))
+        or json.loads((junctions/'state.json').read_text())!=dict(status='complete',analysis_completed=True,qualified_phy=False)
+        or not gr['analysis_completed'] or gr['native_census']['native_mos']!=1479 or gr['native_census']['native_mims']!=43
+        or any(gr['native_census'].get(k) is not True for k in ('native_parameters_preserved','all_native_model_dimensions_preserved','all_reference_supplied_junctions_preserved'))
+        or gr['native_census']['newly_characterized_junction_devices']!=155
+        or gr['geometry']!=gi['geometry'] or gr['component_reference_proof']!=gi['component_reference_proof']
+        or not gr['geometry']['measured_primitive_junction_geometry_bound']
+        or any(sha(junctions/n)!=h for n,h in gr['files'].items())):
+        raise ValueError('Require exact isolated bank geometry and complete native-master reference evidence')
     c=dict(ii['contract'],input_proxy=input_proxy(placed,pi),fixed_bus_terminals_retained_for_routing=True)
     if sha(ROOT/pi['pilot_library'])!=gate['bank_sha256']:
         raise ValueError('Native pilot gate uses a different isolated bank component model')
     paths=[evidence/'manifest.json',evidence/'summary.json',evidence/'state.json',*[evidence/n for n in r['files']]]
+    paths += [junctions/n for n in ('manifest.json','summary.json','state.json',*gr['files'])]
+    paths += [ROOT/n for n in gi['inputs']]
     paths += sorted({Path(m.__file__).resolve() for m in list(sys.modules.values()) if getattr(m,'__file__',None) and Path(m.__file__).resolve().parent==ROOT/'scripts'})
     identity=dict(version=VERSION,parent=str(parent.relative_to(ROOT)),evidence=str(evidence.relative_to(ROOT)),placement=str(placed.relative_to(ROOT)),
-                  timing=str(timing.relative_to(ROOT)),profile=ii['profile'],native_gate=gate['comparison'],bank_sha256=gate['bank_sha256'],contract=c,
+                  timing=str(timing.relative_to(ROOT)),geometry_evidence=str(junctions.relative_to(ROOT)),native_reference=str((junctions/'reference.spice').relative_to(ROOT)),profile=ii['profile'],native_gate=gate['comparison'],bank_sha256=gate['bank_sha256'],contract=c,
                   inputs={**gate['files'],**{str(p.relative_to(ROOT)):sha(p) for p in paths}},external_files=gate['external_files'],openroad=ii['openroad'],
                   numeric_python=dict(path=str(ROOT/'build/tools/exact-rc-venv/bin/python'),sha256=sha(ROOT/'build/tools/exact-rc-venv/bin/python')),
                   scope='Gated router coverage only; streamed native GDS DRC/LVS, joint RC, periodic/PVT and PHY remain unqualified')
@@ -136,6 +149,7 @@ def bound(out):
         or any(sha(Path(t['path']))!=t['sha256'] for t in [i['openroad'],i['numeric_python']])
         or (out/'route.tcl').read_text()!=tcl(ROOT/i['placement'],out,i['contract'])):
         raise ValueError('Gated balanced route inputs changed')
+    geometry.bound(ROOT/i['geometry_evidence'])
     ei=stored.bound(ROOT/i['evidence']);ii,pi=interface.bound(ROOT/ei['parent'])
     if i['contract']!=dict(ii['contract'],input_proxy=input_proxy(ROOT/i['placement'],pi),fixed_bus_terminals_retained_for_routing=True):raise ValueError('Native IN proxy cannot regenerate')
     return i,ii,pi
@@ -185,8 +199,8 @@ def run(out):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('action',choices=['prepare','run','campaign']);p.add_argument('artifact',type=Path);p.add_argument('--timing',type=Path);a=p.parse_args();out=a.artifact.resolve()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('action',choices=['prepare','run','campaign']);p.add_argument('artifact',type=Path);p.add_argument('--timing',type=Path);p.add_argument('--junctions',type=Path);a=p.parse_args();out=a.artifact.resolve()
     if a.action in ['prepare','campaign']:
-        if a.timing is None:p.error('--timing is required for routing admission')
-        out=prepare(out,a.timing.resolve());print(out,flush=True)
+        if a.timing is None or a.junctions is None:p.error('--timing and --junctions required for native routing admission')
+        out=prepare(out,a.timing.resolve(),a.junctions.resolve());print(out,flush=True)
     if a.action in ['run','campaign']:print(run(out),flush=True)

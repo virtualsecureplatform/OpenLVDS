@@ -9985,3 +9985,79 @@ extraction tests verify this mapping and reject a renamed pin with the same
 port count. This is standalone native reference evidence, without standalone
 well-tap, whole-bank routing/RC, timing, or PHY admission. The complete bank
 placement supplies the separate zero-DRC geometry evidence.
+
+
+### Corrected isolated-bank native reference and fine geometry (v243–v247)
+
+`isolated_fine_bank_junctions_v243/2ae01c1174cfa236` retains its ordinary
+extraction and terminal strict-inventory failure (`Ambiguous partial-junction
+native class`). The independent geometry work also exposed a reference
+interface mismatch: the P20/N16 schematic definition ordered its supply pins
+as `VGND VPWR`, while the physical graph emitted `VPWR VGND`. The earlier
+v238 generated schematic reference must be replaced for extraction/LVS.
+Its named physical graph, stored OpenDB connections and GDS placement are
+still the sources of the physical placement evidence; they were not changed
+by this reference repair.
+
+The v247 reference builder uses the independently qualified native flat
+P20/N16 and BUF8 masters plus all five v250 standard-master extractions.
+It verifies model/dimension inventories and every previously supplied junction
+parameter, takes actual junction fields from those extractions, and checks
+all definition port orders against the exact graph instance orders. A named
+header permutation preserves private node names and native component wiring.
+No junction value is inferred, no GDS mask or physical placement is edited,
+and unrelated reference definitions and all root instance calls retain their
+bytes. Tests explicitly verify correct NMOS/PFET supply/body connections
+after normalizing the driver header, reject changed dimensions or pins, and
+require the standard references rather than accepting mixed parameter classes.
+
+`isolated_fine_bank_junctions_v246/100682d1c98a6745` completes with a fresh
+ordinary extraction and the corrected `reference.spice`. All **1522 native
+primitives (1479 MOS + 43 MIM)** preserve models, dimensions and every supplied
+junction parameter. Exactly **155 original fine MOS** remain in the separate
+geometry-allocation class; all seven other native master references supply
+complete measured junctions. The 31 fine instances preserve their canonical
+native hierarchy and masks, their active regions remain separate, and their
+primitive junction geometry is bound to the retained independent measurement.
+
+As in the earlier bank, ordinary extraction does not allocate fine capacitor
+junctions per device: all 62 capacitor MOS differ from the measured primitive
+junction fields (120 zero-field mismatches, 4 nonzero-field mismatches). The
+original extraction remains intact. This diagnostic changes no junctions and
+admits no routed electrical model. Future actual shared-wire RC still requires
+selective geometry-bound fine-junction allocation plus native topology/LVS,
+parameter, passive reduction and independent current checks.
+
+The unstarted regular-route producer v242.2 now requires this exact completed
+geometry/census/reference evidence as well as the existing four-point native
+timing gate. Its manifest supplies the corrected `native_reference` path for
+the later streamed native GDS/LVS producer. Use `--junctions` to name the
+v246 receipt explicitly; using the old v238 schematic reference cannot satisfy
+this new input contract. No routing context had captured v242.1 before this
+change; all earlier captured sources and artifacts are preserved.
+
+Validation: four strict inventory tests, six component/native-bank reference
+tests, two real standard-header tests, and two CAD route tests pass. The full
+native-bank reference test checks all 1522 devices against the retained
+ordinary extraction and confirms that omitting the standard-master references
+still triggers the original strict ambiguity failure.
+
+### First finite-support replay completed; remaining parity open
+
+Native finite-input replay v225 case 0 (P20/N10, SS40, 410 MHz, fine31, 40%
+duty) now completes and passes its original timing/safety screen. Comparing
+its recorded metrics with the immutable v201 case-0 reference preserves every
+original gate result, with maximum differences **0.0018515244 ps** in edge
+delay, **0.0091231987 ps** in slew, and **0.0000762460 V** in native terminal
+peak. The other three replay/reference pairs remain required by the existing
+v226 independent four-case verifier. No full parity receipt or N16/PVT
+admission follows from this first case, and recorded individual run times
+are not a standardized speed benchmark.
+
+Read-only live-prefix snapshots in `build/reports/live-prefix-v245` retain
+accepted-window bytes and hashes with live owner PID/start-time checks. The
+old zero/coarse idle windows have exactly zero external input and only about
+1–2 nV maximum internal-node variation while their median accepted step is
+0.03125 ps. This supports further numerical investigation but identifies no
+proven physical failure or solver root cause. The finite-support case later
+advanced through its full 25 ns; all healthy simulations were retained.
