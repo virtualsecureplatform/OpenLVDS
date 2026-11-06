@@ -12205,3 +12205,29 @@ gate-role observations must be regenerated for the changed fine units.
 This is a fallback inventory, not a capacitor substitution, architecture
 selection or new timing/physical/PHY admission; the pending tapered-bank
 and baseline experiments remain intact.
+
+### Integrated regression passes after the RX bench correction
+
+The fresh run at implementation commit `0f60888` completes **2564 tests
+in 907.824 s: OK, 51 skipped**. Log:
+`build/common-table-full-regression-v312.log`. Unit
+`openlvds-common-table-regression-v312`, invocation
+`6a1f0d76b8b24551bc09c7d1985373eb`, is terminal/inactive with MainPID 0 and
+ExecMainStatus 0. Subsequent changes before this checkpoint are documentation
+only. The earlier failed v311 log remains unchanged.
+
+Fresh discovery again finds exactly 2564 tests and the same 51 statically
+skipped names. The v312 and v311 skipped-name files match byte for byte;
+this is the exact set already executed successfully without skips in the
+CAD interpreter in 52.816 s. The new audit and name list are
+`build/common-table-v312-skip-audit.log` and
+`build/common-table-v312-skip-names.json`. The tools/science integrated run
+also executes the three Yosys tests that were deferred in older runs.
+The corrected RX training bench is included in this passing full run.
+
+This closes the current software/CAD regression, including the new smaller
+restorer producers and tapered-bank continuation. It does not qualify native
+timing: the original zero-code result is still pending, its live diagnostic
+has a 57.033965 ps quarter-period deficit, and the tapered experiment has
+not yet obtained a native result. Full frequency/duty/PVT, shared-wire RC,
+complete clock/link and PHY requirements remain open.
