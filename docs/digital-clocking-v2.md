@@ -10907,3 +10907,46 @@ and 60%**. The active clock matrix already uses these values with
 Existing captured campaigns are unchanged. Complete native timing,
 routed-bank RC, periodic/PVT transport, restored clock chain and full PHY
 qualification remain pending.
+
+### Regular-pair routed electrical transport (v285–v289)
+
+The new observation mapper binds actual Magic instance aliases and extracted
+resistor connectivity to all **1529 MOS, 173 programming gates and 86 logical
+controls**. The graph requires isolation followed by both regular inverters;
+the three observed internal data nets are `selected`, `fine_node` and
+`restored_b`. The actual ordinary v276 extraction proves 353 physical
+instances and 152 canonical nets. RC-separated programming terminals retain
+their individual voltage probes. Missing aliases, inter-net resistor shorts,
+fine-load bypasses and either regenerator bypass are rejected. This ordinary
+extraction is a mapping/fixture test, not routed electrical evidence.
+
+The new zero producer consumes only complete unchanged v283 native RC and
+regenerates this mapping. It retains the two complete native pulse epochs,
+all terminal/control observations, 20 ps repeat limit, 250 ps output-slew
+limit and 410 MHz quarter-period budget. The sparse producer consumes and
+remeasures the passing zero trace before testing fine31 and first-coarse;
+positive overlap is required across both complete histories. The periodic
+producer consumes and remeasures that passing sparse result before running
+**27 conditions**: three codes × 390/400/410 MHz × 40/50/60% duty, with eight
+complete rise/fall histories per case. Original safety, pulse, period,
+history, slew, progression and conservative cross-condition overlap gates
+remain. These are SS/40 transport screens, not all-PVT or PHY qualification.
+
+The persistent unit `openlvds-regular-regenerated-transport-v289` has invocation
+`eb06a9982527465389260bb586759b3b` and follows exact v284 invocation
+`779ba62ac73644849d735e48a56fec0d`. It captures the source/prerequisite closure,
+waits for explicit completed regular-pair RC, and preserves failed or partial
+artifacts. No extra solver is started while it waits. Its stage checks also
+reject failed individual terminal/gate/control records and nonfinite overlap.
+
+All **15 targeted tests pass**, with no skips, in:
+
+- `build/regular-regenerated-observations-v285-tests.log` (4)
+- `build/regular-regenerated-joint-zero-v286-tests.log` (3)
+- `build/regular-regenerated-joint-screens-v287-v288-tests.log` (5)
+- `build/regular-regenerated-transport-v289-tests.log` (3)
+
+The v263 and v269 native pilots still have no completed cases at this
+handoff. Six existing native engines remain live; their slots, solver
+configuration and campaigns are unchanged. Actual revised-bank route,
+native GDS, shared RC and electrical transport results remain pending.

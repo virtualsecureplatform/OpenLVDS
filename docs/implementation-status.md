@@ -92,6 +92,12 @@ device fixture and artificial passive network; they do not qualify a routed
 bank. The v284 continuation is live, waiting for the exact v263 invocation
 before routing, native DRC/LVS/mask checks and fresh RC qualification. It
 preserves the complete four-point timing gate and captured source closure.
+The revised native observation and electrical transport scripts (v285–v289)
+are implemented and pass 15 targeted tests. All 1529 MOS, 173 programming
+gates, 86 logical controls and actual selected/fine/restored-node terminals
+are covered. A separate continuation waits for v284 before testing the actual
+routed bank at zero code, fine/coarse overlap and all 27 sparse-code clock
+conditions. No revised routed-bank electrical result exists yet.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
