@@ -12456,3 +12456,31 @@ connection in the new top. Log:
 `build/preconditioned-fine-bank-v315-prepared-tests.log`. No native case has
 completed at this checkpoint; software preparation does not establish the
 new architecture's latency, slew, overlap or physical admission.
+
+### Integrated v315 software regression passes
+
+The integrated run at implementation commit `3794b0a` completes **2578
+tests in 972.371 s: OK, 51 skipped**, including the eight thread-experiment
+tests and six preconditioned-bank tests. Unit
+`openlvds-common-table-regression-v315`, invocation
+`2cc2421145f64222a93d59caeb64fbdf`, is terminal/inactive with MainPID 0
+and ExecMainStatus 0. Log: `build/common-table-full-regression-v315.log`.
+No implementation changes occur during this run.
+
+Fresh discovery confirms exactly 2578 tests and 51 statically skipped
+names (`build/common-table-v315-skip-audit.log`). Its name list matches the
+v311 list byte for byte: the exact 51 CAD checks already passed without
+skips in 52.816 s. Their sources and component geometry are unchanged.
+The integrated tools/science run also executes the three Yosys checks.
+This software/CAD result does not qualify v315 shared wiring or native
+timing; no new native architecture or thread-runtime point is complete.
+
+The v225 input-precision replay has meanwhile completed all four cases
+without solver errors, preserving its original zero-quarter failure
+(−265.838280 ps). The existing independent v226 verifier is started as
+`openlvds-finite-support-parity-v226-completed`, invocation
+`64412f58e61f4cca9f34a7a36642c2b4`, and is confirmed live remeasuring all
+four original/candidate pairs. Its log is
+`build/finite-support-full-parity-v226-completed.log`. Full four-case
+parity remains pending at this checkpoint; the original producer's false
+parity/admission fields are not rewritten.
