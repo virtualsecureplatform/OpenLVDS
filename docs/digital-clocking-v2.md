@@ -8427,3 +8427,26 @@ Formal corrected artifact: `unguarded_output_cell_v162/54829739e9b70627`;
 service `openlvds-unguarded-output-cell-v162.service`, log
 `build/unguarded-output-cell-v162-run.log`. Qualification is running; no
 component or bank physical/timing admission is claimed before completion.
+
+`counter_output_guards_v161.py` and `probe_counter_output_guards_v161.py` add an
+independent targeted counter repair. They consume and remeasure only completed
+v156 cases 24/25; mutable global campaign state and unfinished cases are not
+captured. All original timing checks must pass and terminal stress must fail
+in both source cases. The candidate clones only the low0 setter definition,
+resizes its two output-to-ground guards from 1x1 to 1.25x1.25 or 1.5x1.5 um,
+and leaves private stack guards and all MOS/passive cards intact. Resistor
+connectivity identifies output guards, and regenerated MOS observations must
+match every original terminal and limit. Only `Xlow0_set_pair` is retargeted.
+
+The four SS/40 C, 50% duty cases retain the complete 26 ns, 1 ps-step native
+fixture, both stopped-clock levels, two native BUF8 clock drivers, all original
+timing and 1.95 V stress limits. Two workers use existing dispatcher slots;
+original v156 continues. These are sizing hypotheses on old component wiring,
+with candidate-layout/full-PVT/clock-assembly/PHY admission false. Two tests
+verify continuation-card handling, output-only sizing, retained private guards,
+unchanged low1 setter, and rejection of wrong geometry/connectivity/selection.
+
+Formal counter hypothesis artifact: `counter_output_guards_v161/2bb90e3aa35bb7c9`;
+service `openlvds-counter-output-guards-v161.service`, log
+`build/counter-output-guards-v161-run.log`. Both priority-0 workers run within
+the unchanged six-engine global budget. No baseline process was restarted.
