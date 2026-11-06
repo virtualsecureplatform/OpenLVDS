@@ -30,14 +30,14 @@ passes DRC/LVS, exact 32-MOS parameters and fresh RC at
 `unguarded_bank_gds_v164/53b0a015a681410b`. Fresh whole-bank RC passes at
 `unguarded_bank_joint_rc_v171/82a3dfbf3d1494ac`, followed by a passing actual
 native zero at 486.850/522.734 ps rise/fall delay, 153.913 ps maximum slew and
-87.021 ps fastest-quarter headroom. Fine31/first-coarse and six sampled boundary points pass. The running periodic
-screen exposes a fine31 history-dependent timing failure despite acceptable
+87.021 ps fastest-quarter headroom. Fine31/first-coarse and six sampled boundary points pass. The completed 27-case periodic
+screen passes only 10 cases and exposes a fine31 history-dependent timing failure despite acceptable
 output swing, voltage and slew. Actual internal-node observations show the
 loaded mux node failing to restore its rail between edges. The first native INV1 isolation cases restore mux swing but lose output
 pulses. A stronger native INV8/NAND2_8 pilot is running; complete INV8 endpoint
 traces still fail slew or period/history limits. Two new balanced regular-P/N
 drivers now pass physical closure and fresh local RC. Their measured-bank
-pilot is preparing under the same dispatcher; bank timing and full
+pilot now has two native fine31 endpoint simulations running under the same dispatcher; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
 
@@ -64,7 +64,12 @@ shared-wire transient replay observes all 510 MOS. Its first two SS0/50%
 cases complete but fail the original phase-event count: low0 emits an extra
 startup pulse. Independent complete terminal screens pass on these two
 traces (1.940872/1.898217 V peaks); this does not waive the timing failure.
-The remaining cases continue and whole-clock validation remains open. No repaired whole clock
+All six completed SS0 cases fail function; at 40% duty PREPARE and
+RESET_N never assert. Their independent terminal screens still pass. A
+compact same-logic 21-macro route now passes zero DRC, unique LVS and exact
+native masters/placements; fresh RC qualification and the original native
+timing replay are linked by an active source-bound continuation. The
+remaining cases continue and whole-clock validation remains open. No repaired whole clock
 assembly or PHY is qualified.
 
 Earlier clocking experiments remain useful diagnostic evidence:

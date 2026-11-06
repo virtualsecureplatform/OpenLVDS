@@ -9452,3 +9452,46 @@ are prepared for the corrected v210 source, gated by its actual zero DRC,
 unique LVS, exact native masters/placements and fresh distributed RC proofs.
 The v209 coordinator binds the explicit producer invocation and code/input
 hashes, and never restarts a producer or relaxes a failed physical/timing gate.
+
+### Compact route closes physical checks; exact replay continuation is live
+
+V210 `compact_repaired_counter_physical_v210/d1431ce996569c33` now passes
+**zero DRC and unique LVS**. Its strict witness verifies all 19 native
+masters, 13 identical duplicate masters and every one of the 21 macro
+placements. GDS SHA-256 is
+`51defaab762503c1ee707c0de68ac818267d08aa8f7cb5b5507053d069bcc9fa`.
+The complete native cells, guards and logic are unchanged; only declared
+placement and routing change. Final planned CLK/request_i unioned spine
+lengths are 224.44/355.76 um, compared with 348.28/784.04 um originally.
+Timing and extracted loading improvement still require measurement.
+
+`openlvds-compact-counter-followup-v209.service` captures the exact live
+v210 invocation and manifest before completion. It admits this passing
+physical result and is preparing fresh v203 distributed RC. Only a complete
+494-primitive native topology/parameter, passive-reduction and independent
+terminal-current proof enables v204's original 12 SS0/40 x 40/50/60% x
+stopped-level cases. Every one of the 510 counter/load MOS is observed;
+original event counts, phase windows, asynchronous clear, stopped-clock
+behavior and terminal limits remain unchanged. Failed or partial work is
+retained and no producer is restarted. State and stage logs are under
+`build/reports/compact_counter_followup_v209/initial/`.
+
+The full regression run passes **2,256 tests, 13 skipped** in 475.640 s
+(`build/compact-counter-full-tests.log`). Those 13 are independently
+enumerated CAD-only tests and all **13 pass in the CAD environment**
+(`build/compact-counter-cad-skips-tests.log`), including actual GDS mask,
+text and placement refusal tests. Later route/continuation additions are
+covered separately by 13 targeted tests plus the physical-handoff test;
+these do not stand in for native timing qualification.
+
+`passive_net_capacitance_v211.py` adds a read-only loading diagnostic for
+comparing original and compact RC. It unions resistor-connected nodes,
+removes self-capacitance after wire shorting, preserves coupling between
+different nets, refuses nonpassive/hierarchical views and does not replace
+native MOS/MIM capacitances with estimates. Two tests verify explicit
+coupling/alias/self-cap cases and refusal gates. The original whole-counter
+parasitic incidence is **281.59299 fF on CLK**, **329.15744 fF on request_i**
+and **85.43191 fF on low0**, excluding native transistor/MIM capacitance.
+These are diagnostic DC wire-group incidences, not effective transient
+loads or delay fits. Original report:
+`build/reports/counter_passive_loading_v211/original.json`.
