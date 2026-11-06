@@ -8484,3 +8484,39 @@ The two new counter-guard tests also pass separately. Logs are
 `build/unguarded-output-cell-v160-full-tests.log`,
 `build/unguarded-output-cell-v160-cad-tests.log`, and
 `build/unguarded-output-cell-v162-tests.log`. No PHY qualification follows.
+
+
+### Counter PVT exposes colder low0 storage/setter stress
+
+With 60 fresh v156 cases complete and no numerical errors, six cases fail
+terminal stress: SS at 0/25/40 C, 50% duty, both stopped-clock levels. Other
+reported timing/arming/order/stopped-clock checks pass in those six cases.
+The worst terminal differences are 1.959043983 V at 0 C, 1.953738485 V at 25 C
+and 1.950384417 V at 40 C, against 1.95 V. At 0/25 C, failures include devices
+in `Xlow0_q` as well as `Xlow0_set_pair`; the setter-only hypothesis must
+therefore be evaluated for effects on the adjacent storage NAND too. No
+unchanged cause is assumed from hot-corner diagnosis alone.
+
+`probe_counter_output_guards_cold_v163.py` extends the identical v161 sizing
+hypotheses to SS/0 C and SS/25 C, both stopped levels: eight cases with the
+same complete fixtures, devices and limits. It binds and remeasures completed
+source cases 52/53/58/59 only, leaving the live v156 global state uncaptured.
+This extension keeps the existing worker/dispatcher policy and does not
+qualify either candidate. The SS40 v161 pilot and baseline sweep continue.
+
+
+The first two v161 repair cases (1.25x1.25 um output guards, SS/40 C, both
+stopped levels) now pass all original native timing and terminal checks. Peak
+terminal difference is 1.947676422 V, leaving only 2.324 mV margin; prepare
+and release occur at 8046.599/10287.318 ps, with 174.148 mV clock-low margin.
+The 1.5 um cases remain running. This preliminary hot-corner pass does not
+establish colder-corner or physical margin; it strengthens the need for the
+v163 extension rather than admitting a repaired counter.
+
+
+Formal cold-corner artifact: `counter_output_guards_cold_v163/81f58078a71a0477`.
+Preparation remeasured all four source traces, verified native observation
+identity for both candidate libraries and generated all eight complete decks.
+Service `openlvds-counter-output-guards-cold-v163.service` is launched; log
+`build/counter-output-guards-cold-v163-run.log`. It shares the unchanged global
+six-engine limit with the baseline/hot pilot; queued work does not add engines.

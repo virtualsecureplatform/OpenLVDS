@@ -35,6 +35,12 @@ its downstream gate remain closed until actual routed sparse timing passes.
 See [digital clocking v2](digital-clocking-v2.md) for the implementation contract
 and exact receipts.
 
+The independent counter PVT sweep has 60 fresh cases complete with no numerical
+errors; six terminal-stress failures occur at SS, 50% duty, both stopped levels
+at 0/25/40 C. A local 1.25 um output-guard prototype passes both SS/40 C cases,
+with only 2.324 mV terminal margin. Larger-guard and colder-corner hypotheses
+are running/queued; no repaired counter or full clock assembly is qualified.
+
 Earlier clocking experiments remain useful diagnostic evidence:
 
 An earlier regenerated delay bank passes the actual routed SS/40 C zero-code screen
