@@ -8808,7 +8808,7 @@ non-storage device/terminal/limit witnesses must remain identical, and all
 sixteen new storage MOS are required. The six SS0/25/40, 50%-duty, both-stopped-
 level cases retain the complete 26 ns / 1 ps fixture, two native BUF8 clock
 drivers and every original timing/stress limit. Six completed 3 um source
-traces are remeasured before preparation. Two tests cover output-only model
+traces are remeasured before preparation. Two tests cover storage-only model
 retargeting, wrong interface/selection refusal and the complete new-body-probe
 fixture without stimulus changes.
 
@@ -8827,3 +8827,38 @@ tests skipped in scientific Python. All six pass in their separate CAD runs;
 the two new storage CAD tests and two integration tests pass. Seven inherited
 periodic/boundary recipe tests pass against v174/v175 as well. Broad log:
 `build/bodytap-and-native-followups-v179-full-tests.log`. No PHY admission follows.
+
+
+### Physical 3 um setter and repaired counter PVT screen (2026-11-06)
+
+The storage-only v179 pilot completes all six cases without errors or failed
+point checks. SS0/25/40 peaks are 1.925630488/1.923070932/1.921363179 V.
+The setter in that experiment still used the earlier wire-RC hypothesis.
+
+The actual single setter `nand2b_stack_guard_physical_v2/1a22d215fc84aa8e`
+(v180 source/version, legacy artifact-directory name) and actual paired setter
+`counter_setter_guard3_pair_v181/8b0f86cdb8007fbb` both pass zero DRC and unique
+LVS. Native NAND2B/body-contact masks and placements are retained. Only the
+output MIM guards grow from 1 x 1 to 3 x 3 um; private 2 x 2 um guards remain.
+`counter_setter_guard3_rc_v182/bcefff3df8cf95ed` passes strict native topology,
+all MOS parameters/junctions, the explicit two-MIM dimension change, passivity,
+exact reduction and independent current witnesses. Fresh extraction
+`b668fe9e0237d48b` contains 988 raw resistors, 292 capacitors and 789 reduced
+resistors. The actual pair contains 18 NFET, 18 HVT PFET and four native MIM.
+Two CAD tests pass (`build/counter-setter-guard3-v182-tests.log`).
+
+`counter_native_repairs_v183/15c6a8caf6163935` replaces only `Xlow0_set_pair`
+with that fresh actual pair RC, retaining the physically qualified v178
+storage repair. All six SS0/25/40, 50%-duty, both-stopped-level cases complete
+without errors and pass every original counter point check. Minimum clock-low
+margin is 0.165589768 V. All non-setter native probes are identical; 36 actual
+setter MOS are observed. Both repaired components now have physical RC evidence.
+Shared inter-component wiring and whole-clock/PHY admission remain unqualified.
+
+`counter_native_repairs_pvt_v184/13a2cc6367501124` consumes those six complete
+traces and runs the other 84 cases: all five corners, 0/25/40 C, 40/50/60% duty
+and both stopped levels at 410 MHz, fixed supplies, original 26 ns / 1 ps
+stimuli and terminal/timing limits. The v185 follower admits this matrix only
+after the exact pilot and actual setter receipt pass. The campaign is running,
+with two workers under the unchanged global six-engine dispatcher. Two v183,
+two v184 and one v185 tests pass; they do not establish a PVT or PHY pass.
