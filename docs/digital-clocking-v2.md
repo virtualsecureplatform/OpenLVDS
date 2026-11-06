@@ -12021,3 +12021,58 @@ times cannot establish a net improvement. The first-coarse overlap result
 also remains necessary before changing fine capacitance or choosing the
 next bank architecture. No physical or electrical admission follows from
 this incomplete capture, and no running campaign is modified.
+
+### Smaller first-restorer native cells prepared (v307–v309)
+
+The measured zero-code latency motivates a tapered-restoration experiment.
+New independent producers prepare two smaller first-stage inverters,
+P6/N4 and P10/N8, for comparison with the existing P20/N16 first inverter.
+The final output inverter can remain P20/N16. No bank substitution or timing
+simulation has been performed yet: reducing gate count does not prove a
+reduction in loaded bank delay, adequate intermediate slew, or retained
+fine/coarse overlap.
+
+`inspect_tapered_driver_pcells_v307.py` inspects actual N4/N8/P6/P10
+connected-gate primitives, retaining 0.65/1.0 um N/P finger widths and
+0.15 um length. Context `tapered_driver_pcells_v307/19acaf255c70656b`
+completes with zero DRC errors and matching extracted dimensions, finger
+counts, common gates and named bodies for all four primitives.
+
+`build_tapered_fine_driver_v308.py` reuses the established physical routing
+method in a new source version. Context
+`tapered_fine_driver_physical_v308/e54a2292b8e29d55` completes with **zero
+DRC errors and passing LVS for both cells**. Every native source, drain,
+gate and bulk receives the existing explicit strapping; each cell retains
+the 2 um × 2 um output MIM guard. The cells have A/Y/VGND/VPWR ports and
+respectively 10/18 MOS plus one MIM. Actual extracted topology and dimensions
+match their schematics.
+
+`qualify_tapered_fine_driver_rc_v309.py` completes context
+`tapered_fine_driver_rc_v309/4cf2d31774fd60cd` using fresh native GDS RC:
+
+| Cell | Raw R/C | Reduced R | Eliminated algebraic nodes | Maximum terminal-current error (A) |
+| --- | ---: | ---: | ---: | ---: |
+| P6/N4 | 382 / 101 | 351 | 74 | 1.598721e−14 |
+| P10/N8 | 600 / 163 | 553 | 111 | 1.443290e−14 |
+
+Both retain native topology/parameters and invariant capacitors, pass
+elementwise passivity, regenerate the exact reduction, and pass the
+independent Schur terminal-current witnesses. Raw and reduced extraction
+artifacts remain under `build/extracted/7afb1c6afed483f9` and
+`build/extracted/b50bd573ec8deb49`. This qualifies local component RC only;
+native transient comparison and bank/clock/PVT/PHY qualification remain.
+
+Logs are `build/tapered-driver-primitives-v307.log`,
+`build/tapered-driver-physical-v308.log` and
+`build/tapered-driver-rc-v309.log`. Run these producers with
+`./scripts/env.sh --tools --ngspice python3`; the RC proof invokes the pinned
+science interpreter internally. An initial invocation with the science
+interpreter directly lacked KLayout and exited before creating a campaign;
+its import-failure log remains at
+`build/tapered-driver-rc-v309-science-environment-attempt.log`.
+
+All **three targeted tests pass with no skips** in the CAD environment,
+including actual native layout inventory, every transistor's gate/bulk and
+dimensions, public port order, and rejection of failed/partial/mismatched
+physical evidence (`build/tapered-driver-v308-native-tests.log`). The existing
+six-engine dispatcher, running campaigns and frozen sources are unchanged.
