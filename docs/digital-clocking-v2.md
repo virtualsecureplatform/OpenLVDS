@@ -9727,3 +9727,45 @@ fresh body-contact, whole-block RC and phase/safety qualification required.
 The measured low2 set-to-Q delay is over 830 ps, compared with about 511 ps
 for low0; the direct first-feedback change alone does not close this gap.
 No such new storage variant or counter architecture is admitted here.
+
+### Guarded stronger storage with actual body contacts (v229)
+
+`strong_counter_storage_bodytap_v229/cf710f8369c0d418` qualifies a stronger
+storage building block using the existing guarded native NAND2_8. It adds
+**18 mirrored native body taps** and explicit supply wiring, retaining the
+original 4 x 4 um MID and 3 x 3 um output MIMs. The NAND8's 3.0 um VPWR
+access is used; the earlier NAND4 row's 3.6 um access is not reused blindly.
+All 16 NFET, 16 HVT PFET and two MIM dimensions/junctions remain unchanged.
+Independent row-only CIF comparison proves that the added body-contact
+masks/wiring are the only geometry change, with all original child masks
+and placements preserved.
+
+Zero DRC, unique LVS, exact native parameters and fresh local RC all pass.
+Extraction has 725 raw R/179 C and 585 reduced R; all four terminal-current
+witnesses pass with maximum absolute error 1.6259e-12 A under the original
+tolerances. No junction dimensions are inferred. Two CAD tests pass,
+including refusal of an altered original transistor mask despite an
+otherwise correct contact row. Log:
+`build/strong-counter-storage-v229-run.log`.
+
+This component enables storage upsizing while retaining physical guards and
+body access. It is not a passing counter timing or all-PVT voltage receipt.
+The motivating cold trace is the retained functional v215 failure; that
+trace passed voltage safety, and is not relabelled as a body failure.
+
+### Stronger N driver closes both measured duty endpoints
+
+Both complete P20/N16 fine31 v220 traces at SS40/410 MHz now pass the
+original clock-interface gate. At 40%: period error **2.079236 ps**, rise/
+fall history spans **2.080810/0.428052 ps**, maximum slew **232.789690 ps**.
+At 60%: period error **12.755231 ps**, spans **12.780391/0.215100 ps**, maximum
+slew **232.760295 ps**. Both pass all native terminal and control checks.
+The short-low-phase fine-node residual falls from 0.169153 V for P20/N10
+to **0.025445 V** for P20/N16; its final high reaches 1.797287 V.
+
+This is the first passing pair for the isolated balanced endpoint design.
+It does not establish zero-code quarter-cycle headroom, first-coarse overlap,
+all 27 frequency/duty/code combinations, dense/common legal tables, actual
+whole-bank wiring, all-PVT or PHY admission. The original pilot and its
+source-bound full-matrix continuation remain active; no missing cases are
+counted as passing.
