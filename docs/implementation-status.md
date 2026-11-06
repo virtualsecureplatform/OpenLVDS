@@ -110,6 +110,13 @@ the 27 passing SS/40 cases and prepares only the remaining 378. Nine matrix
 and continuation tests pass. Its v292 continuation waits on the exact v289
 job; no PVT campaign or electrical result exists yet. Dense/common legal
 tables, update behavior, DCC and full-clock qualification remain pending.
+The first revised dense curve producer (v294) is also implemented: all 32
+fine settings at coarse 0/1, SS40, 410 MHz/50% duty, preserving eight cycles
+and all native observations. It reuses three matched periodic cases and
+prepares 61 new cases only after the complete v288 clock screen passes.
+All 11 dense producer/handoff tests pass; v295 is live waiting for v289.
+Raw fine-step reversals or excessive gaps remain explicit characterization
+results. No dense result, common legal table or full-range admission exists.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT

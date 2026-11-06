@@ -11052,7 +11052,7 @@ safety or transport results; the healthy original solvers continue to their
 full stops and the existing guarded completion readers remain authoritative.
 The stronger discharge improves observed worst falling delay by about
 60.209 ps, which is insufficient to recover the quarter budget. The pending
-v263 regular-inverter pair replaces the BUF8 in both of these configurations;
+v263 P20/N16 candidate replaces the BUF8 stage shared by these architectures;
 the prefix data do not predict that replacement's timing or admit its route.
 
 All **four tests pass** at `build/live-clock-prefix-v293-tests.log`, including
@@ -11079,3 +11079,50 @@ architecture regressions. No native SPICE campaign, model, solver tolerance,
 dispatcher slot or electrical admission gate changes. Full routed-bank
 timing, common legal tables, calibrated clock-chain and PHY qualification
 remain open.
+
+### Revised routed-bank first dense fine curve (v294–v295)
+
+`probe_regular_regenerated_dense_v294.py` implements the next dense
+characterization step: **64 codes**, all fine settings 0–31 at coarse 0/1,
+SS40, 410 MHz, 50% duty. It consumes the complete passing v288 27-condition
+native clock screen, hashes and independently remeasures every consumed
+trace, and reuses only the **three exactly matching periodic cases**. Thus
+only **61 new cases** are prepared. The original routed netlist, 25 ns/eight
+cycle tanh fixture, model/solver settings, supplies, loads and every native
+terminal/gate/control observation remain. All original per-point safety,
+pulse, epoch, period, repetition, quarter-budget and slew gates apply.
+
+For each code and edge, all eight observed delays form a conservative
+minimum/maximum interval. The analysis reports **124 adjacent fine/edge
+boundaries**, including the 15→16 carry. Strict monotonicity uses the next
+minimum minus the previous maximum; the worst gap uses the next maximum
+minus the previous minimum and must not exceed 20 ps. The 10 ps target is
+reported separately. Coarse overlap also uses complete interval bounds.
+Average-positive steps cannot hide reversals or overlapping histories.
+
+A complete curve and raw-code monotonicity are separate results. A reversal
+or excessive raw gap is retained as characterization, without admitting a
+legal table. Filtering a common sequence still requires the complete dense
+data across all 15 PVT, full coarse range and independent legal-gap/coverage
+proofs. This two-coarse SS40 experiment cannot establish TX/RX full range,
+all-PVT tables, updates, a calibrated clock chain or the PHY.
+
+The coordinator `run_regular_regenerated_dense_v295.py` waits for exact
+v289 invocation `eb06a9982527465389260bb586759b3b`. Its unit
+`openlvds-regular-regenerated-dense-v295` has invocation
+`acae5be252f54d818650a19df4b0cfa8`. It captures the source/prerequisite
+closure and advances only after that native transport job completes and
+passes. The new campaign remains limited to two workers at priority 2 under
+the unchanged global six-engine dispatcher. Final handoff independently
+recomputes all code intervals, adjacent gaps and overlap; false broader
+qualification claims are rejected. Failed/partial evidence is retained.
+
+All **11 tests pass with no skips** at
+`build/regular-regenerated-dense-v294-v295-tests.log`. Coverage includes
+64-code completeness and three-case reuse, original fixtures for every
+code, cross-history reversals at 15→16, maximum-gap failures, native safety
+and history failures, wrong/missing/duplicate conditions, independent metric
+recomputation, and retention of a characterized reversal without legal-table
+admission. Synthetic records exercise algorithms only. No v294 production
+manifest or native dense waveform exists yet; the v263 pilot and physical/
+transport prerequisites remain pending.
