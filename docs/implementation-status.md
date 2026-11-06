@@ -57,7 +57,8 @@ strict native-master witness initially finds directory-qualified GDS names.
 A separate name-only repair now passes exact mask/label/placement and native
 master checks. Fresh shared-wire RC now passes exact native parameters,
 passivity, topology, reduction and independent current witnesses. Actual
-shared-wire transient timing and whole-clock validation remain open. No repaired whole clock
+shared-wire transient replay is preparing with all 510 MOS observed;
+whole-clock validation remains open. No repaired whole clock
 assembly or PHY is qualified.
 
 Earlier clocking experiments remain useful diagnostic evidence:

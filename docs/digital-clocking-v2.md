@@ -9198,3 +9198,41 @@ zero/first-coarse runs continue unchanged. A balanced native pull-up/pull-down
 fine driver is the next architecture candidate if the completed remaining
 cases do not close both endpoints; selecting it still requires all original
 static, periodic, overlap, physical/RC, dense/common all-PVT and PHY gates.
+
+
+### Actual shared-wire counter transient replay (v194)
+
+Direct inspection of the qualified v193 raw and reduced netlists shows that
+all five routed internal monitor nodes (`low0`, `high1`, `low1`, `armed`,
+`request_i`) already survive reduction. No observation-port copy or new
+reduction is needed. `probe_repaired_counter_shared_rc_v194.py` uses the
+**exact qualified reduced netlist bytes**, with the same seven-port header
+and every R/C/native statement unchanged.
+
+The original test harness's counter and two clock-buffer calls are replaced
+by this actual 21-macro block at `XR`. The three original native downstream
+loads and 20 fF mask load are byte-equivalent, with all 64 load-device terminal
+observations unchanged. The complete block contributes 446 MOS, so **all 510
+real MOS** remain observed. Original monitor paths `XD:XR:<node>` now directly
+name real nodes of the actual RC block. Missing monitors are refused; no
+artificial observation source, added load or ideal internal short is used.
+
+The 12-case pilot covers SS at **0/40 C x 40/50/60% duty x both stopped-clock
+levels**, at 410 MHz, retaining the full original 26 ns/1 ps fixture and fixed
+supplies. Nominal-duty cold cases run first. All original terminal stress,
+REQUEST/reset/reassertion, alternating phase order, stopped-clock arming and
+low-clock voltage-margin requirements remain. Aggregate admission requires
+finite nonnegative low-clock margin as well as every original counter point
+gate. Other PVT, 25 C, complete frequency transport, actual joint DCC events,
+management-clock warmup and PHY remain unqualified.
+
+The actual 510-MOS assembly preflight and both new tests pass. Tests verify
+complete endpoint coverage, all terminal probes and original loads, exact RC
+body retention, missing-monitor refusal, wrong load refusal, finite voltage
+margins and absence of wider admission. Logs:
+`build/repaired-counter-shared-rc-v194-preflight.log`,
+`build/repaired-counter-shared-rc-v194-tests.log`.
+Live job `openlvds-counter-shared-rc-v194` is preparing the new actual-RC
+campaign, then queues at most two native workers under the unchanged global
+six-engine budget. Run log: `build/repaired-counter-shared-rc-v194-run.log`.
+No earlier healthy simulation is stopped or restarted.
