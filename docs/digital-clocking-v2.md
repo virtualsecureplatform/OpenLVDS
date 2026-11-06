@@ -10147,3 +10147,50 @@ case 0 preserves its original 40% pass and case 1 preserves its original 60%
 failure. The zero/coarse pairs and independent full four-case v226 verifier
 remain outstanding. This does not change the separate N16 driver results or
 admit a new bank/PVT/timing implementation.
+
+
+### Fresh isolated-bank joint RC qualifier implemented (v255)
+
+`qualify_isolated_bank_joint_rc_v255.py` is implemented for a completed
+passing v253 routed native GDS artifact. It requires zero native DRC, strict
+LVS, exact 1479-MOS/43-MIM parameters, final mask/hierarchy proofs, and the
+matching v246 geometry/corrected-reference lineage. Both final routed GDS
+mask and native placement/hierarchy witnesses are regenerated before a fresh
+extraction. Existing or partial extraction namespaces are retained and never
+silently rerun.
+
+The extraction public-port dictionary follows the **graph order**, using the
+exact declared physical anchors, so unrelated dictionary insertion order
+cannot reintroduce the earlier header-order error. Fresh extractor success,
+source manifest, native reference, GDS, fingerprint, public-port order and
+original raw/reduced hashes must all match. The original extraction is
+preserved and its original reduction is regenerated exactly.
+
+The actual raw RC and actual routed ordinary native reference are separately
+passed through the v251 selective fine-capacitor correction. Every other
+native card and passive record is retained at that stage. The qualifier then
+requires full native parameters with **zero inferred junctions**, all 155
+fine MOS matching geometry, strict native topology LVS after wire collapse,
+positive/passive original and corrected raw/reduced networks, exact corrected
+reduction regeneration, byte-idempotent correction and four independent
+clamped-terminal current witnesses in the pinned math runtime. The existing
+0.01 fF extraction threshold remains explicit. None of this grants native
+transient, periodic/PVT, full-clock or PHY admission.
+
+The unchanged math parser does not accept inline comments on resistor cards.
+The new qualifier stores separate analysis-only views that remove legal `$`
+inline comments and verifies that all circuit tokens are identical. The
+certified raw/reduced netlists and original extraction retain their own
+bytes. Witness inputs and certified netlists have separate recorded hashes;
+static capacitor/device/port records and numerical current tolerances remain
+unchanged. Math failures retain their stdout/stderr for diagnosis.
+
+Five CAD tests pass. They reject stale source/reference binding, changed
+public-port order, incorrect native census or missing physical proofs,
+negative passives, a short between distinct formal ports, and absent RC.
+A fixture using the real 1522-device native extraction plus a small synthetic
+single-net R/C network exercises fine correction, strict LVS, nontrivial
+resistor elimination, exact regeneration and independent current witnesses.
+Its resistor comment remains in the certified fixture and is removed only
+in the analysis view. This fixture supplies no routed-bank qualification
+receipt; actual v255 extraction remains gated on the pending native route.
