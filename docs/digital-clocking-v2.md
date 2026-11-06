@@ -11401,3 +11401,45 @@ Both first v263 cases have acquired slots; zero remains live and the completed
 fine31 worker's next task returns to the same queue. All four regular-pair
 physical/transport/PVT/dense continuations are live with unchanged captured
 inputs. The global six-engine budget and original models/settings remain.
+
+### Independent fast-clear stopped-high repair receipt (v299)
+
+V269 case 1 completes naturally at SS0, 410 MHz, 50% duty, stopped high.
+All original counter/clear/reassert/phase-order and **644-MOS** safety checks
+pass, with the unchanged 52.104523 mV minimum clock-low voltage margin.
+Both stopped levels now pass at this condition. The remaining ten pilot
+conditions and complete 270-condition clock/PVT matrix remain outstanding.
+
+`diagnose_fast_clear_counter_v299.py` uses the original unmodified v266
+strict clear-window function, validates the exact v269 parent/decks/libraries,
+independently remeasures all original native metrics and complete 26 ns
+waveforms, and observes the actual distributed phase-input terminals. It
+produces `fast_clear_counter_clear_diagnosis_v299/9be3b323704290c8`, logged
+at `build/fast-counter-clear-v299-completed.log`. Every original metric
+reproduces for both completed cases, with no timing relaxation or waveform
+filtering. Clear margins to the original 23 ns external REQUEST reassertion are:
+
+| Stopped level | PREPARE margin (ps) | RESET_N margin (ps) | Maximum native terminal difference (V) |
+| --- | ---: | ---: | ---: |
+| Low | 661.807191 | 703.692817 | 1.937794 |
+| High | 159.827373 | 194.833063 | 1.904940 |
+
+For stopped high, PREPARE falls at **22.840172627 ns**, improving the old
+NAND4-setter margin from −38.597491 ps to +159.827373 ps, a **198.424864 ps**
+improvement. RESET_N falls at 22.805166937 ns. Final clear voltages remain
+below 4.5 mV after 24 ns, so both the timing and final-state conditions pass.
+This validates the setter repair at this one native condition; it does not
+qualify every duty/PVT, complete DCC, clock-chain warmup or the PHY.
+
+All **three tests pass** at `build/fast-counter-clear-v299-completed-tests.log`:
+the strict late/equal-boundary/missing-edge failures remain, and both retained
+native cases reproduce their positive margins and complete native counts.
+The source/helper closure and native outputs are captured in the separate
+receipt; original failed and passing traces remain intact.
+
+The broad regression for the mapped controllers is running under
+`openlvds-mapped-control-regression-v298`, invocation
+`7800ba5b893b45cd90c01b60d58961ef`, logged at
+`build/mapped-control-full-regression-v298.log`. It predates v299 discovery;
+the three v299 tests above pass separately. No full-regression completion or
+new physical/clock/PHY admission is claimed while that job is running.

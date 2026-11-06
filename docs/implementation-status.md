@@ -245,6 +245,12 @@ hashes and maps all 644 block/load MOS terminals into that original fixture.
 Counter timing remains unqualified; the original failed traces remain.
 The twelve-case replay is now prepared as
 `fast_clear_counter_shared_rc_v269/12b91a2b04a05d8c` and its runner is live.
+Its first two SS0/410 MHz/50% cases now pass at both stopped levels, with all
+644 native MOS observed. Independent complete-trace remeasurement reproduces
+every original metric. The formerly late stopped-high PREPARE now clears
+159.827 ps before external reassertion, a 198.425 ps improvement; RESET_N has
+194.833 ps margin. The other ten pilot cases and full clock/PVT matrix remain
+required. This is a repaired nominal stopped-high case, not full clock/PHY admission.
 The full routed-counter matrix producer (v264) and exact-owner continuation
 (v265) are implemented and live behind that twelve-case gate: 270 conditions
 cover all 15 PVT points, three frequencies, three duties and both stopped
