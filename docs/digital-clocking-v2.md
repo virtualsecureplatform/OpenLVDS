@@ -12318,3 +12318,78 @@ Ngspice's recorded elapsed time is 17385.634 s versus 17261.393 s in the
 original coarse run. These historical runtimes on a shared machine do not
 establish an input-representation speed gain. No numerical representation
 or backend is adopted, and the original bank's known failures remain.
+
+### Complete regular-pair zero reference and tapered-bank handoff
+
+V263 zero case 0 completes naturally. All **1529 MOS**, **173 programming
+gates** and **86 controls** pass their original native checks; maximum
+terminal difference is **1.887029269 V**. All eight full-swing pulses,
+unwrapped epochs and output slew pass. Maximum slew is **80.096506 ps**,
+period error **3.914782 ps**, and rise/fall history spans
+**3.914630/0.016858 ps**. The isolated failure is zero quarter-period
+headroom **−57.033965 ps**, with rising delays 578.604356–582.518987 ps
+and falling delays 666.773205–666.790063 ps. Aggregate transport/interface
+gates consequently remain false. This supersedes the incomplete-prefix
+status of the earlier observations without changing their timing values.
+
+The unchanged v300 analyzer independently remeasures every original native
+metric and all five nodes from the full 25 ns waveform in
+`regular_regenerated_stages_v300/eeff61ca7936aa3c`. All eight stage sums
+telescope exactly; the complete ranges reproduce the earlier live-stage
+capture. The falling path remains approximately 278 ps selection, 210 ps
+isolation/fine loading, 114 ps first restoration and 65 ps final restoration.
+These are loaded crossing differences, not intrinsic delays or size-change
+predictions. Log: `build/regular-regenerated-zero-stage-v300-completed.log`.
+The analyzer unit completes successfully, invocation
+`faea3492bd834eb7ae5c4649daebb180`.
+
+V311 correctly advances after the complete baseline, preparing
+`tapered_regenerated_bank_v310/c10259773d77c082` and starting its guarded
+eight-case run. Its state is `running_tapered_bank`; no candidate result
+has completed at this checkpoint. The original v263 first-coarse case and
+its overlap remain pending, and no old physical continuation is admitted.
+
+The next architectural experiment can reorder the same qualified cells:
+P10/N8 before the loaded P20/N16 stage, followed by one final P20/N16
+inverter. This preserves three inversions after the selected mux node and
+the external clock polarity, while testing reduced mux loading and a
+conditioned edge into the fine capacitance. It changes fine-node polarity
+and needs fresh native observations and all original four-point gates;
+neither reduced latency nor output slew is assumed. The existing
+post-fine tapered experiment remains a useful controlled comparison.
+
+### Completed NAND family: pulse loss confirmed inside the loaded stage
+
+V190 completes all **eight cases with zero solver errors**. Neither its
+INV8 nor NAND8 family passes the component hypothesis. NAND zero case 6
+passes native safety/control/pulse/slew/repetition checks but misses the
+quarter-period budget by **786.015832 ps**. Its first-coarse case 7 passes
+its individual gates with 1056.352112–1067.357900 ps rising delay,
+1583.779645–1585.190404 ps falling delay, maximum slew 226.291513 ps and
+period error 10.926426 ps. That coarse pass cannot rescue the failed family.
+
+Complete 25 ns I/O replay for NAND cases 4/5/7 exactly reproduces every
+original I/O timing metric at
+`build/reports/strong_nand_completed_io_replay/20261106T210121Z`. The
+additional internal-node replay is retained at
+`build/reports/strong_nand_completed_node_replay/20261106T210347Z`.
+Physical rising and falling crossing counts agree at each listed level:
+
+| NAND condition | Selected counts at 0.18/0.9/1.62 V | Fine-node counts at those levels | Output 0.9 V pulses |
+| --- | --- | --- | ---: |
+| Fine31, 40% | 8 / 8 / 8 | 1 / 8 / 0 | 3 |
+| Fine31, 60% | 8 / 8 / 8 | 1 / 1 / 8 | 1 |
+| First coarse/fine0, 50% | 8 / 8 / 8 | 8 / 8 / 8 | 8 |
+
+Thus full-swing degradation first appears between selected and the loaded
+fine node; the 60% case also loses midpoint transitions there. No valid
+fine31 delay interval or coarse-overlap number can be formed from these
+missing pulses. The I/O/node replays do not independently remeasure all
+native safety/control metrics. Separate v262 complete coarse-stage receipt
+`isolated_bank_stage_latency_v262/f0ae3f969630e8de` binds all original files
+and reproduces its eight delays, with zero stage-sum residual. Falling
+stage ranges are 545.279423–545.292014 ps to selected,
+535.702339–537.019738 ps through isolation/fine loading, and
+502.713445–502.878939 ps through output regeneration. No circuit, source,
+limit or waveform is changed by these analyses; current regular-driver
+and runtime experiments continue independently.
