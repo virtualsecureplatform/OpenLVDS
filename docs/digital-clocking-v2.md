@@ -12585,3 +12585,49 @@ PHY admission is established. Native RX qualification must combine this
 timing observer with the actual enlarged bank's independently mapped
 terminal/control checks and a sufficiently long capture. No new native
 RX campaign is queued before a viable physical bank is established.
+
+### Complete P24/N12 zero-code latency result
+
+V201 case 6 completes its original full 25 ns transient without solver
+error (32,941 waveform rows). This is the P24/N12 isolation branch with
+the old BUF8 output, SS/40 C, 410 MHz, 50% duty, coarse0/fine0,
+100 ps input slew and 20 fF output load. All original individual
+native terminal/control, full-swing, epoch, pulse-order, period/history
+and 250 ps slew checks pass, except the zero-quarter requirement.
+Its headroom is **−258.715799 ps**, so aggregate transport/interface
+qualification remains false. Recorded peak terminal difference is
+1.873837220 V, maximum output slew 224.886889 ps, maximum period error
+3.906832 ps, and rise/fall history spans 3.907844/0.017041 ps.
+
+Unchanged v262 analysis produces
+`isolated_bank_stage_latency_v262/1f3754a758ca8a33`. It validates the full
+waveform and all 1479 native MOS observation vectors, binds the original
+case/library hashes, and independently reproduces all eight rise/fall
+end-to-end delays with zero stage-sum residual. It replays I/O and
+internal crossing timing; native terminal/control verdicts above remain
+the original producer's measurements. Unit
+`openlvds-balanced-p24n12-zero-stage-v262-completed`, invocation
+`a692443fb5e246e58bf1b4948449dcd8`, exits successfully. Log:
+`build/balanced-p24n12-zero-stage-v262-completed.log`.
+
+| Section | Rising crossing difference (ps) | Falling crossing difference (ps) |
+| --- | ---: | ---: |
+| Input to selected | 234.401773–237.992350 | 281.895915–281.916037 |
+| Selected to fine_node | 141.219266–141.530827 | 226.476028–226.481265 |
+| Fine_node to output | 287.780354–287.786274 | 360.077786–360.079831 |
+
+The worst complete falling delay is 868.471896 ps, versus 875.594115 ps
+for the completed P20/N10 zero-code control: only **7.122219 ps** of
+improvement from the sizing change. The old output buffer is the largest
+measured falling-stage contribution in this exact zero-code circuit.
+These loaded crossing differences are not intrinsic component delays or
+predictions for the pending tapered/preconditioned banks. The P24/N12
+60% fine endpoint also retains its previously measured period/history
+failure. Driver sizing alone has not supplied a viable bank.
+
+The original zero-code solver exits naturally. Dispatcher events confirm
+its slot 2 release and acquisition by `counter_matched_buffers_v306_0`;
+the buffer campaign is live checking its captured inputs before launching
+SPICE. The six-lease budget is unchanged. V201's final coarse case and
+the other healthy solvers continue; no partial waveform or failed result
+is discarded, and the bank/PHY remain unqualified.
