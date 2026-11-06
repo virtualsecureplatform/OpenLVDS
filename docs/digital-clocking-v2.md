@@ -10419,3 +10419,30 @@ original metric. Its receipt is
 `build/strong-counter-first-result-verification.log`. This is one passing
 actual shared-RC case, not a completed twelve-case pilot, full PVT proof,
 whole-clock or PHY qualification. Remaining native simulations continue.
+
+### Stopped-high clear failure reproduced (v266)
+
+The stopped-high companion (case 1) of the v232 stronger-storage replay
+now completes and fails the unchanged clear-before-reassert gate. It has
+the same passing startup counts, phase order and terminal safety as case 0.
+The external REQUEST falls at 21 ns and rises again at 23 ns. RESET_N
+falls at 22.804822666 ns, leaving 195.177334 ps headroom, but PREPARE falls
+at **23.038597491 ns**, missing the original deadline by **38.597491 ps**.
+Both outputs are below 0.18 V throughout the original final 24–26 ns
+window; final voltage alone would miss this failure. The passing stopped-low
+case instead has 662.683090/704.016112 ps PREPARE/RESET_N clear headroom.
+
+`diagnose_strong_counter_clear_v266.py` reproduces every original metric of
+both complete 612-MOS traces, binds their original source/PDK context and
+all output/library hashes, and records actual distributed phase-input
+crossings. The receipt is
+`strong_counter_clear_diagnosis_v266/06bdfd120dd71fed`, with log
+`build/strong-counter-clear-v266.log`. On the stopped-high trace, high2
+reset-feedback gate nodes cross at 21.890861–21.908568 ns, while its
+set-input gate nodes cross much later at 22.595654–22.612267 ns. High1
+has the same ordering (21.883416–21.900824 ns feedback versus
+22.579111–22.595212 ns set input). These are actual distributed node
+crossings, not equipotential-net substitutions or intrinsic cell delays.
+Two tests retain the strict original deadline, reject missing crossings,
+and show that a late clear fails despite low final voltage. No timing
+limit, waveform or circuit parameter is changed by this diagnosis.

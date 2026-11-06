@@ -130,7 +130,12 @@ low, with all 612 counter/load MOS observed. Independent saved-trace
 remeasurement reproduces every original metric: prepare/release margins
 are 326.399/524.558 ps to the next half phase, minimum clock-low margin is
 84.715 mV, and maximum terminal difference is 1.941780 V against 1.95 V.
-The other eleven pilot cases and full PVT remain pending. The
+The stopped-high companion now completes with a clear/reassert failure:
+PREPARE falls 38.597 ps after external request reassertion, while RESET_N
+clears with 195.177 ps headroom. Startup ordering and all native safety
+checks still pass. Complete read-only diagnosis reproduces both original
+traces and their gates at `strong_counter_clear_diagnosis_v266/06bdfd120dd71fed`.
+The remaining pilot cases continue and full PVT remains pending. The
 remaining cases continue and whole-clock validation remains open. No repaired whole clock
 assembly or PHY is qualified.
 
