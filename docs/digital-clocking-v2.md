@@ -9036,3 +9036,40 @@ original six-engine dispatcher. No stronger-driver transient result exists
 yet. A passing v190 pilot still needs its own complete approved frequency/
 duty matrix, dense/common all-PVT legal tables and fresh whole-bank physical
 RC before integrated clock or LVDS PHY admission.
+
+
+### Physical repaired counter with both clock drivers (v191)
+
+`build_repaired_clock_counter_v191.py` integrates the exact passing v183
+counter topology and its two native BUF8 clock drivers into one routed
+**21-macro** block. Only `low0_q` and `low0_set_pair` use their already
+qualified v178/v181 repairs; every other counter connection/model is compared
+against the original native family. The three downstream test-load NANDs and
+20 fF mask load remain outside this counter macro, as loads for subsequent
+whole-counter RC simulation. RCLK, REQUEST, CLK, PREPARE, RESET_N, VPWR and
+VGND are explicit physical ports. CLK is an output/monitor, not an ideal
+internal clock connection.
+
+Preflight material/topology/source assembly succeeds. Independent KLayout
+comparison finds **19 native masters and 13 repeated definitions**, all shared
+masks and child placements identical before import. The post-build witness
+also requires every native master and all 21 root placements to match the
+actual source GDS and declared floorplan exactly. Deliberate one-grid mask and
+placement changes are rejected in the tests. All three tests pass:
+`build/repaired-clock-counter-v191-tests2.log`. Material preflight:
+`build/repaired-clock-counter-v191-preflight.log`.
+
+The two clock drivers sit above the counter/request driver, with separate
+RCLK/CLK spines and raised global buses. Local supply escapes retain 0.6 um
+width; long supply spines use 2 um. Internal routed counter nets receive
+non-port labels for subsequent actual-MOS/RC observation. All native MOS,
+body contacts, MIM geometry and component hierarchy remain unchanged.
+
+`openlvds-repaired-clock-counter-v191` is preparing and running the new routed
+GDS/DRC/LVS job under `repaired_clock_counter_physical_v191`. Run log:
+`build/repaired-clock-counter-v191-run.log`. This CAD job takes no SPICE slot
+and does not stop any existing solver. Its native six-case source pilot is
+complete; the separate 90-case component PVT campaign continues. Even passing
+DRC/LVS will not qualify shared-wire timing: fresh actual distributed RC,
+strict native/reduction/current-witness checks, remeasured complete counter
+traces, all-PVT and clock-chain/PHY integration are still required.

@@ -51,7 +51,9 @@ passes zero DRC, unique LVS, exact native parameters and fresh component RC.
 Its integrated pilot passes both stopped levels at all three temperatures.
 The actual 3 um setter master/pair also passes DRC/LVS and fresh component RC.
 Both actual repairs pass the six-case SS pilot; the 90-case PVT screen is
-running. Shared clock wiring and whole-clock validation remain open. No repaired whole clock
+running. The repaired counter and both clock drivers are now being integrated
+as a 21-macro routed block; shared-wire RC/timing and whole-clock validation
+remain open. No repaired whole clock
 assembly or PHY is qualified.
 
 Earlier clocking experiments remain useful diagnostic evidence:
