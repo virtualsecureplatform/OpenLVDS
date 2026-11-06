@@ -11982,3 +11982,42 @@ the pending first-coarse result must still establish fine/coarse overlap.
 Do not proceed to physical qualification on the strength of the fine31
 endpoint passes. No source, solver setting, acceptance limit or queue budget
 is changed by this observation.
+
+### Zero-code loaded-stage prefix decomposition
+
+A second read-only capture at
+`build/reports/regular-zero-live-stages/20261106T194614Z` retains time and
+all five stage nodes from the same live PID 2036551. The exploratory
+capture program is retained at `build/analyze-zero-live-stages-20261106.py`;
+its source hash, the unchanged v300 stage-reader hash, native manifest and
+task binding, process identity, source inode/size and copied-vector hash
+are recorded in `observation.json`. Copied-vector SHA-256 is
+`de6d9b030174553f0c22591f626f1a1970b02d46c7625daae42d4a45238ed153`.
+
+The unchanged v300 decomposition function matches all eight crossings
+through every inversion and obtains these loaded 0.9 V crossing ranges:
+
+| Stage | Rising input event (ps) | Falling input event (ps) |
+| --- | ---: | ---: |
+| Input to selected | 233.750216–237.336171 | 278.058429–278.077617 |
+| Selected to fine_node | 174.012502–174.336849 | 209.906919–209.911085 |
+| Fine_node to restored_b | 102.488481–102.492142 | 113.923210–113.923720 |
+| Restored_b to output | 68.353157–68.356309 | 64.880594–64.882277 |
+
+Every per-pulse stage sum and first-minus-last history sum telescopes
+exactly in this capture. All original timing metrics, including every
+delay and the −57.033965 ps quarter headroom, exactly reproduce the
+independently retained v293 observation. These are loaded crossing
+differences, not isolated intrinsic cell delays or predictions for another
+size, code, duty or PVT.
+
+The remaining falling-edge latency is distributed across selection,
+isolation/fine loading and both output inverters. After complete native
+replay, a useful sizing experiment is a tapered restoration pair: reduce
+the first inverter's input loading while retaining enough drive into the
+last inverter and preserving final slew. Any new size needs its own
+physical/local-RC evidence and full native comparison; the captured stage
+times cannot establish a net improvement. The first-coarse overlap result
+also remains necessary before changing fine capacitance or choosing the
+next bank architecture. No physical or electrical admission follows from
+this incomplete capture, and no running campaign is modified.
