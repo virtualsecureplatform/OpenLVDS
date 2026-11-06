@@ -22,8 +22,9 @@ and independent Schur current witness. The complete native SS/40 C zero screen n
 with 76.815 ps fastest-quarter headroom. The actual first-coarse point passes with 174.838 ps slew and both-edge
 overlap remains positive. Fine31 passes voltage/control/repetition checks but
 fails the 250 ps slew limit at 265.033 ps; the actual sparse gate is false.
-Output-compensation circuit prototypes are running, with new physical proof
-still required before a repaired bank can advance. The calibrated clock chain, dense/common legal tables, all-PVT
+Both output-guard prototypes pass their three-point hypothesis screen. The
+unguarded variant reaches 222.248 ps fine31 slew; new native component and
+whole-bank physical/RC proof remain required before a repaired bank can advance. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. All 2,175 regression tests pass.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and

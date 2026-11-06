@@ -8381,3 +8381,49 @@ Its two output guards are native 1x1 MIMs X22/X25. Diagnosis records are under
 `build/reports/counter_stack_stress_v156/`. The baseline sweep continues without
 restart. Its full PVT gate remains false; a separate local output-guard/body-
 return repair must retain the original timing and terminal limits.
+
+
+### Completed output-guard comparison and native replacement
+
+The six-case guard hypothesis campaign
+`measured_output_guard_variants_v159/64e4e009d2cc37ad` is complete with zero
+numerical errors. Both variants pass all three native point checks under the
+unchanged 20 fF load and 250 ps slew limit.
+
+| Output guards retained | Zero repeated rise/fall (ps) | Fine31 maximum slew (ps) | First-coarse repeated rise/fall (ps) | Worst rising/falling overlap (ps) |
+| --- | --- | --- | --- | --- |
+| One shared | 477.248 / 523.521 | 243.775 | 657.716 / 713.640 | 59.751 / 171.846 |
+| None | 467.405 / 513.477 | 222.248 | 647.850 / 703.594 | 55.056 / 169.190 |
+
+Zero fastest-quarter headroom is 86.235 ps with one guard and 96.279 ps without
+guards. All original MOS and non-guard devices, explicit wire R/C, observation
+coverage and stimuli remain intact. This comparison supports advancing the
+unguarded output cell to physical verification: it has 27.752 ps slew margin
+at this point, compared with 6.225 ps for the shared guard. It does not establish
+PVT margin or qualify the changed layout. The failed baseline is retained.
+
+`build_unguarded_output_cell_v162.py` derives a new native parallel output
+master from the qualified v111 component. It removes only the output MIM child
+from the shared INV8 definition, preserving every other child placement and
+all root/MOS/body masks. It requires fresh zero-DRC and unique native LVS,
+exact 32-MOS parameters including junctions, fresh distributed extraction,
+passivity, reproducible reduction, wire-collapsed native topology and an
+independent terminal-current witness. Full-bank geometry, RC, timing and PVT
+remain separate pending gates. Two CAD-environment tests verify exact schematic
+removal, retained MOS cards and refusal of changed capacitor terminals/dimensions,
+and use synthetic GDS to reject MOS or root-wiring mask mutations.
+
+
+The first formal native replacement attempt,
+`unguarded_output_cell_v160/052163cc6f51bde7`, stopped before geometry generation
+because it expected the pre-registration capacitor child name. The registered
+v111 source names that child `ov44_187cefec_1ae441b0`; its native Magic instance
+name remains `cap_out`. The failed artifact and service log
+`build/unguarded-output-cell-v160-run.log` are retained. The v162 builder binds
+that exact registered child through the captured native Magic view before
+preparation. Its two CAD-environment tests pass; no failed source was edited.
+
+Formal corrected artifact: `unguarded_output_cell_v162/54829739e9b70627`;
+service `openlvds-unguarded-output-cell-v162.service`, log
+`build/unguarded-output-cell-v162-run.log`. Qualification is running; no
+component or bank physical/timing admission is claimed before completion.
