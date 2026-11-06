@@ -114,6 +114,10 @@ The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
+The latest broad run passes **2461 tests with 48 CAD skips**; all **48 CAD
+checks pass separately with no skips**. Four live-prefix diagnostic tests
+added after discovery also pass separately. These tests verify the build,
+RTL and qualification machinery; they do not admit pending native timing.
 
 The isolated fine-stage drivers and BUF8 have canonical physical integration
 views (v236): all three pass zero DRC, native LVS, unchanged manufacturing
@@ -139,7 +143,7 @@ transport screens after those gates pass. The observation mapper covers all
 1479 MOS, 173 programming gates and both isolated data nets. Actual isolated-bank
 shared RC remains pending; eight RC/handoff tests pass using a native-device
 fixture rather than a routed-bank qualification receipt. The broad regression
-passes 2387 tests with all 32 CAD skips executed separately; 15 targeted
+passes 2461 tests with all 48 CAD skips executed separately; 15 targeted
 observation/transport tests also pass. Actual routed transport remains pending. Both finite-input fine31 endpoint comparisons now preserve
 the original P20/N10 pass/failure results; full four-case parity is still open. Whole-bank routing, LVS and shared-wire
 RC for this architecture remain open.

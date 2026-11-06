@@ -11061,9 +11061,21 @@ edge delay and quarter violation, rejecting nonfinite/nonmonotonic/missing
 startup samples, and preventing either positive headroom or an incomplete
 pulse set from granting native admission.
 
-A new broad `make test-full` run is live under
+A new broad `make test-full` run completes successfully under
 `openlvds-regular-regenerated-regression-20261106`, invocation
 `25fb4f5f158a4e53b9553cbefcf10e36`, logged at
 `build/regular-regenerated-full-regression-20261106.log`. It was discovered
-before v293 was added; the four v293 tests above run separately. The broad
-run is still pending and adds no SPICE campaign or engine slot.
+before v293 was added; the four v293 tests above pass separately. The broad
+run passes **2461 tests in 520.061 s**, with **48 CAD-dependent skips**,
+and its systemd process exits successfully (status 0).
+
+All **48 skipped CAD checks pass separately with no skips in 54.831 s**
+at `build/regular-regenerated-cad-skips-20261106.log`. Their exact names are
+retained in `build/regular-regenerated-cad-skip-names.json`. The CAD unit
+`openlvds-regular-regenerated-cad-skips-20261106` exits successfully, invocation
+`88fb2eb17b6842138d955dadb8666c61`. This includes the revised native geometry,
+reference, routing, GDS and RC fixture checks, alongside the retained original
+architecture regressions. No native SPICE campaign, model, solver tolerance,
+dispatcher slot or electrical admission gate changes. Full routed-bank
+timing, common legal tables, calibrated clock-chain and PHY qualification
+remain open.
