@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 from copy import deepcopy
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -26,6 +27,7 @@ class PreconditionedFineBank(unittest.TestCase):
         self.assertEqual(observations['programming_gates'], old['programming_gates'])
         self.assertEqual(observations['controls'], old['controls'])
         definitions = probe.source.native.definitions(result)
+        self.assertFalse(any('restored_b' in words for words in definitions[probe.TOP][1]))
         calls = {w[0]: w for w in definitions[probe.TOP][1] if w[0].startswith('Xfine_')}
         self.assertEqual(calls['Xfine_regenerate0'],
                          ['Xfine_regenerate0', 'selected', 'conditioned', 'VGND', 'VPWR', probe.SMALL])
@@ -125,6 +127,25 @@ class PreconditionedFineBank(unittest.TestCase):
         changed['result']['edge_delays_ps']['fall'][0] += 1
         with self.assertRaisesRegex(ValueError, 'delays'):
             probe.require_stage_reference(evidence, original, changed)
+
+    def test_actual_prepared_bank_and_all_four_decks_reproduce(self):
+        parent = probe.ROOT/'build/diagnostics/preconditioned_fine_bank_v315/03aec7bd64badc04'
+        if not (parent/'manifest.json').exists():
+            self.skipTest('requires actual prepared preconditioned bank')
+        manifest = json.loads((parent/'manifest.json').read_text())
+        identity = manifest['identity']
+        self.assertEqual(parent.name, hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()[:16])
+        self.assertEqual(probe.sha(parent/'bank.spice'), manifest['bank_sha256'])
+        self.assertEqual((identity['max_workers'], identity['priority']), (1, 1))
+        self.assertEqual(identity['native_revision']['node_polarities'],
+                         dict(selected='inverting', conditioned='noninverting', fine_node='inverting'))
+        pins = {p: '0' if p == 'VGND' else 'VDD' if p == 'VPWR' else p for p in identity['ports']}
+        devices = probe.source.native.mapped_mos((parent/'bank.spice').read_text(), probe.TOP, pins, 'XD')
+        self.assertEqual(devices, identity['observations']['devices'])
+        for k, task in enumerate(manifest['tasks']):
+            self.assertEqual(task['spec'], probe.specifications()[k])
+            self.assertEqual(probe.sha(parent/task['id']/'bench.cir'), task['deck_sha256'])
+            self.assertEqual((parent/task['id']/'bench.cir').read_text(), probe.fixture(parent, identity, task['spec']))
 
 
 if __name__ == '__main__':

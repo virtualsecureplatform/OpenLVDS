@@ -12444,3 +12444,15 @@ priority 1 through the unchanged six-engine dispatcher. Existing tapered,
 thread-count and other native runs/tickets are unchanged. Routed RC, complete
 clock/PVT matrices, native code tables, safe updates, clock/link and PHY
 qualification remain mandatory after a successful prototype screen.
+
+V315 preparation subsequently completes as
+`preconditioned_fine_bank_v315/03aec7bd64badc04`, capturing **2505 input
+files**, and the guarded campaign is confirmed live with state `running`.
+All **six targeted tests pass without skips in 12.442 s**. The additional
+prepared-context check verifies its canonical identity, bank SHA, actual
+1511-device terminal map, changed internal polarity and all four exact
+fixture/deck hashes. The topology test also rejects any retained restored_b
+connection in the new top. Log:
+`build/preconditioned-fine-bank-v315-prepared-tests.log`. No native case has
+completed at this checkpoint; software preparation does not establish the
+new architecture's latency, slew, overlap or physical admission.
