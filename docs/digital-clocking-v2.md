@@ -11657,3 +11657,47 @@ Selected/boundary clock sweeps, safe updates (including avoiding unsafe
 intermediate codes), physical ROM, other bank dimensions, RX range and full
 clock/link admission remain mandatory. No raw result is discarded and no
 electrical, epoch, repetition or slew limit is weakened for selected codes.
+
+### Complete P24/N16 duty endpoints and stage replay
+
+V220 case 5 completes naturally at SS40/410 MHz, fine31, 60% duty.
+Both P24/N16 endpoint cases 4/5 now pass their original individual
+1483-MOS native safety/control, pulse, epoch, period/history and 250 ps slew
+checks. At 60% duty, maximum slew is **231.351243 ps**, maximum period
+error **13.387173 ps**, and rising/falling history spans are
+**13.397774/0.103341 ps**. At 40%, the corresponding values remain
+231.368755 ps, 1.797508 ps and 1.798994/0.318961 ps. These are individual
+fine endpoints; the P24/N16 zero and first-coarse cases remain required.
+
+The unchanged v262 analyzer independently reproduces all eight complete
+crossings in each trace at
+`isolated_bank_stage_latency_v262/0e6f8cb4f709f2a6`; log:
+`build/discharge-p24n16-endpoints-stage-v262-completed.log`. Signed rising
+first-minus-last contributions are:
+
+| Section | 40% duty (ps) | 60% duty (ps) |
+| --- | ---: | ---: |
+| Input to selected | −1.800956 | +1.390338 |
+| Selected to fine_node | +0.298500 | +11.621405 |
+| Fine_node to output | −0.295655 | +0.385546 |
+| Total | −1.798110 | +13.397289 |
+
+The 60% falling first-minus-last sum is −0.103341 ps. Small differences
+between signed first-minus-last and whole-history span retain the actual
+extrema across all eight edges. No startup edge is removed. The old buffer
+still contributes 352.277–352.663 ps rising and 478.158–478.171 ps falling
+crossing differences in the 60% trace. These are loaded crossing
+differences, not intrinsic gate delays or zero-code predictions. The N16
+discharge supports complete duty endpoints, but zero latency and coarse
+overlap still gate this branch. No result is transferred to the separate
+P20/N16 regular-pair candidate.
+
+Fresh post-table CAD/synthesis verification also completes: all **51 checks
+pass, no skips, in 103.957 s**, logged at
+`build/common-table-v304-skips.log`. Unit
+`openlvds-common-table-skips-v304`, invocation
+`df05e59d330a46c4a06a111f68e8d7b9`, exits with status 0. The exact 48 CAD
+and three synthesis test names remain in
+`build/mapped-control-v298-skip-names.json`; this run uses that unchanged
+selection. These checks validate software/backend machinery and do not
+provide pending routed-bank, full-clock or PHY electrical evidence.
