@@ -8993,3 +8993,46 @@ have passing separate CAD runs with unchanged sources:
 `build/counter-setter-guard3-v182-tests.log` (two tests each).
 Broad log: `build/isolated-fine-v189-full-tests.log`. This verifies software,
 RTL and the covered native/CAD checks, not electrical clock/PHY qualification.
+
+
+### Complete INV1 pulse loss and stronger native-driver pilot (v190)
+
+Both first v187 cases now complete without numerical errors. Fine31 at
+410 MHz and 40/60% duty has all eight input pulses and **zero output pulses**.
+All native terminal and programming-control checks pass. The mux node now
+recovers full swing, but the fine node reaches only 0.22028 V at 40% and
+0.52038 V at 60% after eight cycles. The INV1/HVT-PFET driver is too weak for
+the combined fine/output-buffer load. This is a retained scientific failure,
+not a failed solver or an admitted isolated bank. Remaining v187 cases run
+unchanged; its complete-matrix follower remains bound exclusively to v187.
+
+`probe_strong_isolated_fine_bank_v190.py` screens two existing native layouts:
+`openlvds_inv_8_regular_o4_v14` (regular PFET/NFET) and tied-input
+`openlvds_nand2_8_shunted_v2` (parallel HVT PFET paths and series NFET paths).
+It retains one copy of every measured fine unit and the same BUF8 output.
+The regular INV8 component definition is byte-preserved from the original
+bank; NAND2_8/BUF8 definitions are copied from the passing native clock
+library. No transistor width, model parameter or component RC is scaled.
+All other original component definitions and native probes are preserved.
+The two banks contain exactly **1459/1475 MOS**, respectively, and 173
+programming gates each. New inter-component wiring remains ideal.
+
+The focused eight-case matrix tests each driver at fine31/40% and fine31/60%,
+then zero/first-coarse at 50%, SS40/410 MHz. Every original eight-cycle,
+25 ns, 2 ps, 100 ps input, 20 fF load, full-native safety/control, period,
+repeatability, zero-quarter, output-slew and both-edge overlap gate remains.
+Preparation remeasures the complete v187 case 1 and requires both restored
+mux swing and sub-threshold fine-node pulse loss. Only that completed case
+and immutable source files are captured; the running parent's mutable
+state/summary are excluded. No healthy producer is stopped or restarted.
+
+Three new tests pass (log `build/strong-isolated-fine-v190-tests2.log`): both
+native inventories and actual transforms, refusal of incomplete/contradictory
+failure evidence, and unchanged complete-history/overlap admission. These
+are additional targeted tests after the 2,214-test broad regression above.
+Service `openlvds-strong-isolated-fine-v190` is preparing source evidence;
+run log `build/strong-isolated-fine-v190-run.log`. At most two workers use the
+original six-engine dispatcher. No stronger-driver transient result exists
+yet. A passing v190 pilot still needs its own complete approved frequency/
+duty matrix, dense/common all-PVT legal tables and fresh whole-bank physical
+RC before integrated clock or LVDS PHY admission.
