@@ -8298,3 +8298,39 @@ completed its first twelve fresh cases without errors or native failures:
 FF/0 C and FS/40 C, all three duty points and both stopped-clock levels.
 The other native/PVT conditions and complete clock-island/PHY qualification
 remain pending.
+
+
+### Actual fine31 slew failure and conservative boundary gate
+
+The complete actual v153 receipt `5ea04b57af7cb8cf` has two cases, a consumed
+zero trace and zero numerical errors. Its first-coarse repeated rise/fall delay
+is 666.986866/723.060629 ps, with 174.837763 ps maximum slew. Fine31 repeated
+delay is 731.455323/897.449655 ps, with **265.032564 ps** maximum slew against
+the unchanged **250 ps** limit. All native terminal/control/repetition checks
+pass. Both-pulse rising overlaps are +67.606269/+64.468457 ps, falling overlaps
++174.388387/+174.389026 ps. The actual sparse feasibility gate is **false**.
+Periodic continuation correctly refused it and retains its failure log.
+
+`probe_measured_balanced_joint_boundaries_v158.py` is prepared code for the next
+six-point screen: consume passing zero/fine31/coarse1, add fine1/15/16, and retain
+the full native fixture and every observation. Its interval comparisons use
+both pulse epochs: right minimum must exceed left maximum, and adjacent fine
+codes must have worst-case increment at most 20 ps. Coarse overlap also uses
+fine minimum minus coarse maximum. Four tests include examples where per-epoch
+steps/overlap appear valid but conservative intervals fail. Dense/common legal
+and all-PVT/table/PHY admission remain false.
+
+The full boundary regression passes **2,170 tests without skips** in
+**376.032 s** (`build/measured-balanced-joint-boundaries-v158-full-tests.log`).
+No v158 manifest or native case is admitted: explicit preparation against the
+failed sparse receipt refuses it
+(`build/measured-balanced-joint-boundaries-v158-source-refusal.log`). The initial
+waiter-registration attempt also found the original owner already terminal and
+created no service. The next valid source must pass the original slew gate.
+
+Read-only diagnosis in `build/reports/measured_output_slew_v153/` examines all
+32 RC-separated gates of the final parallel inverter pair. Fine31 gate 10–90%
+rise/fall slew reaches about 2694.284/1236.344 ps, versus 912.709/425.226 ps at
+zero. Output rises in 265.033 ps. The final driver contains two native 2x2 MIM
+output guards; their loading is a specific circuit-repair candidate. Original
+traces and the failed geometry/RC receipt remain unchanged.

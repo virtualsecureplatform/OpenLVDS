@@ -19,9 +19,12 @@ selective measured fine-capacitor junction correction, all 155 fine MOS junction
 strict native parameter/topology checks, elementwise passivity, exact reduction
 and independent Schur current witness. The complete native SS/40 C zero screen now passes at
 486.497/532.941 ps repeated rise/fall delay and 174.364 ps maximum slew,
-with 76.815 ps fastest-quarter headroom. The first-coarse/fine31 stage is
-preparing; its full-bank overlap/slew results remain required. The calibrated clock chain, dense/common legal tables, all-PVT
-clock transport and LVDS PHY remain unqualified. All 2,166 regression tests pass.
+with 76.815 ps fastest-quarter headroom. The actual first-coarse point passes with 174.838 ps slew and both-edge
+overlap remains positive. Fine31 passes voltage/control/repetition checks but
+fails the 250 ps slew limit at 265.033 ps; the actual sparse gate is false.
+Output-compensation circuit prototypes are running, with new physical proof
+still required before a repaired bank can advance. The calibrated clock chain, dense/common legal tables, all-PVT
+clock transport and LVDS PHY remain unqualified. All 2,170 regression tests pass.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
 0/25/40 C across all five process corners. The prepared periodic producer and

@@ -26,11 +26,13 @@ passes: original extraction preserved, measured fine-device junctions, strict
 native topology/parameters, passive reduction and independent current witness.
 The complete native SS/40°C full-bank zero screen passes at repeated
 486.497/532.941 ps rise/fall delay, 174.364 ps maximum output slew, and
-76.815 ps fastest-quarter headroom. First-coarse/fine31 preparation has started.
+76.815 ps fastest-quarter headroom. First-coarse passes, while fine31 misses
+the unchanged 250 ps slew limit at 265.033 ps. Output-compensation repair
+prototypes are running; boundary and periodic qualification remain gated.
 
 Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
 dense common legal codes, complete delay range, all PVT, calibrated clock-chain
-integration and full-link qualification remain open. All 2,166 regression tests
+integration and full-link qualification remain open. All 2,170 regression tests
 pass; software and physical/RC passes do not establish electrical PHY release.
 Retained experiment results and exact receipts are in the implementation status
 and digital-clocking notes.
