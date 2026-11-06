@@ -64,7 +64,10 @@ reference is now prepared: 62 capacitor devices/124 fields are selectively
 corrected, all 155 fine MOS match the measurements, and correction is byte
 idempotent. This does not qualify shared-wire RC. The regular-route producer
 requires that corrected reference evidence and waits for the complete native
-pilot's zero/overlap/duty gates. Whole-bank routing, LVS and shared-wire
+pilot's zero/overlap/duty gates. The streamed native GDS qualifier is implemented,
+and an exact-owner coordinator is live to run routing and native checks after
+that gate passes. Both finite-input fine31 endpoint comparisons now preserve
+the original P20/N10 pass/failure results; full four-case parity is still open. Whole-bank routing, LVS and shared-wire
 RC for this architecture remain open.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and

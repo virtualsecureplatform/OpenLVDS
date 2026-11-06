@@ -10091,3 +10091,59 @@ terminal-current checks. Three tests exercise the real extraction, confirm
 all 155 junction sets and unchanged non-capacitor cards, retain synthetic
 R/C records byte-for-byte, and reject missing measurements or changed fine
 capacitor dimensions/topology.
+
+
+### Gated streamed native GDS and automatic continuation (v253/v254)
+
+`build_isolated_fine_native_gds_v253.py` is implemented for the eventual
+completed v242 route. It requires a complete zero-violation route and
+reproduces the route connection/coverage proof. Before native import it
+checks the corrected reference against all 180 physical graph component
+calls, named nets and every used master definition's port order. The old
+v238 reference supply-order mismatch is explicitly rejected.
+
+The producer restores the exact registered native GDS masters during DEF
+streamout and compares the result with the native placement: nonrouting
+manufacturing masks must match, original native routing masks must be
+retained, and new geometry is limited to routing/vias and the declared die
+boundary. Native hierarchy, labels, instance arrays and placements must also
+match. Fresh Magic DRC and strict native LVS use the corrected v246 reference.
+The exact 1479-MOS/43-MIM parameter comparison remains mandatory, with only
+155 separately geometry-bound fine MOS. The final Magic-exported GDS is
+checked again for masks and native hierarchy/placements. No joint RC or
+periodic/PVT/PHY admission follows from this producer. No route/native-GDS
+campaign has started while the native pilot gate remains incomplete.
+
+The host-side coordinator `run_isolated_native_physical_followup_v254.py`
+is live as `openlvds-isolated-native-physical-followup-v254`. Its initial state
+is `build/reports/isolated_native_physical_followup_v254/initial/state.json`.
+It follows the existing v220 invocation
+`43c25247a28041f9b8b299981380368c` and explicit immutable v241/v246/v252 inputs;
+90 input hashes include the imported CAD source closure. It does not start
+or restart the source pilot. A restarted owner, changed input, incomplete
+pilot, or failing P20/N16 four-point gate stops the continuation and retains
+all evidence. Once admitted, it runs v242 routing and v253 native GDS checks
+with explicit artifact handoffs and independently checks each stage's result.
+It adds no SPICE jobs and leaves the global six-engine dispatcher untouched.
+
+Validation: four CAD tests check the corrected reference/graph match, old
+header rejection, incorrect fine programming connections and incomplete or
+nonzero-violation routes. Four host tests check failed native LVS/missing
+final-mask evidence, route failures, changed owner invocation and missing
+owner without a complete receipt. Together with the three real fine-junction
+correction tests, all eleven targeted tests pass. The running coordinator's
+PID and systemd invocation were verified while it reports
+`waiting_for_native_pilot`.
+
+### Both finite-input endpoints now preserve their baseline results
+
+Finite-support replay v225 case 1 (the unchanged P20/N10 baseline at 60%
+duty) also completes. Its timing screen still fails, as required for parity
+with the known v201 failure, while the per-case recorded-metric comparison
+passes: all original gates agree; maximum differences are **0.0023220176 ps**
+in edge delay, **0.0116279885 ps** in slew, and **0.0002281982 V** in native
+terminal peak. Both fine31 endpoint comparisons now pass their parity checks;
+case 0 preserves its original 40% pass and case 1 preserves its original 60%
+failure. The zero/coarse pairs and independent full four-case v226 verifier
+remain outstanding. This does not change the separate N16 driver results or
+admit a new bank/PVT/timing implementation.
