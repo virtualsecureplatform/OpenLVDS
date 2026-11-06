@@ -83,7 +83,7 @@ transport screens after those gates pass. The observation mapper covers all
 1479 MOS, 173 programming gates and both isolated data nets. Actual isolated-bank
 shared RC remains pending; eight RC/handoff tests pass using a native-device
 fixture rather than a routed-bank qualification receipt. The broad regression
-passes 2362 tests with all 32 CAD skips executed separately; 15 targeted
+passes 2387 tests with all 32 CAD skips executed separately; 15 targeted
 observation/transport tests also pass. Actual routed transport remains pending. Both finite-input fine31 endpoint comparisons now preserve
 the original P20/N10 pass/failure results; full four-case parity is still open. Whole-bank routing, LVS and shared-wire
 RC for this architecture remain open.
@@ -159,6 +159,9 @@ The full routed-counter matrix producer (v264) and exact-owner continuation
 cover all 15 PVT points, three frequencies, three duties and both stopped
 levels, with twelve pilot cases consumed and remeasured rather than rerun.
 No full-matrix SPICE case starts before the native pilot passes.
+The actual RC-observation test and two complete internal-slew tests added
+after the latest broad discovery also pass separately. These checks do not
+qualify the pending native timing or full clock chain.
 
 Earlier clocking experiments remain useful diagnostic evidence:
 

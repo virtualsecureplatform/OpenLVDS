@@ -10598,3 +10598,23 @@ timing prediction or admission is inferred. Two tests cover all eight edge
 histories, slew-domain decisions and missing-pulse rejection, at
 `build/fine-node-slew-v271-tests.log`. They run separately after the broad
 suite's discovery; the frozen sources and active solver jobs are unchanged.
+
+### Full regression after fast-clear integration
+
+`make test-full` completes successfully: **2387 tests, 32 skipped**, in
+492.343 seconds at `build/fast-clear-full-regression-20261106.log`.
+The service invocation `732cf56d24394f11876b29f49b3fc3f6` is terminal with
+exit status zero. All **32 CAD-dependent skips** are separately executed
+successfully with no remaining skips in
+`build/fast-clear-cad-skips-20261106.log` (25.776 seconds), using the
+previously enumerated `build/isolated-bank-cad-skip-names.json` list.
+
+Three tests were added after this broad suite's discovery: the actual
+qualified v268 RC/644-device-observation test passes within the six-test
+`build/fast-clear-counter-chain-qualified-rc-tests.log` run, and both v271
+complete internal-slew tests pass at `build/fine-node-slew-v271-tests.log`.
+These extra tests are explicitly separate from the 2387-test total. All
+new sources remain frozen by their manifests or live continuation guards.
+The complete native v269 pilot and v263 bank experiment have no completed
+cases at this verification point; the six existing healthy SPICE engines
+and original timing/qualification gates remain unchanged.
