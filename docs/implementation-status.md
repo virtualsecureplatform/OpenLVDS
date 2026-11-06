@@ -171,10 +171,10 @@ tests. These tests verify the build, RTL and qualification machinery;
 they do not admit pending native timing.
 
 Counter startup has distinct clear and low-phase timing constraints. The
-fast-clear branch passes its two completed SS0/410 MHz/50% stopped-level
-cases. A completed predecessor 60% case clears correctly but misses the
+fast-clear branch passes its four completed SS0/410 MHz cases: 40% and 50%
+duty, both stopped levels. A completed predecessor 60% case clears correctly but misses the
 original low0 voltage window by 90.188 ps; the repaired 50% cases retain
-17.560 ps low0 headroom. The matched CLK/REQUEST buffer experiment (v306)
+17.560 ps low0 headroom at 50% and 29.738 ps at 40%. The matched CLK/REQUEST buffer experiment (v306)
 now compares 24 paired SS0/40, 40/50/60% cases with qualified component RC
 and ideal shared wiring: 644 baseline MOS and 844 replacement-buffer MOS,
 all other logic and downstream loads preserved. Its seven tests pass and

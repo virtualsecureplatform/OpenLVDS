@@ -11894,3 +11894,43 @@ broader timing/physical/PHY admission remain gated. The new matched-buffer
 counter runner has also completed initial validation and holds two live
 priority-0 queue tickets for its first paired 60% condition. No existing
 ticket, solver setting or global budget is changed by either observation.
+
+### Fast-clear counter passes both stopped levels at 40% duty
+
+V269 cases 2/3 complete naturally at SS0, 410 MHz, 40% duty. Both stopped
+levels pass all original 644-MOS safety, clear/reassert, startup, arming and
+alternating-order checks. Together with cases 0/1, this is four completed
+passing pilot cases at SS0/40–50% duty; the remaining eight conditions,
+including 60% duty and SS40, are still outstanding.
+
+The unchanged v299 analyzer independently remeasures all original native
+metrics and the full 26 ns traces in
+`fast_clear_counter_clear_diagnosis_v299/f15402cdcf5e0c6a`; log:
+`build/fast-counter-forty-clear-v299-completed.log`. Clear margins to the
+original external 23 ns REQUEST reassertion are:
+
+| Stopped level | PREPARE margin (ps) | RESET_N margin (ps) | Maximum native terminal difference (V) |
+| --- | ---: | ---: | ---: |
+| Low | +661.387692 | +703.292950 | 1.937241 |
+| High | +160.154871 | +195.113773 | 1.909156 |
+
+For stopped high, PREPARE falls at 22839.845129 ps. Against the complete
+original 40% stopped-high failure at 23038.353214 ps, this is a measured
+**198.508085 ps** improvement and restores the original strict clear gate.
+Final output clear voltages stay below 4.5 mV after 24 ns in both cases.
+
+The unchanged v305 analyzer then reproduces the original low-voltage gate
+in both traces, with receipt
+`counter_low_windows_v305/c41d46fe8105de47`; log:
+`build/fast-counter-forty-windows-v305-completed.log`. Fixed-epoch low0,
+low1 and armed time margins are respectively **29.737964, 469.820094 and
+459.651851 ps**, identical before stopping in both fixtures. Minimum voltage
+margin is **85.927446 mV** at low0. The low0 margin remains positive but is
+10.834175 ps smaller than the predecessor's 40% stopped-high result; clear
+propagation and low-phase startup remain separate measured constraints.
+
+No limit or waveform is changed, and these passing 40% cases do not predict
+the pending 60% results. The full twelve-case pilot, 270-condition clock/PVT
+matrix, matched-buffer component experiment, actual DCC first event,
+warmup/full-clock and PHY admission remain required. No new tests or source
+changes are needed for these replays of existing validated analyzers.
