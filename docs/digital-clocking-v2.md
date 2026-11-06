@@ -11730,3 +11730,62 @@ coordinators retain 449 unique unchanged captured inputs at this checkpoint.
 These successful software/backend checks do not supply the pending zero,
 coarse/fine overlap, routed-bank native timing, all-PVT code curves,
 selected-clock/update, physical ROM, DCC/full-clock or PHY admission.
+
+### Counter duty-boundary low-window diagnosis (v305)
+
+The original stronger-storage v232 case 4 completes at SS0, 410 MHz,
+60% duty, stopped low. Native voltage safety and asynchronous clear pass,
+but the original low-phase arming/order checks fail. Independent original
+26 ns remeasurement in
+`strong_counter_clear_diagnosis_v266/e08900230cd63bca` reproduces both this
+case and case 3 (40%, stopped high). Case 4 PREPARE/RESET_N clear margins
+remain **+664.306628/+704.643287 ps**; its startup failure is separate from
+the earlier late-clear problem. Case 3 still fails only the stopped-high
+PREPARE clear boundary by **38.353214 ps**, with passing low-phase assertions.
+Log: `build/strong-counter-duty-boundaries-v266-completed.log`.
+
+`analyze_counter_low_windows_v305.py` consumes these unchanged full-native
+receipts plus the two independently remeasured fast-clear 50% cases. It
+replays complete public CLK and low0/low1/armed waveforms and exactly
+reproduces every original point-of-assertion voltage. Each phase is bound
+to its original first/second/third low epoch between the specified rising
+edges. The guaranteed-low window ends at the **0.18 V rising crossing**,
+not at the later 0.9 V rising crossing; a late assertion cannot wrap forward
+to another period. Receipt:
+`counter_low_windows_v305/62b7bd0dcde80cc2`; log:
+`build/counter-low-windows-v305-completed.log`.
+
+| Circuit/condition | low0 remaining low window (ps) | low1 (ps) | armed (ps) |
+| --- | ---: | ---: | ---: |
+| Original v232, SS0/410, 40%, stopped high | +40.572139 | +463.831629 | +427.237082 |
+| Original v232, SS0/410, 60%, stopped low | **−90.187512** | +4.689427 | **−10.258012** |
+| Fast-clear v269, SS0/410, 50%, either stopped level | +17.560375 | +229.727156 | +227.742626 |
+
+At original 60%, the actual stable-low windows are 630.630/633.763/632.137 ps.
+Low0 asserts at 4765.683091 ps with CLK **0.474422 V**, giving
+−294.421666 mV voltage margin; armed sees 0.212811 V, giving −32.810852 mV.
+Both assertions precede the corresponding 0.9 V rising crossing, illustrating
+why ordering at half supply alone cannot replace the original low-voltage
+gate. CLK takes about 227 ps to rise from 0.18 to 0.9 V in these epochs.
+The fast-clear 50% traces retain their passing +52.104523 mV minimum voltage
+margin but only **17.560375 ps** of low0 time headroom; their 0.18-to-0.9 V
+clock rise is about 238 ps. These are loaded waveform measurements, not
+intrinsic gate delays or a prediction for the pending fast-clear 60% cases.
+
+This separates two repair objectives: stopped-high clear propagation and
+short-low-phase startup timing. The NAND8 setter repair is verified only at
+its completed 50% condition; it does not yet establish the full duty range.
+The next circuit comparison should examine matched CLK/REQUEST edge
+conditioning using qualified regular-P/N pairs while retaining the original
+phase logic, low-voltage threshold, REQUEST epochs, complete pulse histories
+and both stopped levels. Any changed buffer needs its own native hypothesis,
+fresh physical/RC and full clock/PVT checks. Request-phase robustness and
+phase-qualified capture remain required; edge shaping alone is not a proof
+for arbitrary REQUEST timing. Existing native campaigns remain unchanged.
+
+All **five targeted tests pass** in 6.301 s at
+`build/counter-low-windows-v305-completed-tests.log`. They cover fixed epochs,
+the 0.18-versus-0.9 V distinction, late-event wrapping rejection,
+incomplete/nonfinite traces and the bound four-case native receipt. These
+five read-only diagnostic tests were added after the passing 2540-test broad
+regression; no new circuit or counter/PVT/DCC/PHY admission is granted.
