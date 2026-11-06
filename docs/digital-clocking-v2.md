@@ -8900,3 +8900,49 @@ output slew before choosing a geometry. Native component RC can screen this
 hypothesis; new common wiring still needs actual GDS, DRC/LVS, fresh RC and
 unchanged full-bank/dense/update/all-PVT/PHY gates. Healthy existing campaigns
 continue with their original frozen sources, matrices and dispatcher limits.
+
+
+### Isolated fine-driver experiment (v187, 2026-11-06)
+
+The additional exact-node report
+`build/reports/bank_periodic_history_v186/zero_duty60.json` reproduces the
+zero-code 60%-duty failures at 390/400 MHz: period errors 29.973494/32.395115 ps
+and rising-delay spans 29.986019/32.436889 ps. The internal gate initially
+reaches 1.81134 V, but its last-cycle maximum is only 1.63624/1.62193 V.
+Zero-code duty endpoints are therefore required in subsequent validation,
+not just fine31 or nominal-duty zero.
+
+`probe_isolated_fine_bank_v187.py` defines six explicit component hypotheses:
+a native INV1, tied-input NAND2_2, or both in parallel drive a separate fine
+node; one or two copies of each measured fine unit load that node; a native
+noninverting BUF8 regenerates OUT. Overall bank polarity is preserved. The
+other components and their local RC are byte-preserved. All new shared wiring
+is ideal, so this experiment cannot admit a physical bank or PHY.
+
+The 24-case pilot tests fine31 at 40/60% duty and zero/first-coarse at 50%,
+all at SS40/410 MHz, eight cycles, 25 ns, 2 ps maximum step, 100 ps input slew
+and 20 fF output load. It retains the original full-history 20 ps period and
+repeatability checks, zero quarter headroom, 250 ps slew, controls and every
+native terminal. Both-edge overlap is conservative over the complete pulse
+histories. Native MOS counts range from 1445 to 1608; programming-gate counts
+are exactly 173 or 266 (all 93 fine-control gates replicated for a second
+fine bank). Internal selected/fine-node min/max values are also saved for
+every cycle. No first-cycle discard or timing waiver is introduced.
+
+All six structural preflights and both regression tests pass, including
+refusal of missing/nonfinite history, either-edge overlap loss, bad original
+wiring and incomplete native observations. Logs:
+`build/isolated-fine-bank-v187-preflight.log` and
+`build/isolated-fine-bank-v187-tests2.log`. The service
+`openlvds-isolated-fine-bank-v187` is preparing/revalidating the retained source
+evidence, then queues at most two workers under the unchanged six-engine
+budget. No new transient result exists yet. Run log:
+`build/isolated-fine-bank-v187-run.log`.
+
+Even a passing hypothesis needs zero/first-coarse at both duty endpoints,
+fine31 at nominal duty, complete 390/400/410 MHz checks and dense/common legal
+codes across all fifteen PVT conditions before geometry selection/admission.
+Actual new GDS/common-wire RC, update/loop/integrated clock and full-link gates
+remain required. Existing periodic and repaired-counter campaigns continue.
+The four v183/v184 tests were also rerun successfully in
+`build/native-counter-repairs-v183-v184-tests-final.log`.
