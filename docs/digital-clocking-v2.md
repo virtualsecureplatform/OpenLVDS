@@ -11292,3 +11292,56 @@ The dispatcher assigns the released slots to older direct-feedback-counter
 cases 4/5 and strong-isolation case 4 under the unchanged aging policy.
 Those engines, the other native runs and all pending v263 followups remain
 subject to the original gates. No failed waveform is discarded or rerun.
+
+### Mapped TX/RX controller compositions (v298)
+
+`openlvds_tx_control_v3` now composes the mapped DLL core with the existing
+single-deadline sequencer, DCC release/warmup and real training transmitter.
+Committed legal indices and native codes have separate buses and widths;
+all four native DLL words come from the immutable common table. Calibration
+still operates on legal indices, while the explicit physical interface
+receives native programming words. Table/model admission defaults remain zero.
+
+`openlvds_rx_control_v3` independently maps the DLL and deskew indices. Its
+`native_deskew_code` is separate from the legal `deskew_index` used by training
+and characterized delay-bound lookup. Invalid deskew mapping withholds the
+physical-settling acknowledgement even if an external backend asserts it.
+Unadmitted tables cannot release capture, and invalid DLL mappings cannot
+launch calibration measurements. Calibration, fresh physical-settling
+generations, 256-cycle delivered-clock warmup, eye scanning, retraining,
+payload handoff and the eight-management-cycle clock-loss bound retain the
+existing engines and original limits. The mapped DLL core also rejects
+confirmation counts below 64 or timeouts beyond 2,500,000 management cycles.
+
+The proposal exporter now accepts `--role dll`, `tx`, `rx_dll` or `rx_deskew`.
+It emits the correct parameter names for each composition, binds the target
+RTL sources in its manifest and still sets every table-admission flag to
+zero. DLL/TX exports require quarter-range proposals; RX deskew exports
+require the full longest-period-plus-500 ps range. A quarter table cannot be
+silently exported as a deskew table. Separate RX fragments compile together
+with distinct legal/native bus widths and known invalid outputs by default.
+Delay-bound inputs remain explicit characterized/backend interfaces; no
+behavioral timing oracle or invented PVT table is added to the controllers.
+
+The functional benches deliberately reverse both native DLL and RX deskew
+addresses. Their external synthetic physical models decode the actual native
+outputs. Thus using legal indices directly as raw codes cannot accidentally
+pass. All **24 functional scenarios** pass in three grouped tests at
+`build/mapped-tx-rx-control-v298-completed-tests.log` (241.660 s). Coverage
+includes complete TX framing/payload and RX acquisition/retraining/payload,
+all original admission/settling/deadline/clock-loss cases, new unadmitted DLL
+and deskew maps, invalid native words, weakened confirmations/warmup and an
+overlong deadline. Invalid DLL words report unqualified-model failure;
+missing physical settling retains its timeout failure. The earlier failed
+test expectations remain in the original log and are superseded by this
+completed passing run.
+
+Both **Yosys synthesis/width checks pass** at
+`build/mapped-control-synthesis-v298-tests.log`: the designs retain separate
+legal-index and native-code widths for DLL and deskew buses. All **ten ROM/core
+regressions pass** at `build/mapped-control-v298-rom-regression.log`; all
+**six proposal-export/integration checks pass** at
+`build/mapped-control-v298-export-integration-tests.log`. These checks use
+synthetic tables and explicit external timing/eye fixtures. Physical ROM and
+decoder delay, real characterized bounds, native update safety, coupled
+clock-chain timing, DRC/LVS/RC and full PHY qualification remain open.

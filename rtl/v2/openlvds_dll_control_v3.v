@@ -30,7 +30,9 @@ module openlvds_dll_control_v3 #(
 );
     localparam PARAMETERS_VALID=CODE_WIDTH>=1 && CODE_WIDTH<=16 && RAW_WIDTH>=1 && RAW_WIDTH<=16 &&
         CODE_COUNT>=2 && CODE_COUNT<=(2**CODE_WIDTH) &&
-        NATIVE_CODE_COUNT>=2 && NATIVE_CODE_COUNT<=(2**RAW_WIDTH);
+        NATIVE_CODE_COUNT>=2 && NATIVE_CODE_COUNT<=(2**RAW_WIDTH) &&
+        CONFIRMATIONS>=64 && CONFIRMATIONS<=65535 &&
+        TIMEOUT_CYCLES>0 && TIMEOUT_CYCLES<=2500000;
     openlvds_dll_code_map_v2 #(.INDEX_WIDTH(CODE_WIDTH),.RAW_WIDTH(RAW_WIDTH),.CODE_COUNT(CODE_COUNT),
         .NATIVE_CODE_COUNT(NATIVE_CODE_COUNT),.MODEL_ADMITTED(TABLE_MODEL_ADMITTED && PARAMETERS_VALID),.RAW_CODES(RAW_CODES)) native_mapping(
         .indices(raw_indices),.raw_codes(raw_codes),.valid(mapping_valid));

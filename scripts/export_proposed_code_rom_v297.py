@@ -33,14 +33,19 @@ def parameters(selection):
         RAW_CODES=f"{bits}'h{packed:0{(bits+3)//4}x}",packed_integer=packed,codes=codes)
 
 
-def export(proposal,out):
+def export(proposal,out,role='dll'):
     body=proposal.read_bytes();selection=json.loads(body);p=parameters(selection)
+    if role not in ('dll','tx','rx_dll','rx_deskew') or selection['policy']['mode']!=('rx' if role=='rx_deskew' else 'tx'):
+        raise ValueError('DLL/TX needs quarter-range characterization; RX deskew needs full-period-plus-headroom characterization')
+    prefix='DLL_' if role=='rx_dll' else 'DESKEW_' if role=='rx_deskew' else ''
+    target='openlvds_rx_control_v3' if role.startswith('rx_') else 'openlvds_tx_control_v3' if role=='tx' else 'openlvds_dll_control_v3'
     paths=[proposal,Path(__file__),Path(selector.__file__),ROOT/'scripts/clocking_v2.py',ROOT/'clocking_v2.json',ROOT/'requirements.json']
+    paths += sorted({ROOT/'rtl/v2'/f'{name}.v' for name in (target,'openlvds_dll_control_v3','openlvds_legal_code_map_v2')})
     out.mkdir(parents=True,exist_ok=False)
     text='// Unqualified proposal; native characterization and release remain required.\n'
-    text+=',\n'.join('.'+name+'('+str(p[name])+')' for name in ('CODE_WIDTH','RAW_WIDTH','CODE_COUNT','NATIVE_CODE_COUNT','TABLE_MODEL_ADMITTED','RAW_CODES'))+'\n'
+    text+=',\n'.join('.'+prefix+name+'('+str(p[name])+')' for name in ('CODE_WIDTH','RAW_WIDTH','CODE_COUNT','NATIVE_CODE_COUNT','TABLE_MODEL_ADMITTED','RAW_CODES'))+'\n'
     (out/'parameters.vh').write_text(text)
-    report=dict(parameters={k:v for k,v in p.items() if k!='packed_integer'},policy=selection['policy'],
+    report=dict(parameters={k:v for k,v in p.items() if k!='packed_integer'},policy=selection['policy'],role=role,target_module=target,
         inputs={str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in paths},
         parameters_sha256=hashlib.sha256(text.encode()).hexdigest(),native_characterization_verified=False,
         legal_code_table_admitted=False,qualified_phy=False,
@@ -51,4 +56,5 @@ def export(proposal,out):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('proposal',type=Path);p.add_argument('output',type=Path)
-    a=p.parse_args();print(export(a.proposal.resolve(),a.output.resolve()))
+    p.add_argument('--role',choices=['dll','tx','rx_dll','rx_deskew'],default='dll')
+    a=p.parse_args();print(export(a.proposal.resolve(),a.output.resolve(),a.role))

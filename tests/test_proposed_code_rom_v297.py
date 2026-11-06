@@ -12,6 +12,11 @@ import export_proposed_code_rom_v297 as p
 ROOT=p.ROOT
 
 class ProposedRomExportTests(unittest.TestCase):
+    @staticmethod
+    def receiver_selection():
+        curves={corner:{edge:[p.Delay(code,100+5*code,100+5*code+.2) for code in range(1024)] for edge in ('rise','fall')} for corner in p.selector.PVT}
+        return p.selector.select(curves,'rx',64,16)
+
     @classmethod
     def setUpClass(cls):
         curves={corner:{edge:[p.Delay(code,100+5*code,100+5*code+.2) for code in range(256)] for edge in ('rise','fall')} for corner in p.selector.PVT}
@@ -45,5 +50,27 @@ class ProposedRomExportTests(unittest.TestCase):
             self.assertIn('.TABLE_MODEL_ADMITTED(0)',(out/'parameters.vh').read_text())
             self.assertEqual(r['parameters_sha256'],p.hashlib.sha256((out/'parameters.vh').read_bytes()).hexdigest())
             with self.assertRaises(FileExistsError):p.export(proposal,out)
+
+    def test_rx_dll_prefix_keeps_quarter_table_separate_from_deskew_range(self):
+        with tempfile.TemporaryDirectory(dir=ROOT/'build') as tmp:
+            base=Path(tmp);proposal=base/'proposal.json';proposal.write_text(json.dumps(self.selection))
+            p.export(proposal,base/'dll','rx_dll');r=json.loads((base/'dll/manifest.json').read_text())
+            self.assertEqual(r['target_module'],'openlvds_rx_control_v3')
+            self.assertIn('.DLL_TABLE_MODEL_ADMITTED(0)',(base/'dll/parameters.vh').read_text())
+            self.assertIn('.DLL_RAW_CODES(', (base/'dll/parameters.vh').read_text())
+            with self.assertRaisesRegex(ValueError,'quarter-range'):p.export(proposal,base/'wrong','rx_deskew')
+            self.assertFalse((base/'wrong').exists())
+
+    def test_rx_deskew_role_uses_independent_native_width_and_full_span_policy(self):
+        selection=self.receiver_selection()
+        with tempfile.TemporaryDirectory(dir=ROOT/'build') as tmp:
+            base=Path(tmp);proposal=base/'proposal.json';proposal.write_text(json.dumps(selection))
+            p.export(proposal,base/'deskew','rx_deskew');r=json.loads((base/'deskew/manifest.json').read_text())
+            self.assertEqual(r['parameters']['FINE_COUNT'],16)
+            self.assertEqual(r['parameters']['NATIVE_CODE_COUNT'],1024)
+            self.assertIn('.DESKEW_TABLE_MODEL_ADMITTED(0)',(base/'deskew/parameters.vh').read_text())
+            self.assertIn('.DESKEW_RAW_CODES(', (base/'deskew/parameters.vh').read_text())
+            for role in ('dll','tx','rx_dll'):
+                with self.assertRaises(ValueError):p.export(proposal,base/role,role)
 
 if __name__=='__main__':unittest.main()

@@ -130,7 +130,11 @@ and a v3 DLL-control wrapper, preserving the v2 calibration and exact
 configuration/settling protocol. Proposal export keeps table admission zero.
 Ten export/mapping/synthesis tests and five original DLL-control tests pass;
 these use synthetic tables/observers and do not qualify a physical ROM or
-native timing. TX/RX top-level table integration remains pending.
+native timing. Mapped TX/RX v3 control compositions now connect these tables,
+including a separate RX deskew map and invalid-map settling gate. All 24
+functional scenarios pass, along with two synthesis checks, ten ROM/core
+regressions and six export-integration checks. Physical ROM/decoder timing,
+calibrated delay bounds and full native clock/link integration remain pending.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
