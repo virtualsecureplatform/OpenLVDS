@@ -52,6 +52,8 @@ regenerator with two instances of the qualified regular P20/N16 inverter,
 preserving overall polarity and the existing isolation stage. Its four native
 checks prioritize zero delay, both duty endpoints and coarse overlap. New
 shared wiring and timing are unqualified; existing campaigns continue.
+The prepared artifact is `regular_regenerated_bank_v263/7fa8c46ce9db679e`;
+its persistent runner is live under the unchanged dispatcher.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
@@ -122,9 +124,13 @@ passing native terminal safety. Native path diagnosis confirms late
 setter/storage propagation remains; feedback routing alone does not fix it.
 A new 22-macro variant now uses six guarded body-contact NAND8 storage
 cells, two REQUEST buffers and three direct low-phase feedbacks. It passes
-zero DRC, unique LVS and fresh 598-primitive shared RC; the original timing
-replay with all 612 counter/load MOS observed is queued. No timing pass is
-inferred from physical or RC closure. The
+zero DRC, unique LVS and fresh 598-primitive shared RC. Its original timing
+replay now has a first passing case at SS/0 C, 410 MHz, 50% duty, stopped
+low, with all 612 counter/load MOS observed. Independent saved-trace
+remeasurement reproduces every original metric: prepare/release margins
+are 326.399/524.558 ps to the next half phase, minimum clock-low margin is
+84.715 mV, and maximum terminal difference is 1.941780 V against 1.95 V.
+The other eleven pilot cases and full PVT remain pending. The
 remaining cases continue and whole-clock validation remains open. No repaired whole clock
 assembly or PHY is qualified.
 

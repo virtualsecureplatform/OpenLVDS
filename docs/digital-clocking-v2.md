@@ -10389,3 +10389,33 @@ workers and priority zero. Three tests cover the exact native replacement
 and supply order, unchanged controls/programming gates, original full
 stimulus, complete eight-edge coverage, every point gate, and conservative
 overlap. Common routing, all-PVT, dense/update timing and PHY remain open.
+
+The prepared artifact is `regular_regenerated_bank_v263/7fa8c46ce9db679e`.
+The persistent `openlvds-regular-regenerated-bank-v263` runner is started
+with invocation `181cf82cb97949109657cb60d5111980`; it verifies the frozen
+input closure before entering the unchanged dispatcher. The five new
+diagnostic/candidate tests and five existing complete-matrix/sparse tests
+pass, recorded in `build/isolated-stage-latency-v262-tests.log`,
+`build/regular-regenerator-v263-tests.log`, and
+`build/regular-regenerator-existing-clock-tests.log`. No candidate transient
+result exists at preparation time.
+
+### First actual shared-RC stronger-storage counter timing pass
+
+Case 0 of `strong_storage_counter_shared_rc_v232/efea3a7d04b05ec7` now
+completes naturally and passes the original native timing/function/safety
+gates: SS/0 C, 410 MHz, 50% duty, stopped low. Prepare occurs after the
+second qualifying clock edge and public release after the third. Their
+latencies from the qualifying edges are 893.113/694.954 ps, leaving
+326.399/524.558 ps to the next half phase. All 612 native MOS are screened;
+maximum terminal difference is 1.941779880 V (1.95 V limit), and minimum
+clock-low margin is 0.084714875 V.
+
+An independent read-only check binds the original v232 manifest, libraries,
+source/PDK closure, task and complete native output hashes, remeasures the
+original trace with its 612-device observations, and reproduces every
+original metric. Its receipt is
+`build/reports/strong_storage_first_case_v232/verification.json`, with log
+`build/strong-counter-first-result-verification.log`. This is one passing
+actual shared-RC case, not a completed twelve-case pilot, full PVT proof,
+whole-clock or PHY qualification. Remaining native simulations continue.
