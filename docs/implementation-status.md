@@ -33,8 +33,9 @@ native zero at 486.850/522.734 ps rise/fall delay, 153.913 ps maximum slew and
 87.021 ps fastest-quarter headroom. Fine31/first-coarse and six sampled boundary points pass. The running periodic
 screen exposes a fine31 history-dependent timing failure despite acceptable
 output swing, voltage and slew. Actual internal-node observations show the
-loaded mux node failing to restore its rail between edges. Fine-stage isolation
-requires a new architecture experiment. The calibrated clock chain, dense/common legal tables, all-PVT
+loaded mux node failing to restore its rail between edges. A native component-RC fine-stage isolation
+experiment is running; the full approved frequency/duty follow-up is gated on
+passing pilot results. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and

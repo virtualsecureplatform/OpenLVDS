@@ -34,7 +34,8 @@ mask checks. Fresh whole-bank RC passes, and native zero passes at 486.850/522.7
 rise/fall delay, 153.913 ps slew and 87.021 ps quarter headroom. Fine31/first-coarse and six sampled boundary points pass. Continuous periodic
 fine31 clocks fail period/repeatability: the internal loaded mux node does not
 restore its rail between edges. Output swing, voltage and slew checks still
-pass. Fine-stage isolation is the next architecture experiment.
+pass. A native component-RC fine-stage isolation experiment is running; its full
+frequency/duty follow-up is gated on passing pilot results.
 
 Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
 dense common legal codes, complete delay range, all PVT, calibrated clock-chain

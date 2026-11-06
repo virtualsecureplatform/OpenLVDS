@@ -8946,3 +8946,39 @@ Actual new GDS/common-wire RC, update/loop/integrated clock and full-link gates
 remain required. Existing periodic and repaired-counter campaigns continue.
 The four v183/v184 tests were also rerun successfully in
 `build/native-counter-repairs-v183-v184-tests-final.log`.
+
+
+### Complete sparse input-clock matrix after isolation pilot (v188/v189)
+
+The v187 pilot is formally prepared as
+`isolated_fine_bank_v187/ef54c4df9e57088a` and running. Source validation
+completed without changing any retained trace or frozen producer. Its two
+workers use the original global six-engine dispatcher.
+
+`probe_isolated_fine_clock_matrix_v188.py` admits only variants with all four
+passing pilot cases and positive conservative both-edge overlap. It remeasures
+the consumed native traces, retains all four, then runs the missing 23 cases
+per admitted variant: zero/fine31/first-coarse at every combination of
+390/400/410 MHz and 40/50/60% duty. SS40, fixed supplies, 100 ps input slew,
+20 fF load and complete eight-cycle/25 ns/2 ps observations are unchanged.
+The first missing cases prioritize zero at 410 MHz/60%, then zero at 40%,
+first-coarse at both endpoints and nominal-duty fine31. Passing the full
+matrix also requires conservative coarse/fine overlap across every pulse and
+all nine input conditions. Missing/nonfinite history or any original timing,
+voltage, control, quarter-headroom or slew failure prevents admission.
+
+`run_isolated_fine_clock_followup_v189.py` binds the existing v187 invocation
+and exact manifest hash, waits for all 24 terminal results, then prepares and
+runs v188 only for passing hypotheses. A failed pilot is retained and cannot
+start the matrix. A collected successful transient owner can hand off a
+matching complete artifact; a different invocation is refused. The follower
+never restarts a producer or retries a partial campaign. Live unit:
+`openlvds-isolated-fine-clock-followup-v189`; state/logs:
+`build/reports/isolated_fine_clock_followup_v189/initial/`.
+
+Six targeted v187-v189 tests pass, including all 27 combinations, exactly
+23 remaining cases, priority of the known zero/60% failure, refusal of a
+contradictory pilot, either-edge history/overlap failures and absence of PHY
+promotion. Log: `build/isolated-fine-v187-v189-tests.log`. Whole-bank physical
+RC, dense/common legal tables, dynamic updates, other PVT, clock loops and
+full LVDS link gates remain open even after a passing component sparse matrix.
