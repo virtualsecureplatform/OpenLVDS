@@ -9073,3 +9073,47 @@ complete; the separate 90-case component PVT campaign continues. Even passing
 DRC/LVS will not qualify shared-wire timing: fresh actual distributed RC,
 strict native/reduction/current-witness checks, remeasured complete counter
 traces, all-PVT and clock-chain/PHY integration are still required.
+
+
+### Retained counter naming failure and strict name-only repair (v192)
+
+The v191 block `e2af7f307ddb041d` completes actual Magic DRC with **zero
+violations** and **unique LVS**, then stops at the stricter native-master
+witness: `clock_mim_2x2_v2` appears missing. Inspection of the actual streamed
+GDS identifies the cause: absolute `save` paths became directory-qualified
+GDS cell names for MIM and NAND2B child masters. Shapes and hierarchy must
+still be proved; zero DRC/LVS does not waive that witness. The complete failed
+producer, GDS, MAG, logs and exception state are retained unchanged.
+Diagnosis log: `build/repaired-clock-counter-v191-gds-diagnosis.log`.
+
+`native_gds_names_v192.py` accepts only an exact captured directory prefix
+and a bijection onto the complete actual component-master inventory plus
+root. Unknown paths, missing/duplicate targets and ambiguous aliases are
+refused. MAG copying changes only the proven `use` child-name fields;
+all rectangles, labels, ports, transforms and other bytes are preserved.
+After a separate Magic requalification, an independent KLayout comparison
+requires **every layer region, label string/position, child placement and
+root placement** to match the original GDS under that name bijection.
+The original v191 strict native-master and 21-root-placement witness must
+also pass with canonical names. LEF geometry is compared to the original.
+
+`repair_clock_counter_names_v192.py` consumes only that specific terminal
+naming failure with the original zero-DRC/unique-LVS evidence. It creates a
+new artifact and records all new output hashes. It neither reroutes the
+counter nor alters the frozen original producer. Live job:
+`openlvds-counter-name-repair-v192`; log
+`build/counter-name-repair-v192-run.log`. A successful name repair still
+requires fresh distributed shared-wire RC and unchanged native timing/PVT/
+clock-chain/PHY gates.
+
+Two pure name/byte-preservation tests and three actual-GDS CAD tests pass.
+The latter reject deliberate one-grid mask changes, label changes and
+instance shifts. Logs: `build/counter-name-repair-v192-cad-tests.log` and
+`build/counter-name-repair-v192-preflight.log` (actual retained MAG/GDS names).
+
+One legacy long-running weighted experiment also completes naturally:
+`weighted_direct_v2/70fd8cd26309c493`, case 1. It has no numerical error but
+fails terminal safety and has a negative fine15-to16 carry increment. Its
+complete data remain unqualified; the other healthy weighted solver is not
+stopped or restarted. This legacy result does not promote or replace the
+current measured fine-stage experiments.
