@@ -12180,3 +12180,28 @@ all 15 protocol modes and warmup/clock-loss checks at 390/400/410 MHz
 (`build/rx-training-v3-declaration-order-tests.log`). A fresh integrated
 run remains required before claiming an integrated pass. The exact 51 CAD
 checks already passed and are unaffected by this declaration-order fix.
+
+### Retained MIM fine-cell fallback inventory rechecked
+
+While the original zero/coarse results remain pending, a read-only review
+finds reusable geometry for a possible fine-range experiment: the 2x2 and
+2x3 switched-data-MIM cells already described above. Their original
+extraction producers still bind, and every **13 witness/code hashes per
+receipt** matches current bytes. Both retain three native MOS, two MIMs,
+NODE/EN/ENB/VDD/VSS ports, zero-error original DRC and passing original LVS.
+The current audit is retained at
+`build/reports/mim_fine_fallback_inventory/20261106T202642Z`, with program
+`build/audit-mim-fine-fallback-20261106.py` and log
+`build/mim-fine-fallback-inventory-20261106.log`. No old artifact is modified.
+
+The original MIM-to-MOSCAP change reduced excessive fine loading/slew in a
+different, weakly driven internal-node architecture. Its failures cannot
+predict MIM performance behind the present isolation and restoration
+stages. Conversely, the larger MIM's old sparse range pass cannot qualify
+the current bank. If complete new coarse/fine evidence shows a range gap,
+these existing GDS cells allow fresh modern component-RC/Schur checks and
+a controlled bank comparison before considering another layout. Native
+gate-role observations must be regenerated for the changed fine units.
+This is a fallback inventory, not a capacitor substitution, architecture
+selection or new timing/physical/PHY admission; the pending tapered-bank
+and baseline experiments remain intact.
