@@ -3,7 +3,7 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
-Current architecture work (2026-11-05):
+Current architecture work (2026-11-06):
 
 The regenerated delay bank passes the actual routed SS/40 C zero-code screen
 with 64.8 ps quarter-cycle headroom. Its falling coarse/fine overlap still
@@ -96,7 +96,8 @@ all fine/output/control circuitry and verifies 1,453/1,773 MOS, 42 MIMs and
 under unchanged gates and dispatcher limits. The double-coarse profile now has all three completed native points, with
 positive rising/falling overlap of 58.053478/167.446004 ps and zero-code
 quarter headroom of 111.213640 ps. All native/slew screens pass; triple-coarse
-cases remain running. These component-model results do not admit common bank
+cases remain running; its fine31 point now passes at 690.584011/854.005211 ps
+and 243.178202 ps maximum slew. These component-model results do not admit common bank
 wiring, periodic clocks, PVT or the PHY.
 Canonical middle-fine and stronger-coarse GDS/LEF views now pass fresh native,
 mask/junction and OpenDB checks at
@@ -163,8 +164,13 @@ capacitors match but leaves 31 N capacitors wrong and changes other native
 junction fields. All three policies preserve topology/W/L, but none is a
 valid physical repair. A separate check confirms every junction field of
 all 93 pass/clear switches matches its measured primitive in both profiles.
-A geometry-proven selective capacitor correction remains required for future
-whole-bank RC; no extraction defaults or admitted models are changed.
+The selective correction is now implemented in v142. Both measured-reference
+preparations pass at `measured_bank_junction_reference_v143/1595e26c774ff542`
+(b2) and `measured_bank_junction_reference_v143/a01184cabad95322` (b3), each
+correcting 124 fields on only 62 capacitor devices. All non-capacitor devices,
+topology and dimensions remain unchanged; the correction regenerates and is
+byte-idempotent. These are unrouted measured references, with no joint RC or
+PHY admission. Extraction defaults and admitted timing models are unchanged.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native
@@ -180,9 +186,9 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-The full regression passes **2,136 tests without skips** in 428.220 s
-(`build/measured-bank-fine-partition-v139-full-tests.log`), including physical
-graph, matched-diagnostic, three-point, inventory and fine-partition guard tests. Both CAD campaigns also reject injected metal,
+The full regression passes **2,140 tests without skips** in 435.391 s
+(`build/measured-bank-junction-reconstruction-v142-full-tests.log`), including
+physical graph, matched-diagnostic, timing, partition and reconstruction guards. Both CAD campaigns also reject injected metal,
 label and duplicated-instance faults; these native layout checks supplement
 the software suite. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;

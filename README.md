@@ -44,9 +44,9 @@ interface checks for their existing fine-data and supply buses.
 The next native GDS/DRC/LVS stage is prepared behind the timing and routing
 gates. Fresh unrouted device extractions preserve both exact MOS/MIM inventories
 and reference-supplied parameters; routed connectivity and joint RC remain open.
-The upcoming bank RC reference needs measured junction geometry for its 62
-fine-capacitor MOS devices; ordinary shared-rail extraction misallocates their
-individual junction fields.
+Selective junction reconstruction now matches all 62 fine-capacitor MOS to
+measured geometry while preserving other devices and wiring. Both ordinary
+reference preparations pass; actual routed-bank RC qualification remains open.
 Their exploratory 332-instance placement passes zero DRC and fixed-bus
 connectivity checks; whole-bank routing and timing qualification remain open.
 The physical parallel INV8 output master passes native geometry and complete

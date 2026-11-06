@@ -7741,3 +7741,51 @@ witnesses. A completed routed bank with native LVS is still required before
 that correction can qualify an actual bank RC model. Current timing runs,
 fixtures, solver settings, six-engine queue and clock/supply/temperature gates
 remain untouched.
+
+
+### Selective measured capacitor reconstruction implemented
+
+`measured_bank_junction_reconstruction_v142.py` now reconstructs only the
+62 capacitor MOS identified by the full 31-section topology. It requires one
+flat native bank namespace and the exact b2/b3 MOS/MIM census. Every target
+must have tied D/S/body and a matching independently measured primitive;
+ambiguous/asymmetric D/S junction orientation is refused. Both zero and known
+nonzero allocation errors can be replaced, with every original/target field
+recorded. No other native device or parameter is changed.
+
+Only the junction-value tokens on those source cards change. Multiline cards,
+inline comments and their original whitespace are retained; every explicit
+R/C record stays byte-identical. Topology/model/W/L signatures remain equal,
+all non-capacitor device dictionaries remain identical, and every corrected
+capacitor field must match its measured geometry. A second application is
+byte-identical. Callers still must prove actual native masks/separate active
+regions and full routed-bank native LVS before admitting an RC model.
+
+`build_measured_bank_junction_reference_v143.py` exercises this correction
+against both complete v140 ordinary extractions with their frozen geometry
+provenance:
+
+| Profile | Reference artifact | Corrected devices / fields | Original extraction |
+| --- | --- | ---: | --- |
+| b2 | `measured_bank_junction_reference_v143/1595e26c774ff542` | 62 / 124 | preserved |
+| b3 | `measured_bank_junction_reference_v143/a01184cabad95322` | 62 / 124 | preserved |
+
+Both reference preparations pass. All non-capacitor parameters and all original
+reference-supplied native parameters are preserved; corrections regenerate
+exactly and are byte-idempotent. Their ordinary sources contain no explicit
+R/C, so these are measured-reference preparations with **joint RC and PHY
+admission false**. Future routed qualification must construct its reference
+from that routed bank's own ordinary extraction, never substitute these
+unrouted connections.
+
+Four new tests cover both full native censuses, exact passive and non-capacitor
+preservation, idempotence, multiline/comment handling, and refusal of missing
+measurements, asymmetric junctions, negative/ambiguous fields, changed fine
+topology, wrong census and multiple subcircuit namespaces. They pass in
+12.598 s. The complete regression passes **2,140 tests without skips** in
+**435.391 s** (`build/measured-bank-junction-reconstruction-v142-full-tests.log`).
+
+The ongoing b3 parent sparse campaign also completes its fine31 point:
+repeated delays **690.584011 / 854.005211 ps**, maximum output slew
+**243.178202 ps**, with native/control/repetition/slew checks passing. Zero
+and first-coarse b3 points remain pending; this does not admit that profile.
