@@ -8097,3 +8097,41 @@ periodic manifest or native periodic pass exists yet.
 The periodic expansion regression passes **2,159 tests without skips** in
 **378.941 s** (`build/measured-balanced-joint-periodic-v154-full-tests.log`).
 The actual periodic stage remains gated on whole-bank native timing evidence.
+
+
+### Actual joint-RC extraction retained after continuation-parser failure
+
+The v144 receipt `1ede485637de1219` completed actual extraction and original
+passive reduction, then failed its parameter-inventory boundary on continued
+`.subckt` ports in the ordinary native reference. Its process exited with a
+traceback; the preserved state remains partial (`extracting`). The native
+extractor receipt under `build/extracted/d0ff682eb7231e2a/` passes its ports
+and passivity gates with **50,887 resistors and 13,024 capacitors**. Reduction
+retains 39,647 resistors. Corrected raw/reference/reduced partial files are
+retained. The old downstream services refused this incomplete upstream state.
+
+New `verify_measured_balanced_joint_rc_v155.py` consumes this retained extraction
+without re-extracting or overwriting it. It requires the original producer's
+execution lock to be free, revalidates the frozen v144 native/geometry lineage,
+binds the exact GDS/extractor fingerprint and source scope, verifies original
+raw/reduced hashes and passivity, and hashes every original extraction and
+partial-campaign file. Its own output namespace regenerates the original and
+corrected reductions, selective junction correction, all native/fine-device
+parameters, corrected native LVS and independent Schur witness. Every original
+file must remain unchanged. Geometry or transistor parameters are not relaxed.
+
+`measured_native_parameter_view_v155.py` normalizes the existing analysis view
+before the strict inventory call, leaving stored SPICE bytes untouched. Two
+regression tests use the full 1,453-MOS/42-MIM census with continued port and MOS
+cards, and reject changed W/L, missing native devices or reordered public ports.
+The real retained corrected reference and collapsed joint netlist pass this
+parameter gate (`build/measured-native-parameter-view-v155-preflight.log`).
+
+The initial v155 preparation hit an NFS exclusive-lock access-mode error before
+creating a manifest. Opening the existing lock read/write corrected it without
+changing its bytes. Formal receipt `7065685b553b1050` is now prepared and running;
+its source/helpers are frozen. The unprepared v146 evidence import was safely
+retargeted to v155 after confirming no formal manifest captured v146. New
+`after155` zero/sparse/periodic services require each complete passing upstream
+receipt. The v155 full regression is running, and complete joint-RC/native
+transient/PVT/PHY admission remains pending.
