@@ -9117,3 +9117,52 @@ fails terminal safety and has a negative fine15-to16 carry increment. Its
 complete data remain unqualified; the other healthy weighted solver is not
 stopped or restarted. This legacy result does not promote or replace the
 current measured fine-stage experiments.
+
+
+### Counter name-only repair passes; full shared-wire RC launched (v193)
+
+`repaired_clock_counter_names_v192/14dd04aca960527a` completes successfully.
+It requalifies **zero DRC and unique LVS**. All 20 GDS cells match the original
+under a bijection changing exactly eight names; **every mask, label and
+child/root placement is identical**. The original strict witness now passes
+all 19 native masters, 13 repeated definitions and all 21 integrated macro
+placements. The failed v191 artifact remains byte-preserved. The independently
+expanded actual LVS census is **223 NFET + 223 HVT PFET + 48 MIM = 494 native
+primitives** with the exact seven-port interface. Census log:
+`build/repaired-clock-counter-native-census-v193.log`.
+
+`qualify_repaired_clock_counter_rc_v193.py` admits only this complete physical
+proof with every geometry/name/placement flag and output hash verified. It
+requires fresh actual-GDS extraction, positive passive elements, exact public
+port order, the full native census/model/geometry parameters, reproducible
+reduction, collapsed native topology LVS and independent Schur current
+witnesses. The independent CAD certifier's complete imported script closure
+and matching pinned scientific runtime are captured. All complete-byte SHA-256
+checks remain; the new producer streams hashes in bounded memory rather than
+allocating whole retained waveforms. No old producer/helper is edited.
+
+Three tests pass: all physical/name witness gates, the actual 494-primitive
+census and model-change refusal, and complete-byte streaming SHA equivalence
+across block boundaries. Log `build/repaired-clock-counter-rc-v193-tests.log`.
+Live job: `openlvds-repaired-counter-rc-v193`; run log
+`build/repaired-clock-counter-rc-v193-run.log`. Extraction/math add no SPICE
+engine. A passing RC proof still cannot admit counter transient timing,
+all-PVT, joint DCC first events, hardware warmup, full clock loops or PHY.
+
+### First stronger fine-driver result retains a history failure
+
+Complete v190 case 1 (regular INV8, one fine bank, fine31, SS40/410 MHz/60%)
+restores all eight full-swing output pulses. Controls and terminal safety
+pass; output slew **246.867425 ps** passes the unchanged 250 ps domain.
+However period error is **140.576798 ps** and rising/falling delay spans are
+**166.591894/39.825912 ps**, above 20 ps. Rising delay changes from
+1311.809981 to 1145.218087 ps. The mux node recovers full swing, but the fine
+node settles only between approximately **0.19726 and 1.52637 V**. Output
+regeneration hides the incomplete internal recovery. This case remains failed
+without discarding startup cycles. Other v190 and v187 cases continue.
+
+This stronger-driver evidence points toward a deliberately balanced fine-node
+pull-up/pull-down stage, rather than merely copying a larger equal-ratio gate.
+A custom native CMOS driver and/or altered coarse step may be needed; it must
+retain the original repeatability/period, both-edge overlap, zero-quarter,
+slew, dense/common all-PVT and fresh physical/RC gates before selection.

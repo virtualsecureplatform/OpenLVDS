@@ -53,9 +53,10 @@ The actual 3 um setter master/pair also passes DRC/LVS and fresh component RC.
 Both actual repairs pass the six-case SS pilot; the 90-case PVT screen is
 running. The repaired counter and both clock drivers are now being integrated
 as a 21-macro routed block. It has zero Magic DRC and unique LVS, but the
-strict native-master witness finds directory-qualified GDS names. A separate
-name-only repair with exact mask/label/placement checks is running; shared-wire
-RC/timing and whole-clock validation remain open. No repaired whole clock
+strict native-master witness initially finds directory-qualified GDS names.
+A separate name-only repair now passes exact mask/label/placement and native
+master checks. Fresh shared-wire RC qualification is running; native timing
+and whole-clock validation remain open. No repaired whole clock
 assembly or PHY is qualified.
 
 Earlier clocking experiments remain useful diagnostic evidence:
