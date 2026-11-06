@@ -7888,3 +7888,43 @@ Three new observation unit tests pass, covering doubled/per-control typed gate
 coverage, logical shorts, missing aliases, public port order and preservation
 of an RC-separated terminal. Immutable v60 coordinate/alias helpers are reused;
 no prior producer, model or fixture is changed.
+
+
+### Full observed post-layout zero screen prepared
+
+`probe_measured_balanced_joint_zero_v146.py` admits only a complete, unchanged
+v144 actual routed joint-RC receipt with native topology/equivalence and all
+original extraction hashes intact. It regenerates v145 observations from the
+real native GDS `.mag`, original distributed `.ext`, qualified corrected reduced
+netlist and exact physical graph/plan. The actual counts are mandatory:
+351 instances, 150 canonical nets, 1,453/1,773 MOS, 173 typed programming gates
+and all 86 logical controls. A corrected unrouted v143 reference is explicitly
+refused as input; log
+`build/measured-balanced-joint-zero-v146-reference-refusal.log`.
+
+The new case retains the original full **20 ns, two-pulse, 2 ps maximum-step**
+fixture at SS/40 C, 1.8 V, 100 ps input slew and 20 fF load, with no initial
+conditions added. Every actual body/drain/source/gate terminal and separate
+control endpoint is saved. The native analyzer requires complete startup and
+both unwrapped epochs, one rising/falling pulse per epoch, every terminal
+voltage bound, every internal/external control and typed programming gate,
+and no more than 20 ps repeated-delay difference.
+
+Additional zero admission requires both pulses' 10–90% output slew at or below
+250 ps and the worst rising/falling delay from either pulse within the fastest
+410 MHz quarter (609.756098 ps). Missing full-swing events, a first-pulse budget
+failure, wide slew or any native failure cannot pass. The zero result retains
+whole-bank RC, with periodic/update/dense/PVT and electrical/PHY admission false.
+The gate does not replace the remaining full-bank sparse or clock/link checks.
+
+Three new fixture/measurement tests pass, covering both pulses and the original
+quarter/slew limits, native failure, missing/invalid epochs, and retention of
+all RC-separated probes and original stimulus. The observation tests also pass.
+The complete regression passes **2,146 tests without skips** in **389.665 s**
+(`build/measured-balanced-joint-zero-v146-full-tests.log`).
+
+`openlvds-measured-balanced-joint-zero-v146.service` waits for the exact existing
+v144 joint-RC process, then requires its complete passing receipt before
+preparing or running a native case. It uses one priority-0 worker in the
+original six-engine dispatcher. No new actual joint-RC timing artifact is
+claimed yet, and all existing healthy solvers/fixtures remain intact.

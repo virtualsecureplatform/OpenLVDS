@@ -186,6 +186,13 @@ retains all separate MOS terminals, and checks 173 programming gates by native
 type/width/control polarity plus all 86 logical controls. Both reference-graph
 logic preflights pass, and all four injected gate/polarity faults are rejected.
 Those preflights use synthetic aliases and do not qualify actual routed mapping.
+The v146 complete observed post-layout zero screen is prepared and queued
+behind actual joint-RC qualification. It regenerates mapping from the actual
+native/RC files and refuses an unrouted corrected reference. The case retains
+the full two-pulse 20 ns, 2 ps maximum-step SS/40 fixture, all MOS terminals,
+173 programming gates and 86 controls. Native safety/control/repetition,
+250 ps full-swing slew and both pulses' fastest-quarter timing must all pass.
+No post-layout timing artifact or PHY admission is claimed yet.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native
@@ -205,9 +212,9 @@ endpoint cases with overlap 20.649958/10.736333 ps and max slew
 supersede the measured-RC bank failures. The 0.80 um campaign also retains
 its original scope in `moscap_fine_component_v89/2be386aad63fa8a0`.
 
-The full regression passes **2,140 tests without skips** in 435.391 s
-(`build/measured-bank-junction-reconstruction-v142-full-tests.log`), including
-physical graph, matched-diagnostic, timing, partition and reconstruction guards. Both CAD campaigns also reject injected metal,
+The full regression passes **2,146 tests without skips** in 389.665 s
+(`build/measured-balanced-joint-zero-v146-full-tests.log`), including physical
+graph, native reconstruction, typed observation and complete zero-screen guards. Both CAD campaigns also reject injected metal,
 label and duplicated-instance faults; these native layout checks supplement
 the software suite. Native architecture experiments
 use the unchanged six-engine dispatcher and at most two workers per campaign;
