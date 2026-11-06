@@ -12503,3 +12503,40 @@ failure, establishes no runtime speedup, and leaves electrical, bank
 clock-interface, all-PVT and PHY qualification false. The approved raw
 clock input-duty range remains **40%–60%**, with **50%** as the nominal
 check, under `clocking_duty_v2_2.json`.
+
+### Independent repaired-counter duty-window replay
+
+Read-only report
+`build/reports/native_counter_duty_windows/20261106T221400Z/summary.json`
+remeasures the four complete v184 cases 24–27 (SS/40 C, 410 MHz,
+40/60% duty, both stopped levels). All original native metrics reproduce,
+including all **510 MOS** terminal screens. The case files, exact fixture,
+parent identity and component libraries are checked against their original
+hashes; this selected-case replay does not revalidate every historical
+parent input. Its retained script is
+`build/analyze-native-counter-duty-windows-20261106.py`, SHA256
+`03f563adf39b8873f2081695d1f1180e61de54228b38c369f10f245c21bb51f2`.
+Unit `openlvds-native-counter-duty-windows-20261106`, invocation
+`cf4651efc33d44e18c3164205132cbf5`, exits successfully. Log:
+`build/native-counter-duty-windows-20261106.log`.
+
+The first assertions have identical startup timing for both stopped levels:
+
+| Input duty | low0 remaining low window (ps) | low1 (ps) | armed (ps) |
+| --- | ---: | ---: | ---: |
+| 40% | 93.725 | 580.138 | 557.036 |
+| 60% | −8.959 | 101.825 | 81.581 |
+
+At 60%, CLK crosses upward through 0.180 V at 4678.941797 ps, before
+low0 asserts at 4687.900553 ps. Its actual voltage is 0.211530797 V,
+giving **−31.530797 mV** of low-voltage margin. Thus the recorded
+alternating-phase failure is a first-assertion startup race; later
+low-phase assertions, terminal safety and stopped-clock clear pass.
+No epoch wrapping or timing/voltage threshold change is used.
+
+This independently localizes the older component-assembled counter's
+failure and supports examining the pending matched CLK/REQUEST buffer
+experiment. It does not transfer numerical bounds to that different
+644/844-device assembly or establish its success. The original 26 ns
+waveforms and failing gates remain intact; no circuit, whole-clock RC,
+PVT or PHY admission follows from this diagnosis.
