@@ -8982,3 +8982,14 @@ contradictory pilot, either-edge history/overlap failures and absence of PHY
 promotion. Log: `build/isolated-fine-v187-v189-tests.log`. Whole-bank physical
 RC, dense/common legal tables, dynamic updates, other PVT, clock loops and
 full LVDS link gates remain open even after a passing component sparse matrix.
+
+
+The complete regression after v188/v189 ran **2,214 tests in 424.742 s**:
+**2,206 passed**, eight KLayout tests skipped in scientific Python. All eight
+have passing separate CAD runs with unchanged sources:
+`build/unguarded-output-cell-v160-cad-tests.log`,
+`build/unguarded-output-cell-v162-tests.log`,
+`build/counter-bodytap-v178-tests.log`, and
+`build/counter-setter-guard3-v182-tests.log` (two tests each).
+Broad log: `build/isolated-fine-v189-full-tests.log`. This verifies software,
+RTL and the covered native/CAD checks, not electrical clock/PHY qualification.
