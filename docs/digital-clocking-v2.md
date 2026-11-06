@@ -12076,3 +12076,55 @@ including actual native layout inventory, every transistor's gate/bulk and
 dimensions, public port order, and rejection of failed/partial/mismatched
 physical evidence (`build/tapered-driver-v308-native-tests.log`). The existing
 six-engine dispatcher, running campaigns and frozen sources are unchanged.
+
+### Gated tapered-restoration bank experiment (v310–v311)
+
+`probe_tapered_regenerated_bank_v310.py` implements the native bank comparison
+for the qualified P6/N4 and P10/N8 first restorers. Only
+`Xfine_regenerate0` changes. The isolation driver, final P20/N16 inverter,
+all unrelated component definitions and native terminal maps, 86 controls
+and 173 typed programming gates remain unchanged. Actual native assemblies
+contain respectively **1503 and 1511 MOS**, with **43 MIM** in each. The
+new component interconnections remain ideal; this is not a routed bank.
+
+Each variant retains the original four-point SS40/410 MHz screen:
+zero/50%, fine31/60%, fine31/40%, first-coarse/50%. All eight startup/steady
+cycles, fixed 1.8 V supply, 100 ps input slew, 20 fF output load, 25 ns
+duration, native models and original solver settings remain. Both edge
+histories, native terminal safety, programming controls, 250 ps slew,
+20 ps repeatability/period limits, zero quarter-period budget and
+conservative both-duty fine/coarse overlap remain mandatory. Missing,
+nonfinite or failed results cannot pass a variant. Full clock/PVT coverage
+remains 390/400/410 MHz and 40/50/60% duty; this component screen does not
+replace that qualification.
+
+Preparation requires the original v263 zero-code case to complete
+naturally. Its full native result and retained file hashes must independently
+reproduce, and all native safety/control/pulse/history/slew gates must pass
+with the quarter-period budget as the isolated failure. A live prefix is
+insufficient. Both smaller drivers must also retain their actual qualified
+physical/local-RC evidence. Only then are decks and the captured source/
+PDK/simulator closure created. Two workers use priority 1 under the unchanged
+six-engine dispatcher; existing or partial campaigns are never restarted.
+
+`run_tapered_regenerated_followup_v311.py` is launched as
+`openlvds-tapered-regenerated-followup-v311`, PID **2067295**, invocation
+`97e39876d09f45bf98d776cc96d016a0`. It follows the original v263 invocation
+`181cf82cb97949109657cb60d5111980`, pins **218 input files**, and is confirmed
+live in `waiting_for_complete_native_zero`. State and exclusive stage logs
+are retained under `build/reports/tapered_regenerated_followup_v311/initial`;
+the unit log is `build/tapered-regenerated-followup-v311.log`. No v310
+native waveform or passing timing result exists at this checkpoint. A
+changed producer/source or failed prerequisite stops the continuation and
+preserves evidence; a successful component comparison still grants no
+shared-wire, PVT, DLL or PHY admission.
+
+All **nine targeted tests pass without skips**, including actual native
+assembly and qualified RC handoff, exact original fixtures, rejection of
+wrong sizes/ports/unrelated terminal changes, missing edges/nonfinite
+delays/failed overlap, incomplete baseline gating and exact producer
+ownership (`build/tapered-regenerated-bank-v310-v311-final-tests.log`). An
+earlier test run expected a different message for the correctly rejected
+missing owner; its failed log remains at
+`build/tapered-regenerated-bank-v310-v311-tests.log`. The assertion is
+corrected without changing producer rejection behavior.
