@@ -12732,3 +12732,68 @@ replay, all-point safety/low-window gates, guard coverage and restart
 protection. Log: `build/request-taper-counter-v317-tests.log`.
 This is software validation only; no new native result, routed-counter
 RC, all-duty/frequency/PVT, DCC or PHY qualification follows.
+
+### Prepared REQUEST taper context and native queue
+
+Preparation completes as
+`request_taper_counter_v317/a9021aae03b1ad1c`, binding **2899 inputs**,
+**2798 per-lease guards**, **808 MOS** and the unchanged **56 native MIM**
+inventory. Generated library hashes are included in its canonical
+identity. Preparation unit `openlvds-request-taper-counter-prepare-v317`,
+invocation `3747f62fb2e84f898eec7e53f2fe7749`, exits successfully;
+log: `build/request-taper-counter-v317-prepare.log`.
+
+The guarded run is live as `openlvds-request-taper-counter-v317`,
+MainPID 2101856, invocation `5ef0b0dc216047bbb02386dcd7a6ba50`.
+State is running, and its first priority-1 ticket
+`request_taper_counter_v317_0` has a held live owner. One worker uses the
+unchanged six-lease dispatcher. No new native point has completed.
+Log: `build/request-taper-counter-v317-run.log`.
+
+All **nine targeted tests pass without skips in 22.644 s**, including
+actual prepared native observation/deck checks, exact guard coverage,
+canonical generated-library checksums and rejection of a forged outer
+library checksum. The test file is not in the captured closure; the
+prepared producer and helper closure remain unchanged. Log:
+`build/request-taper-counter-v317-prepared-tests.log`.
+
+### Actual shared-RC sixty-percent counter failure remains startup timing
+
+V269 cases 4/5 also complete without solver errors: actual fast-clear
+counter shared-wire RC, SS/0 C, 410 MHz, 60% duty, both stopped levels.
+All 644 native MOS pass terminal safety, and stopped-clock clearing and
+reassertion pass. Phase arming and alternating-phase order still fail.
+These are different assemblies from v306's ideal-shared-wire controls;
+passing component timing cannot be transferred to the routed counter.
+
+Unchanged full-native diagnosis v299 reproduces every original metric
+for both cases in
+`fast_clear_counter_clear_diagnosis_v299/739e8063729c2acb`. Unit
+`openlvds-fast-clear-sixty-v299-completed`, invocation
+`bdad9ff100f84334952ec303f442c332`, exits successfully; log:
+`build/fast-clear-counter-sixty-v299-completed.log`.
+PREPARE/RESET_N clear headrooms before external REQUEST reassertion are
+**662.525648/704.321483 ps** for low-stop and
+**159.568278/194.603283 ps** for high-stop. Final output voltages also
+pass the unchanged clear gate.
+
+Existing fixed-epoch observer v305 then produces
+`counter_low_windows_v305/bedf4d0ac76e17e1`, reproducing the original
+clock-voltage gate for both full waveforms. Unit
+`openlvds-fast-clear-sixty-windows-v305-completed`, invocation
+`ab39329942ab42df920015cc86fbf958`, exits successfully; log:
+`build/fast-clear-sixty-low-windows-v305-completed.log`.
+Both stopped levels have identical startup results:
+
+| Assertion | Remaining guaranteed-low window (ps) | CLK voltage (V) |
+| --- | ---: | ---: |
+| low0 | −106.933929 | 0.515810943 |
+| low1 | −12.584916 | 0.218817248 |
+| armed | −14.952046 | 0.226189764 |
+
+The clear-path repair has not supplied valid startup phase timing at
+this duty endpoint. No edges are discarded or reassigned to another
+epoch. The REQUEST taper targets the separate measured internal-gate
+overvoltage; even successful component tests must be followed by fresh
+counter routing/RC and full native startup/clear qualification. SS40 and
+the remaining clock/PVT/DCC/PHY requirements remain outstanding.

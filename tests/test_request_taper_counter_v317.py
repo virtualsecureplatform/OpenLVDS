@@ -150,6 +150,37 @@ class RequestTaperCounterTests(unittest.TestCase):
                 bound.assert_not_called()
                 self.assertEqual((folder / 'state.json').read_text(), original)
 
+    def test_prepared_identity_canonical_library_hashes_guards_and_native_decks(self):
+        folder = probe.ROOT / 'build/diagnostics/request_taper_counter_v317/a9021aae03b1ad1c'
+        if not (folder / 'manifest.json').exists():
+            self.skipTest('Requires actual prepared REQUEST taper context')
+        manifest = probe.bound(folder, full=False)
+        identity = manifest['identity']
+        self.assertEqual(len(identity['devices'][probe.VARIANT]), 808)
+        self.assertEqual(identity['native_revision']['native_mims'], 56)
+        self.assertEqual(manifest['libraries'], identity['library_sha256'])
+        self.assertEqual(len(identity['inputs']), 2899)
+        self.assertEqual(len(identity['guards']), 2798)
+        self.assertEqual(identity['guards'], probe.guard_inputs(identity['inputs']))
+        self.assertEqual(identity['max_workers'], 1)
+        self.assertEqual(identity['priority'], 1)
+        self.assertEqual(len(manifest['tasks']), 4)
+        for name, expected in identity['library_sha256'].items():
+            self.assertEqual(probe.sha(folder / name), expected)
+        # An updated outer checksum cannot legitimize a changed generated
+        # library: its checksum also belongs to the canonical identity.
+        changed = deepcopy(manifest)
+        changed['libraries']['cells.spice'] = '0' * 64
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            copied = root / 'build/diagnostics' / probe.CONTEXT / folder.name
+            copied.mkdir(parents=True)
+            (copied / 'manifest.json').write_text(json.dumps(changed))
+            with patch.object(probe, 'ROOT', root), patch.object(probe, 'provenance') as provenance:
+                with self.assertRaisesRegex(ValueError, 'native context changed'):
+                    probe.bound(copied, full=False)
+                provenance.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()
