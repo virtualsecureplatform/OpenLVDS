@@ -7834,3 +7834,23 @@ leaves this stage unadmitted. No actual routed joint-RC artifact or pass is
 claimed yet. All healthy native timing solvers, captured source files,
 fixtures, queue limits and the 390/400/410 MHz, 40/50/60% duty, fixed-supply,
 0/25/40 C requirements remain unchanged.
+
+
+### Measured-inverter first-coarse timing completes
+
+Case 1 of `measured_gang_sparse_v131/58a9364cba76fa27` completes its full
+20 ns native run with no case error. Independently rechecking all recorded
+output hashes and remeasuring the completed trace reproduces its result
+exactly (`build/measured-gang-sparse-v131-completed-coarse-recheck.log`).
+
+Repeated rising/falling delay is **634.430366 / 688.577488 ps**; maximum output
+slew is **156.083759 ps**. Native terminal/control/repetition and output-slew
+gates pass. Relative to the unchanged completed measured-inverter fine31
+trace, the two-point overlap is **+58.070422 / +167.461298 ps**.
+
+The zero-code run remains active. Its complete native safety/slew/repetition
+and fastest-quarter checks are still required before the three-point result
+can pass. These measured component-model points retain their scope: common
+bank wiring, periodic/PVT timing and the PHY remain unqualified. The queued
+routing, native GDS and joint-RC services continue to enforce their existing
+complete-evidence gates.

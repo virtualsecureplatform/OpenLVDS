@@ -185,9 +185,13 @@ The matched measured-inverter fine31 diagnostic is complete at
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native
 and slew checks passing. New zero/first-coarse runs use the identical model
 at `measured_gang_sparse_v131/58a9364cba76fa27`, consuming the completed fine31
-trace as the third point. They preserve the complete 20 ns fixture and all
-original observations, with two dispatcher leases. This measured-gang model
-still needs its own three-point verdict; no whole-bank or PHY admission follows.
+trace as the third point. The first-coarse case now completes and independently
+remeasures exactly: repeated 634.430366/688.577488 ps, maximum slew 156.083759 ps,
+all native/slew gates passing. Its overlap with fine31 is +58.070422/+167.461298 ps.
+The zero-code case remains active and must pass the complete fastest-quarter
+and native/slew gates. Both cases retain the full 20 ns fixture and original
+observations. This measured-gang model still needs its own three-point verdict;
+no whole-bank or PHY admission follows.
 
 The 0.76 um original width prototype separately passes its three initial
 endpoint cases with overlap 20.649958/10.736333 ps and max slew
