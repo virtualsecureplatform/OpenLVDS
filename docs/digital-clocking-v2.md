@@ -11573,3 +11573,33 @@ failure, incomplete/duplicate/foreign conditions, missing startup histories,
 native safety failures, full donor remeasurement, changed waveform/runtime
 inputs and both-coordinator handoff/lineage rejection. These are software
 and synthetic tests; they do not provide new native timing evidence.
+
+The persistent handoff is live as
+`openlvds-regular-regenerated-full-range-v302`, PID 2047524, invocation
+`cbad3c780d68469b976246d9248faeb7`, with **447 captured inputs** and status
+`waiting_for_native_donors`. It pins sparse invocation
+`61b44074399f450a8105652b7bb3e7a2` and dense invocation
+`acae5be252f54d818650a19df4b0cfa8`. Its state is retained at
+`build/reports/regular_regenerated_full_range_v302/initial/state.json`.
+It holds no SPICE lease while waiting; no full-range campaign is prepared.
+
+### Additional completed sizing evidence
+
+V220 case 4 (P24/N16, SS40, 410 MHz, fine31, 40% duty) completes without
+simulator error and passes its original individual native/interface checks:
+231.368755 ps maximum slew, 1.797508 ps maximum period error and
+1.798994/0.318961 ps rising/falling history span. Its other endpoint,
+zero-code latency and coarse overlap are still separate requirements.
+
+V201 case 5 (P24/N12 at the same condition except 60% duty) also completes
+without simulator error but fails period/history/interface: maximum period
+error 36.495754 ps and rising-history span 36.614285 ps, despite acceptable
+231.440829 ps slew. The unchanged v262 analyzer reproduces all eight
+crossings in receipt `isolated_bank_stage_latency_v262/d706a12b9247bc73`,
+logged at `build/balanced-p24n12-fine60-stage-v262-completed.log`.
+Its signed first-minus-last rising contributions are 1.336139 ps at the
+mux, 30.798971 ps across isolation/fine loads and 4.479175 ps through the
+old output buffer, summing to 36.614285 ps. Falling contributions sum to
+−0.663036 ps. This is evidence of the remaining history failure in this
+specific sizing branch, not an inference about the pending revised-bank
+zero/coarse tests. Neither sizing branch supplies bank or PHY admission.
