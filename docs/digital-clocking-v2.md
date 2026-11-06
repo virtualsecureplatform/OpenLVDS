@@ -8591,3 +8591,45 @@ four KLayout tests skipped in scientific Python. Those four v160/v162 tests
 pass in their separate CAD runs. The additional v165 metadata test, two v168
 guard tests and three v170 coordinator tests pass separately. Broad log:
 `build/unguarded-bank-v165-full-tests.log`.
+
+### Counter repair results require more cold-corner output damping
+
+The SS40 v161 pilot is complete: four cases, zero numerical errors, all
+native point checks pass. With 1.5 um guards, maximum terminal differences
+are 1.945761916 V and 1.944584680 V for stopped levels 0/1.
+
+The colder v163 cases expose remaining stress. Both stopped levels at SS0
+with 1.25 um guards reach 1.955863241 V; SS25 reaches 1.950854979 V. Both
+SS0 cases with 1.5 um guards reach 1.952248107 V. The 1.95 V limit remains
+unchanged and those candidates remain rejected. Original timing checks pass.
+
+`diagnose_counter_terminal_peaks_v166.py` reproduces stored failures from
+complete, hash-bound real samples. At SS0 with 1.25 um guards, the worst
+setter drain/body event is 1.955863241 V at 4020.5 ps: output drain 1.953132 V,
+body -2.731 mV, private source +0.739405 V. Storage NAND `Xlow0_q:X5` peaks
+at gate/body 1.953955607 V at 4024.5 ps, with its gate 1.953864 V and body
+-0.092 mV. Thus storage stress sees the setter overshoot at its input gate;
+a separate storage-output redesign is not yet supported by these peaks.
+Report: `build/reports/counter_terminal_peaks_v166/ss0_guard125.json`.
+
+The v168 helper/pilot extends output guards to 2x2 and 3x3 um, keeping all
+other native cards and original wire RC intact. Twelve SS0/25/40, 50%-duty,
+both-stopped-level cases prioritize the cold failures. The two new helper
+tests pass. The original timing/stress checks, fixed supplies and dispatcher
+limits remain intact; geometry, all-PVT and whole-clock qualification remain
+false until independently established.
+
+
+The v163 cold pilot is now complete: eight cases, zero numerical errors. Six
+cases fail the strict stress gate; the two 1.5 um SS25 cases pass at
+1.947568908 V. No all-temperature repair is admitted.
+
+Formal larger-guard artifact: `counter_output_guard_margin_v168/3e16952b31d1d2b0`;
+service `openlvds-counter-output-guard-margin-v168.service`, log
+`build/counter-output-guard-margin-v168-run.log`. Twelve complete native
+cases are running with two priority-0 workers inside the unchanged dispatcher.
+The first prepare attempt stopped before a manifest because numeric library
+directories collided with case IDs; its partial directory
+`counter_output_guard_margin_v168/7fdf30bfc6d017ee` and prepare log are retained.
+The formal recipe uses `guard_2`/`guard_3` library directories, with unchanged
+native devices, stimuli, limits and numerical task IDs.
