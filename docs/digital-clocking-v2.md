@@ -9275,3 +9275,39 @@ these do not override the failed physical results. Run logs:
 `build/balanced-driver-pcells-v195-run.log`,
 `build/balanced-fine-driver-v196-run.log`,
 `build/balanced-fine-driver-v197-run.log`.
+
+
+### Balanced drivers pass physical closure (v198)
+
+`balanced_fine_driver_physical_v198/b22c5ef15943083d` completes both sizing
+hypotheses with **zero DRC and unique LVS**. P20/N10 has 10 x 0.65 um NFET,
+20 x 1.0 um regular PFET and one 2 x 2 um MIM; P24/N12 has 12/24 fingers
+and the same MIM. Every model and width/length matches the schematic, and
+actual MOS junction geometry is recorded. Local RC and timing remain open.
+
+The repair uses a solid Metal1 gate strap to eliminate narrow notches against
+the PDK gate bars, and joins both equidistant source landings at a centered
+body contact. `balanced_driver_access_v198.py` additionally locates the
+unlabelled right end drain in each even finger array. It requires exactly
+one unlabelled native diffusion node, the expected labelled terminal counts,
+array symmetry and an actual contacted-diffusion plus VIALI shape at the
+mirrored coordinate. The added connection is a physical wire; no ideal net
+alias is introduced. Full-driver LVS independently proves every finger is
+connected to the intended inverter nodes. All failed v196/v197 artifacts
+remain unchanged.
+
+Three v198 tests pass, including actual contact geometry, refusal of missing
+VIALI/asymmetric arrays, complete terminal planning, actual MIM plate
+isolation and exact inverter model/connectivity checks. Run log:
+`build/balanced-fine-driver-v198-run.log`.
+
+The first two v194 actual shared-counter traces complete numerically but
+fail the unchanged alternating phase-event count check. Read-only transition
+diagnosis (`build/repaired-counter-shared-rc-v194-first-event-diagnosis.log`)
+finds a spurious low0 pulse at **5221.518--5462.930 ps**, then the stable
+assertion at **7097.122 ps**. The local clock is high during that first pulse
+(rises at 4911.687 ps, falls at 6098.596 ps). Buffered REQUEST rises at
+4178.818 ps; the first partial low-phase request reaches the sticky state
+too late. Both stopped-level cases have that extra initial pulse. No startup
+pulse is discarded or relabelled as passing. Remaining cases continue;
+full terminal/clock-window diagnosis is needed before the next counter fix.
