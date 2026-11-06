@@ -12231,3 +12231,53 @@ timing: the original zero-code result is still pending, its live diagnostic
 has a 57.033965 ps quarter-period deficit, and the tapered experiment has
 not yet obtained a native result. Full frequency/duty/PVT, shared-wire RC,
 complete clock/link and PHY requirements remain open.
+
+### Isolated explicit-thread runtime experiment (v313–v314)
+
+The pinned ngspice 42 processes are directly observed with two native
+threads although the container exports `OMP_NUM_THREADS=1`. The current
+[official manual](https://ngspice.sourceforge.io/docs/ngspice-manual.pdf#page=375)
+documents an internal two-thread default and the separate `num_threads`
+control. The installed pinned binary's help independently confirms the
+`-D variable=value` frontend option. KLU is already enabled in the live
+logs; enabling KLU is not a new remedy. No speedup is inferred from thread
+count, and no live setting is changed.
+
+`run_native_threaded_binary_v313.py` reuses the original binary translator
+and runtime-file checks. Its sole simulation command difference is explicit
+`-D num_threads=1` or `2`. Original KLU, models, tolerances, save vectors and
+complete transient remain. The wrapper records observed child thread counts,
+wall/user/system time and full-transient validation in `runtime.json`.
+Observation retries drain the child to completion, never terminate it, and
+cannot overwrite prior or partial outputs.
+
+`probe_native_thread_count_v314.py` implements three sequential full native
+replays: v263 fine31/60% with one thread, fine31/40% with one thread, and the
+same 40% case with two threads as a measured control. Every deck is copied
+byte for byte from the complete source reference. The SS40/410 MHz,
+100 ps input, 20 fF load, eight startup/steady cycles and full 25 ns remain.
+All 1529 MOS, 173 programming gates and 86 controls are measured again.
+
+Preparation independently reproduces both complete reference metrics and
+file hashes. Original native gates must match and pass; timing/slew parity
+must additionally stay within **0.1 ps**, and terminal/control metric
+differences within **1 mV**. These are extra comparison bounds, not changes
+to the original native timing or voltage limits. Observed thread counts and
+all three full cases are required before a runtime comparison can pass.
+The paired wall-time ratio describes sequential measurements on this busy
+machine; it does not grant universal speedup or backend/PHY admission.
+
+One worker uses priority 2 through the unchanged six-engine dispatcher.
+Historical evidence is fully rehashed before and after the run; captured
+source, circuit/model inputs and decks are checked before each lease.
+Existing native campaigns, tickets and frozen helpers are unchanged.
+
+All **seven targeted tests pass without skips in 0.147 s**, including actual
+reference metrics, full original fixtures, CLI-only thread changes, rejection
+of failed gates/changed maps/nonfinite or missing edges, measured-thread
+requirements and observation retries (`build/native-thread-count-v313-v314-tests.log`).
+The preceding 2564-test integrated pass predates these two new modules.
+Preparation is started as `openlvds-native-thread-prepare-v314`, invocation
+`57e26841738c4356a4d7a7ad0f58b32f`, with log
+`build/native-thread-count-v314-prepare.log`; its source validation is confirmed
+live at the initial checkpoint. No new runtime or parity result is claimed.
