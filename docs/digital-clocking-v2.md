@@ -8450,3 +8450,37 @@ Formal counter hypothesis artifact: `counter_output_guards_v161/2bb90e3aa35bb7c9
 service `openlvds-counter-output-guards-v161.service`, log
 `build/counter-output-guards-v161-run.log`. Both priority-0 workers run within
 the unchanged six-engine global budget. No baseline process was restarted.
+
+
+### Unguarded native component physical/RC qualification completed
+
+`unguarded_output_cell_v162/54829739e9b70627` is complete and passes. The new
+parallel output master has zero Magic DRC violations, a unique LVS match,
+16 original PFET plus 16 original low-Vt NFET devices and exact native
+dimensions/junction parameters. Only the two output MIM placements were
+removed. All other native cell masks, child placements and root wiring match.
+A separate check of the final Magic-written GDS also passes those comparisons
+(`build/unguarded-output-cell-v162-final-masks.log`).
+
+Fresh extraction is under
+`build/extracted/ee102e7d3af2bc78/openlvds_parallel_inv8_unguarded_v162/`.
+It contains 521 raw resistors and 211 explicit parasitic capacitors; reduction
+retains 374 resistors and eliminates 117 algebraic nodes. Passivity, exact
+regeneration, native wire-collapsed topology/parameters and four independent
+terminal-current witnesses pass. The current-error maximum is 2.274e-13 A,
+with 253 boundary nodes and no floating components.
+
+This qualifies a replacement component, not a repaired whole bank. Next,
+register the new master with unchanged public rail locations/placement, bind
+the deliberate 42-to-40 whole-bank MIM change while retaining all 1,453 MOS,
+and obtain fresh full-bank native geometry, fine-junction and distributed RC
+proof. Repeat actual zero/fine31/first-coarse timing before opening boundary
+and periodic checks. The existing failed 265.033 ps baseline gate stays false.
+
+The broad regression completed 2,177 discovered tests in 423.862 s: 2,175
+passed and two v160 KLayout tests skipped in scientific Python. Both skipped
+tests pass separately in CAD Python, as do both corrected v162 CAD tests.
+The two new counter-guard tests also pass separately. Logs are
+`build/unguarded-output-cell-v160-full-tests.log`,
+`build/unguarded-output-cell-v160-cad-tests.log`, and
+`build/unguarded-output-cell-v162-tests.log`. No PHY qualification follows.

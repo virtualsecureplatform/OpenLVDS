@@ -28,8 +28,8 @@ The complete native SS/40°C full-bank zero screen passes at repeated
 486.497/532.941 ps rise/fall delay, 174.364 ps maximum output slew, and
 76.815 ps fastest-quarter headroom. First-coarse passes, while fine31 misses
 the unchanged 250 ps slew limit at 265.033 ps. Both output-guard repair prototypes pass their three-point hypothesis screen;
-the unguarded variant reaches 222.248 ps fine31 slew. A new native output-cell
-physical/RC verification is being prepared; boundary and periodic qualification remain gated.
+the unguarded variant reaches 222.248 ps fine31 slew. The new native output cell passes DRC/LVS, exact MOS parameters and fresh
+component RC. Whole-bank integration, boundary and periodic qualification remain gated.
 
 Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
 dense common legal codes, complete delay range, all PVT, calibrated clock-chain
