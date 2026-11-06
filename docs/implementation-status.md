@@ -5,7 +5,32 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 Current architecture work (2026-11-06):
 
-The regenerated delay bank passes the actual routed SS/40 C zero-code screen
+The current measured balanced b2 bank passes the component-model three-point
+screen: zero has 110.126 ps fastest-quarter headroom, with positive rising/
+falling coarse overlap of 58.070/167.461 ps. Actual whole-bank routing now
+passes with zero violations (`measured_balanced_bank_route_v152/d7f930268a4bd034`).
+The streamed native bank passes zero Magic DRC, unique LVS, exact native masks/
+hierarchy/placements and its 1,453-MOS/42-MIM inventory
+(`measured_balanced_native_gds_v150/6766444ea6d551f4`).
+
+Actual whole-bank joint RC is now qualified at
+`measured_balanced_joint_rc_v155/7065685b553b1050`: original extraction preserved,
+selective measured fine-capacitor junction correction, all 155 fine MOS junctions,
+strict native parameter/topology checks, elementwise passivity, exact reduction
+and independent Schur current witness. The native zero-code timing stage is
+preparing from this complete receipt. This physical/RC pass does not yet prove
+full-bank timing. The calibrated clock chain, dense/common legal tables, all-PVT
+clock transport and LVDS PHY remain unqualified. All 2,161 regression tests pass.
+
+Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
+0/25/40 C across all five process corners. The prepared periodic producer and
+its downstream gate remain closed until actual routed sparse timing passes.
+See [digital clocking v2](digital-clocking-v2.md) for the implementation contract
+and exact receipts.
+
+Earlier clocking experiments remain useful diagnostic evidence:
+
+An earlier regenerated delay bank passes the actual routed SS/40 C zero-code screen
 with 64.8 ps quarter-cycle headroom. Its falling coarse/fine overlap still
 fails by 18.544 ps, and periodic 410 MHz clocks at 40/60% duty fail output
 slew or full-swing checks. The calibrated clock chain and LVDS PHY remain

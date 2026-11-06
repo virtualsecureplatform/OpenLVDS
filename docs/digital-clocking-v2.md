@@ -1,7 +1,8 @@
 # Calibrated digital clocking, v2
 
 This is the implementation contract for the architecture selected from the two
-new papers in `../refs`. The machine-readable policy is `clocking_v2.json`.
+new papers in `../refs`. The machine-readable base policy is `clocking_v2.json`, with the approved
+40--60% input-duty amendment in `clocking_duty_v2_2.json`.
 All v2 evidence starts unqualified. Existing analog DLL artifacts and producer
 sources remain immutable; they do not establish v2 performance.
 
@@ -95,7 +96,8 @@ V2 release gates derive from its architecture descriptor, not the old fixed
 remain required. Digital convergence replaces only analog DLL control-loop
 checks. Verify all five process corners at 0/25/40 C, 390/400/410 MHz, fixed
 supplies, actual loads/slews and injected jitter. RX reference duty coverage is
-30--70%; widen the slew domain if actual gates exceed 250 ps. Native selected
+40--60% under `clocking_duty_v2_2.json`; a wider actual slew domain requires
+native downstream requalification. Native selected
 and boundary codes must validate the characterized models used for long
 behavioral calibration scans. Full-link checks require actual qualified phases,
 45 cases, 4096 nominal/512 corner bits, two OpenPLL traces, 200 ps margins,
@@ -8163,3 +8165,22 @@ checks. The b3 repeated first-coarse delay is 610.238/673.800 ps, with
 +80.346/+180.205 ps coarse/fine overlap. Actual bank wiring, full PVT and PHY
 admission do not follow from those component results. The qualified routed b2
 bank remains the source of the live actual joint-RC chain.
+
+
+### Complete actual routed joint-RC gate passed
+
+The v155 receipt `7065685b553b1050` is now complete and passing. It preserves
+the original actual routed extraction, reconstructs exactly 62 capacitor MOS
+(124 junction fields) in both raw and native-reference copies, and verifies all
+155 fine MOS junctions against independently measured geometry. All other
+native device parameters and passive records remain unchanged. Corrected native
+LVS, original/corrected elementwise passivity, exact regeneration, byte-idempotent
+correction and independent Schur current witness all pass. The original files'
+hashes remain unchanged through final validation.
+
+`openlvds-measured-balanced-joint-zero-v146-after155.service` has entered native
+zero preparation from this complete receipt. It must regenerate actual physical
+observations and preserve the full 20 ns/two-pulse/2 ps fixture before acquiring
+one priority-0 solver slot. No actual full-bank zero timing pass is claimed yet.
+The subsequent sparse and 27-case periodic services retain their complete
+upstream gates; dense/update/all-PVT/calibrated-chain/link release remains open.

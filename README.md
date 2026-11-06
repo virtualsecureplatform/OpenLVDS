@@ -6,54 +6,32 @@ there is no CDR. OpenPLL supplies the transmitter clock.
 
 The implementation includes synthesizable DDR logic, transistor circuits,
 generated analog GDS/LEF, digital place and route, DRC/LVS, GDS-based distributed
-RC extraction, and reproducible simulation runners. **The OTA candidate is still
+RC extraction, and reproducible simulation runners. **The link is still
 in electrical bring-up and has no published release.** Its staged workflow must
 pass all release gates before publishing an exact-byte macro package. Generated layouts alone do not qualify
 the link, and functional analog models do not establish electrical performance.
 See [implementation status](docs/implementation-status.md) for completed checks
 and the remaining link bring-up work.
 
-The next architecture, [digital clocking v2](docs/digital-clocking-v2.md), is
+The selected [digital clocking v2](docs/digital-clocking-v2.md) architecture is
 under implementation: calibrated four-phase clock generation, symmetric DCC,
-RX deskew and explicit framed startup training. Its regenerated delay bank
-passes the complete routed SS/40°C zero-code screen with 64.8 ps quarter-cycle
-headroom. The v2 input-clock checks use 40/50/60% duty at 390/400/410 MHz.
-The current bank still fails falling coarse/fine overlap and periodic
-output-slew/full-swing checks. Split-loading and output-buffer comparisons
-are complete. Three compact gate-capacitor fine cells now pass native geometry
-and component RC checks with measured junctions. Integrating that RC exposed
-root-mux loading as a timing bottleneck. A strengthened final stage meets the
-fine31 slew check, but quarter timing and overlap still fail. Balanced-drive
-and post-mux regeneration pilots complete with unchanged gates.
-The completed balanced-drive pilot passes native/slew checks and has 111 ps
-zero-code quarter headroom, but rising coarse overlap still fails by 10.72 ps.
-Post-mux regeneration passes native/slew/zero screens but misses rising
-overlap by 17.27 ps. The root-only trial misses the zero-code quarter budget
-by 17.79 ps. With fully extracted double-strength coarse buffers, the three
-initial points now pass native/slew checks and have positive rising/falling
-overlap of 58.05/167.45 ps. Triple-strength cases remain running.
-Canonical measured fine, inverter and stronger-coarse cell views pass layout
-and OpenDB checks. The model with measured group/final inverter wiring maps
-to 179 functional macros; its native inventories and named-pin graph agree.
-Both stronger-coarse balanced placements pass zero DRC and all 351-instance
-connectivity checks, with native mask previews available. Their routing and
-whole-bank timing admission remain pending. The measured inverter-gang
-fine31 point passes at 244.22 ps maximum slew; its matching zero/coarse
-checks are running. Both placements also pass reversible native router
-interface checks for their existing fine-data and supply buses.
-The next native GDS/DRC/LVS stage is prepared behind the timing and routing
-gates. Fresh unrouted device extractions preserve both exact MOS/MIM inventories
-and reference-supplied parameters; routed connectivity and joint RC remain open.
-Selective junction reconstruction now matches all 62 fine-capacitor MOS to
-measured geometry while preserving other devices and wiring. Both ordinary
-reference preparations pass; actual routed-bank RC qualification remains open.
-Their exploratory 332-instance placement passes zero DRC and fixed-bus
-connectivity checks; whole-bank routing and timing qualification remain open.
-The physical parallel INV8 output master passes native geometry and complete
-component RC checks, and
-is now included in a fresh timing experiment. Full delay-range,
-all-PVT, clocking integration and full-link
-qualification remain open; these results are separate from the legacy PHY.
+RX deskew and explicit framed startup training. Its measured balanced delay
+bank passes the component three-point screen, with 110.126 ps zero-code quarter
+headroom and positive rising/falling coarse overlap of 58.070/167.461 ps.
+
+The actual bank now passes routing with zero violations, streamed native GDS
+with zero DRC and a unique LVS match, exact native masks/hierarchy/placements,
+and its 1,453-MOS/42-MIM inventory. Complete actual joint-RC qualification also
+passes: original extraction preserved, measured fine-device junctions, strict
+native topology/parameters, passive reduction and independent current witness.
+The native full-bank zero-code simulation is preparing from this receipt.
+
+Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank timing,
+dense common legal codes, complete delay range, all PVT, calibrated clock-chain
+integration and full-link qualification remain open. All 2,161 regression tests
+pass; software and physical/RC passes do not establish electrical PHY release.
+Retained experiment results and exact receipts are in the implementation status
+and digital-clocking notes.
 
 All project implementation and generated artifacts stay in this repository.
 `thirdparties/OpenPLL` is the pinned clock-source dependency; OpenSERDES was used
@@ -69,10 +47,12 @@ as a reference and is not required at run time.
 | Termination | external 100 Ω across each receiver pair |
 | Board model | 20 cm, 100 Ω differential, 1.2 ns delay |
 | Per-pin model | 1 nH package inductance; 2 pF pad capacitance |
-| Stress | 390/400/410 MHz; 45/50/55% duty; ±100 ps skew; 100 ps pp jitter |
+| Stress | 390/400/410 MHz; 40/50/60% input duty; ±100 ps skew; 100 ps pp jitter |
 | Sampling margin target | 200 ps |
 
-The machine-readable contract is [requirements.json](requirements.json).
+The hardware baseline is [requirements.json](requirements.json). The current
+calibrated-clock policy is [clocking_v2.json](clocking_v2.json), with the
+approved input-duty amendment in [clocking_duty_v2_2.json](clocking_duty_v2_2.json).
 These are reusable macros: pads, ESD protection, package design, and a complete
 chip assembly are outside their boundary. VREF must be buffered because the
 receiver input stages exchange current with it.

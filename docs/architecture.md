@@ -1,5 +1,13 @@
 # Architecture and interfaces
 
+The selected calibrated-clock architecture is described in
+[digital clocking v2](digital-clocking-v2.md), with implementation under
+`rtl/v2/` and `sky130/v2/`. It uses balanced four-section DLLs, symmetric
+rising-event DCCs, RX deskew and framed startup training. See the
+[implementation status](implementation-status.md) for current native timing and
+physical qualification. The following sections describe the retained analog
+DLL/OTA baseline and its I/O interfaces.
+
 `rtl/openlvds_tx.v` assembles a shared bias generator, DLL, lock controller,
 startup training counter, DDR launch core, and two differential drivers.
 `rtl/openlvds_rx.v` assembles a shared bias generator, two input comparators and
