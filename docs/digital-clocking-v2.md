@@ -8013,3 +8013,44 @@ require passing route, native GDS and joint-RC receipts in sequence before
 the original v146 zero screen can launch. Earlier services and logs are
 retained. The new route and regression are running; no new physical or
 whole-bank timing pass is claimed from this preparation.
+
+
+### Connected-bus route passed; actual joint-RC sparse screen prepared
+
+The complete v152 route receipt `d7f930268a4bd034` passes with zero final
+router violations. All 94 fixed-bus terminals retain their native nets during
+routing. The original public/master pin geometry, connections, placements,
+fixed buses and required regular routes pass the restoration/coverage checks.
+This confirms the five floating-terminal conflicts can be removed through
+correct router connectivity, without changing physical masks or timing models.
+The routing-fix regression passes 2,152 tests without skips in 375.219 s
+(`build/route-v152-full-tests.log`). The native GDS stage has started; route
+success alone does not establish native DRC/LVS, joint RC or PHY admission.
+
+`probe_measured_balanced_joint_sparse_v153.py` prepares the next actual
+whole-bank experiment after a complete passing v146 zero-code trace. It
+remeasures and hashes that trace, retains identical bank bytes and native
+observations, and adds first-coarse `(1,0)` and maximum-fine `(0,31)` cases.
+Both cases keep the original 20 ns/two-pulse/2 ps fixture, SS/40 C,
+1.8 V, 100 ps input slew and 20 fF load. All terminal, typed programming-gate,
+control, repeatability and 250 ps slew screens remain mandatory. The quarter
+budget applies to zero; coarse/fine overlap and positive progress from zero
+are required on both edges in both native pulse epochs.
+
+The producer uses two priority-0 workers in the unchanged six-engine
+dispatcher and refuses component-model substitutes, incomplete zero receipts
+or changed evidence. A waiting service follows the actual `after152` zero
+service and requires its passing result before preparing a manifest. Four new
+unit tests cover first-epoch failure, missing/duplicate/invalid/error cases,
+whole-bank provenance, native/slew failures and exact fixture/probe retention.
+The expanded full regression is running. No actual whole-bank sparse receipt
+or dense/update/periodic/PVT/electrical/PHY pass is claimed yet.
+
+
+The expanded regression passes **2,156 tests without skips** in **376.818 s**
+(`build/measured-balanced-joint-sparse-v153-full-tests.log`). The streamed
+v150 artifact `6766444ea6d551f4` has completed Magic extraction with no DRC
+errors and Netgen reports “Circuits match uniquely.” Its complete native
+parameter/mask/hierarchy receipt and final unchanged-input checks are still
+pending at this observation. The downstream RC/zero/sparse gates remain closed
+until the respective complete passing receipts exist.
