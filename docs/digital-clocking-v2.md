@@ -8135,3 +8135,31 @@ retargeted to v155 after confirming no formal manifest captured v146. New
 `after155` zero/sparse/periodic services require each complete passing upstream
 receipt. The v155 full regression is running, and complete joint-RC/native
 transient/PVT/PHY admission remains pending.
+
+
+### Retained-RC regression and actual observation mapping passed
+
+The complete v155 regression passes **2,161 tests without skips** in
+**372.652 s** (`build/measured-balanced-joint-rc-v155-full-tests.log`).
+The retained-RC producer has generated a unique corrected native LVS match
+and a passing independent Schur witness: 32,701 original versus 20,389 reduced
+nodes, 14,107 boundary nodes, four clamped-terminal witnesses, and maximum
+absolute current difference 6.762e-10 A. Its final unchanged-input validation
+is still live at this observation; these partial results do not admit a
+native transient before the complete receipt passes.
+
+The v145 mapper also passes a preflight using actual streamed `.mag`, original
+extracted `.ext` and retained corrected RC files. Coverage is 1,453 MOS,
+173 typed programming gates, 86 logical controls, 351 instances and all
+150 canonical nets. No aliases were synthesized. Records are under
+`build/reports/measured_bank_observations_v145/actual_b2_v155_preflight/`, log
+`build/measured-bank-observations-v145-actual-preflight.log`. This preflight
+keeps physical timing and whole-bank RC admission false; v146 will regenerate
+the mapping from the eventual complete joint-RC receipt.
+
+The earlier v123 component campaign `8d9e2e94f139b1a3` has now completed all
+six cases without errors. Both b2 and b3 pass its component sparse feasibility
+checks. The b3 repeated first-coarse delay is 610.238/673.800 ps, with
++80.346/+180.205 ps coarse/fine overlap. Actual bank wiring, full PVT and PHY
+admission do not follow from those component results. The qualified routed b2
+bank remains the source of the live actual joint-RC chain.
