@@ -8633,3 +8633,22 @@ directories collided with case IDs; its partial directory
 `counter_output_guard_margin_v168/7fdf30bfc6d017ee` and prepare log are retained.
 The formal recipe uses `guard_2`/`guard_3` library directories, with unchanged
 native devices, stimuli, limits and numerical task IDs.
+
+
+### Larger guard exposes a separate stopped-low reset body excursion
+
+The first two v168 cases (2x2 um, SS0) are complete. Stopped-high passes
+at 1.944027507 V. Stopped-low fails only `XD:XR:Xlow0_q:X0` at
+1.950734667 V; all original timing checks pass. Read-only exact-sample
+diagnosis at 21855.5 ps locates output/source 1.924322378 V against body
+-26.412289 mV, with gate 1.456259356 V, clock approximately zero and
+REQUEST low. This is the reset interval, distinct from the earlier ~4 ns
+setter overshoot propagated to storage gates. Report:
+`build/reports/counter_terminal_peaks_v166/ss0_guard2_stop0.json`.
+
+The full 2/3 um campaign continues unchanged. No guard variant is admitted
+from one passing stopped-clock condition. If 3 um retains the reset failure,
+the next local circuit experiment should address the storage cell's body-return
+path (for example, a dedicated/stronger local tap/ground connection), with
+new physical and native RC proof; further setter loading alone is not yet
+a demonstrated solution to this reset event.
