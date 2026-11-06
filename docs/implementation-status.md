@@ -20,7 +20,7 @@ strict native parameter/topology checks, elementwise passivity, exact reduction
 and independent Schur current witness. The native zero-code timing stage is
 preparing from this complete receipt. This physical/RC pass does not yet prove
 full-bank timing. The calibrated clock chain, dense/common legal tables, all-PVT
-clock transport and LVDS PHY remain unqualified. All 2,161 regression tests pass.
+clock transport and LVDS PHY remain unqualified. All 2,164 regression tests pass.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
 0/25/40 C across all five process corners. The prepared periodic producer and

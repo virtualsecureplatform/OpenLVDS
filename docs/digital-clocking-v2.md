@@ -8184,3 +8184,49 @@ observations and preserve the full 20 ns/two-pulse/2 ps fixture before acquiring
 one priority-0 solver slot. No actual full-bank zero timing pass is claimed yet.
 The subsequent sparse and 27-case periodic services retain their complete
 upstream gates; dense/update/all-PVT/calibrated-chain/link release remains open.
+
+
+### Independent startup-counter component PVT expansion
+
+The completed loaded-threshold source receipt
+`phase_threshold_pvt_verification_v2/443b12b369f72e2a` records all 540 cases,
+zero numerical errors and passing threshold/health checks across fifteen PVT,
+both swaps, 20/250 ps unequal slews, three offsets and both threshold selections.
+Detector physical matching and full calibration admission remain false. The
+superseded unloaded arbiter campaign remains archived incomplete.
+
+`probe_static_phase_clock_drive_pvt_v156.py` expands the independently passing
+two-BUF8 native-component RC counter from its four SS/40 endpoint traces.
+It verifies the original independent receipt and source hashes, regenerates the
+same native libraries and remeasures all four full traces before consuming them.
+The complete matrix has **90 cases**: five process corners, 0/25/40 C,
+40/50/60% duty and both stopped-clock levels, at 410 MHz and 100 ps input slew.
+Four original traces are consumed unchanged; **86 fresh cases** are prepared.
+The native device observations, all original health/timing limits, fixed
+1.8 V, 26 ns duration and 1 ps maximum step remain unchanged. Fast/mixed stress
+corners run first. Three tests cover exact coverage/reuse, unchanged complete
+fixtures/probes, and rejection of native/low-phase/coverage failures.
+
+Formal artifact `static_phase_clock_drive_pvt_v156/83eac44346882fca` is prepared
+and its source is frozen. It uses two priority-1 workers in the unchanged
+six-engine dispatcher, independently of the priority-0 actual bank zero screen.
+The first operational launcher had a wrong script filename and exited before
+creating a running state or acquiring a solver. Its log is retained at
+`build/static-phase-clock-drive-pvt-v156.log`; the corrected direct first
+execution is `openlvds-static-phase-clock-drive-pvt-v156-run.service`, log
+`build/static-phase-clock-drive-pvt-v156-run.log`. No producer or case is retried.
+
+The aggregate requires complete unique coverage, every native counter screen
+and finite nonnegative clock-low margins. Shared inter-driver wires remain the
+original ideal diagnostic assembly. Whole-clock routed RC, joint DCC first
+events, 256-cycle warmup, electrical and PHY admission remain false. No PVT
+result is claimed yet; the full regression and campaign are running.
+
+
+The v156 expansion regression passes **2,164 tests without skips** in
+**383.700 s** (`build/static-phase-clock-drive-pvt-v156-full-tests.log`).
+The actual full-bank zero simulation and the first two FF/0 C clock-drive
+cases are now verified live ngspice processes. Five engines are occupied in
+total, including the two retained long-running weighted cases. No existing
+healthy solver was interrupted and the global six-engine limit is unchanged.
+Native timing verdicts remain pending.

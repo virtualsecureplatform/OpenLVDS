@@ -28,7 +28,7 @@ The native full-bank zero-code simulation is preparing from this receipt.
 
 Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank timing,
 dense common legal codes, complete delay range, all PVT, calibrated clock-chain
-integration and full-link qualification remain open. All 2,161 regression tests
+integration and full-link qualification remain open. All 2,164 regression tests
 pass; software and physical/RC passes do not establish electrical PHY release.
 Retained experiment results and exact receipts are in the implementation status
 and digital-clocking notes.
