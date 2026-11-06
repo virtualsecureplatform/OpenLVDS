@@ -180,6 +180,12 @@ passivity, regenerated reductions, native collapsed LVS and the independent
 Schur witness. Both fine-junction preflights pass and reject an injected clear
 junction error. This service waits for the exact existing GDS process; no
 routed joint-RC result or transient/PHY qualification is claimed yet.
+The v145 observation mapper is prepared for the actual joint-RC bank. It binds
+all 351 physical instances and 150 logical nets to actual extraction aliases,
+retains all separate MOS terminals, and checks 173 programming gates by native
+type/width/control polarity plus all 86 logical controls. Both reference-graph
+logic preflights pass, and all four injected gate/polarity faults are rejected.
+Those preflights use synthetic aliases and do not qualify actual routed mapping.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native

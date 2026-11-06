@@ -7854,3 +7854,37 @@ can pass. These measured component-model points retain their scope: common
 bank wiring, periodic/PVT timing and the PHY remain unqualified. The queued
 routing, native GDS and joint-RC services continue to enforce their existing
 complete-evidence gates.
+
+
+### Actual measured-bank observation mapping prepared
+
+`measured_bank_observations_v145.py` maps native RC observations from the
+recorded Magic instance models/positions, flattened extraction aliases and
+actual resistor connectivity. It requires the original 351 placed instances
+at their exact orientation/coordinates, one flat bank and exact public port
+order. Missing signal/control aliases are refused; only the existing native
+LVS policy for disappearing well-only VNB/VPB aliases is retained.
+
+All 150 canonical nets must have actual RC vertices. The mapper retains every
+separate native MOS terminal rather than collapsing waveform probes. It checks
+all **1,453/1,773 MOS**, **173 programming gates** and **86 logical controls**.
+Programming coverage is derived per physical macro: 40 doubled leaf/root TGs
+supply 80 gates, and 31 fine macros supply 93 pass/clear gates. Expected model,
+width and logical control polarity must match for every gate; a total count
+alone is insufficient. Every RC-separated control terminal is observed.
+
+Both full reference graphs pass a mapping-logic preflight with explicitly
+synthetic MAG/EXT aliases: 351 instances, 150 nets, all native MOS, 173 gates
+and 86 controls. A split control vertex remains its own waveform probe. Four
+negative cases across the two profiles reject a reversed N-gate control and a
+missing programming transistor. These are logic preflights, with actual routed
+mapping admission false; the native stage must regenerate mapping from the
+real routed Magic/RC files. Records reside under
+`build/reports/measured_bank_observations_v145/{b2,b3}/`, with logs
+`build/measured-bank-observations-v145-preflight.log` and
+`build/measured-bank-observations-v145-negative-controls.log`.
+
+Three new observation unit tests pass, covering doubled/per-control typed gate
+coverage, logical shorts, missing aliases, public port order and preservation
+of an RC-separated terminal. Immutable v60 coordinate/alias helpers are reused;
+no prior producer, model or fixture is changed.
