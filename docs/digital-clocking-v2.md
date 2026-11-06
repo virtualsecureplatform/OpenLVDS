@@ -9666,3 +9666,64 @@ ending the first incomplete latch transition. The first-loop feedback
 shortcut advances the first local low0 Q by only 4.53 ps. Further repair must
 address setter/storage propagation and complete feedback closure in the
 available low phase; routing capacitance alone is insufficient evidence.
+
+### Bounded finite-support clock precision experiment (v224--v226)
+
+The slow zero/first-coarse v190 traces provide a numerical diagnostic before
+the first clock edge. In one live zero-code 100 ps window ending near
+1.453 ns, 1,092 stored points have median/minimum spacing
+0.03125/0.0009765625 ps despite a 2 ps maximum step. IN is only
+9.99e-15..7.96e-13 V and the largest observed internal voltage change is
+about 1.23e-9 V. The first-coarse window is similarly tiny. This supports
+investigating input-tail numerical sensitivity, not a claim of a physical
+oscillation or a proven performance fix. Read-only partial observations are
+retained in `build/idle-bank-live-prefix-diagnosis-v223.log`; they do not
+qualify a waveform or terminate any solver.
+
+`finite_support_clock_v224.py` provides a finite-support testbench input.
+For L=9 and T=tanh(L), the normalized step is exactly 0/1 outside +/-L and
+`(1+tanh(u)/T)/2` inside. Width is normalized using atanh(0.8*T) to retain
+exact 100 ps 10--90% edges. Centres, periods, duties, eight cycles and 1.8 V
+swing stay unchanged. The combined clipping and width-renormalization error
+is bounded analytically for all times, not just at sampled grid points:
+`2*cycles*(0.9*(1-T) + 0.45*abs(log(width/old_width)))` =
+**8.82237e-7 V for all eight pulses**. The derivative bound follows from
+`abs(u)*sech(u)^2 <= 1/2`, since `cosh(u)^2 >= 1+u^2 >= 2*abs(u)`.
+Supply rails, native devices, solver tolerances and timing/voltage limits do
+not change. This input-precision bound alone is not native parity proof.
+
+`finite_support_bank_replay_v225/a0e6bd4a1725ca68` is preparing/running four
+same-DUT native cases on the original P20/N10 component bank. Both complete
+fine31 traces are retained as mandatory references: the passing 40% case
+and **failing 60% case must both be reproduced**. No original bank definition,
+load, observation or fixture option is changed; only the BIN expression and
+provenance title differ. Native results require all original gates, every
+one of the 1,473 native MOS, edge/slew differences at most 1 ps, unchanged
+stress limits and terminal-peak differences at most 1 mV. Zero and first
+coarse are also run. Two reference cases are deliberately insufficient to
+admit this waveform for general use. No speedup or parity result is claimed
+yet. `openlvds-finite-support-bank-v225` is verified live and uses the same
+two-worker/global-six-engine dispatcher.
+
+`verify_finite_support_parity_v226.py` supplies the required separate
+four-case read-only receipt. It refuses until all four original and all four
+candidate traces are complete, checks every declared raw/deck/library byte,
+remeasures all native cases, and verifies the original passing/failing gate
+results independently of the producer's two-case diagnostic. It never
+restarts an original solver or treats a missing reference as passing. Even
+a passing input-parity receipt explicitly leaves bank clock-interface,
+all-PVT, electrical and PHY qualification false. Seven targeted tests pass,
+covering the analytic bound, exact levels/slew, native failure preservation,
+unchanged fixture options/all terminals, all-four coverage and refusal of an
+incomplete handoff before creating a receipt. Logs:
+`build/finite-support-v224-v226-tests3.log` and
+`build/finite-support-bank-v225-run.log`.
+
+The remaining circuit priority is still the counter's late setter/storage
+path. The existing NAND2_8 shunted native macro already has a 4 x 4 um MID
+MIM and 3 x 3 um output MIM. Upsizing guarded storage and strengthening
+REQUEST therefore have a path using existing native gate geometry, with
+fresh body-contact, whole-block RC and phase/safety qualification required.
+The measured low2 set-to-Q delay is over 830 ps, compared with about 511 ps
+for low0; the direct first-feedback change alone does not close this gap.
+No such new storage variant or counter architecture is admitted here.

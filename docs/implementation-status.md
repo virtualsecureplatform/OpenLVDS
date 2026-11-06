@@ -40,7 +40,8 @@ drivers now pass physical closure and fresh local RC. Their measured-bank
 P20/N10 fine31 endpoints now complete: 40% passes, while 60% still fails
 period/history despite passing native safety and slew. Two stronger-discharge
 N16 variants also pass zero DRC, unique LVS and fresh local RC; their new
-bank pilot is preparing under the same dispatcher; bank timing and full
+bank pilot runs under the same dispatcher, with a gated continuation for
+the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
 
@@ -73,8 +74,11 @@ compact same-logic 21-macro route now passes zero DRC, unique LVS and exact
 native masters/placements; fresh RC qualification passes and the original native timing replay is
 queued by an active source-bound continuation. A further direct first-loop
 feedback route also passes zero DRC, unique LVS and fresh RC, reducing
-feedback parasitics from 63.4 to 37.2 fF; its full native replay is queued
-separately under the same six-engine dispatcher. The
+feedback parasitics from 63.4 to 37.2 fF; its full native replay runs
+separately under the same six-engine dispatcher. The first two cold/50%
+traces of both new routes fail the unchanged sticky-arm event count while
+passing native terminal safety. Native path diagnosis confirms late
+setter/storage propagation remains; feedback routing alone does not fix it. The
 remaining cases continue and whole-clock validation remains open. No repaired whole clock
 assembly or PHY is qualified.
 
