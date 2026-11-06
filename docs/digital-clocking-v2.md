@@ -8230,3 +8230,45 @@ cases are now verified live ngspice processes. Five engines are occupied in
 total, including the two retained long-running weighted cases. No existing
 healthy solver was interrupted and the global six-engine limit is unchanged.
 Native timing verdicts remain pending.
+
+
+### Complete actual bank zero passed; explicit Xyce diagnostic underway
+
+Actual joint-RC zero receipt `measured_balanced_joint_zero_v146/352a49d41b94d2c9`
+is complete with one case and zero errors. Its original full 20 ns/two-pulse
+trace passes all terminal, control, repetition, full-swing, 250 ps slew and
+fast-quarter checks. Repeated rise/fall delay is **486.496590/532.941361 ps**;
+maximum output slew is **174.363982 ps** and worst-pulse fastest-quarter
+headroom is **76.814642 ps**. Solver wall time is 533.212 s. The final unchanged
+input/physical proof checks passed before publication. The actual first-coarse/
+fine31 v153 stage has entered preparation from this complete receipt.
+
+The first two fresh v156 FF/0 C 40% cases also pass all native counter checks
+at both stopped-clock levels, with 175.400 mV minimum clock-low margin. Worst
+terminal differences are 1.923864/1.906234 V, below the unchanged 1.95 V limit.
+Later cases are progressing; no full ninety-case PVT pass is claimed.
+
+`probe_xyce_measured_joint_zero_v157.py` runs a separate explicit diagnostic
+from the same qualified actual routed bank and complete original fixture.
+Formal artifact `xyce_measured_joint_zero_v157/393ca0567c27a29f` is prepared and
+running. Initial admission revalidates v146's immutable physical/model inputs;
+its source manifest, bank, fixture, upstream receipts and PDK files remain
+hashed. Live native state/log/raw files are excluded from the input capture,
+so completing the independent ngspice run cannot invalidate or contaminate it.
+
+The immutable v151 comment-token adapter and v148 binary RAW alias adapter
+are reused. Stimulus, native devices, passive values, all probes, 20 ns duration
+and 2 ps maximum step remain unchanged. Only backend title, library binding,
+RAW print syntax and inline annotation handling differ. One priority-2 worker
+uses the original six-engine dispatcher. The diagnostic always forces native
+zero admission, backend/model equivalence, electrical and PHY flags false,
+even when its exploratory timing checks pass. Model substitutions/warnings
+and complete native samples are retained. No speed comparison against an
+incomplete trace is produced by this diagnostic.
+
+Two new tests verify full fixture/probe preservation and refusal to promote
+positive exploratory results. The complete regression passes **2,166 tests
+without skips** in **417.453 s**
+(`build/xyce-measured-joint-zero-v157-full-tests.log`). Dense/common tables,
+complete delay range, update and periodic/PVT timing, calibrated clock islands
+and full-link qualification remain open.

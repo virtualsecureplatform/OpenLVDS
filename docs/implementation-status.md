@@ -17,10 +17,11 @@ Actual whole-bank joint RC is now qualified at
 `measured_balanced_joint_rc_v155/7065685b553b1050`: original extraction preserved,
 selective measured fine-capacitor junction correction, all 155 fine MOS junctions,
 strict native parameter/topology checks, elementwise passivity, exact reduction
-and independent Schur current witness. The native zero-code timing stage is
-preparing from this complete receipt. This physical/RC pass does not yet prove
-full-bank timing. The calibrated clock chain, dense/common legal tables, all-PVT
-clock transport and LVDS PHY remain unqualified. All 2,164 regression tests pass.
+and independent Schur current witness. The complete native SS/40 C zero screen now passes at
+486.497/532.941 ps repeated rise/fall delay and 174.364 ps maximum slew,
+with 76.815 ps fastest-quarter headroom. The first-coarse/fine31 stage is
+preparing; its full-bank overlap/slew results remain required. The calibrated clock chain, dense/common legal tables, all-PVT
+clock transport and LVDS PHY remain unqualified. All 2,166 regression tests pass.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
 0/25/40 C across all five process corners. The prepared periodic producer and

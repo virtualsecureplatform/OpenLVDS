@@ -24,11 +24,13 @@ with zero DRC and a unique LVS match, exact native masks/hierarchy/placements,
 and its 1,453-MOS/42-MIM inventory. Complete actual joint-RC qualification also
 passes: original extraction preserved, measured fine-device junctions, strict
 native topology/parameters, passive reduction and independent current witness.
-The native full-bank zero-code simulation is preparing from this receipt.
+The complete native SS/40°C full-bank zero screen passes at repeated
+486.497/532.941 ps rise/fall delay, 174.364 ps maximum output slew, and
+76.815 ps fastest-quarter headroom. First-coarse/fine31 preparation has started.
 
-Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank timing,
+Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
 dense common legal codes, complete delay range, all PVT, calibrated clock-chain
-integration and full-link qualification remain open. All 2,164 regression tests
+integration and full-link qualification remain open. All 2,166 regression tests
 pass; software and physical/RC passes do not establish electrical PHY release.
 Retained experiment results and exact receipts are in the implementation status
 and digital-clocking notes.
