@@ -8054,3 +8054,46 @@ errors and Netgen reports “Circuits match uniquely.” Its complete native
 parameter/mask/hierarchy receipt and final unchanged-input checks are still
 pending at this observation. The downstream RC/zero/sparse gates remain closed
 until the respective complete passing receipts exist.
+
+
+### Native routed bank passed; complete narrowed periodic matrix prepared
+
+The complete v150 receipt `6766444ea6d551f4` now passes: zero Magic DRC,
+unique native LVS, unchanged manufacturing masks, all native routing geometry
+retained, exact hierarchy/labels and 351 placements across 27 hierarchy cells.
+Its parameter inventory preserves model/dimension and all reference-supplied
+junction fields for 1,453 MOS and 42 MIM capacitors, with exact public port
+order. Joint-RC v144 has prepared receipt `1ede485637de1219` from this actual
+routed GDS and the placement-matched v140 fine geometry. Its original RC,
+selective measured junction correction, native equivalence, passive reduction
+and independent current witness must still pass before transient admission.
+
+`probe_measured_balanced_joint_periodic_v154.py` requires a complete passing
+actual v153 sparse screen, remeasures both new native traces and hashes all
+inherited evidence. It copies identical bank bytes and native observations.
+The matrix has **27 SS/40 cases**: codes `(0,0)`, `(0,31)`, `(1,0)` crossed
+with **390/400/410 MHz** and **40/50/60% input duty**. Each retains 1.8 V,
+100 ps input slew and 20 fF load, with eight actual clock pulses, a full
+25 ns startup/tail trace and 2 ps maximum step. Only title, input waveform
+and stop time differ from the complete native pulse fixture.
+
+The immutable v67 periodic analyzer checks every input/output and full-swing
+crossing, unwrapped epochs, pulse order/width, input timing, period error,
+repeatability, all MOS terminal voltages and every native control/programming
+gate. Zero must still fit the fastest quarter; every case must remain inside
+the original 250 ps downstream slew domain. Complete frequency/duty/code
+coverage and actual whole-bank RC are required in the aggregate. Warmup,
+64-confirmation calibration, corrected DCC output, dense/update/all-PVT and
+full PHY/link admission remain separate mandatory gates.
+
+A waiting service follows the exact v153 process, requires its passing sparse
+receipt, then enters the producer's full native admission. It uses two
+priority-1 workers in the unchanged six-engine dispatcher. Three new tests
+cover exact matrix/tail coverage, unchanged fixture/probes and rejection of
+missing/duplicate/relaxed/failed cases. The full regression is running; no
+periodic manifest or native periodic pass exists yet.
+
+
+The periodic expansion regression passes **2,159 tests without skips** in
+**378.941 s** (`build/measured-balanced-joint-periodic-v154-full-tests.log`).
+The actual periodic stage remains gated on whole-bank native timing evidence.
