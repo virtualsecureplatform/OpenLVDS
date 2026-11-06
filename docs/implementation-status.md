@@ -61,6 +61,11 @@ shift and actual metal-4 output access. Placement feasibility passes zero
 DRC and verifies all 353 connections/placements plus all three fixed buses at
 `regular_regenerated_placement_v272/82dc7493ef40f70d`; routing, whole-bank
 LVS/RC and timing admission remain open for this revised architecture.
+The revised router-interface preflight also passes exact native restoration
+at `regular_regenerated_routing_interface_v274/b41db4edac628761`: 93 fixed
+terminals, all eight root outputs and all three M4 stages retained. Stored
+database and ten-fault verification is running separately; no routing has
+been performed.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT

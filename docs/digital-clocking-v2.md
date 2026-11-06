@@ -10683,3 +10683,46 @@ The v263 native timing pilot still has no completed cases. This is a
 placement/fixed-bus feasibility receipt only: whole-bank routing/LVS,
 shared-wire RC and timing admission remain false. The existing six native
 SPICE engines and their original guarded source closures are unchanged.
+
+### Regular-pair router interface and stored-database checks (v274–v275)
+
+`prepare_regular_regenerated_routing_interface_v274.py` supplies reversible
+router access for the completed v272 placement. It represents the three
+existing M3 fixed buses with exact temporary BPin shapes, disconnects only
+their **93 native rail terminals** and native pins without routing shapes,
+and restores all connections, native master types, public ports, fixed
+metal and net flags afterward. All eight selected roots remain connected.
+The six actual M4 data connections on isolation/regenerator0/regenerator1
+are explicit invariants, including the two-terminal `restored_b` net.
+Driver supply maps and actual M4 access layers are checked independently.
+No new access-pad geometry or signal-path change is introduced.
+
+The actual OpenDB round trip passes at
+`regular_regenerated_routing_interface_v274/b41db4edac628761`, following
+service invocation `3c140f2be9274e14b029e39d13fa78c7`. All six before/after
+record sets (connections, ports, boxes, masters, nets and buses) match;
+353 native physical instances, all three driver paths and exact existing
+proxy metal are retained. The shared frozen v240 Tcl procedure is reused
+without modification and captured in the new manifest. This interface
+preflight performs no routing or SPICE work.
+
+`verify_regular_regenerated_routing_v275.py` separately rereads placed,
+router-input and restored databases against those snapshots. Its ten
+injected faults include missing/bypassed isolation, missing root output,
+shifted fixed-metal proxy, lost native supply type, moved FIRM instance,
+either regular stage bypassing `restored_b`, disconnected final M4 output,
+and shifted public M4 OUT geometry. The active artifact is
+`regular_regenerated_routing_verification_v275/13aea70be0ae4a65`, service
+`openlvds-regular-regenerated-router-verification-v275`, invocation
+`3aba2bd73b834e2b99da448cd1f7660a`, logging to
+`build/regular-regenerated-router-verification-v275.log`.
+
+Six unit/saved-interface tests pass in
+`build/regular-regenerated-router-v274-completed-tests.log`, covering
+native stage/supply/layer maps, exact 93-term adaptation, missing stage
+even under a false shapeless-pin report, wrong proxies/restored masters,
+saved-record faults, actual completed output hashes and native restoration.
+The three original v240 interface tests also pass in the CAD environment
+at `build/regular-regenerated-router-original-tests.log`. Database
+restoration and fault rejection do not qualify whole-bank routing/LVS,
+shared RC, native timing, DCC/full-clock or PHY operation.
