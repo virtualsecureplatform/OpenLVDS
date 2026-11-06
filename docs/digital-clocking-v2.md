@@ -10658,3 +10658,28 @@ physical tests and three v263 native-candidate tests also pass in
 `build/regular-regenerated-original-native-tests.log`. Placement feasibility
 does not qualify whole-bank connectivity, shared RC, timing selection,
 dense/all-PVT transport, DCC/full-clock or PHY operation.
+
+### Regular-pair placement feasibility completed
+
+`regular_regenerated_placement_v272/82dc7493ef40f70d` now completes with
+**zero Magic DRC**, all 353 instance connections, placements/sizes and
+public interfaces verified in OpenDB, and all 43 tapped rows retained.
+The saved GDS instance/master/origin multiplicities match the plan. Each
+of VPWR, VGND and fine_node is one actual fixed metal component touching
+its required 31 native fine rails without touching another named net.
+The native library merge also preserves all masks, hierarchy and labels.
+
+Two additional saved-artifact tests verify every retained output hash and
+the narrowly scoped completion flags, rerun the actual GDS bus audit,
+reject an injected wrong-net rail map, and verify that the public M4 OUT
+contact reaches the final driver's Y rail while remaining separate from
+its A rail. All **six** v273 tests execute successfully in the CAD
+environment with no skips at
+`build/regular-regenerated-physical-v273-cad-tests.log`. Together with the
+four original physical and three native-candidate checks, all **13 targeted
+tests** pass. The v272 service finishes with exit status zero.
+
+The v263 native timing pilot still has no completed cases. This is a
+placement/fixed-bus feasibility receipt only: whole-bank routing/LVS,
+shared-wire RC and timing admission remain false. The existing six native
+SPICE engines and their original guarded source closures are unchanged.

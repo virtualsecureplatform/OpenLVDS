@@ -57,7 +57,8 @@ its persistent runner is live under the unchanged dispatcher.
 Its physical backend is now implemented separately: 181 functional/353
 physical instances, exact native graph and 1529-MOS/43-MIM inventory,
 corrected native supply-port reference, 52-site fine-array/control-row
-shift and actual metal-4 output access. Placement feasibility runs at
+shift and actual metal-4 output access. Placement feasibility passes zero
+DRC and verifies all 353 connections/placements plus all three fixed buses at
 `regular_regenerated_placement_v272/82dc7493ef40f70d`; routing, whole-bank
 LVS/RC and timing admission remain open for this revised architecture.
 The bank pilot runs under the same dispatcher, with a gated continuation for
