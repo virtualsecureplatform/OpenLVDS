@@ -9957,3 +9957,31 @@ two CAD route-generation/admission tests pass. The admission test verifies
 that an incomplete pilot is rejected without creating an artifact. Native
 manufacturing placement DRC and the stored-database positive/fault controls
 above were executed separately from these unit tests.
+
+
+### Native standard-master junction references (v248/v250)
+
+The isolated-bank ordinary extraction exposed an ambiguity in the schematic
+reference: original standard-cell definitions supplied W/L only, while the
+new BUF8 native hierarchy supplied full junction parameters for the same
+NFET/PFET model/dimension classes. The strict inventory rejected this mixture
+instead of weakening junction comparisons. The first fine-junction diagnostic
+(v243) and first standalone reference extraction (v248) are retained.
+
+`isolated_bank_standard_references_v250/70e0b0dbd0180169` completes for
+all five original functional standard masters. Each master is selected from
+the exact registered GDS library of the passing isolated-bank placement,
+extracted independently with Magic, and checked by strict native Netgen LVS
+against its original schematic. No device width/length or junction value is
+inferred. Primitive counts are 10 for `buf_4`, 8 for `inv_4`, 12 for `and2_4`,
+4 for `buf_1`, and 2 for `inv_1` (all `sky130_fd_sc_hd__`).
+
+The first v248 extraction stopped because Magic emitted a different public
+header order. The v250 revision uses the existing exact named-port bijection
+adapter: only the public header is reordered, with every non-header byte,
+native device node/model/parameter and passive statement preserved. Both the
+raw extraction and ordered reference remain available. Actual retained buf_4
+extraction tests verify this mapping and reject a renamed pin with the same
+port count. This is standalone native reference evidence, without standalone
+well-tap, whole-bank routing/RC, timing, or PHY admission. The complete bank
+placement supplies the separate zero-DRC geometry evidence.
