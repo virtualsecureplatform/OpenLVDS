@@ -10868,3 +10868,42 @@ positive overlap cannot admit an unsampled zero, average-positive histories
 with a cross-history gap fail, incomplete/mixed/nonfinite cases are rejected,
 and the actual completed evidence hashes and numerical result reproduce.
 The original gate, waveforms and ongoing zero/other campaigns remain unchanged.
+
+### Regular-pair routed native GDS and shared RC backend (v282–v283)
+
+The revised native GDS producer checks all 181 functional calls against the
+canonical reference, native manufacturing masks and all 353 placements,
+then requires fresh zero Magic DRC, strict native LVS and exact
+1529-MOS/43-MIM parameters. A failed or incomplete route cannot advance.
+Four targeted CAD tests pass at
+`build/regular-regenerated-native-gds-v282-tests.log`, including rejection
+of the historical supply-header error and a changed programming connection.
+
+The separate fresh shared-RC qualifier preserves original extraction,
+reconstructs only the 62 geometry-bound fine capacitor junction records,
+and checks all 155 fine MOS junctions. It requires exact native topology
+and parameters, zero inferred junctions, passive raw/reduced networks,
+regenerated reductions and independent terminal-current witnesses. Five
+tests pass at `build/regular-regenerated-joint-rc-v283-tests.log`. The
+positive test uses the actual native ordinary extraction and an artificial
+small passive network; it verifies the qualification machinery, not actual
+routed-bank RC. No v282/v283 production artifact exists yet.
+
+### Exact-pilot physical continuation and duty scope (v284)
+
+The continuation `openlvds-regular-regenerated-physical-v284` is launched
+with invocation `779ba62ac73644849d735e48a56fec0d`. It binds the existing
+v263 producer invocation `181cf82cb97949109657cb60d5111980`, completed
+v275 interface evidence, v276 geometry and v279 measured reference. It
+captures the imported source closure and prerequisite files, waits for the
+complete four-point native pilot, and advances through route, native GDS
+and fresh RC only after each preceding stage passes. Failed gates and
+changed inputs stop the continuation and retain evidence. Four handoff
+tests pass at `build/regular-regenerated-physical-v284-tests.log`.
+
+The user-confirmed clock-duty range is **40–60%**, sampled at **40%, 50%
+and 60%**. The active clock matrix already uses these values with
+390/400/410 MHz, fixed supplies and five process corners at 0/25/40 C.
+Existing captured campaigns are unchanged. Complete native timing,
+routed-bank RC, periodic/PVT transport, restored clock chain and full PHY
+qualification remain pending.

@@ -86,6 +86,12 @@ The original extraction remains intact; this is not a routed LVS/RC receipt.
 The revised routing producer (v278) is implemented behind the complete
 four-point v263 native gate. It retains all 93 fixed-bus terminals and
 requires the new `restored_b` route; no route has been prepared or launched.
+The revised native GDS and fresh shared-RC qualifiers (v282/v283) are also
+implemented, with nine passing targeted tests. Their RC tests use a native
+device fixture and artificial passive network; they do not qualify a routed
+bank. The v284 continuation is live, waiting for the exact v263 invocation
+before routing, native DRC/LVS/mask checks and fresh RC qualification. It
+preserves the complete four-point timing gate and captured source closure.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
@@ -120,7 +126,8 @@ observation/transport tests also pass. Actual routed transport remains pending. 
 the original P20/N10 pass/failure results; full four-case parity is still open. Whole-bank routing, LVS and shared-wire
 RC for this architecture remain open.
 
-Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
+Clock checks use 390/400/410 MHz and 40/50/60% input duty (40% and 60%
+endpoints plus the 50% nominal check), fixed supplies and
 0/25/40 C across all five process corners. The periodic campaign runs under the unchanged global six-engine dispatcher;
 its failures are retained and do not admit the bank.
 See [digital clocking v2](digital-clocking-v2.md) for the implementation contract
