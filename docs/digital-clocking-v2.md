@@ -12128,3 +12128,33 @@ earlier test run expected a different message for the correctly rejected
 missing owner; its failed log remains at
 `build/tapered-regenerated-bank-v310-v311-tests.log`. The assertion is
 corrected without changing producer rejection behavior.
+
+### Integrated regression and exact CAD coverage after v311
+
+Fresh discovery at implementation commit `d1f08a4` finds **2564 tests**:
+the previous 2540 plus v305's five, v306's seven, v308's three and the
+v310/v311 comparison/continuation's nine. Pinned NumPy/SciPy requirements
+are checked before the integrated run. Discovery uses the tools environment
+with the science interpreter, enabling the three Yosys checks previously
+deferred while leaving 51 CAD tests statically skipped. The latter are
+the previous 48 CAD checks plus the three smaller-inverter checks. The
+exact names and set differences are retained in
+`build/common-table-v311-skip-names.json` and
+`build/common-table-v311-skip-audit.log`.
+
+Those exact **51 CAD tests pass with no skips in 52.816 s** using the CAD
+interpreter. The runner requires both success and an empty skipped list;
+its log is `build/common-table-v311-skips.log`. Unit
+`openlvds-common-table-skips-v311`, invocation
+`6e71c5fd69a843389c9bfea7c1724c4c`, is terminal/inactive with MainPID 0 and
+ExecMainStatus 0. This includes native layout/terminal/dimension checks and
+existing physical admission tests; it does not establish bank timing.
+
+The **2564-test integrated regression is still running** as
+`openlvds-common-table-regression-v311`, PID 2067834, invocation
+`48f30a50d6e04309988cfca20e78424b`, with log
+`build/common-table-full-regression-v311.log`. No integrated pass is claimed
+at this checkpoint. The six native engines remain occupied, and the
+tapered-bank continuation remains live awaiting complete original zero-code
+evidence. The original zero-code solver PID 2036551 is directly confirmed
+live; no native case is restarted or replaced by these software/CAD checks.
