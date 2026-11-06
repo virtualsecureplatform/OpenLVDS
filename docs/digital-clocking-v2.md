@@ -10194,3 +10194,32 @@ resistor elimination, exact regeneration and independent current witnesses.
 Its resistor comment remains in the certified fixture and is removed only
 in the analysis view. This fixture supplies no routed-bank qualification
 receipt; actual v255 extraction remains gated on the pending native route.
+
+
+### Native-to-RC automatic handoff active (v256)
+
+`run_isolated_bank_rc_followup_v256.py` is live as
+`openlvds-isolated-bank-rc-followup-v256`, with state in
+`build/reports/isolated_bank_rc_followup_v256/initial/state.json`. It follows
+the exact native physical coordinator invocation
+`675bd2311b874b93832acc4fc511c3d7`, captures its existing immutable input
+bindings and geometry identity, and pins the imported RC source closure.
+Its 101 guarded inputs and running PID were verified while it reports
+`waiting_for_native_physical`.
+
+Only the completed native physical coordinator's explicit v253 artifact can
+be handed to v255. A restart, changed input/geometry identity, failed parent,
+incomplete native artifact or wrong context terminates the continuation
+without restarting any producer. Once eligible, the coordinator prepares and
+runs the fresh RC qualifier and independently requires the completed receipt,
+strict native inventory, zero inferred junctions, all 155 fine junctions,
+native topology, preserved original extraction, both regenerated reductions,
+all three passivity results, unchanged non-capacitor/passive records and a
+passing independent current witness. It adds no SPICE jobs or dispatcher
+slots; timing and full PHY gates remain separate.
+
+Three host tests pass for incomplete/wrong native handoffs, every required RC
+proof, and missing/failed passivity evidence. Combined with the five CAD RC
+qualification tests, all eight targeted tests pass. The real routed-bank RC
+campaign has not started because the native pilot/physical gates are still
+pending; the synthetic test network is not used as substitute evidence.
