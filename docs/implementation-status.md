@@ -59,7 +59,10 @@ native records; six injected connection/geometry/type faults are rejected.
 Five native standard-master reference extractions now pass strict LVS. The
 fresh whole-bank junction diagnostic also completes with all 1522 native
 primitives checked, a corrected supply-port reference order, and 155 fine MOS
-bound to the separate geometry-allocation proof. The regular-route producer
+bound to the separate geometry-allocation proof. The measured ordinary
+reference is now prepared: 62 capacitor devices/124 fields are selectively
+corrected, all 155 fine MOS match the measurements, and correction is byte
+idempotent. This does not qualify shared-wire RC. The regular-route producer
 requires that corrected reference evidence and waits for the complete native
 pilot's zero/overlap/duty gates. Whole-bank routing, LVS and shared-wire
 RC for this architecture remain open.

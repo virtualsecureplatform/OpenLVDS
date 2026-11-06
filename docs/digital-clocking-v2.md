@@ -10061,3 +10061,33 @@ old zero/coarse idle windows have exactly zero external input and only about
 0.03125 ps. This supports further numerical investigation but identifies no
 proven physical failure or solver root cause. The finite-support case later
 advanced through its full 25 ns; all healthy simulations were retained.
+
+
+### Measured isolated-bank fine-junction reference (v251/v252)
+
+`isolated_fine_junction_reference_v252/bcd02df0466bafba` completes on the
+retained ordinary v246 extraction. The new v251 helper keeps the existing
+structural partition and selective correction boundaries, with the exact
+isolated-bank census of **1479 MOS + 43 MIM**. Only the 62 tied-terminal fine
+capacitor MOS may receive measured AD/AS/PD/PS values. All 31 sections must
+retain the original private CAP, complementary enable, pass/clear, shared
+data and bulk topology, and all targets require symmetric measured D/S
+junctions from the bound native primitive measurements.
+
+The actual correction changes **62 devices and 124 junction fields**. Every
+other native device/card/parameter and every R/C record is preserved. All
+**155 fine MOS**, including 93 unchanged programming MOS, then match all four
+measured junction fields. The full 1522-primitive comparison preserves every
+previously supplied junction parameter in the corrected native reference.
+Reconstruction regenerates exactly, and applying it again changes no bytes.
+Original ordinary extraction and physical GDS/placements remain untouched.
+
+This is a measured reference artifact for the later routed extraction. It
+is not shared-wire RC or electrical admission. A routed bank still needs its
+own native LVS and fresh joint extraction; the correction must be applied to
+that actual RC and its actual routed native reference, followed by strict
+native topology/parameters, passivity, exact reduction and independent
+terminal-current checks. Three tests exercise the real extraction, confirm
+all 155 junction sets and unchanged non-capacitor cards, retain synthetic
+R/C records byte-for-byte, and reject missing measurements or changed fine
+capacitor dimensions/topology.
