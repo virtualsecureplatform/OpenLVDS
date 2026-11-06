@@ -12484,3 +12484,22 @@ four original/candidate pairs. Its log is
 `build/finite-support-full-parity-v226-completed.log`. Full four-case
 parity remains pending at this checkpoint; the original producer's false
 parity/admission fields are not rewritten.
+
+### Complete four-case input-precision parity independently verified
+
+The same v226 invocation subsequently exits successfully (inactive,
+MainPID 0, ExecMainStatus 0), producing
+`finite_support_bank_parity_v226/c2bd335b35f9f3d1`. Its state is complete
+and passed. All four full-waveform comparisons pass and preserve every
+original passing and failing endpoint gate. Across the four cases the
+largest edge-delay difference is **0.002323 ps**, slew difference
+**0.011628 ps**, and native terminal-peak difference **0.228199 mV**
+(rounded upward). This closes the pending independent parity check;
+the original v225 artifacts remain unchanged.
+
+This result applies to input precision for the same P20/N10 DUT at
+SS/40 C only. It preserves the known 60% timing failure and zero-quarter
+failure, establishes no runtime speedup, and leaves electrical, bank
+clock-interface, all-PVT and PHY qualification false. The approved raw
+clock input-duty range remains **40%–60%**, with **50%** as the nominal
+check, under `clocking_duty_v2_2.json`.
