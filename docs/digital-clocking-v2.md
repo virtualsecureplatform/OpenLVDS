@@ -10980,3 +10980,43 @@ oscillation. Full waveform parity and elapsed-time benefit remain unproven.
 The original and finite-support campaigns continue with unchanged settings.
 Native completion, safety, timing and full-link admission must still come
 from the complete guarded readers and original gates.
+
+### Revised routed-bank sparse clock PVT matrix (v291–v292)
+
+`probe_regular_regenerated_pvt_v291.py` implements **405 conditions**:
+five process corners × 0/25/40 C × 390/400/410 MHz × 40/50/60% duty ×
+zero/fine31/first-coarse code. It requires the approved fixed-supply
+contract and consumes only a complete passing v288 27-case SS/40 screen.
+All 27 original raw/deck/output records are hashed and independently
+remeasured before being reused; only **378 new cases** are prepared.
+The same actual routed RC netlist, all 1529 native MOS, 173 programming
+gates and actual control-terminal observations are retained. Every original
+pulse, epoch, safety, repetition, period, quarter-budget and 250 ps slew
+gate remains mandatory, with eight finite positive edge histories per case.
+
+Conservative fine/coarse overlap and positive progress from zero are
+recomputed over every frequency, duty and pulse within each of the 15 PVT
+points. Different PVT delay offsets are not compared as one overlap interval;
+common legal-code tables still require their separate dense monotonicity,
+coverage and maximum-gap proofs. A passing sparse PVT result also does not
+qualify updates, DCC, the complete clock chain or the LVDS link.
+
+`run_regular_regenerated_pvt_v292.py` follows exact v289 invocation
+`eb06a9982527465389260bb586759b3b`, preserving the complete source closure
+and prerequisite binding. Its unit `openlvds-regular-regenerated-pvt-v292`
+has invocation `61b44074399f450a8105652b7bb3e7a2`. It waits for passing
+native transport before creating the PVT campaign. The unchanged dispatcher
+limits this campaign to two workers at priority 2 under the global six-engine
+budget. Failures and partial artifacts are retained without restart. The
+final handoff independently checks all 405 unique conditions, every original
+native flag/observation, and all 15 group overlap/progression metrics.
+
+All **nine tests pass with no skips** at
+`build/regular-regenerated-pvt-v291-v292-tests.log`. They exercise complete
+condition coverage/reuse, all generated process/temperature fixtures,
+preserved input/solver/load/supply text, false native flags, missing/duplicate
+conditions, nonfinite/incomplete histories, cross-history overlap gaps,
+progression failure, wrong handoff context and independent group recomputation.
+Synthetic result records test aggregation and handoff logic only. No v291
+production manifest or native PVT result exists; the v263 native pilot and
+all physical/transport prerequisites remain pending.

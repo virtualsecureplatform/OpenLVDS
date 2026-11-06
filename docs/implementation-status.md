@@ -98,6 +98,13 @@ gates, 86 logical controls and actual selected/fine/restored-node terminals
 are covered. A separate continuation waits for v284 before testing the actual
 routed bank at zero code, fine/coarse overlap and all 27 sparse-code clock
 conditions. No revised routed-bank electrical result exists yet.
+The next PVT producer (v291) is implemented for 405 sparse-code clock
+conditions across all five process corners and 0/25/40 C, retaining
+390/400/410 MHz and 40/50/60% duty at fixed supplies. It remeasures/reuses
+the 27 passing SS/40 cases and prepares only the remaining 378. Nine matrix
+and continuation tests pass. Its v292 continuation waits on the exact v289
+job; no PVT campaign or electrical result exists yet. Dense/common legal
+tables, update behavior, DCC and full-clock qualification remain pending.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
