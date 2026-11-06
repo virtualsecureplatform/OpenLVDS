@@ -9384,3 +9384,71 @@ close its sticky feedback loop before the set pulse disappears. The
 must address setter/storage feedback timing or phase qualification, retain
 native safety checks and requalify actual shared-wire behavior; changing
 the event threshold or ignoring the first pulse would not repair the circuit.
+
+### Completed periodic baseline and cold shared-counter diagnosis
+
+The actual joint-RC periodic v174 campaign `99ccbf8a9c9b09ef` now completes
+all 27 cases with no solver/measurement exceptions. Only **10/27** pass the
+unchanged clock-interface gate: zero 6/9, fine31 0/9, first coarse 4/9.
+Every case passes terminal safety and the 250 ps output slew limit. Zero
+fails at 60% duty at all three frequencies; fine31 fails at all frequencies
+and duties; first coarse additionally fails 400/410 MHz at 50% and all
+three 60% conditions. These are retained period/history failures, not an
+admitted bank. The balanced-driver v201 pilot has a captured manifest at
+`balanced_isolated_fine_bank_v201/742b7d3b91c0b3b7` and runs under the same
+six-engine dispatcher; no result is inferred from its preparation or queue.
+
+Six SS0 v194 shared-counter cases have completed. At 50/60%, both stopped
+levels fail the alternating-phase event count. At 40%, PREPARE and RESET_N
+never rise in the complete 26 ns traces, and the original measure correctly
+raises `prepare rising-event count`. `diagnose_shared_counter_v206.py`
+extends the read-only v200 diagnostic to this explicit class of public-event
+failure; waveform completeness, all 510 MOS terminal pairs, byte hashes and
+all unfiltered events remain required. Additional terminal peaks are
+1.941321602/1.898141054 V at 40% stop0/1 and
+1.941195417/1.898217410 V at 60% stop0/1. All six cold cases pass terminal
+safety while failing function. Exact reports are under
+`build/reports/shared_counter_diagnosis_v206/`; log:
+`build/shared-counter-diagnosis-v206-cold.log`.
+
+### Compact counter shared-wire repair and retained physical attempts
+
+The component-RC SS0/50% counter asserts low0 at 4620.253 ps and passes;
+the same native cells with full routed wiring first emit an incomplete pulse
+at 5221.518 ps. Its buffered REQUEST is also 277 ps later than the component
+case. This motivates reducing shared wiring before changing storage logic.
+The compact physical producers retain all 21 macros, all 19 native masters,
+logical connectivity, device guards and both native clock buffers. They use
+32 um stage pitch and move control/supply buses toward the middle; the
+standalone top name remains `openlvds_repaired_clock_counter_v191`, while
+each new geometry is identified by its own artifact and GDS hash.
+
+- V202 `ee68dab8d9d4f28a` stops before DRC because middle global buses make
+  the old REQUEST driver escapes reuse local signal spines. It remains
+  frozen. V205 gives REQUEST and request_i dedicated 6.5/2.0 um tracks and
+  independently checks M3 spine separation before layout. Planned unioned
+  CLK/request_i vertical spans fall from 348.28/784.04 to 224.44/351.76 um;
+  those are geometric planning metrics, not extracted capacitances or timing.
+- V205 `e2905cecb034cbc4` passes unique LVS and all native master/placement
+  witnesses, but has **two Metal4 spacing DRC violations** around the first
+  middle via band. It is not physically admitted. Its relative Magic saves
+  preserve native cell names without the directory-name defect of v191.
+- V208 shifts the via band and fourth stage bus bundle. The new planning
+  clearance gate catches the raised high2 feedback spine touching the next
+  low2 feedback input before a physical artifact is made. The failed run log
+  and frozen source remain; the regression treats this as a rejected plan.
+- V210 additionally leaves 4 um after that raised bundle, shifting the low2
+  and release rows and their buses together. Thirteen targeted planning,
+  native replay-interface and RC admission tests pass, including independent
+  bounding-box separation, same-net wire unions, complete 510-device probe
+  coverage and rejection of the earlier crossings. Actual physical closure
+  is running; no timing improvement has yet been measured.
+
+Logs: `build/compact-repaired-counter-v202-run.log`, `...-v205-run.log`,
+`...-v208-run.log`, `...-v210-run.log`. The initial v207 coordinator refuses
+handoff when its source producer has already exited; no RC or SPICE work
+starts from the failing v205 layout. Fresh RC v203 and native replay v204
+are prepared for the corrected v210 source, gated by its actual zero DRC,
+unique LVS, exact native masters/placements and fresh distributed RC proofs.
+The v209 coordinator binds the explicit producer invocation and code/input
+hashes, and never restarts a producer or relaxes a failed physical/timing gate.
