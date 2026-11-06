@@ -37,7 +37,10 @@ loaded mux node failing to restore its rail between edges. The first native INV1
 pulses. A stronger native INV8/NAND2_8 pilot is running; complete INV8 endpoint
 traces still fail slew or period/history limits. Two new balanced regular-P/N
 drivers now pass physical closure and fresh local RC. Their measured-bank
-pilot now has two native fine31 endpoint simulations running under the same dispatcher; bank timing and full
+P20/N10 fine31 endpoints now complete: 40% passes, while 60% still fails
+period/history despite passing native safety and slew. Two stronger-discharge
+N16 variants also pass zero DRC, unique LVS and fresh local RC; their new
+bank pilot is preparing under the same dispatcher; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
 
@@ -67,8 +70,11 @@ traces (1.940872/1.898217 V peaks); this does not waive the timing failure.
 All six completed SS0 cases fail function; at 40% duty PREPARE and
 RESET_N never assert. Their independent terminal screens still pass. A
 compact same-logic 21-macro route now passes zero DRC, unique LVS and exact
-native masters/placements; fresh RC qualification and the original native
-timing replay are linked by an active source-bound continuation. The
+native masters/placements; fresh RC qualification passes and the original native timing replay is
+queued by an active source-bound continuation. A further direct first-loop
+feedback route also passes zero DRC, unique LVS and fresh RC, reducing
+feedback parasitics from 63.4 to 37.2 fF; its full native replay is queued
+separately under the same six-engine dispatcher. The
 remaining cases continue and whole-clock validation remains open. No repaired whole clock
 assembly or PHY is qualified.
 

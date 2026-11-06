@@ -9558,3 +9558,48 @@ inspection through 24 ns first exposed this result in
 marks incomplete trace and unverified terminal safety and is not a
 qualification receipt; the later complete 25 ns v201 reports independently
 confirm the timing values and safety checks above.
+
+### Stronger-discharge native fine-driver implementation (v217--v220)
+
+V217 `discharge_driver_pcells_v217/b783de533acec9e1` regenerates actual
+connected-gate N16/P20/P24 primitive arrays using the same pinned native
+PCell options: 0.65 um NFET fingers, 1.0 um regular PFET fingers and
+0.15 um length. All three primitive DRC/count/dimension/gate/body inspections
+pass. Separate D/S access and the physically contacted unlabelled even-array
+end drain are retained and explicitly strapped.
+
+V218 `discharge_fine_driver_physical_v218/e9cdc083fc9a84bc` implements
+P20/N16 and P24/N16 inverters, strengthening N to 10.4 um total while retaining
+P20/24 um and the 2 x 2 um output MIM. Both layouts pass **zero DRC and unique
+LVS**, with exact 37/41 native primitive counts and parameters. This targets
+the measured short-low-phase discharge limitation rather than assuming that
+scaling P and N together balances both duty endpoints. It is a hypothesis
+until native bank measurements complete.
+
+Fresh v219 local RC `discharge_fine_driver_rc_v219/7a09244f3f729a64`
+qualifies both exact GDS files, preserving the complete native models,
+dimensions and junction parameters. P20/N16 has 1,123 raw R/443 C, reduced
+to 1,080 R; P24/N16 has 1,241 raw R/513 C, reduced to 1,198 R. Passive
+reduction, strict collapsed native LVS and all four independent current
+witnesses pass on each. Two primitive tests, two physical planning tests and
+two CAD RC-admission tests pass against the actual generated artifacts.
+
+`probe_discharge_isolated_fine_bank_v220.py` now prepares eight native bank
+cases: both sizes at fine31/410 MHz/40% and 60%, plus zero and first coarse
+at 50%. It retains every other measured bank component, the original BUF8
+output, all 173 programming gates and all **1,479/1,483 native MOS** in the
+two variants. Two additional tests check actual native terminal coverage and
+both-edge overlap/history admission, including refusal of missing or
+nonfinite histories. Every original 250 ps slew, period/repetition,
+quarter-cycle, safety and control gate stays mandatory. New shared wires are
+ideal at this hypothesis stage; actual whole-bank routing, full frequency/
+duty, dense/update/common tables and all-PVT qualification remain required.
+
+`openlvds-discharge-isolated-fine-v220.service` is verified live in source
+admission/preparation. It uses at most two workers within the original global
+six-engine priority/aging dispatcher. All older solvers and failed/partial
+artifacts remain intact. Logs:
+`build/discharge-driver-pcells-v217-run.log`,
+`build/discharge-fine-driver-v218-run.log`,
+`build/discharge-fine-driver-rc-v219-run.log`, and
+`build/discharge-isolated-fine-v220-run.log`.
