@@ -11020,3 +11020,50 @@ progression failure, wrong handoff context and independent group recomputation.
 Synthetic result records test aggregation and handoff logic only. No v291
 production manifest or native PVT result exists; the v263 native pilot and
 all physical/transport prerequisites remain pending.
+
+### Observed zero-code quarter-budget failures before native completion (v293)
+
+`diagnose_live_clock_prefix_v293.py` binds one live native solver, its exact
+case/task/deck and immutable parent manifest, and copies only time/IN/OUT
+from the complete frames already present. Original raw/deck files are never
+modified. The copied TSV, original raw header, hashes, process identity,
+native task and timing-reader/runtime provenance are retained separately.
+The diagnostic requires finite monotonically increasing samples from startup.
+It uses the original periodic crossing measurements, but cannot check
+unobserved future samples or native terminal safety and always leaves complete
+transport/electrical/PHY admission false.
+
+Both captures in `build/reports/live_clock_prefix_v293/20261106T153315Z`
+contain all eight expected input/output crossings at SS40, 410 MHz, 50%
+duty, zero coarse/fine code:
+
+- **Old P20/N10 v201 case 2**, PID 1990963, observed through 24.709419 ns:
+  rising delays 672.845339–676.795023 ps, falling delays
+  875.578222–875.594115 ps, maximum slew 225.125929 ps. Quarter headroom is
+  **−265.838017 ps** against the unchanged 609.756098 ps budget.
+- **Current P20/N16 v220 case 2**, PID 2005259, observed through 24.744572 ns:
+  rising delays 685.423759–689.342531 ps, falling delays
+  815.369688–815.385080 ps, maximum slew 225.177821 ps. Quarter headroom is
+  **−205.628982 ps**.
+
+These observed violations cannot become a passing quarter-budget result by
+appending the remaining quiet interval. They do not establish complete native
+safety or transport results; the healthy original solvers continue to their
+full stops and the existing guarded completion readers remain authoritative.
+The stronger discharge improves observed worst falling delay by about
+60.209 ps, which is insufficient to recover the quarter budget. The pending
+v263 regular-inverter pair replaces the BUF8 in both of these configurations;
+the prefix data do not predict that replacement's timing or admit its route.
+
+All **four tests pass** at `build/live-clock-prefix-v293-tests.log`, including
+replaying both retained native TSVs and hashes, reproducing every observed
+edge delay and quarter violation, rejecting nonfinite/nonmonotonic/missing
+startup samples, and preventing either positive headroom or an incomplete
+pulse set from granting native admission.
+
+A new broad `make test-full` run is live under
+`openlvds-regular-regenerated-regression-20261106`, invocation
+`25fb4f5f158a4e53b9553cbefcf10e36`, logged at
+`build/regular-regenerated-full-regression-20261106.log`. It was discovered
+before v293 was added; the four v293 tests above run separately. The broad
+run is still pending and adds no SPICE campaign or engine slot.
