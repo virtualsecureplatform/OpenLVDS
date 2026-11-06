@@ -32,7 +32,7 @@ def evidence(parent):
     code='''import sys,json
 from pathlib import Path
 sys.path.insert(0,'scripts')
-import verify_unguarded_bank_joint_rc_v165 as p
+import verify_unguarded_bank_joint_rc_v171 as p
 import measured_bank_observations_v145 as observations
 out=Path(sys.argv[1]);i,bi=p.bound(out);r=json.loads((out/'summary.json').read_text())
 if json.loads((out/'state.json').read_text())!=dict(status='complete',passed=True,qualified_phy=False) or not r['joint_rc_passed'] or not r['native_topology_verified'] or any(p.sha(out/n)!=h for n,h in r['files'].items()) or any(p.sha(p.ROOT/n)!=h for n,h in r['original_extracted_files'].items()):raise ValueError('Require complete unchanged actual joint RC and native equivalence')

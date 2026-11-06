@@ -8652,3 +8652,48 @@ the next local circuit experiment should address the storage cell's body-return
 path (for example, a dedicated/stronger local tap/ground connection), with
 new physical and native RC proof; further setter loading alone is not yet
 a demonstrated solution to this reset event.
+
+
+### Retained RC header-order repair after v165 admission refusal
+
+The fresh v165 extraction completed successfully at
+`build/extracted/11a0230a0344f288/openlvds_balanced_b2_unguarded_v164/`: 50,875
+raw resistors, 13,018 explicit parasitic capacitors, 39,637 reduced resistors.
+Its GDS/source-manifest/native-reference fingerprints all match. The producer
+then refused interface admission because it passed the placement-port dictionary
+order to extraction: E0--E30 preceded S0--S3, while the declared bank interface
+requires S before E. The retained producer
+`unguarded_bank_joint_rc_v165/a2984e3a5c75c5f2` remains at its failed extracting
+state; its service terminated. The v170 follower also terminated as intended,
+with no zero/sparse artifact prepared or solver started. Neither is restarted.
+
+`native_public_port_order_v171.py` restores only the copied flat SPICE header
+to the declared named order. It requires one flat definition and an exact
+unique-name public-port bijection; every circuit-body byte, native device/net/
+parameter and passive statement remains intact. Original extracted files are
+untouched. Two tests cover multiline headers, byte preservation, idempotence,
+and refusal of missing/extra/duplicate ports or hierarchy. Actual preflight
+passes at `build/reports/unguarded_bank_header_v171/preflight.json`: 62 native
+capacitor MOS / 124 junction fields corrected after the header adapter, then
+strict comparison of all 1,453 MOS and 40 MIM dimensions/junction parameters
+against the actual native reference, with exact public port order.
+
+`verify_unguarded_bank_joint_rc_v171.py` consumes that completed extraction
+under the terminated producer's execution lock, verifies every original
+fingerprint/hash and preserves the original reduction. It performs all
+remaining native topology, 155 fine-MOS junction, passivity, reproducible
+reduction, idempotence and independent current-witness gates. This is a new
+qualification artifact; it does not re-extract or modify v165.
+Service `openlvds-unguarded-bank-rc-v171.service` is running; log
+`build/unguarded-bank-v171-run.log`.
+
+A manifest scan confirmed v167/v169 had never been formally captured. The
+unprepared v167 evidence import now targets v171; the full native fixture
+and gates are unchanged. The preserved failed v170 coordinator source stays
+intact. New `run_unguarded_bank_chain_v173.py` follows the specific v171 unit
+invocation and retains the same gated v167-zero/v169-sparse sequence. Its
+three lifecycle/gate tests pass using the existing v170 test cases against
+the new coordinator. Service: `openlvds-unguarded-bank-chain-v173.service`;
+state/logs: `build/reports/unguarded_bank_chain_v173/initial/` and
+`build/unguarded-bank-chain-v173.log`. Full bank transient/PHY admission remains
+false until the new RC and timing results complete.
