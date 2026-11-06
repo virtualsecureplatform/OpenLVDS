@@ -47,7 +47,12 @@ period/history despite passing native safety and slew. Two stronger-discharge
 N16 variants also pass zero DRC, unique LVS and fresh local RC. P20/N16 now
 passes both complete fine31 40/60% duty endpoints (2.08/12.76 ps period
 error, about 232.8 ps maximum slew); zero/coarse and broader validation
-remain pending. The bank pilot runs under the same dispatcher, with a gated continuation for
+remain pending. A separate v263 candidate replaces only the native BUF8
+regenerator with two instances of the qualified regular P20/N16 inverter,
+preserving overall polarity and the existing isolation stage. Its four native
+checks prioritize zero delay, both duty endpoints and coarse overlap. New
+shared wiring and timing are unqualified; existing campaigns continue.
+The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.

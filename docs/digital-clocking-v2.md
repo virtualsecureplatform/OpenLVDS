@@ -10350,3 +10350,42 @@ These signed 0.9 V crossing differences are not intrinsic cell delays and
 do not predict timing after changing loading, cell topology or routing.
 The diagnostic changes no traces or circuit parameters and grants no
 electrical, PVT or PHY qualification.
+
+### Regular-inverter output regeneration candidate (v263)
+
+`probe_regular_regenerated_bank_v263.py` tests the measured latency diagnosis
+by replacing only the final BUF8 regenerator with two qualified P20/N16
+regular-P/N inverter instances. The path becomes:
+
+```text
+selected → P20/N16 isolation → fine_node → P20/N16 → restored_b → P20/N16 → OUT
+                               │
+                         31 original fine loads
+```
+
+The two inversions preserve the original regenerator polarity. The existing
+isolation stage, every other native macro definition/terminal map, all 173
+programming-gate observations and original controls remain unchanged. The
+removed BUF8 contains 22 MOS; the new pair contains 72 MOS. The candidate
+therefore has **1529 MOS and 43 MIM**. Each new inverter retains its actual
+qualified native device geometry and local RC from v219. Connections between
+components are ideal for this feasibility experiment; the v220 bank's
+1479-MOS placement, routing interface and coordinators do not qualify this
+new architecture.
+
+Four native points retain SS/40 C, 410 MHz, 100 ps input slew, 20 fF output
+load, eight full cycles, 25 ns duration, original Gear/tolerance/2 ps settings
+and all native D/G/S/B/control observations. Task order is zero/50%,
+fine31/60%, fine31/40%, first-coarse/50%. The original fastest-quarter,
+pulse/epoch, period/history, terminal/control and 250 ps output-slew gates
+remain mandatory, together with conservative fine/coarse overlap across
+both duty histories. No improvement is inferred from replacing the cell:
+the changed input capacitance and internal loading require actual replay.
+
+Preparation requires the unchanged complete v262 diagnosis and remeasures
+both passing v220 P20/N16 fine endpoints. It preserves ongoing v220 and
+other campaigns and uses the same six-engine dispatcher with at most two
+workers and priority zero. Three tests cover the exact native replacement
+and supply order, unchanged controls/programming gates, original full
+stimulus, complete eight-edge coverage, every point gate, and conservative
+overlap. Common routing, all-PVT, dense/update timing and PHY remain open.
