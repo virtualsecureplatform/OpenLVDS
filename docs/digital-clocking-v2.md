@@ -10745,3 +10745,36 @@ and verifies that routing/RC/electrical/PHY admission remains false. All
 existing v240 tests also pass, for **ten targeted tests**. These receipts
 prepare a future timing-gated route; they do not replace the pending v263
 native zero/overlap/duty screens or qualify actual shared-wire transport.
+
+### Regular-pair geometry and fresh junction diagnostic (v276–v277)
+
+`analyze_regular_regenerated_junctions_v276.py` completes at
+`regular_regenerated_junctions_v276/ca85f4dd7ca7a27a`, invocation
+`a2f2395b0b5e4cb8a32363bcb63001fc`. It verifies the actual stored native
+GDS hierarchy/masks/labels and all **353 placed instances**, canonical fine
+master masks, separate fine active regions across all **31 sections**, and
+the measured primitive-geometry provenance for all 155 fine MOS. Five
+qualified standard-master junction references are reused only from the
+exact v238 source placement, with identical master records and verified
+unchanged merged masks, hierarchy and labels. The new regular-driver
+reference retains its qualified native junctions and canonical named-pin
+order. No native source parameter is inferred from a standard-cell name.
+
+Fresh ordinary extraction has **1572 primitives: 1529 MOS and 43 MIM**.
+`regular_regenerated_inventory_v277.py` checks the exact public port order,
+native models/dimensions and every reference-supplied junction value. The
+155 fine devices remain separately bound to primitive geometry; ordinary
+allocation is explicitly not their per-device junction reference. The
+diagnostic reproduces **62 mismatched capacitor MOS, 120 zero-field
+mismatches and four nonzero-field mismatches**. Original extraction and
+all device parameters remain unchanged by the diagnostic. Whole-bank native
+LVS, routing, joint RC, electrical and PHY qualification remain false.
+
+Three CAD tests pass for qualified-reference reuse, wrong parent/model/
+geometry/mask rejection, and actual saved-extraction census/diagnostic/hash
+reproduction at `build/regular-regenerated-junctions-v276-completed-tests.log`.
+Four new inventory tests reject missing devices, changed model dimensions/
+junction fields and public-port permutation at
+`build/regular-regenerated-inventory-v277-tests.log`. The four original
+v244 inventory tests also pass at
+`build/regular-regenerated-original-inventory-tests.log`.
