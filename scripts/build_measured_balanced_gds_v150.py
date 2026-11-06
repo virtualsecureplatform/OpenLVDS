@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Restore exact native masks after gated balanced-bank routing and run DRC/LVS.
 
-Consumes the new native-IN-access route; the failed v135 route is retained.
+Consumes the connected-fixed-bus native-IN route; prior routes are retained.
 Strict device census/dimension/junction checks remain mandatory. No joint RC,
 periodic/PVT timing or PHY admission follows from router or geometry success.
 """
@@ -17,7 +17,7 @@ import re
 import subprocess
 import sys
 import klayout.db as db
-import route_measured_balanced_bank_v149 as route
+import route_measured_balanced_bank_v152 as route
 import build_tg_bank_gds_v51 as legacy
 import measured_bank_native_inventory_v138 as inventory
 

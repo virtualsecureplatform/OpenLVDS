@@ -7983,3 +7983,33 @@ cannot admit physical extraction or a native waveform. The full regression
 listed above includes these new producers. Detailed routing, actual native
 DRC/LVS, whole-bank RC and all remaining periodic/PVT/link requirements are
 still mandatory. Duty checks stay 40/50/60% at 390/400/410 MHz.
+
+
+### Fixed-bus disconnection isolated and routing correction prepared (v152)
+
+Read-only short diagnostics use the v149 saved global database and unchanged
+routing guides, with separate one- and four-iteration outputs under
+`build/reports/router_shorts_v149/` and `router_shorts_v149_iter4/`.
+The four-iteration result reproduces exactly five met3 shorts: selected
+against `u_fine_compound/A`, three VPWR markers against
+`u_fine_unit30/VPWR`, and VGND against `u_fine_unit30/VGND`.
+All are fixed-bus metal against native terminals temporarily disconnected
+by the interface adapter. Foreign connected-pin/obstruction overlaps with
+the public bus proxies were independently absent in the saved input database.
+The original v149 router is retained and continues naturally.
+
+New `route_measured_balanced_bank_v152.py` retains all 94 fixed-bus terminals
+on their exact original nets while routing. The exact fixed metal still has
+its existing temporary public proxy and is restored afterward. No native
+mask, placement, pin geometry, timing model or stimulus is changed. The
+producer explicitly verifies all 94 adapted connections, plus every original
+restoration, coverage and completed three-point gate. Nonrouting body-pin
+handling is unchanged. This addresses the demonstrated floating-terminal
+conflicts without relaxing the zero-violation gate.
+
+The unprepared v150 native-GDS producer now imports v152; no v150/v144/v146
+formal manifest existed when retargeted. New `after152` waiting services
+require passing route, native GDS and joint-RC receipts in sequence before
+the original v146 zero screen can launch. Earlier services and logs are
+retained. The new route and regression are running; no new physical or
+whole-bank timing pass is claimed from this preparation.
