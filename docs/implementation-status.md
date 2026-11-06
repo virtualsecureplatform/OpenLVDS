@@ -47,8 +47,9 @@ period/history despite passing native safety and slew. Its first-coarse
 reference now also completes and passes individual interface checks, but
 the complete histories give rising overlap of −3.063 ps at 40% and
 −69.849 ps at 60%; conservative falling overlap is +63.006 ps. This older
-configuration therefore fails the required overlap gate independently of
-its still-pending zero case. Two stronger-discharge
+configuration therefore fails the required overlap gate. Its zero case now
+also completes and misses the quarter budget by 265.838 ps, despite passing
+all 1473-MOS native safety/control and output slew checks. Two stronger-discharge
 N16 variants also pass zero DRC, unique LVS and fresh local RC. P20/N16 now
 passes both complete fine31 40/60% duty endpoints (2.08/12.76 ps period
 error, about 232.8 ps maximum slew); coarse and broader validation
@@ -56,9 +57,8 @@ remain pending. Its complete zero trace now confirms the quarter-period
 budget failure by 205.629 ps (815.385 ps worst delay), despite passing all
 1479-MOS native safety, control, period, repetition and 225.178 ps slew checks.
 Complete stage analysis measures 296/345 ps rise/fall crossing differences
-from fine node through the BUF8 to OUT. The older P20/N10 zero prefix
-similarly exceeds the budget by 265.838 ps, but its original solver remains
-live. Neither branch is admitted. A separate v263 candidate replaces only the native BUF8
+from fine node through the BUF8 to OUT. Both complete zero results confirm
+the earlier prefix diagnoses. Neither branch is admitted. A separate v263 candidate replaces only the native BUF8
 regenerator with two instances of the qualified regular P20/N16 inverter,
 preserving overall polarity and the existing isolation stage. Its four native
 checks prioritize zero delay, both duty endpoints and coarse overlap. New
@@ -125,6 +125,12 @@ and both edges, finds one shared ordering, prefers 10 ps gaps, enforces the
 coverage. It emits proposals only: native provenance, complete dense curves,
 safe updates and physical/full-link admission remain unverified. No actual
 bank table has been generated or admitted.
+Legal-index/native-code mapping is now implemented in a constant RTL ROM
+and a v3 DLL-control wrapper, preserving the v2 calibration and exact
+configuration/settling protocol. Proposal export keeps table admission zero.
+Ten export/mapping/synthesis tests and five original DLL-control tests pass;
+these use synthetic tables/observers and do not qualify a physical ROM or
+native timing. TX/RX top-level table integration remains pending.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT

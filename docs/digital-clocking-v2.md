@@ -11225,3 +11225,70 @@ instant, v263 cases 0/1 occupy positions 7/8 behind aged older work; its
 configured priority remains 0 and the six-engine/180-second aging policy
 is unchanged. All six native engines remain live and the new pilot has
 no completed cases at this checkpoint.
+
+### Committed legal indices mapped to native programming codes (v297)
+
+Common legal ordering can filter or interleave raw coarse/fine codes, so
+passing an index directly to native programming logic would select the wrong
+delay. `export_proposed_code_rom_v297.py` revalidates all 30 selected interval
+curves, common ordering, conservative range and current dimension/gap policy,
+then packs each native code into its explicit ROM word. Entry zero occupies
+the least-significant word. The manifest includes coarse/fine dimensions,
+policy, input/source hashes and parameter-file hash. Existing exports are
+never overwritten. Every exported parameter set keeps
+**`TABLE_MODEL_ADMITTED=0`**; proposals cannot issue native certificates.
+
+`openlvds_legal_code_map_v2` implements that constant combinational lookup,
+rejecting out-of-range indices, native codes and invalid dimensions.
+`openlvds_dll_code_map_v2` maps all four committed indices together; an invalid
+lane invalidates the entire native configuration. Default unadmitted tables
+drive known invalid/zero outputs from initialization. The continuous lookup
+function avoids an undriven parameter-disabled combinational process.
+
+`openlvds_dll_control_v3` composes the existing v2 calibration, configuration
+CDC and measurement engines with this mapping. It preserves legal indices
+for calibration and maps only the committed raw-domain indices into native
+codes. Mapping validity gates frontend readiness; both native-model and
+table admission remain required. The exact physical-settling generation,
+64 confirmations, lock freeze and clock-loss behavior are unchanged. Actual
+ROM/decoder propagation must be included in future native physical settling
+and update qualification. TX/RX top-level table composition is still pending.
+
+All **ten export/mapping tests pass without skips** at
+`build/legal-code-mapping-v297-completed-tests.log`, and all **five original
+DLL control tests pass** at `build/legal-code-mapping-v297-v2-regression.log`.
+The actual controller test deliberately reverses native code addresses; its
+synthetic observer decodes that mapping while the real calibration, tagged
+measurement and atomic CDC engines converge and confirm 64 times. Separate
+cases reject unadmitted tables/detectors, stale/missing physical settling,
+invalid/unknown lookup addresses and incomplete four-lane validity. Every
+exported word is also round-tripped through the RTL. Yosys synthesis checks
+the combinational mapper and finds no latches or clocked storage. These
+tests do not qualify a native delay model, physical ROM, update waveform,
+post-route timing or the PHY. The retained initial failing lookup test is
+superseded by the completed passing log; solver campaigns are unchanged.
+
+### Completed old P20/N10 zero and weak-driver zero
+
+The original P20/N10 v201 zero case 2 finishes with no solver error and
+confirms **−265.838017 ps** quarter headroom and **225.125929 ps** maximum
+slew. All 1473 native MOS, 173 programming gates, controls, period and
+repetition checks pass; quarter/interface admission fails. Together with the
+completed fine31 endpoint and overlap failures, its first four-case family
+is rejected. This is not completion of the remaining parent variants.
+The unchanged complete v262 reader independently binds the full trace and
+reproduces stage sums at `isolated_bank_stage_latency_v262/2a9bb2e632054660`,
+logged at `build/balanced-zero-stage-v262-completed.log`. Its BUF8 crossing
+differences are 294.545–294.552 ps rising and 367.396–367.397 ps falling;
+these remain crossing differences, not intrinsic cell-delay predictions.
+
+The older weak v187 case 6 (INV isolation, two fine-load copies, zero code)
+also completes numerically and passes its native voltage screen but produces
+**zero output crossings for eight input crossings on both edges**. Pulse,
+period and repetition gates fail. This is a functional failure, not a
+numerically incomplete trace or evidence of usable timing.
+
+The dispatcher assigns the released slots to older direct-feedback-counter
+cases 4/5 and strong-isolation case 4 under the unchanged aging policy.
+Those engines, the other native runs and all pending v263 followups remain
+subject to the original gates. No failed waveform is discarded or rerun.
