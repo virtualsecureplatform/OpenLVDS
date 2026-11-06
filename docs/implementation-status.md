@@ -34,8 +34,11 @@ native zero at 486.850/522.734 ps rise/fall delay, 153.913 ps maximum slew and
 screen exposes a fine31 history-dependent timing failure despite acceptable
 output swing, voltage and slew. Actual internal-node observations show the
 loaded mux node failing to restore its rail between edges. The first native INV1 isolation cases restore mux swing but lose output
-pulses. A stronger native INV8/NAND2_8 component-RC pilot is preparing;
-its complete frequency/duty and physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
+pulses. A stronger native INV8/NAND2_8 pilot is running; complete INV8 endpoint
+traces still fail slew or period/history limits. Two new balanced regular-P/N
+drivers now pass physical closure and fresh local RC. Their measured-bank
+pilot is preparing under the same dispatcher; bank timing and full
+frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
@@ -57,8 +60,11 @@ strict native-master witness initially finds directory-qualified GDS names.
 A separate name-only repair now passes exact mask/label/placement and native
 master checks. Fresh shared-wire RC now passes exact native parameters,
 passivity, topology, reduction and independent current witnesses. Actual
-shared-wire transient replay is preparing with all 510 MOS observed;
-whole-clock validation remains open. No repaired whole clock
+shared-wire transient replay observes all 510 MOS. Its first two SS0/50%
+cases complete but fail the original phase-event count: low0 emits an extra
+startup pulse. Independent complete terminal screens pass on these two
+traces (1.940872/1.898217 V peaks); this does not waive the timing failure.
+The remaining cases continue and whole-clock validation remains open. No repaired whole clock
 assembly or PHY is qualified.
 
 Earlier clocking experiments remain useful diagnostic evidence:

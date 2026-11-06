@@ -9346,3 +9346,41 @@ these two traces pass terminal safety. Other PVT/duty cases are not inferred
 from these two. Reports:
 `build/reports/shared_counter_diagnosis_v200/stop0.json` and `stop1.json`.
 Two tests cover an otherwise hidden body excursion and nonfinite data.
+
+### Balanced driver bank pilot (v201)
+
+`probe_balanced_isolated_fine_bank_v201.py` connects each exact v199 native
+RC inverter to the measured b2 coarse/fine bank, moves all 31 original fine
+units to the isolated fine node and retains the native noninverting BUF8
+output. All other bank component definitions are byte-preserved. The two
+new top-level connections are ideal at this hypothesis stage; no full-bank
+physical admission is claimed. Each sizing option has 1,473/1,479 observed
+MOS and all 173 original programming gates. Tests check those actual native
+inventories, all fine-unit connections and refusal of unintended topology
+changes. Both-edge conservative overlap and all eight startup/steady cycles
+remain required, as do the original safety, swing, period, repetition and
+250 ps slew limits.
+
+Eight cases cover each size at fine31/410 MHz/40% and 60%, and zero plus
+first coarse at 50%. The source component sparse and repaired-clock receipts
+are retained and checked, alongside all balanced-driver proof and extraction
+bytes. `openlvds-balanced-isolated-fine-v201.service` runs preparation and
+dispatch through the original six-engine budget, with no more than two
+workers. No older live solver is stopped. Its initial source-admission and
+hashing phase is verified live; timing results are pending. Log:
+`build/balanced-isolated-fine-v201-run.log`.
+
+Additional read-only local counter diagnosis
+(`build/shared-counter-local-first-pulse-v200.log`) resolves the first pulse
+more precisely. At SS0/50%, the local setter clock rises at 4912.155 ps,
+within 0.468 ps of public CLK, so long clock-bus skew is not the dominant
+cause in this trace. The storage set input is low from 4675.718 to
+5346.813 ps. Local storage Q crosses 0.9 V at 5205.053 ps but peaks at only
+0.977111 V in the first 4--6 ns window; its feedback input does not cross
+low until 7523.131 ps, after the next stable Q assertion. Thus the first
+partial low-phase set pulse starts the storage output moving but does not
+close its sticky feedback loop before the set pulse disappears. The
+0.9 V phase-event failure exposes a real incomplete latch transition. Fixes
+must address setter/storage feedback timing or phase qualification, retain
+native safety checks and requalify actual shared-wire behavior; changing
+the event threshold or ignoring the first pulse would not repair the circuit.
