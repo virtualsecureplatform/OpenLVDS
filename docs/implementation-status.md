@@ -55,8 +55,9 @@ running. The repaired counter and both clock drivers are now being integrated
 as a 21-macro routed block. It has zero Magic DRC and unique LVS, but the
 strict native-master witness initially finds directory-qualified GDS names.
 A separate name-only repair now passes exact mask/label/placement and native
-master checks. Fresh shared-wire RC qualification is running; native timing
-and whole-clock validation remain open. No repaired whole clock
+master checks. Fresh shared-wire RC now passes exact native parameters,
+passivity, topology, reduction and independent current witnesses. Actual
+shared-wire transient timing and whole-clock validation remain open. No repaired whole clock
 assembly or PHY is qualified.
 
 Earlier clocking experiments remain useful diagnostic evidence:

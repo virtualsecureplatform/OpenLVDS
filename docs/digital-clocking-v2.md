@@ -9166,3 +9166,35 @@ pull-up/pull-down stage, rather than merely copying a larger equal-ratio gate.
 A custom native CMOS driver and/or altered coarse step may be needed; it must
 retain the original repeatability/period, both-edge overlap, zero-quarter,
 slew, dense/common all-PVT and fresh physical/RC gates before selection.
+
+
+### Complete fresh counter shared-wire RC receipt
+
+`repaired_clock_counter_rc_v193/8c480900e695a872` completes and passes all
+declared RC gates. Fresh extraction `49aef5b8606ada55` has **8821 resistors,
+2092 capacitors**, exact seven-port order and positive passive elements.
+Reduction produces **6270 resistors**, eliminating 2321 algebraic nodes.
+All **494 native primitives** retain their exact models/dimensions and all
+supplied MOS junction geometry; there are no newly inferred junctions.
+Collapsed native topology LVS passes. Four independent current witnesses
+pass with maximum absolute difference **2.0918378141e-11 A**, against the
+unchanged 1e-9 A absolute / 1e-8 relative tolerances. The witness graphs have
+6152/3831 original/reduced nodes, 3143 boundary nodes and no floating
+components. This admits the actual 21-macro shared-wire RC model only.
+
+Next counter step is actual transient replay with all 510 real MOS terminals
+(the 446-MOS block plus the three existing downstream NAND loads). Preserve
+all original voltage, stopped-clock, arming, phase-order, low-clock-margin and
+warmup distinctions. The five routed internal monitor nodes must survive
+reduction and map to the original measurement interface without added devices,
+loads or internal shorts; header-only observation copies/reduction must be
+independently reverified, retaining the original extraction unchanged.
+
+The second completed v190 INV8 case (fine31/40%) passes period/repetition
+(8.581513 ps period error, 8.746169/6.471186 ps delay spans) but misses the
+250 ps slew limit at **279.943396 ps**. Thus neither complete INV8 endpoint
+is admitted: 40% fails slew, while 60% fails history. NAND2_8 and remaining
+zero/first-coarse runs continue unchanged. A balanced native pull-up/pull-down
+fine driver is the next architecture candidate if the completed remaining
+cases do not close both endpoints; selecting it still requires all original
+static, periodic, overlap, physical/RC, dense/common all-PVT and PHY gates.
