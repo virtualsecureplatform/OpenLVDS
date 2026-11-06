@@ -11168,3 +11168,60 @@ policy. That native solver starts as host PID **2031596**; the original five
 engines remain live. No ticket, priority, model or global budget is edited.
 The v263 pilot remains queued and its physical/electrical followups continue
 waiting behind the complete original gates.
+
+### Common conservative code-sequence selection (v296)
+
+`common_delay_sequence_v296.py` fills the selection step between complete
+dense native characterization and the existing common-code validator. Its
+input is a mapping of all 15 `process:temperature` names (`tt:0`, `tt:25`,
+etc.), each with `rise` and `fall` lists of conservative `clocking_v2.Delay`
+intervals. Every curve must contain every raw code exactly once. Raw code
+`coarse*fine_count + fine` is mapped back explicitly in the proposed ROM.
+TX coarse counts remain 16/32/64, RX 64/128/256, and fine counts 16/32;
+missing PVT/edge/code data or unsupported dimensions are rejected.
+
+The selector constructs a directed acyclic graph of universally legal
+interval increments. An edge exists only when the next minimum exceeds
+the preceding maximum in **all 30 PVT/edge curves**, and the largest possible
+increment meets the gap limit in every curve. It first searches with the
+10 ps target, then with the unchanged 20 ps maximum. Reference-interval
+bisect bounds avoid comparing far-separated delays. The final path is also
+checked through the existing `clocking_v2.common_legal_codes` contract.
+
+Reachability retains nondominated start-interval labels rather than making
+a greedy choice using one corner. Two starts may favor different corners;
+discarding either prematurely can lose the only RX path with sufficient
+worst-case span. Parent labels preserve an actual common edge-by-edge path.
+Code ordering follows measured intervals, so raw coarse/fine codes may
+interleave; it never generates separate corner-specific orderings.
+
+For TX, the first interval's upper bound must be no greater than
+**609.756098 ps** and the final lower bound no less than **641.025641 ps**
+at every PVT and edge. For RX, every conservative endpoint span must be
+at least **3064.102564 ps**, the longest permitted period plus 500 ps.
+No shorter path or changed gap policy can substitute for those requirements.
+Range/gap witnesses and all selected intervals accompany any proposed code
+sequence. Configuration area/power selection remains a separate step.
+
+All **12 selector tests pass** at `build/common-delay-sequence-v296-tests.log`,
+including the largest declared 256×32 RX input (8192 raw codes per curve),
+partial/missing input rejection, range failure, one-corner reversal filtering,
+raw-code interleaving, incomparable start labels, and agreement with exhaustive
+enumeration on 64 small two-dimension graphs for both TX/RX coverage policies.
+The **eight existing contract tests also pass** at
+`build/common-delay-sequence-v296-contract-regression.log`.
+
+These are synthetic algorithm tests, not SKY130 characterization. Every
+selector result keeps native-provenance verification, update qualification,
+legal-table admission and PHY admission false. Complete guarded native
+curves across all relevant PVT/clock conditions, measured area/power,
+safe code updates, calibrated clock-chain checks and full-link release are
+still required. No actual bank ROM or new SPICE campaign is produced here.
+
+A read-only queue observation at
+`build/reports/spice_queue_observation/20261106T160042Z.json` binds the
+dispatcher source and live owner locks without changing tickets. At that
+instant, v263 cases 0/1 occupy positions 7/8 behind aged older work; its
+configured priority remains 0 and the six-engine/180-second aging policy
+is unchanged. All six native engines remain live and the new pilot has
+no completed cases at this checkpoint.

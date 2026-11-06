@@ -118,6 +118,13 @@ prepares 61 new cases only after the complete v288 clock screen passes.
 All 11 dense producer/handoff tests pass; v295 is live waiting for v289.
 Raw fine-step reversals or excessive gaps remain explicit characterization
 results. No dense result, common legal table or full-range admission exists.
+The common sequence selector (v296) is now implemented and passes 12
+algorithm tests. It requires complete raw-code intervals across all 15 PVT
+and both edges, finds one shared ordering, prefers 10 ps gaps, enforces the
+20 ps maximum, and checks TX quarter-range or RX longest-period-plus-500 ps
+coverage. It emits proposals only: native provenance, complete dense curves,
+safe updates and physical/full-link admission remain unverified. No actual
+bank table has been generated or admitted.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
