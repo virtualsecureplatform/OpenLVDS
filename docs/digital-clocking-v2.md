@@ -10778,3 +10778,29 @@ junction fields and public-port permutation at
 `build/regular-regenerated-inventory-v277-tests.log`. The four original
 v244 inventory tests also pass at
 `build/regular-regenerated-original-inventory-tests.log`.
+
+### Four-point-gated regular-pair route producer (v278)
+
+`route_regular_regenerated_bank_v278.py` consumes the exact v275 saved-
+database proof, v276 geometry/reference evidence and a **complete passing
+four-point v263 pilot**. Before routing, its scientific subprocess binds
+the original engine/model/source closure, checks each original deck/raw/
+log hash, remeasures every native waveform and reproduces the complete
+zero/40–60%-duty/fine–coarse overlap comparison. A running, incomplete,
+failed or changed pilot is rejected. The consumed bank hash must match
+the immutable component library used by the new physical placement.
+
+The route uses only existing native IN metal as a temporary access rail,
+restores the original public IN shape exactly, retains all **93 fixed-bus
+terminals** on their real nets while routing, and requires regular wire on
+every required native net including **restored_b**. All native connections,
+placements, public/master pin shapes/types and fixed-bus shapes must remain.
+Router coverage does not substitute for streamed native GDS DRC/LVS,
+selective measured-junction RC qualification, periodic/PVT or PHY admission.
+
+Three CAD tests pass at `build/regular-regenerated-route-v278-tests.log`:
+unfinished pilots cannot create routing outputs, the actual native IN rail
+is used while retaining all 93 fixed terminals, and missing intermediate
+regular wire is rejected by the coverage checker. Coverage-record tests
+use explicit synthetic route records rather than claiming a real route.
+No route manifest or routing process is created while v263 remains pending.

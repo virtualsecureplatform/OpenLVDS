@@ -73,6 +73,9 @@ native instances and 31 separate fine active regions are verified, with the
 expected 1529 MOS/43 MIM census. All 62 capacitor MOS retain the known
 per-device junction allocation mismatch in the preserved raw extraction;
 this diagnostic does not qualify shared RC or whole-bank LVS.
+The revised routing producer (v278) is implemented behind the complete
+four-point v263 native gate. It retains all 93 fixed-bus terminals and
+requires the new `restored_b` route; no route has been prepared or launched.
 The bank pilot runs under the same dispatcher, with a gated continuation for
 the complete 27-case frequency/duty/sparse-code screen of any passing family; bank timing and full
 frequency/duty/physical validation remain required. The calibrated clock chain, dense/common legal tables, all-PVT
