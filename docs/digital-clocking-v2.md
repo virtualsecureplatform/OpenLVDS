@@ -12393,3 +12393,54 @@ stage ranges are 545.279423–545.292014 ps to selected,
 502.713445–502.878939 ps through output regeneration. No circuit, source,
 limit or waveform is changed by these analyses; current regular-driver
 and runtime experiments continue independently.
+
+### Stage-order architecture experiment implemented (v315)
+
+`probe_preconditioned_fine_bank_v315.py` implements the next alternative
+using the same qualified P10/N8 and two P20/N16 cells as the prepared
+post-fine P10/N8 taper. Only their three signal connections and the bank
+top name change:
+
+`selected -> P10/N8 -> conditioned -> P20/N16 + fine units -> fine_node -> P20/N16 -> OUT`
+
+The three inversions after the selected mux node preserve the external
+noninverting clock. Relative to IN, selected and fine_node are inverted;
+conditioned and OUT are noninverted. The fixture explicitly saves the new
+conditioned node and removes the obsolete restored_b probe without adding
+an alias. Future internal-node analyses must use the new polarity map.
+
+Every qualified component definition, native terminal map outside those
+three instances, all 173 programming gates and 86 controls are preserved.
+The native inventory remains **1511 MOS and 43 MIM**. No new cell geometry,
+device dimension, model, ideal active element or supply is introduced.
+Shared inter-component wiring remains ideal; local component RC is retained.
+This prototype does not transfer the old bank's physical qualification.
+
+Preparation binds the actual P10/N8 assembly in
+`tapered_regenerated_bank_v310/c10259773d77c082`, independently remeasures
+the original complete zero case with its isolated quarter failure, and
+requires unchanged full-stage diagnosis
+`regular_regenerated_stages_v300/eeff61ca7936aa3c`. The experiment retains
+the original zero/50%, fine31/60%, fine31/40% and first-coarse/50% points
+at SS40/410 MHz, full 25 ns/eight-cycle traces, 100 ps input slew, 20 fF
+output load, fixed 1.8 V and original pinned ngspice/KLU/Gear/tolerances.
+All original native voltage/control/pulse/epoch/history/period/250 ps slew
+and quarter-budget gates remain. Both coarse overlaps must be positive.
+No improved timing or loaded-node swing is assumed from the stage reordering.
+
+All **five targeted tests pass with no skips in 11.744 s**, covering actual
+qualified cell definitions and device maps, symbolic output polarity,
+internal polarity change, malformed port/supply/topology rejection, unique
+complete observations, unchanged native stimulus, original acceptance gates
+and binding of the complete zero-stage evidence
+(`build/preconditioned-fine-bank-v315-tests.log`). The previous integrated
+2564-test result and the eight thread-experiment tests are separate evidence.
+
+The campaign is launched as `openlvds-preconditioned-fine-bank-v315`, PID
+**2082580**, invocation `efb88a5c5f1f433594d016ebf11974de`, with log
+`build/preconditioned-fine-bank-v315-run.log`. Its initial source validation
+is confirmed live; no v315 native result exists yet. One worker uses
+priority 1 through the unchanged six-engine dispatcher. Existing tapered,
+thread-count and other native runs/tickets are unchanged. Routed RC, complete
+clock/PVT matrices, native code tables, safe updates, clock/link and PHY
+qualification remain mandatory after a successful prototype screen.
