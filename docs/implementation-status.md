@@ -54,8 +54,11 @@ masks/junction parameters and OpenDB interface checks. Their new bank placement
 The physical graph matches all 180 native component calls (1479 MOS, 43 MIM),
 including the isolated fine node and unchanged programming gates. The reversible
 router-interface preflight also passes, retaining all native connections and
-actual M4 driver access. Whole-bank routing, LVS and shared-wire RC for this
-architecture remain open.
+actual M4 driver access. Rereading all three saved databases reproduces their
+native records; six injected connection/geometry/type faults are rejected.
+The new regular-route producer is implemented and waits for the complete
+native pilot's zero/overlap/duty gates. Whole-bank routing, LVS and shared-wire
+RC for this architecture remain open.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
 0/25/40 C across all five process corners. The periodic campaign runs under the unchanged global six-engine dispatcher;

@@ -9912,3 +9912,48 @@ terminals remain connected to their intended nets. Tests reject a fine unit
 left on `selected`, a driver input bypassing isolation, and altered native
 fine programming connections. Routing still requires native geometry/LVS,
 fresh shared RC, original timing/safety gates and full frequency/duty checks.
+
+
+### Isolated-bank router preparation and gate (v240–v242)
+
+`isolated_fine_routing_interface_v240/32b45fb8019e379b` completes with an
+exact native roundtrip. It retains 352 placed instances, all eight native
+root outputs, both M4 isolation-driver connections, and all original
+signal/control connections. Only the 94 fixed-bus terminals and genuinely
+nonrouting body pins are temporarily disconnected for the interface
+preflight. Three proxy pins represent the exact existing fixed M3 buses;
+restoration recovers all original native connections, master/public pin
+shapes and types, instance placements, nets and fixed-metal rectangles.
+No regular route is admitted by this check.
+
+`isolated_fine_routing_interface_verification_v241/66d060844d2ee34f`
+then rereads the three actual stored OpenDB databases (`placed`,
+`router_input`, `restored`) and reproduces all six native record sets for
+each. Six injected faults are independently rejected: missing M4 driver
+output, M4 input bypassing isolation, missing native root output, shifted
+proxy metal, lost native supply type, and moved FIRM native instance.
+The injected copies are retained separately from the clean databases.
+
+The new regular-route producer `route_isolated_fine_bank_v242.py` consumes
+only that verified interface and a complete error-free v220 pilot. Before
+creating a route context, it reproduces the P20/N16 four-point comparison,
+checks every pilot row's lineage/files, remeasures all four consumed native
+traces, and requires the original zero-code quarter-period, coarse/fine
+overlap and both 40/60% endpoint timing/safety gates. It binds the exact
+pilot DUT library SHA to the physical graph's immutable component library.
+The pilot is still incomplete, so no new regular route has started.
+
+Once that gate passes, the producer retains all 94 native fixed-bus terminals
+during routing, gives the router only the actual existing full IN access
+rail, restores the original public IN rectangle, and requires regular wires
+on every required native net, including `selected` and `fine_node`.
+OpenDB connection/placement/pin/fixed-bus preservation and zero final router
+violations are mandatory. Even a passing router result does not substitute
+for streamed native GDS DRC/LVS, fresh shared-wire RC or native periodic/PVT
+qualification. Clock duty coverage remains 40/50/60% at 390/400/410 MHz.
+
+Validation: four graph/placement tests, three CAD router-interface tests and
+two CAD route-generation/admission tests pass. The admission test verifies
+that an incomplete pilot is rejected without creating an artifact. Native
+manufacturing placement DRC and the stored-database positive/fault controls
+above were executed separately from these unit tests.
