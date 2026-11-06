@@ -7789,3 +7789,48 @@ The ongoing b3 parent sparse campaign also completes its fine31 point:
 repeated delays **690.584011 / 854.005211 ps**, maximum output slew
 **243.178202 ps**, with native/control/repetition/slew checks passing. Zero
 and first-coarse b3 points remain pending; this does not admit that profile.
+
+
+### Actual routed joint-RC qualification prepared with selective reconstruction
+
+`verify_measured_balanced_joint_rc_v144.py` joins the correction to the mandatory
+physical chain. Preparation requires a completed, unchanged v137 routed native
+GDS result with zero Magic DRC, native LVS, parameter and hierarchy/placement
+checks, plus the v140 geometry proof for that exact placement and profile.
+An unrouted placement is refused before extraction (actual refusal log
+`build/measured-balanced-joint-rc-v144-unrouted-refusal.log`).
+
+After admission, the producer extracts the actual routed, mask-verified GDS
+using the frozen distributed extractor and original 0.01 fF capacitance cutoff.
+An existing/partial extraction is retained rather than overwritten. The original
+raw/reduced netlists and every extraction artifact remain unchanged. Original
+reduction must regenerate exactly. The producer then reconstructs the 62
+capacitor junctions in separate copies of that raw RC and that routed bank's
+own ordinary native extraction. It does not use the unrouted v143 connectivity
+as a routed reference.
+
+The corrected raw must preserve every R/C byte and every non-capacitor device
+and parameter. Both native censuses, all model/W/L/junction parameters, and
+**all 155 fine MOS junctions** must match their independently measured primitive
+geometry: 62 capacitors and 93 pass/clear switches. A changed non-capacitor
+junction is refused, rather than repaired. This fine-junction gate passes on
+both actual reference preflights and rejects an injected clear-switch junction
+corruption in each; log
+`build/measured-balanced-joint-rc-v144-fine-junction-preflight.log`.
+
+Final joint RC admission additionally requires elementwise passivity of original
+raw, corrected raw and corrected reduced RC, exact regenerated reductions,
+strict native Netgen LVS of wire-collapsed corrected RC against its measured
+routed reference, and the pinned independent terminal-current Schur witness.
+Correction must regenerate and be byte-idempotent; original extraction hashes
+must still match. The final receipt identifies both original and corrected
+netlists and separate native-reference/raw-RC correction records. Electrical,
+transient, periodic/PVT and PHY flags remain false even after a joint RC pass.
+
+`openlvds-measured-balanced-joint-rc-v144.service` waits for the exact existing
+v137 native GDS process instance, then requires its complete passing receipt
+before entering this qualification. Timing, routing or native LVS failure
+leaves this stage unadmitted. No actual routed joint-RC artifact or pass is
+claimed yet. All healthy native timing solvers, captured source files,
+fixtures, queue limits and the 390/400/410 MHz, 40/50/60% duty, fixed-supply,
+0/25/40 C requirements remain unchanged.

@@ -171,6 +171,15 @@ correcting 124 fields on only 62 capacitor devices. All non-capacitor devices,
 topology and dimensions remain unchanged; the correction regenerates and is
 byte-idempotent. These are unrouted measured references, with no joint RC or
 PHY admission. Extraction defaults and admitted timing models are unchanged.
+The v144 actual routed joint-RC producer is now prepared and queued behind the
+existing native GDS service. It refuses unrouted inputs and binds actual
+routed GDS/LVS to the exact fine-geometry proof, preserves the original
+extraction, corrects only capacitor fields in separate raw/reference copies,
+and requires all native parameters, all 155 fine-MOS measured junctions,
+passivity, regenerated reductions, native collapsed LVS and the independent
+Schur witness. Both fine-junction preflights pass and reject an injected clear
+junction error. This service waits for the exact existing GDS process; no
+routed joint-RC result or transient/PHY qualification is claimed yet.
 The matched measured-inverter fine31 diagnostic is complete at
 `measured_gang_fine_v127/36cf5a7471a52929`: repeated delays are
 692.500788/856.038786 ps and maximum slew is 244.222924 ps, with all native
