@@ -10223,3 +10223,42 @@ proof, and missing/failed passivity evidence. Combined with the five CAD RC
 qualification tests, all eight targeted tests pass. The real routed-bank RC
 campaign has not started because the native pilot/physical gates are still
 pending; the synthetic test network is not used as substitute evidence.
+
+
+### Isolated-bank native observations and zero screen (v257/v258)
+
+The v257 mapper adapts the established physical-alias mapping to the exact
+isolated P20/N16 bank. It requires the intended `selected -> fine_node -> OUT`
+driver/regenerator path, all 31 fine loads on `fine_node`, unchanged fine
+programming/bulk pins, 180 functional components and 352 physical instances.
+Every label comes from actual Magic instances/extraction aliases and the RC
+network. Missing aliases, joined different logical nets or changed load/control
+connections are errors. Individual RC-separated MOS terminals are retained;
+a programming-gate probe is never replaced by its ideal logical control.
+
+The mapping covers **1479 native MOS, 173 typed programming gates, 86 logical
+controls, 151 canonical nets and 352 placed instances**. Actual MOS-terminal
+observations of both `selected` and `fine_node` are also recorded for diagnosis;
+these are already included in the complete native terminal probe set. All
+existing 1.95 V native terminal-difference limits are preserved. The real
+unrouted ordinary extraction is used only as an alias-mapping test fixture;
+that fixture supplies no routing or RC admission.
+
+`probe_isolated_bank_joint_zero_v258.py` requires the passing v255 joint-RC
+receipt, native equivalence, unchanged original extraction and full regenerated
+observation mapping. It retains the established SS40 two-pulse native fixture:
+100 ps input slew, fixed 1.8 V, 20 fF load, both complete pulse epochs, 20 ns
+startup-through-tail observation, Gear/RELTOL=1e-4/ABSTOL=1e-12 and 2 ps maximum
+step. Every native D/G/S/B node and every typed programming gate is observed.
+Both complete pulses, original repeated-delay and control/safety checks,
+250 ps slew and the fastest 410 MHz quarter-period budget remain mandatory.
+This is the first static zero-code screen; the separate periodic matrix is
+required for full input-clock frequency/duty transport. The native fixtures
+retain the original tanh stimulus and solver settings.
+
+Four mapper tests pass, including a distinct resistor-separated programming
+gate node, lost real alias, a short between the isolated data nets, changed
+fine programming, and bypassed isolation. Three zero-screen tests pass for
+unchanged waveform/solver/full terminal probes, compiled CAD admission code,
+and preserved complete-sample/quarter/slew/native gates. No real routed
+zero-code simulation is started before qualified joint RC exists.
