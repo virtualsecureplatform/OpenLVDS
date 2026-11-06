@@ -11154,10 +11154,13 @@ telescoping sums. Measured crossing-difference ranges are:
 
 These differences support evaluating the already-queued v263 replacement;
 they are not intrinsic delays or predictions for that revised circuit.
-Native routed/PVT/clock-chain admission remains false. A full independent
-native-metric recheck is running at
-`build/discharge-zero-native-recheck-v220.log`; it has no new solver and is
-not yet claimed complete.
+Native routed/PVT/clock-chain admission remains false. The full independent
+native-metric recheck completes successfully at
+`build/discharge-zero-native-recheck-v220.log`. Its separate receipt,
+`build/reports/discharge_zero_native_recheck_v220/summary.json`, binds the
+complete output/deck/manifest hashes and original readers, uses pinned
+NumPy 2.1.3, and reproduces every original native metric exactly, including
+the failed quarter/interface gates. It adds no solver or electrical admission.
 
 The dispatcher releases the finished zero's slot 1 and assigns it to the
 older `finite_support_bank_replay_v225_3` ticket under its existing aging
