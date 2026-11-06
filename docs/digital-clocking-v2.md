@@ -8697,3 +8697,61 @@ the new coordinator. Service: `openlvds-unguarded-bank-chain-v173.service`;
 state/logs: `build/reports/unguarded_bank_chain_v173/initial/` and
 `build/unguarded-bank-chain-v173.log`. Full bank transient/PHY admission remains
 false until the new RC and timing results complete.
+
+
+### Repaired whole-bank RC and native zero complete; followups queued
+
+`unguarded_bank_joint_rc_v171/82a3dfbf3d1494ac` is complete/passed. The original
+50,875-R/13,018-C extraction remains untouched. Only the copied public header
+and 124 junction fields on 62 fine capacitor MOS were repaired. Strict native
+parameters/topology, all 155 geometry-bound fine MOS, passive reduction and
+four independent current witnesses pass. The corrected network has 39,637
+resistors, 32,740 to 20,426 nodes, 14,145 boundary nodes, no floating components
+and maximum current error 7.127241020e-10 A under the original tolerances.
+
+The new actual-bank native zero artifact
+`unguarded_bank_joint_zero_v167/cf76c12f78cbba62` is complete: one case, no
+numerical errors, all native voltage/control/repetition/swing/slew/quarter
+checks pass. Repeated rise/fall delay is **486.849658/522.734354 ps**; first
+epoch 486.850249/522.735123 ps. Maximum slew is **153.912720 ps**, and
+fastest-quarter headroom across both epochs is **87.020975 ps**. This is the
+fresh actual whole-bank RC result, separate from the earlier retained-wire
+hypothesis. Fine31 and first-coarse are now running in
+`unguarded_bank_joint_sparse_v169/37905e3782c6ef2f`; no sparse admission is
+claimed before both complete.
+
+The former idle v173 waiter had a service-lifecycle issue: successful transient
+units can be collected by systemd, clearing their InvocationID before a poll.
+The completed v164 unit demonstrates `LoadState=not-found`, inactive, PID 0.
+While v173 was verified idle with no timing artifacts and the RC producer
+still incomplete, only that waiter was stopped. Its source/state are retained,
+with replacement details in
+`build/reports/unguarded_bank_chain_v173/initial/superseded.json`. No solver or
+RC producer was stopped/restarted. New v177 accepts a collected terminal unit
+only when its matching artifact has passed normal admission; incomplete and
+replaced producers still fail. Two focused tests cover successful collection,
+incomplete termination and replacement. Actual handoff to v167/v169 now works.
+
+Active chain: `openlvds-unguarded-bank-chain-v177.service`; state/logs in
+`build/reports/unguarded_bank_chain_v177/initial/` and
+`build/unguarded-bank-chain-v177.log`.
+
+`probe_unguarded_bank_joint_periodic_v174.py` preserves the complete 27-case
+SS40 matrix: zero/fine31/first-coarse, 390/400/410 MHz, 40/50/60% duty, eight
+cycles, 25 ns full tail, 2 ps maximum step, all native observations and the
+250 ps slew limit. Fine31 at 410 MHz and 40/60% duty runs first, then 50%,
+without removing other cases. `probe_unguarded_bank_joint_boundaries_v175.py`
+adds fine1/15/16 after the same passing sparse receipt, keeping conservative
+both-pulse ordering, sampled adjacent gaps <=20 ps and overlap checks. Dense
+common tables, full range, update timing and all-PVT remain unqualified.
+Seven inherited recipe/fixture/gate tests pass against the new producers.
+
+Two v176 followers wait on the specific v177 chain and prepare no cases until
+its complete passing sparse artifact belongs to this exact v164 bank. Periodic
+workers retain priority 1, boundary workers use priority 2; each campaign has
+at most two engines under the unchanged global six-engine/aging policy. Two
+additional tests cover bad handoffs/banks, failed source gates and exact
+followup case counts. Services:
+`openlvds-unguarded-bank-periodic-followup-v176.service`,
+`openlvds-unguarded-bank-boundary-followup-v176.service`; state/logs under
+`build/reports/unguarded_bank_followup_v176/{periodic,boundaries}/`.

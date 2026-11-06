@@ -27,8 +27,11 @@ unguarded variant reaches 222.248 ps fine31 slew. Its new native component
 passes DRC/LVS, exact 32-MOS parameters and fresh RC at
 `unguarded_output_cell_v162/54829739e9b70627`. The new whole-bank native GDS passes zero DRC, unique LVS and exact
 1,453-MOS/40-MIM output-only geometry at
-`unguarded_bank_gds_v164/53b0a015a681410b`. Fresh whole-bank RC qualification
-is running, followed by gated native zero/fine/coarse timing. The calibrated clock chain, dense/common legal tables, all-PVT
+`unguarded_bank_gds_v164/53b0a015a681410b`. Fresh whole-bank RC passes at
+`unguarded_bank_joint_rc_v171/82a3dfbf3d1494ac`, followed by a passing actual
+native zero at 486.850/522.734 ps rise/fall delay, 153.913 ps maximum slew and
+87.021 ps fastest-quarter headroom. Fine31/first-coarse timing is running;
+periodic and sampled-boundary followups remain gated on the complete sparse pass. The calibrated clock chain, dense/common legal tables, all-PVT
 clock transport and LVDS PHY remain unqualified. The broad regression and separate CAD checks pass.
 
 Clock checks use 390/400/410 MHz and 40/50/60% input duty, fixed supplies and
