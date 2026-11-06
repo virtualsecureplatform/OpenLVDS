@@ -12281,3 +12281,40 @@ Preparation is started as `openlvds-native-thread-prepare-v314`, invocation
 `57e26841738c4356a4d7a7ad0f58b32f`, with log
 `build/native-thread-count-v314-prepare.log`; its source validation is confirmed
 live at the initial checkpoint. No new runtime or parity result is claimed.
+
+### Prepared thread replay and completed finite-support coarse point
+
+V314 preparation completes as
+`native_thread_count_v314/e32ffaa3ebc26f18`, binding **2397 input files**
+with **1154 per-lease guards** and the three exact original decks. Both
+reference waveforms and all original native metrics reproduce. All **eight
+targeted tests pass without skips in 1.844 s**, now including the actual
+prepared context, guarded inputs, worker/priority limits, reference bindings
+and byte-identical decks (`build/native-thread-count-v313-v314-prepared-tests.log`).
+The prior integrated 2564-test pass does not include these eight new tests.
+
+The persistent run is `openlvds-native-thread-count-v314`, PID **2077127**,
+invocation `1651d2bbdc454124a56a1b6a24bfa042`, with log
+`build/native-thread-count-v314-run.log`. It completes its initial source
+validation and is confirmed live with a queued priority-2
+`native_thread_count_v314_0` ticket whose owner lock is held. No benchmark
+SPICE waveform or speed/parity result exists yet. The unchanged six-engine
+queue continues to select work normally; the new experiment has one worker.
+
+Separately, finite-support input replay v225 case 3 completes naturally
+on the old P20/N10 bank. All original native safety/control/pulse/history/
+period/slew gates pass. Rising delays are **851.336125–854.280352 ps** and
+falling delays **1065.547749–1065.563952 ps**; maximum slew is
+**225.130045 ps** and maximum period error **2.944105 ps**. This is a
+completed first-coarse point, not a zero-code or current v263-bank pass.
+
+A stored-metric comparison using unchanged `v225.compare_case` matches
+every original gate, with maximum edge/slew differences
+**0.000069136/0.000050226 ps** and maximum native-terminal peak difference
+**0.625593 uV**. This is not an independent waveform remeasurement or the
+v226 four-case receipt. V225 cases 0/1/3 are complete; zero case 2 remains
+live, and v226 must still remeasure all four original/candidate pairs.
+Ngspice's recorded elapsed time is 17385.634 s versus 17261.393 s in the
+original coarse run. These historical runtimes on a shared machine do not
+establish an input-representation speed gain. No numerical representation
+or backend is adopted, and the original bank's known failures remain.

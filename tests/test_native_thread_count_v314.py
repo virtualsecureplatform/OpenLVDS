@@ -54,6 +54,21 @@ class NativeThreadCount(unittest.TestCase):
             self.assertGreater(len(names), 1500)
             self.assertEqual(text.count('tanh('), 16)
 
+    def test_actual_prepared_context_keeps_all_three_decks_and_reference_bindings(self):
+        parent = probe.ROOT / 'build/diagnostics/native_thread_count_v314/e32ffaa3ebc26f18'
+        if not (parent / 'manifest.json').exists():
+            self.skipTest('requires actual prepared explicit-thread context')
+        manifest = probe.bound(parent, full=False)
+        identity = manifest['identity']
+        self.assertEqual((identity['max_workers'], identity['priority']), (1, 2))
+        self.assertEqual(len(identity['observations']['devices']), 1529)
+        self.assertEqual(len(identity['observations']['programming_gates']), 173)
+        self.assertEqual([(t['source_id'], t['threads']) for t in manifest['tasks']], probe.plan())
+        for task in manifest['tasks']:
+            source = probe.ROOT / identity['parent'] / task['source_id'] / 'bench.cir'
+            self.assertEqual((parent / task['id'] / 'bench.cir').read_bytes(), source.read_bytes())
+            self.assertTrue(identity['references'][task['source_id']]['row']['result']['current_clock_interface_screen_passed'])
+
     def test_actual_reference_parity_and_all_native_terminals_and_controls(self):
         reference = self.reference()
         result = probe.parity(deepcopy(reference), reference)
