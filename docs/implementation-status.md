@@ -52,8 +52,9 @@ also completes and misses the quarter budget by 265.838 ps, despite passing
 all 1473-MOS native safety/control and output slew checks. Two stronger-discharge
 N16 variants also pass zero DRC, unique LVS and fresh local RC. P20/N16 now
 passes both complete fine31 40/60% duty endpoints (2.08/12.76 ps period
-error, about 232.8 ps maximum slew); coarse and broader validation
-remain pending. Its complete zero trace now confirms the quarter-period
+error, about 232.8 ps maximum slew). Its first-coarse reference now completes
+and passes individual native checks, but complete endpoint histories give
+conservative rising/falling gaps of 14.365/22.121 ps. Its complete zero trace also confirms the quarter-period
 budget failure by 205.629 ps (815.385 ps worst delay), despite passing all
 1479-MOS native safety, control, period, repetition and 225.178 ps slew checks.
 Complete stage analysis measures 296/345 ps rise/fall crossing differences
@@ -65,6 +66,10 @@ checks prioritize zero delay, both duty endpoints and coarse overlap. New
 shared wiring and timing are unqualified; existing campaigns continue.
 The prepared artifact is `regular_regenerated_bank_v263/7fa8c46ce9db679e`;
 its persistent runner is live under the unchanged dispatcher.
+Its first complete point (fine31, 60% duty, SS40/410 MHz) passes all 1529-MOS
+native, pulse, period, repetition and interface checks, with 87.894 ps maximum
+slew and 16.003 ps period error. Zero, 40% duty and coarse overlap remain
+required; no complete v263 component or physical admission follows.
 Its physical backend is now implemented separately: 181 functional/353
 physical instances, exact native graph and 1529-MOS/43-MIM inventory,
 corrected native supply-port reference, 52-site fine-array/control-row

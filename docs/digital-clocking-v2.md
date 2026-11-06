@@ -11345,3 +11345,59 @@ regressions pass** at `build/mapped-control-v298-rom-regression.log`; all
 synthetic tables and explicit external timing/eye fixtures. Physical ROM and
 decoder delay, real characterized bounds, native update safety, coupled
 clock-chain timing, DRC/LVS/RC and full PHY qualification remain open.
+
+### Completed P20/N16 first-coarse and independent overlap diagnosis
+
+V220 case 3 (P20/N16, SS40, 410 MHz, 50% duty, first-coarse/fine0)
+completes without solver error. All individual native checks pass, with
+225.183380 ps maximum slew. Rising delays span 864.067036–866.967994 ps;
+falling delays span 1005.552114–1005.568949 ps. Completing this reference
+does not rescue the independently failed zero-code quarter budget.
+
+The unchanged v281/v262 readers independently validate the complete native
+traces, their hashes and all eight crossings for both fine31 endpoints and
+this coarse reference. The receipt is
+`completed_bank_overlap_v281/f2cb4775de9d0386`, logged at
+`build/discharge-completed-overlap-v281.log`. Conservative overlaps are:
+
+| Edge | Fine31 40% minus first coarse (ps) | Fine31 60% minus first coarse (ps) |
+| --- | ---: | ---: |
+| Rising | −1.584946 | −14.365337 |
+| Falling | −22.121285 | +14.052124 |
+
+Thus this BUF8 configuration fails both required conservative edge overlaps,
+even though both fine31 cases and coarse1 pass their individual transport
+gates. In the same retained decomposition, the fine-node boundary already
+has worst conservative gaps of 86.207 ps rising and 154.426 ps falling.
+Those are observations of the current circuit; removing output-stage delay
+alone is not proof of sufficient fine range in a different circuit. Actual
+v263 fine/coarse histories remain mandatory before choosing its architecture.
+No gate, code selection or physical admission is changed by this diagnosis.
+
+### First complete regular-pair point and fast-clear counter point
+
+V263 case 1 now completes naturally: P20/N16 regular-pair regenerator,
+SS40, 410 MHz, fine31, 60% duty. All original native/interface gates pass
+with **1529 MOS** terminal observations and **173 programming gates**.
+Maximum output slew falls to **87.893506 ps**. Maximum period error is
+**16.003190 ps** and rising repeated-delay span **16.054668 ps**, inside
+the unchanged 20 ps limits. Rising delays span 715.200416–731.255083 ps;
+falling delays span 777.297015–777.675291 ps. This is one complete component
+point only: zero, the 40% endpoint, first coarse and the complete four-point
+overlap/quarter gate remain outstanding, followed by fresh bank routing/RC
+and actual transport/PVT qualification. The new raw-node/backend wiring is
+still ideal at this component stage. No full bank, DLL or PHY is admitted.
+
+V269 case 0 also completes: fast-clear counter shared RC, SS0, 410 MHz,
+50% duty, stopped low. All **644 native MOS** safety checks, original
+counter/clear/reassert/phase-order gates pass. Minimum delivered clock-low
+voltage margin is **52.104523 mV**. The stopped-high and remaining duty/
+temperature pilot points are still required before the full 270-condition
+counter matrix can start. Whole-clock, warmup and PHY qualification remain
+false; the first point cannot substitute for those gates.
+
+The dispatcher assigns released slots under the existing aging policy.
+Both first v263 cases have acquired slots; zero remains live and the completed
+fine31 worker's next task returns to the same queue. All four regular-pair
+physical/transport/PVT/dense continuations are live with unchanged captured
+inputs. The global six-engine budget and original models/settings remain.
