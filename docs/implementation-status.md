@@ -58,6 +58,14 @@ at `regular_clock_buffer_v325/9d3380b4eca0696f`: two unchanged P20/N16
 stages, 72 MOS/two MIM, zero DRC, strict LVS and independent Schur proof.
 Both buffer component types are available for future physical counter
 integration; the active source pilot and its qualification gates are unchanged.
+A native integration preflight now passes at
+`counter_buffer_material_preflight_v326/7654d308b75a4197`: all 22 phase
+macros and seven public pins are preserved, shared native masters are
+compatible, and the proposed netlist matches the actual v317 circuitry
+uniquely in strict LVS. Its counter core has 744 MOS/50 MIM; the existing
+downstream loads add 64 MOS/six MIM to reach the 808-MOS/56-MIM testbench.
+This is a netlist/material check; new counter geometry, shared RC and
+SS40/native timing qualification remain pending.
 The reordered fine bank (v315) now completes its zero-code case:
 voltage, controls, eight pulses, slew and period/history pass, but quarter
 headroom is still -46.311 ps. Full native/stage replay reproduces every

@@ -13624,3 +13624,52 @@ The two-stage bank's first zero-code native run has also started, with
 host process 2119463 verified live and advancing. It retains the original
 four-case fixture and all startup cycles. No completed bank point verdict
 exists yet; no partial waveform supplies admission.
+
+### Native counter integration netlist and master compatibility preflight (v326)
+
+`scripts/preflight_request_taper_counter_v326.py` builds a reviewable native
+counter netlist using the actual qualified v323/v324 REQUEST and v325 CLK
+components with the existing strong-storage/fast-clear phase logic. The
+22 original macro roles and all seven public ports are checked against
+the actual v317 component DUT. Only both REQUEST and both CLK buffer
+models change to their physical component names; all role pin maps are
+preserved. No placement, routing, transient or model selection is performed.
+
+Context `counter_buffer_material_preflight_v326/7654d308b75a4197` passes
+with 1437 captured inputs. Its `proposed_counter.sch.spice` uses the
+actual native LVS extraction of every component, preserving complete
+supplied junction data. Parameter comparison against the v317 native
+component circuit passes for **744 MOS and 50 MIM devices**: 358 NMOS,
+140 regular PMOS, 246 HVT PMOS and the 50 intentional MIM devices.
+There are zero newly inferred junctions. The original testbench adds
+64 downstream MOS and six MIM devices, yielding its independently checked
+808-MOS/56-MIM inventory. These core and loaded-harness counts remain
+distinct in the receipt.
+
+Shared-master checking covers 26 named native GDS masters with 15
+duplicate occurrences. Every common mask/hierarchy definition matches,
+including child-instance transforms. Strict native LVS then compares
+the proposed counter with the actual v317 component circuit after
+parasitic-wire collapse: **circuits match uniquely and pin lists are
+equivalent**. This proves the proposed native connectivity and materials,
+not actual routed-counter timing. Integrated-placement/native-master
+output flags remain false because a new counter GDS is not built here.
+
+The initial preflight correctly refused a mixed reference: older schematic
+macros omitted junctions in device classes where the new buffer references
+supplied them. The strict comparator reported `Ambiguous partial-junction
+native class`. No context was created and no existing evidence changed.
+Failed log: `build/counter-buffer-material-preflight-v326.log`; the exact
+failed producer is retained at
+`build/preflight-request-taper-counter-v326-partial-junction-reference-20261107.py`.
+The reference construction was corrected before source capture to use
+fully characterized native LVS extractions throughout. No junction
+property or comparison rule was removed or relaxed.
+
+Successful unit `openlvds-counter-native-material-preflight-v326`,
+invocation `ab6fe81374a94ae1a340eab4a87fa390`, exits zero; log:
+`build/counter-native-material-preflight-v326.log`. The new context retains
+both the proposed schematic and collapsed v317 reference with the LVS
+setup/report. All new-counter geometry, shared-wire RC, counter timing,
+all-PVT, electrical and PHY qualification flags remain false. The two
+remaining SS40 v317 cases and all later admission gates are still required.
