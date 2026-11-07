@@ -159,9 +159,14 @@ The P10/N8 fine31/60% point now also passes all individual gates.
 Full replay `tapered_bank_stage_replay/20261107T061059Z` reproduces
 all 1511-MOS/173-control metrics and signed stage/history sums with zero
 residual: maximum period error 13.729 ps, rising/falling history spans
-13.761/0.268 ps and maximum slew 101.651 ps. Its remaining zero-code,
-40% and coarse points are still required; this endpoint does not admit
+13.761/0.268 ps and maximum slew 101.651 ps. Its zero-code and coarse points are still required; this endpoint does not admit
 P10 or replace the separate loaded-driver recovery experiment.
+The P10 fine31/40% endpoint now also passes every individual gate.
+Full replay `tapered_bank_stage_replay/20261107T064434Z` reproduces
+all 1511-MOS/173-control metrics and signed stage/history sums with zero
+residual: period error 2.057 ps, rising/falling history spans 2.059/0.445 ps
+and maximum slew 101.757 ps. Both fine endpoints are now independently
+verified; P10 zero-code and coarse coverage remain open.
 
 The corrected numeric-thread campaign v319 now completes all three
 native cases with zero errors. Independent full replay

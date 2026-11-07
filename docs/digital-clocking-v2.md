@@ -14920,3 +14920,28 @@ Its native result remains pending. Actual mux loading, zero-code quarter
 delay, fine/coarse overlap, new shared RC, other PVT and full DLL/PHY
 qualification still require complete-bank evidence. No original bank
 failure or hardware admission gate is replaced by this equivalence proof.
+
+
+### P10/N8 fine31/40% independently passes the endpoint screen
+
+The original v310 P10/N8 fine31/40% SS40/410 MHz case completes without
+numerical error and passes every individual native point gate. Rising
+delay is 768.133216--770.191723 ps and falling delay
+795.288227--795.733367 ps. Maximum period error is **2.057213 ps**,
+rising/falling history spans 2.058506/0.445140 ps, and maximum slew
+101.756828 ps. Every startup cycle and original limit remains included.
+
+Full replay `tapered_bank_stage_replay/20261107T064434Z` reproduces
+all original native metrics for 1511 MOS and 173 programming gates,
+using the actual four-stage polarities. Stage and first-to-last history
+sums have zero residual on both edges; the loaded fine inverter's rising
+first-minus-last contribution is +0.332318 ps. Unit
+`openlvds-tapered-p10-fine-forty-native-replay`, invocation
+`e0ab2eea29e043e28384282491481c14`, exits zero. Log:
+`build/tapered-p10-fine-forty-native-replay.log`.
+
+Both P10 fine endpoints now have independent full replays. Its zero-code
+and coarse points remain open; neither latency/range nor the complete
+eight-case campaign is admitted by the two endpoint passes. The separate
+P24 recovery diagnostic and eleven new counter-boundary results remain
+pending. No new circuit, solver, geometry or acceptance gate changes.
