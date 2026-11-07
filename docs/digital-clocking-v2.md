@@ -14945,3 +14945,94 @@ and coarse points remain open; neither latency/range nor the complete
 eight-case campaign is admitted by the two endpoint passes. The separate
 P24 recovery diagnostic and eleven new counter-boundary results remain
 pending. No new circuit, solver, geometry or acceptance gate changes.
+
+
+### Completed P24 recovery intervention retains the timing failure
+
+The v333 coordinator now completes both recorded-input cases, zero errors
+and zero guarded cases, validates its final inputs and exits zero. The
+P24/N16 intervention retains 31 native fine cells, all eight startup
+events and the complete original 25 ns waveform. Independent full replay
+`loaded_fine_p24_replay/20261107T071253Z` reproduces every original metric
+for 417 MOS and 93 programming gates and binds the independently verified
+413-MOS baseline.
+
+| Metric | P20/N16 baseline | P24/N16 intervention |
+| --- | ---: | ---: |
+| Maximum period error (ps) | 62.135232 | 39.914162 |
+| Loaded rising first-minus-last delay (ps) | 61.848388 | 38.341191 |
+| Fine node at eighth source rising 10% crossing (V) | 1.546892331 | 1.613986496 |
+
+Loaded rising delays change from 348.691599 ps on the first event to
+310.350408 ps on the eighth. Loaded falling history is -0.189133 ps;
+both signed stage sums have zero residual. Native safety, programming
+controls, all pulses and the original slew domain pass. Period and
+repeatability still fail the unchanged 20 ps limits. The stronger pull-up
+improves recovery but does not solve the problem. Input loading, zero-code
+latency and fine/coarse range still require complete-bank proof.
+
+Read-only helper: `build/replay-loaded-fine-p24-v333-20261107.py`; unit
+`openlvds-loaded-fine-p24-native-replay-v333`, invocation
+`6bb1e69914444fd3b3eb0359cc06d7ed`, exits zero. Log:
+`build/loaded-fine-p24-native-replay-v333.log`.
+
+
+### Two more unchanged-shunt counter boundaries pass
+
+V334 case 1 (SS0, 410 MHz, 40% duty, stopped high) and case 2 (same
+conditions, 50% duty, stopped low) complete normally and pass every
+original component point gate. Minimum remaining low windows are
+440.492072 and 358.889535 ps; peak terminal differences are
+1.935719803 and 1.914712731 V. Full native replays reproduce all 808 MOS
+metrics and exact limiting samples, including the REQUEST stages.
+
+Receipts: `large_shunt_counter_boundary_replay/20261107T065234Z` and
+`20261107T065804Z`. Units
+`openlvds-large-shunt-cold-forty-high-native-replay` (invocation
+`3b5d6270661b4e87a5dcf3090abbac76`) and
+`openlvds-large-shunt-cold-fifty-low-native-replay` (invocation
+`759e3022f531453886dcfa78d56d6067`) both exit zero. The retained source
+plus these two new points do not complete the twelve-point screen.
+The remaining nine native points keep their original tickets, worker
+limits and global six-engine budget. Whole-counter integration stays
+gated on the complete boundary screen.
+
+
+### Native 5x5 counter-output MIM physical material and witness repair
+
+The first physical producer v335 retains its failed artifact at
+`counter_output_mim5_physical_v335/d4ce90cd8e8eb0c0`. Its actual layout
+passes zero DRC and strict native LVS. Its mask checker fails on layer
+`(71,5)`, the native MET4TXT annotation layer: KLayout Region XOR retains
+zero-area Text markers even though both child labels are identical.
+Explicit comparison of every non-Text shape finds no fabrication change.
+
+New immutable producer `build_counter_output_mim5_v336.py` reproduces
+and binds that failure. It checks polygon/box/path geometry on every
+layer, excluding only GDS Text, and independently requires both native
+child annotations to remain identical. A negative test also inserts a
+non-Text shape on the text layer and requires rejection; no layer is
+exempt from the fabrication witness.
+
+Artifact `counter_output_mim5_physical_v336/80531cf7f88fa1a5` now completes
+with zero DRC, a strict unique LVS match and one native
+`sky130_fd_pr__cap_mim_m3_1` of W=L=5 um, with zero MOS. Both the native
+child and whole translated wrapper preserve all non-Text geometry on
+all seven layers; both original labels are preserved. Footprint is
+7.16 by 5.4 um. Native top-electrode Y access is M4 at (2.70,2.70) um;
+bottom-electrode VGND access is M3 at (6.90,2.70) um. The LEF exposes
+the two electrodes. Only labels are added to the native drawing.
+
+Five CAD tests pass in 0.076 s with no skips; the science interpreter
+discovers five explicit missing-KLayout skips and no import errors.
+Logs: `build/counter-output-mim5-v336-final-tests.log` and
+`build/counter-output-mim5-v336-science-discovery.log`. Preparation unit
+`openlvds-counter-output-mim5-prepare-v336`, invocation
+`cc3a406e754d463b88500ae9cacd6f39`, and execution unit
+`openlvds-counter-output-mim5-physical-v336`, invocation
+`ce85ca0bbb1b4c3fbdaa15aeb717e3dc`, both exit zero. Physical log:
+`build/counter-output-mim5-physical-v336.log`.
+
+This qualifies the standalone native capacitor material only. It adds
+no counter placement/wiring/shared-RC or native PVT timing qualification.
+The failed v335 artifact and all captured producer sources remain intact.

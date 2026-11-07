@@ -126,7 +126,8 @@ all other retained components and the full 25 ns stimulus stay unchanged.
 Six targeted tests pass. Preparation now completes successfully at
 `loaded_fine_recovery_v333/53cd1cb8b555e03e`, retaining all 13000 native
 source points in a 590039-byte PWL file. The sequential native coordinator
-is live, using one worker under the same six leases. This omits upstream
+now completes both cases with zero errors and no guarded cases, validates
+its final inputs and exits zero. This omits upstream
 loading and therefore cannot qualify quarter delay, fine/coarse range or
 the full bank, even if local history improves. The baseline now completes
 and passes parity: maximum crossing error 0.031273 ps and maximum
@@ -135,8 +136,15 @@ all 413 MOS. Safety/control/pulse gates pass, while its original history
 failure remains (62.135 ps period error, 61.848 ps loaded-stage rising
 history). Independent full replay
 `loaded_fine_baseline_replay/20261107T063932Z` reproduces every metric
-and parity result. This unlocks the P24 diagnostic; that result remains
-pending and supplies no bank admission.
+and parity result. The P24/N16 diagnostic also completes, and independent
+full replay `loaded_fine_p24_replay/20261107T071253Z` reproduces all
+417-MOS metrics and binds the baseline replay. Period error improves
+from 62.135232 to **39.914162 ps**, and loaded-stage rising history from
+61.848388 to **38.341191 ps**. The eighth source rising-event fine-node
+voltage improves from 1.546892331 to 1.613986496 V. Native safety, controls,
+pulse counts and slew pass; the original 20 ps period/history gates still
+fail. Stronger pull-up helps recovery but this intervention remains
+rejected, with every startup event included. No bank admission follows.
 
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.
@@ -224,11 +232,30 @@ circuit is now extended by v334 to SS0/SS40, 40/50/60% duty and both
 stopped levels at 410 MHz: one retained verified trace and eleven new
 native points, with eight targeted tests passing. Preparation completes at
 `large_shunt_counter_boundaries_v334/89ff7c952da2161a`; its coordinator
-reproduces the retained point successfully and queues the new points
+reproduces the retained point successfully. New cases 1 and 2 now pass:
+SS0/410 MHz, 40% duty stopped high and 50% duty stopped low. Independent
+full replays `large_shunt_counter_boundary_replay/20261107T065234Z`
+and `20261107T065804Z` reproduce all 808 native MOS metrics and exact
+limiting terminal samples. Minimum remaining low windows are
+440.492072/358.889535 ps; peak terminal differences are
+1.935719803/1.914712731 V. The remaining nine new points continue
 under the unchanged six-slot dispatcher.
-The remaining boundaries, actual added-MIM geometry, new shared RC and
+The remaining boundaries, actual integrated counter geometry, new shared RC and
 full clock/PVT/PHY qualification remain required. The old v317 60%
 passes do not qualify the resized-shunt circuit at those conditions.
+
+The separate added-MIM physical material now passes in
+`counter_output_mim5_physical_v336/80531cf7f88fa1a5`: zero DRC, strict
+unique native LVS, one exact 5x5 MIM and no MOS. All non-Text geometry
+on all seven layers is preserved, both in the native child and after
+wrapper translation; both native text labels are checked separately.
+The retained v335 failure at `(71,5)` is reproduced and diagnosed as a
+zero-area Text-marker XOR artifact, with unchanged fabrication geometry.
+The corrected checker is a new immutable version; no captured producer
+or failed artifact is overwritten. Five CAD tests pass with no skips;
+science discovery reports exactly five explicit missing-KLayout skips.
+This is component material only: new counter placement, wiring, LVS,
+shared RC and all-PVT timing remain unqualified.
 
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,
 40/50/60% duty, both-stopped-level cases without numerical errors. Only
