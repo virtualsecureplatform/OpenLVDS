@@ -15249,3 +15249,42 @@ only the six SS0 boundaries. All six SS40 points, the terminal twelve-point
 campaign/final validation, new whole-counter GDS/LVS/shared RC and
 subsequent clock/PVT/PHY qualification remain required. Whole-counter
 integration stays gated on the complete twelve-point screen.
+
+
+### Completed older weak-NAND coarse point confirms loaded-node pulse loss
+
+The original v187 `nand_c2` coarse1/fine0 case 15 completes normally at
+SS40/410 MHz/50% duty, retaining its full 25 ns and all eight source
+cycles. Independent full replay
+`isolated_nand_coarse_failure/20261107T080208Z` reproduces every original
+metric for **1606 native MOS and 266 programming gates**, including
+voltage/control checks and the failed pulse, epoch, slew and history
+gates. The source remains at
+`isolated_fine_bank_v187/ef54c4df9e57088a/15`; no prior producer, raw
+trace or acceptance gate changes.
+
+The selected node has eight rises and eight falls through all three
+thresholds (0.18/0.9/1.62 V), and its last-cycle range is
+-0.024517--1.830100 V. The loaded fine node's first-cycle range is
+-0.014367--1.158436 V, then its minimum climbs each cycle; from cycle
+four onward it never falls below 0.9 V. Its eighth-cycle range is
+**1.016936--1.695505 V**. The public output's eighth-cycle range is
+**1.799278--1.800859 V**. Across the full retained trace, the output has
+only one 50% rise and one 50% fall against eight of each at the source.
+
+Voltage-stress and programming-control checks pass. This is a signal-level
+failure localized to the loaded fine/restore path after a full-swing
+selected waveform. It supports retaining adequate pull-down strength
+while testing the P40/N16 pull-up recovery intervention. It is not an
+isolated NAND transistor causal test and supplies no P40 timing or
+full-bank admission. The old weak-NAND family remains rejected while
+its remaining original simulations continue unchanged.
+
+Read-only helper:
+`build/replay-isolated-nand-c2-coarse-native-20261107.py`; unit
+`openlvds-isolated-nand-c2-coarse-native-replay`, invocation
+`b5ab516c2c024d0b94783912ffd14474`, exits zero. Log:
+`build/isolated-nand-c2-coarse-native-replay.log`. The receipt binds
+selected-case/library/code bytes and rechecks them after full replay;
+its scope excludes all historical ancestry hashes, other PVT, new
+shared-wire RC and PHY qualification.

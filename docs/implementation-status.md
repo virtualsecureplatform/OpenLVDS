@@ -176,6 +176,18 @@ the actual qualified-component circuit, all retained terminal maps and
 all 13000 original native source points byte-for-byte. This verifies the
 prepared circuit and waveform, with no P40 timing admission.
 
+An older weak-NAND/two-copy fine bank now completes its coarse1/fine0
+point (v187 case 15, SS40/410 MHz/50% duty) and fails pulse transport.
+Independent full replay `isolated_nand_coarse_failure/20261107T080208Z`
+reproduces every original metric for 1606 MOS and 266 programming gates.
+All eight selected-node pulses cross 10/50/90% thresholds, but the loaded
+fine node drifts to 1.016936--1.695505 V in cycle eight. The output then
+stays at 1.799278--1.800859 V; only one full-trace 50% rising/falling
+output event remains. Native stress and control settling pass. This
+localizes signal loss to the loaded fine/restore path and retains the
+old candidate's rejection; it does not establish isolated-transistor
+causality or qualify the new P40 intervention.
+
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.
 All other point gates pass. Full replay
