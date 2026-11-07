@@ -170,7 +170,7 @@ zero-code quarter latency and the existing fine/coarse range failures
 remain required; stronger pull-up is not a range repair or bank admission.
 Preparation now exits zero at
 `loaded_pullup_recovery_v341/27234677e3639f9b`, and the original single
-case is queued under the unchanged dispatcher. Independent generated-deck
+case has entered native simulation under the unchanged dispatcher. Independent generated-deck
 verification `loaded_pullup_prepared_replay/20261107T075030Z` reproduces
 the actual qualified-component circuit, all retained terminal maps and
 all 13000 original native source points byte-for-byte. This verifies the
@@ -297,7 +297,12 @@ also passes, and full replay
 points now pass: 40/50/60% duty at both stopped levels, retaining every
 26 ns trace and original timing/stress gate. The minimum remaining
 window is 136.893239 ps; worst terminal stress is 1.935719803 V at 40%.
-The six SS40 points continue
+The first SS40 point, case 6 (40% duty stopped low), now passes and
+full replay `large_shunt_counter_boundary_replay/20261107T080542Z`
+reproduces all 808-MOS metrics and exact limiting samples. Its minimum
+remaining low window is 426.812298 ps and peak terminal difference
+1.937055384 V, leaving 12.944616 mV below the original limit.
+Seven of twelve points now pass. The remaining five SS40 points continue
 under the unchanged six-slot dispatcher.
 The remaining boundaries, actual integrated counter geometry, new shared RC and
 full clock/PVT/PHY qualification remain required. The old v317 60%

@@ -15288,3 +15288,26 @@ Read-only helper:
 selected-case/library/code bytes and rechecks them after full replay;
 its scope excludes all historical ancestry hashes, other PVT, new
 shared-wire RC and PHY qualification.
+
+
+### First SS40 unchanged-shunt boundary passes; P40 enters native simulation
+
+V334 case 6 (SS40, 410 MHz, 40% duty, stopped low) completes without
+error and passes every original component point gate. Independent full
+replay `large_shunt_counter_boundary_replay/20261107T080542Z`
+reproduces all 808 MOS metrics and exact limiting samples. The minimum
+remaining low window is **426.812298 ps** and peak terminal difference
+**1.937055384 V**, leaving **12.944616 mV** below the unchanged 1.95 V
+limit. This is slightly higher stress than the completed SS0 subset;
+no temperature trend is assumed from it. Unit
+`openlvds-large-shunt-hot-forty-low-native-replay`, invocation
+`a3a0033c46d946c6a5bd8427bc1c533b`, exits zero. Log:
+`build/large-shunt-hot-forty-low-native-replay.log`.
+
+Seven of twelve native boundaries now pass; the remaining five SS40
+points and terminal campaign validation remain required before
+whole-counter integration. The original v341 P40 intervention also
+acquires an existing dispatcher lease and enters actual native
+simulation. No P40 timing result is available at this checkpoint;
+prepared-deck equivalence and component RC passes remain separate
+from its required transient safety/recovery checks.
