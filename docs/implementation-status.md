@@ -194,9 +194,14 @@ component definition. It requires the complete independently replayed
 passing P40 recovery before preparation. Its four original SS40/410 MHz
 points cover zero/50%, fine31/60%, fine31/40% and coarse1/50%, preserving
 every clock/load/stimulus and the original quarter/overlap gates. Four
-targeted tests pass in 0.461 s without skips. Preparation is validating
-inputs, with two campaign workers under the same six-engine budget.
-There is no full-bank P40 timing or range result yet.
+targeted tests pass in 0.461 s without skips. Preparation now completes
+at `pullup_two_stage_bank_v342/6fb0494678a32ddc`, and the original
+producer queues its first two cases under the same six-engine budget.
+Independent prepared-bank replay
+`pullup_bank_prepared_replay/20261107T083301Z` reproduces the qualified
+P40-only circuit and all four unchanged clock/load/programming fixtures,
+with no selected-node ideal source or replay boundary. There is no
+full-bank P40 timing or range result yet.
 
 An older weak-NAND/two-copy fine bank now completes its coarse1/fine0
 point (v187 case 15, SS40/410 MHz/50% duty) and fails pulse transport.
@@ -332,7 +337,11 @@ pass. Case 8, SS40/50% duty stopped low, also passes: minimum window
 353.994258 ps and peak terminal difference 1.916684766 V. Full replay
 `large_shunt_counter_boundary_replay/20261107T082815Z` reproduces all
 808-MOS metrics and exact limiting samples. Nine of twelve points now
-pass. The remaining three SS40 points continue
+pass. The matching SS40/50% stopped-high case 9 also passes: the same
+353.994258 ps minimum window and 1.916684766 V peak stress. Full replay
+`large_shunt_counter_boundary_replay/20261107T083607Z` reproduces all
+808-MOS metrics and exact limiting samples. Ten of twelve points now
+pass. The two remaining SS40/60% stopped-level points continue
 under the unchanged six-slot dispatcher.
 The remaining boundaries, actual integrated counter geometry, new shared RC and
 full clock/PVT/PHY qualification remain required. The old v317 60%

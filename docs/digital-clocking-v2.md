@@ -15456,3 +15456,54 @@ twelve-point validation, whole-counter integration/shared RC and later
 PVT/clock/PHY qualification remain open. The README now describes the
 actual P40 recovery candidate and current counter repair rather than
 the superseded weak-driver pilot.
+
+
+### Full-bank P40 preparation and generated decks independently verify
+
+V342 preparation now exits zero at
+`pullup_two_stage_bank_v342/6fb0494678a32ddc`. The original producer
+queues zero/50% and fine31/60% as its first two cases, with two workers,
+priority 1 and the unchanged global six leases. Fine31/40% and
+coarse1/fine0/50% follow through the same captured four-point campaign.
+There is no full-bank P40 native timing or range result yet.
+
+Independent prepared-bank receipt
+`pullup_bank_prepared_replay/20261107T083301Z` rebuilds the actual
+generated circuit from the qualified v340 P40 numerical model and
+original complete v322 bank. It reproduces **1385 MOS/34 MIM**, all
+1329 non-loaded MOS maps, 86 controls, 173 programming gates, every
+unrelated top-level call and every retained native component definition.
+All four generated fixtures reproduce exactly. Their original clock
+waveforms, fixed supply, programming voltages, 20 fF load, 25 ns stop
+and all eight startup events remain; no ideal selected-node source or
+diagnostic replay boundary is present. The original passing native P40
+recovery receipt and naturally complete producer state are bound.
+
+The receipt checks selected circuit/material/fixture/code bytes and
+guards, rather than every historical ancestry hash; the original
+producer performs its full validation separately. Helper:
+`build/verify-pullup-bank-prepared-v342-20261107.py`; unit
+`openlvds-pullup-bank-prepared-replay-v342`, invocation
+`e31ac2d0bc1947a6830f0ed2b6adb0c1`, exits zero. Log:
+`build/pullup-bank-prepared-replay-v342.log`. This prepares the native
+input-loading/latency/range test; it supplies no electrical, common-code,
+PVT, shared-wire RC, DLL or PHY admission.
+
+
+### Both SS40 nominal-duty stopped levels independently pass
+
+V334 case 9 (SS40, 410 MHz, 50% duty, stopped high) completes without
+error and passes every original component point gate. Minimum remaining
+low window is **353.994258 ps** and peak terminal difference
+**1.916684766 V**. Independent full replay
+`large_shunt_counter_boundary_replay/20261107T083607Z` reproduces all
+808 MOS metrics and exact limiting samples. Unit
+`openlvds-large-shunt-hot-fifty-high-native-replay`, invocation
+`2788f369bdde449490a680d073c669b9`, exits zero; log:
+`build/large-shunt-hot-fifty-high-native-replay.log`.
+
+Ten of twelve boundaries now pass in the unchanged circuit. Only the
+two SS40/60% stopped-level points remain, followed by the campaign's
+terminal full input validation. Whole-counter integration stays gated
+on all twelve points; no remaining duty, physical/shared-RC or all-PVT
+result is inferred from the ten passes.
