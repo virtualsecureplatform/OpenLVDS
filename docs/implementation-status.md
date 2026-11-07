@@ -106,6 +106,16 @@ preflight; each requests **6429 voltage vectors**. The fresh zero/duty/
 coarse screen is queued with two priority-1 workers under the unchanged
 six leases. No production circuit, running campaign or gate was changed.
 
+The older MIM-only bank v321 now naturally completes all **eight** points,
+with zero execution errors. All eight native metric/stage replays and the
+original aggregate rejection are independently bound in
+`mim_bank_complete_screen_replay/20261107T151504Z`. Both 2×2 and 2×3
+variants fail quarter headroom, fine60 history and coarse/fine overlap.
+Increasing MIM size worsens rising fine60 history from **39.277 ps** to
+**90.643 ps** and falling overlap from **−136.308 ps** to **−170.146 ps**.
+This closes that experiment as rejected; no remaining v321 simulation or
+MIM-only sizing retry is pending.
+
 The zero-code bank is still advancing slowly before its first edge. The isolated-cell
 diagnostic v353 tests all four static decoder input states and both logic
 states of the native restoration/fine/coarse cells, with the exact v352

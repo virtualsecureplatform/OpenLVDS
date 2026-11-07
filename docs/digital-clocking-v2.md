@@ -16643,3 +16643,51 @@ terminals. It retains original failed point metrics even if crossings
 are missing or extra, without choosing a new epoch. Actual next-bank
 loading, new shared routing/RC, dense/update tests, common legal codes,
 all PVT, full DLL/DCC integration and PHY qualification remain open.
+
+### Older MIM-only screen completes and independently rejects both sizes
+
+The original v321 coordinator naturally terminates after all eight native
+points complete with **zero execution errors**. Its terminal state and
+aggregate report are now present. The unit's journal records completion
+at 2026-11-07 15:11:19 UTC; no healthy run was stopped or restarted.
+The previous larger-MIM coarse-pending status is superseded.
+
+Final 2×3 coarse1/50% case 7 passes its individual waveform checks:
+2.898951 ps rising-history span, 0.017681 ps falling-history span and
+79.710175 ps maximum output slew. Full native stage replay
+`mim_bank_stage_replay/20261107T151210Z` reproduces every original metric.
+This individual pass still leaves a gap between fine maximum and the
+next coarse code, which rejects the bank as a whole.
+
+| MIM size | Zero-code quarter headroom | Fine60 rising history | Fine60 period error | Conservative overlap rise / fall |
+| --- | ---: | ---: | ---: | ---: |
+| 2×2 | −45.665 ps | 39.277 ps | 38.716 ps | −35.794 / −136.308 ps |
+| 2×3 | −45.272 ps | 90.643 ps | 86.129 ps | −50.262 / −170.146 ps |
+
+Both sizes fail the unchanged quarter-period, 20 ps history/period and
+positive-overlap gates. Larger MIM alone worsens recovery and range
+overlap. This is a completed native counterexample, not a numerical
+failure or an untested reason to stop a healthy simulation.
+
+Read-only closure helper `build/close-mim-bank-screen-v321-20261107.py`
+binds the terminal original report, rederives its complete comparison,
+checks coverage by all eight independent native stage replays, checks
+every original result/file against those receipts and rehashes their
+combined inputs. It also regenerates the prepared native circuit/maps/
+fixtures with captured model/runtime context, excluding historical raw
+ancestry outside these selected complete cases. Receipt:
+`mim_bank_complete_screen_replay/20261107T151504Z`; log:
+`build/mim-complete-screen-replay-v321.log`. All eight replays reproduce
+1467-MOS point metrics. Both complete variants remain rejected and
+`qualified_phy=False`; no new MIM-only variant is queued.
+
+The active v365 experiment addresses the distinct failures separately:
+paired-restorer removal targets minimum latency, the retained verified
+P80/N32 fine driver targets recovery, and balanced coarse units with
+duplicated fine units target coarse/fine overlap. These are hypotheses
+until the new complete native screen passes. Its read-only completion
+watcher `openlvds-direct-bank-completion-replays-v365`, invocation
+`01bbcaf7d6bc4340bcdd02365af03d54`, binds original coordinator PID 2286213
+and start ticks. Queue receipt:
+`direct_balanced_bank_replay_queue/20261107T151009Z`. It starts no SPICE
+jobs and retains failed metrics rather than changing epochs or gates.
