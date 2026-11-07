@@ -13131,3 +13131,41 @@ original fixtures, rejected wiring/namespace/coverage changes, per-variant
 admission failures, and the actual qualified MIM inputs. Log:
 `build/mim-isolated-fine-bank-v321-tests.log`. These are implementation
 checks; no new MIM-bank transient verdict exists yet.
+
+### Complete reordered-bank zero-code diagnosis (v315, 2026-11-07)
+
+The original v315 zero-code case now completes all 25 ns at SS/40 C,
+410 MHz, 50% duty. Its quarter headroom remains **-46.310768 ps**,
+10.723197 ps better than the original regular bank but still a failure.
+Rise delays are 572.338160--576.320225 ps and fall delays
+656.051086--656.066866 ps. All eight full-swing pulses, native voltage,
+controls, 94.507 ps maximum slew, 3.982 ps maximum period error and
+3.982/0.016 ps rising/falling history spans pass their original limits.
+Maximum native terminal difference is 1.873837058 V.
+
+Independent replay
+`preconditioned_bank_stage_replay/20261107T011544Z/summary.json` reproduces
+every original metric, all eight matched stage crossings and stage-history
+sums with zero residual. It uses the actual alternating node polarities:
+IN (+), selected (-), conditioned (+), fine_node (-), OUT (+). The unchanged
+v300 decomposition helper is called through explicit polarity-correct aliases;
+the report restores the actual node/stage names. Thus the original regular
+bank's positive fine_node assumption is not applied to the reordered bank.
+
+| Measured loaded section | Rising delay range (ps) | Falling delay range (ps) |
+| --- | ---: | ---: |
+| Input to selected | 217.029--220.425 | 251.968--251.986 |
+| Selected to conditioned | 134.223--134.794 | 159.635--159.635 |
+| Conditioned to fine_node | 136.984--137.000 | 158.265--158.267 |
+| Fine_node to output | 84.101--84.102 | 86.180--86.183 |
+
+These are loaded crossing differences, not intrinsic cell delays or
+predictions for fine/coarse codes. They establish that reordering alone
+does not remove enough zero-code latency. The original remaining v315
+cases continue unchanged; no bank, physical route or codebook is admitted.
+The read-only helper is
+`build/analyze-preconditioned-bank-stages-v315-20261107.py`; log:
+`build/preconditioned-zero-native-stages-v315.log`. Unit
+`openlvds-preconditioned-zero-native-stages-v315`, invocation
+`c5628a1e0f06403b9b4993639babf9cd`, exits zero. The receipt binds the
+selected complete case/library/code, not every historical ancestor input.

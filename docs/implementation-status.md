@@ -25,9 +25,12 @@ counter's limiting low0 setter reaches 1.949317 V, leaving only 0.683 mV
 below 1.95 V. The remaining three cases and whole-counter shared RC are
 required. The repair retains the final REQUEST drivers, both clock-buffer
 stages, counter logic, 20 ps REQUEST edges and all original voltage/timing
-limits. The reordered fine bank
-(v315) is still running its zero-code case. Neither candidate is admitted
-by partial waveforms. Clock coverage remains 390/400/410 MHz with
+limits. The reordered fine bank (v315) now completes its zero-code case:
+voltage, controls, eight pulses, slew and period/history pass, but quarter
+headroom is still -46.311 ps. Full native/stage replay reproduces every
+metric at `preconditioned_bank_stage_replay/20261107T011544Z`.
+Its remaining cases continue; the zero failure prevents admission.
+Clock coverage remains 390/400/410 MHz with
 40/50/60% input duty, fixed supplies, and five process corners at 0/25/40 C.
 
 The original regular-pair bank (v263) completes all four native cases with
@@ -39,7 +42,10 @@ metrics. Its guarded physical, transport, dense, PVT and full-range followers
 reject the failed source. They are retained without reruns or admission.
 The retained 2x2/2x3 MIM fine cells now both pass current native/Schur RC
 proofs at `retained_mim_fine_rc_v320/ddf3c29ce3fc44da`; substitution behind
-the isolated driver still requires a new bank pilot and fresh bank qualification.
+the isolated driver is implemented in v321, with six targeted tests passing.
+The eight-case MIM pilot is preparing its full source bindings; no MIM-bank
+native verdict exists. Fresh bank physical/RC and complete timing qualification
+remain required.
 
 Current architecture work (2026-11-06):
 
