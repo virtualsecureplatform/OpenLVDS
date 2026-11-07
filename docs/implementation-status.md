@@ -117,6 +117,12 @@ macro footprints and passes the existing spine-clearance check; REQUEST
 and CLK pair footprint gaps are 8.96 and 4.16 um. Four targeted tests
 also pass. This is a deterministic plan only; final v317 timing remains
 required before routing, and no new geometry/RC/electrical gate is admitted.
+Further escape analysis finds eight same-row different-net M4 overlaps
+if the old straight-escape renderer is used with these new ports. Receipt
+`counter_m4_escape_conflicts/20261107T032434Z` retains their exact planned
+coordinates. The v327 plan fixes footprint fit only and is not directly
+routable by the old renderer. Port-specific signal escapes must be
+implemented and checked before GDS/DRC/LVS/shared-RC qualification.
 The reordered fine bank (v315) now completes its zero-code case:
 voltage, controls, eight pulses, slew and period/history pass, but quarter
 headroom is still -46.311 ps. Full native/stage replay reproduces every

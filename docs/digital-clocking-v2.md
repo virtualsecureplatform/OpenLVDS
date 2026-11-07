@@ -688,6 +688,43 @@ routing/Magic/KLayout DRC, LVS and antenna counts in
 infinite unconstrained timing slacks. The original failed state and all files
 remain unchanged.
 
+### New buffer ports also require a different signal escape
+
+The v327 footprint plan is **not directly routable by the old v234
+straight-escape renderer**. Both public buffer signal ports are on M4
+at local y=18.9 um. The old renderer draws each M4 signal directly left
+to its M3 spine at that same y. With these actual ports, the A and X
+escape segments overlap on different nets, including across each parallel
+pair. This would short REQUEST to request_i and RCLK to CLK, independent
+of the corrected footprint spacing.
+
+Read-only receipt
+`build/reports/counter_m4_escape_conflicts/20261107T032434Z/summary.json`
+retains **eight positive-length different-net centerline overlaps** using
+the exact v327 placements/ports and unchanged v234 drawing formula. The
+REQUEST row is y=224.9 um: the first A segment spans x=6.5--125.16 um,
+and its X segment spans x=2--166.90 um, overlapping by 118.66 um. The
+CLK row is y=256.9 um: first A spans x=8--125.16 um and X spans
+x=5--171.70 um, overlapping by 117.16 um. The parallel-buffer escapes
+produce six additional different-net intersections. These are guaranteed
+shorts under that formula, not a complete physical DRC audit.
+
+The immutable analysis helper is
+`build/analyze-counter-m4-escapes-20261107.py`; the receipt binds its code,
+the actual plan manifest/summary/state, and the original escape renderer.
+No GDS, native macro, route, waveform or threshold was changed. The
+recorded footprint and M3-spine checks remain valid within their scope;
+they do not establish M4 escape separation or native routability.
+
+Before physical counter routing, implement port-specific escape geometry
+that separates both signal nets across both parallel buffers, then check
+it against native component masks and the global bus/via geometry. A
+layer change plus a separate access track is a candidate; a horizontal
+track shift alone can still cross another buffer's vertical escape or
+native internal wire. The final v317 timing point, full native DRC/LVS,
+unchanged-device/mask proof and fresh whole-counter shared RC remain
+required. The old draw function must not be reused unchanged.
+
 `recover_dcc_physical_v2.py` creates the separate receipt
 `dcc_physical_recovery_v2/5b37b88a57c9d32d`, binding the exact GDS consumed by
 signoff stages. The new topology policy recognizes true constant-high tie
