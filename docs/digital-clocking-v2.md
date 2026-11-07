@@ -16692,3 +16692,48 @@ watcher `openlvds-direct-bank-completion-replays-v365`, invocation
 and start ticks. Queue receipt:
 `direct_balanced_bank_replay_queue/20261107T151009Z`. It starts no SPICE
 jobs and retains failed metrics rather than changing epochs or gates.
+
+### Complete SS40 loaded-counter clock matrix independently closes
+
+All **18** SS40 counter conditions now have complete passing native
+waveforms and independent replays: 390/400/410 MHz × 40/50/60% duty ×
+stopped high/low. The matrix retains six original pilot traces at
+410 MHz and twelve newly simulated traces at 390/400 MHz. Each source
+trace matches exactly one requested condition, including its stopped
+level. Retained pilot IDs are mapped by their actual source case, rather
+than confused with the new matrix IDs.
+
+Read-only helper `build/close-counter-ss40-matrix-v354-20261107.py`
+checks the exact Cartesian coverage, complete original result/deck,
+original component gates, independent native receipt, low-window metrics
+and exact limiting terminal sample for each point. It rejects duplicate
+or reused trace coverage and rehashes the combined **483** input files.
+The prepared whole-counter native maps, captured runtime/PDK context and
+all 270 prepared stimulus decks also pass `bound(full=False)`. It starts
+no additional SPICE jobs and changes no producer or captured helper.
+
+Receipt: `counter_ss40_matrix_replay/20261107T152420Z`; log:
+`build/counter-ss40-matrix-replay-v354.log`. All 18 original results retain
+their actual-shared-RC qualification flag. Each independent waveform
+replay covers the original **808 MOS** and complete **26 ns** protocol.
+Minimum remaining startup low window, taking both stopped levels:
+
+| Clock | 40% duty | 50% duty | 60% duty |
+| --- | ---: | ---: | ---: |
+| 390 MHz | 506.319 ps | 441.798 ps | 206.496 ps |
+| 400 MHz | 442.895 ps | 399.276 ps | 178.411 ps |
+| 410 MHz | 382.394 ps | 353.162 ps | 150.325 ps |
+
+The limiting window is **150.3250929326141 ps** at SS40/410 MHz/60%,
+stopped high. Maximum native terminal difference is
+**1.9139511930757178 V**, at SS40/390 MHz/40%, stopped high, within the
+unchanged 1.95 V screening limit. These are counter startup and terminal
+checks; they do not establish a payload eye or DLL phase accuracy.
+
+This closes **one of fifteen** counter process/temperature corners. The
+270-point campaign remains active for the other fourteen corners at
+fixed 1.8 V, with the requested 0/25/40 °C temperatures. Full DLL/DCC
+integration, common delay codes, next-bank loading, routed delay-bank
+RC and full PHY qualification remain required. The receipt explicitly
+keeps `all_15_pvt_covered=False`, `whole_clock_rc_qualified=False` and
+`qualified_phy=False`.

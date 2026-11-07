@@ -173,6 +173,17 @@ Receipt: `routed_counter_pvt_native_replay/20261107T144650Z`. Retained
 pilot IDs 18–23 are not new simulations. The 270-point campaign continues;
 this batch does not establish all-PVT or integrated clock qualification.
 
+The complete **SS40 counter clock matrix** is now independently bound:
+all **18** combinations of 390/400/410 MHz, 40/50/60% duty and both
+stopped levels pass their original actual-shared-RC native counter checks.
+Six retained pilot traces and twelve new traces each have complete native
+replays; none is counted twice or reused for a distinct stimulus.
+Receipt: `counter_ss40_matrix_replay/20261107T152420Z`. This closes one
+of the 15 counter PVT corners. Minimum remaining startup low window is
+**150.325 ps**, and maximum native terminal difference is **1.913951 V**.
+The other fourteen corners and complete
+clock-chain/PHY qualification remain open.
+
 New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359/v360/v361/v362/v364/v365 all pass: **72 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
 scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
