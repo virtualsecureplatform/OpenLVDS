@@ -3,6 +3,18 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+New bank evidence (2026-11-07): the two-stage architecture v322 completes
+its SS40/410 MHz, zero-code, 50% duty case and passes every original
+point gate. Its quarter-period headroom is **+38.637 ps**, improving
+95.671 ps over the original regular bank's -57.034 ps. Full 25 ns replay
+at `two_stage_bank_native_replay/20261107T030617Z` reproduces every native
+metric for 1365 MOS and 173 programming-gate observations. Rising delay
+is 563.902--571.119 ps, falling delay 457.010--457.265 ps, maximum slew
+109.605 ps, maximum period error 7.218 ps, and peak terminal difference
+1.873843 V. All eight startup cycles remain included. This supports the
+depth reduction at this one point; both fine31 duty endpoints, coarse
+overlap, shared-wire RC, dense codes and all-PVT qualification remain open.
+
 New counter evidence (2026-11-07):
 
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,

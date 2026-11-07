@@ -13733,3 +13733,57 @@ startup cause separately from successful clearing. This closes the old
 family as a failed candidate within the required 40--60% duty range;
 neither this census nor any passing subset admits the repaired circuit,
 counter shared RC, full PVT coverage or PHY.
+
+### Two-stage bank: complete zero-code point passes
+
+The actual direct-two-TG-level/two-inverter bank v322 completes case 0 at
+SS/40 C, 410 MHz, coarse0/fine0, 50% duty, 100 ps input slew and 20 fF load.
+Its full original 25 ns native trace passes all point gates, including
+the zero-code quarter-period check. No startup cycle is dropped. The
+original v263 zero-code headroom was -57.033965 ps; v322 now has
+**+38.636858 ps**, a 95.670823 ps improvement under the same fixture.
+
+Read-only full native replay at
+`build/reports/two_stage_bank_native_replay/20261107T030617Z/summary.json`
+reproduces every original point metric for **1365 MOS and 173 programming
+gates**. Component inventory remains 1365 MOS/34 MIM, with all 86 logical
+controls retained. Measured timing includes all eight original events:
+
+| Metric | Complete zero-code result |
+| --- | ---: |
+| Rising delay | 563.901515--571.119240 ps |
+| Falling delay | 457.009869--457.265346 ps |
+| Maximum output 10--90% slew | 109.605485 ps |
+| Maximum period error | 7.217540 ps |
+| Rising/falling repeated-delay span | 7.217724 / 0.255476 ps |
+| Maximum native terminal difference | 1.873842763 V |
+
+The replay explicitly uses the actual node polarities: IN and selected
+are positive, fine_node is inverted, and OUT is positive. All eight
+0.9 V crossings exist at each observed stage. Stage and first-to-last
+history sums reproduce the original end-to-end delays with zero residual.
+Rising-event delay ranges are 210.932--218.704 ps through the TG mux,
+252.125--252.666 ps through the loaded fine inverter, and
+100.290--100.303 ps through the final inverter. Corresponding falling
+ranges are 172.731--172.981, 194.889--194.893 and 89.390--89.392 ps.
+These are measured crossing differences, not isolated intrinsic delays.
+
+The initial read-only helper correctly reproduced the full point metrics
+but then failed because its new stage arithmetic expected arrays while
+the crossing helper returned lists. The exact failed helper is retained
+at `build/replay-two-stage-bank-native-20261107-list-crossings-failed.py`,
+with `build/two-stage-zero-native-replay.log`. Before any replay receipt
+was created, explicit NumPy conversion corrected that analysis-only error.
+No native source, waveform, fixture or gate changed. The corrected helper
+`build/replay-two-stage-bank-native-20261107.py` is captured by the passing
+receipt and is now retained unchanged. Successful unit
+`openlvds-two-stage-zero-array-native-replay`, invocation
+`2a77ef0f8bdd4a9280079526a1ea3878`, exits zero; log:
+`build/two-stage-zero-array-native-replay.log`.
+
+This is one component-RC point with ideal new shared wires. The other
+three original v322 cases remain required: fine31 at 40% and 60%, then
+coarse1/fine0 at 50% for conservative overlap. A zero-code pass alone
+does not admit either endpoint, overlap, updates, dense/common codebooks,
+shared-wire RC, 15-PVT coverage, the DLL or PHY. Existing candidates keep
+running unchanged; no new bank variant is launched from this single pass.
