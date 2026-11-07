@@ -100,6 +100,26 @@ class NumericNativeThreadsTests(unittest.TestCase):
             bound.assert_not_called()
             self.assertEqual((folder / 'state.json').read_text(), original)
 
+    def test_prepared_context_binds_recipes_original_translation_and_all_guards(self):
+        folder = probe.ROOT / 'build/diagnostics/numeric_native_threads_v319/3d8fb25e4ae0db0e'
+        if not (folder / 'manifest.json').exists():
+            self.skipTest('Requires actual prepared numeric-thread native context')
+        manifest = probe.bound(folder, full=False)
+        identity = manifest['identity']
+        self.assertEqual(len(identity['inputs']), 2429)
+        self.assertEqual(len(identity['guarded_inputs']), 2335)
+        self.assertEqual(identity['guarded_inputs'], probe.guarded_inputs(identity['inputs']))
+        self.assertEqual(identity['max_workers'], 1)
+        self.assertEqual(identity['priority'], 2)
+        self.assertFalse(manifest['backend_admitted'])
+        self.assertFalse(manifest['qualified_phy'])
+        self.assertEqual(identity['initialization_recipes'], {str(n): probe.runner.startup_text(n) for n in (1, 2)})
+        for task in manifest['tasks']:
+            original = probe.ROOT / identity['parent'] / task['source_id'] / 'bench.cir'
+            self.assertEqual((folder / task['id'] / 'bench.cir').read_bytes(), original.read_bytes())
+            self.assertEqual(identity['translations'][task['source_id']],
+                             identity['references'][task['source_id']]['row']['files']['bench.ngspice.cir'])
+
 
 if __name__ == '__main__':
     unittest.main()

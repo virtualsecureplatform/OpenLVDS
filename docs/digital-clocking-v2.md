@@ -12885,3 +12885,38 @@ or runtime assertions, all control prerequisites for a speed result,
 complete guard coverage and restart protection. Log:
 `build/numeric-thread-v318-v319-tests.log`. These tests do not provide
 a new native runtime result or any analog/PHY qualification.
+
+### Prepared corrected native thread comparison
+
+V319 preparation completes as
+`numeric_native_threads_v319/3d8fb25e4ae0db0e`, capturing **2429 inputs**
+and **2335 per-lease guards**. All three input decks and original
+translation hashes are unchanged; numeric startup recipes for both
+counts are canonical identity fields. Preparation unit
+`openlvds-numeric-native-threads-prepare-v319`, invocation
+`e7f1ba771cc6475797151a5dad04dd0a`, exits successfully. Log:
+`build/numeric-native-threads-v319-prepare.log`.
+
+The guarded run is active as `openlvds-numeric-native-threads-v319`,
+MainPID 2106772, invocation `fba2f4afa8a74709bfaf336d512beaa6`.
+State is running with backend/PHY admission false. Its first priority-2
+ticket `numeric_native_threads_v319_0` has a held live owner; no native
+case has completed. One worker remains under the unchanged six-lease
+budget. Log: `build/numeric-native-threads-v319-run.log`.
+
+The combined prepared-context regression passes **15 tests without
+skips in 5.411 s**, verifying actual recipes, all guards, original deck
+bytes/translation hashes and all configuration/parity prerequisites.
+Log: `build/numeric-thread-v318-v319-prepared-tests.log`. The test file
+is not captured; prepared producers/helpers remain unchanged.
+
+Meanwhile the frozen v314 case 0 completes without solver error. All
+original native gates and metrics reproduce exactly (maximum timing,
+terminal-peak and control differences are zero), but its receipt records
+**configured_threads=1** and **active_thread_configuration_observed=false**.
+It observed 3084 active samples with two threads and one with one thread;
+the separate host audit confirms two actually advancing workers during
+positive transient time. Its measured wall time is 1085.230663 s on the
+shared machine. This is valid native physics evidence with a failed
+thread-configuration prerequisite, not a one-thread speed result.
+Original receipt and continuing campaign are retained unchanged.
