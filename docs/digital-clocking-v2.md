@@ -14240,3 +14240,36 @@ The frozen replay helper is
 `build/tapered-zero-stage-v310-completed.log`. Original native source,
 waveform, fixture, safety/timing gates and failed artifacts remain intact;
 bank, routed RC, PVT, DLL and PHY admission remain false.
+
+### Full regression and exact CAD skip completion at 7be8db2
+
+The complete science-interpreter regression at code revision `7be8db2`
+finishes successfully: **2649 tests in 948.223 s, 67 explicit CAD skips**.
+Unit `openlvds-full-regression-after-escape-discovery-fix`, invocation
+`1d212f99af97461db52a76446ed4b153`, exits zero. Log:
+`build/full-regression-after-escape-discovery-fix.log`.
+
+The exact 67 skipped IDs are parsed from that terminal successful log
+and executed under the pinned CAD interpreter. **All 67 pass in
+76.231 s with zero skips, failures or errors.** The runner requires the
+executed ID sequence to match the selected skip sequence exactly and
+checks the log, runner and selected test-file hashes before/after the
+run. All 2649 distinct tests have now executed successfully across the
+two environments; the source/test code is unchanged since `7be8db2`
+(later commits before this record change documentation only).
+
+Receipt:
+`build/reports/full_regression_cad_completion/20261107T043212Z/summary.json`.
+Retained runner: `build/run-full-regression-cad-skips-20261107.py`.
+Unit `openlvds-exact-full-regression-cad-skips`, invocation
+`587c2ce9c5dd4690b862583d4e851c1c`, exits zero. Log:
+`build/full-regression-exact-cad-skips.log`. The seven newly guarded
+escape tests are included in this exact CAD set and execute normally.
+
+This closes the software regression/discovery check for the current
+implementation. It does not turn synthetic fixture tests or existing
+component proofs into new native transient, full clock/PVT, counter
+geometry, joint RC, DLL or PHY qualification. The known bank timing
+failures remain retained, and the v330 40% startup-stress point remains
+required before actual counter routing. Running native experiments,
+frozen producers, original evidence and all limits remain unchanged.

@@ -3,6 +3,18 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Latest software verification (2026-11-07): the complete regression at
+code revision `7be8db2` passes 2649 tests in 948.223 s, with 67 explicit
+CAD skips. Exactly those 67 test IDs then execute under the pinned CAD
+interpreter and all pass in 76.231 s, with no skips, failures or errors.
+All 2649 distinct tests have therefore executed successfully across the
+two environments. Receipt:
+`full_regression_cad_completion/20261107T043212Z`; logs:
+`build/full-regression-after-escape-discovery-fix.log` and
+`build/full-regression-exact-cad-skips.log`. Subsequent changes before
+this record are documentation only. This verifies software/fixture/CAD
+checks; native circuit, full PVT, routed RC and PHY gates remain open.
+
 Regression discovery correction (2026-11-07): the seven v328/v329 CAD
 escape tests now use the repository's explicit missing-KLayout guard.
 The NumPy-only interpreter discovers seven named skips without import
