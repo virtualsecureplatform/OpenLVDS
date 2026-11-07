@@ -15,6 +15,17 @@ is 563.902--571.119 ps, falling delay 457.010--457.265 ps, maximum slew
 depth reduction at this one point; both fine31 duty endpoints, coarse
 overlap, shared-wire RC, dense codes and all-PVT qualification remain open.
 
+The corrected numeric-thread campaign v319 now completes all three
+native cases with zero errors. Independent full replay
+`numeric_thread_native_replay/20261107T034441Z` reproduces all original
+metrics and parity results with zero timing, voltage-peak or control
+differences. Actual active-worker observations match one/two-thread
+initialization. The paired 40% case records 1797.107 s wall/1699.965 s
+user CPU with one thread, versus 1613.565 s wall/2880.320 s user CPU with
+two: 10.213% less wall time and 69.434% more user CPU for this one
+contended pair. No universal speed claim or global setting change follows;
+backend and electrical admission remain false.
+
 New counter evidence (2026-11-07):
 
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,

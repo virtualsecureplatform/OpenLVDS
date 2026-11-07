@@ -13989,3 +13989,46 @@ Unit `openlvds-preconditioned-fine-forty-stages-v315`, invocation
 `00ae521cb7f14b2a8a6a6245511e9cd5`, exits zero. Log:
 `build/preconditioned-fine-forty-stages-v315.log`. The original failed
 cases, native waveforms, producer and replay helper remain unchanged.
+
+### Correct numeric-thread campaign completes with full native parity
+
+`numeric_native_threads_v319/3d8fb25e4ae0db0e` is now terminal complete:
+three cases, zero errors. Every case loads its private numeric startup,
+retains that startup unchanged, verifies the pinned native runtime and
+original deck translation, and validates the full 25 ns transient.
+All original point gates and native metrics reproduce with **zero**
+timing, terminal-peak and control-deviation differences.
+
+| Case | Duty | Numeric threads | Active-worker samples | Wall (s) | Child user CPU (s) |
+| --- | --- | ---: | --- | ---: | ---: |
+| 0 | 60% | 1 | 3280 samples of 1 | 1189.185 | 1094.662 |
+| 1 | 40% | 1 | 5547 samples of 1 | 1797.107 | 1699.965 |
+| 2 | 40% | 2 | 4853 samples of 2 | 1613.565 | 2880.320 |
+
+Case 2's total sampled thread counts are 4869 samples of two and 493
+of one; **all active-observation samples are two**. The private numeric
+initialization therefore establishes the actual requested worker setting,
+unlike the retained legacy string-option trial. The paired 40% translated
+deck hashes are identical. Child system times are 2.396 s for one thread
+and 3.424 s for two.
+
+The measured two/one wall ratio is **0.897867917**: 10.213% less wall
+time for two threads in this one sequential pair on a shared busy machine.
+Its user CPU ratio is **1.694340483**, or 69.434% more CPU. This supports
+neither a universal speedup nor a throughput improvement across concurrent
+jobs. No extra SPICE run is launched, and global settings and six-slot
+dispatch remain unchanged. `backend_admitted`, electrical and PHY
+qualification flags remain false.
+
+Independent read-only replay
+`build/reports/numeric_thread_native_replay/20261107T034441Z/summary.json`
+reproduces every complete native measurement and parity result for all
+three cases, checks unchanged selected library, case files, private
+startup/runtime records and measurement code, and regenerates exactly the
+producer's final aggregate comparison. It does not requalify all historical
+ancestor waveforms. Helper:
+`build/replay-numeric-thread-comparison-20261107.py`, now retained unchanged.
+Unit `openlvds-numeric-thread-native-comparison-replay`, invocation
+`ab2c1ea7ed384626bb19136f46a49e45`, exits zero; log:
+`build/numeric-thread-native-comparison-replay.log`. The original v319
+coordinator also exits zero after its final full input checks.
