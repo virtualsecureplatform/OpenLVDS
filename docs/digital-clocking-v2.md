@@ -13827,3 +13827,44 @@ independently: both SS0 stopped levels and SS40 stopped low. The final
 SS40 stopped-high point remains required before the timing-gated physical
 counter integration. Fresh whole-counter geometry/shared-wire RC and
 its native timing, stress, full clock/PVT and PHY gates remain open.
+
+### Counter floorplan correction for actual buffer widths (v327)
+
+The native material preflight preserves connectivity and shared masters,
+but the old floorplan does not fit the wider qualified buffers. Actual
+LEF bounds are `[2,2,51.34,23.2]` um for the REQUEST component and
+`[2,2,56.14,23.2]` um for CLK. The old 24 um corridor puts each parallel
+pair's origins only 42.30 um apart, causing REQUEST footprint overlap of
+7.04 um and CLK overlap of 11.84 um. These are physical integration
+conflicts, independent of the component-level transient results.
+
+`scripts/plan_request_taper_counter_v327.py` adds a deterministic plan
+with a **40 um corridor**. It retains all 22 native role models and pin
+maps, the original row/bus construction and direct-feedback routing
+construction. It regenerates the existing spine-clearance check and
+rejects any positive-area overlap among all native macro footprints.
+Parallel REQUEST footprint clearance becomes **8.96 um**, and CLK
+clearance **4.16 um**. The larger spacing changes future physical wire
+lengths, so old wire RC and timing are not transferred to this plan.
+
+Receipt `request_taper_counter_plan_v327/d8e29c7f91c15d0d` binds the
+complete unchanged v326 preflight and actual qualified component files,
+and retains both old conflicts and the full proposed placement/escape
+plan. Unit `openlvds-request-taper-floorplan-v327`, invocation
+`09802108629c421a823f51e422e8ed1f`, exits zero; log:
+`build/request-taper-floorplan-v327.log`. No counter GDS is emitted.
+
+Four tests in `tests/test_request_taper_counter_plan_v327.py` pass using
+actual component dimensions and access metadata: reproduce both old
+overlaps, fit the unchanged cells with the wider corridor, reject a
+future oversized CLK footprint, and reject a CLK input changed into
+feedback. The tests do not repeat the full historical waveform hashes;
+the producer separately binds that material closure. Log:
+`build/request-taper-counter-plan-v327-tests.log` (four passes, no skips).
+
+This addresses a concrete placement conflict while the final v317
+stopped-high case waits for its existing native simulation slot. The
+timing gate remains required before physical routing; this plan supplies
+no routed-wire DRC, native LVS, new shared RC, counter timing, PVT or PHY
+qualification. Existing frozen layout/RC producers and live experiments
+remain unchanged.

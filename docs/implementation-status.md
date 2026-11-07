@@ -108,6 +108,15 @@ uniquely in strict LVS. Its counter core has 744 MOS/50 MIM; the existing
 downstream loads add 64 MOS/six MIM to reach the 808-MOS/56-MIM testbench.
 This is a netlist/material check; new counter geometry, shared RC and
 SS40/native timing qualification remain pending.
+A subsequent actual-dimension floorplan check found both parallel buffer
+pairs overlap in the old 24 um corridor. The additive v327 plan widens
+that corridor to 40 um while retaining the existing rows, buses and
+direct-feedback construction. Receipt
+`request_taper_counter_plan_v327/d8e29c7f91c15d0d` has no overlapping
+macro footprints and passes the existing spine-clearance check; REQUEST
+and CLK pair footprint gaps are 8.96 and 4.16 um. Four targeted tests
+also pass. This is a deterministic plan only; final v317 timing remains
+required before routing, and no new geometry/RC/electrical gate is admitted.
 The reordered fine bank (v315) now completes its zero-code case:
 voltage, controls, eight pulses, slew and period/history pass, but quarter
 headroom is still -46.311 ps. Full native/stage replay reproduces every
