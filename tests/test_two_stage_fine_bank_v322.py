@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 from copy import deepcopy
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -141,6 +142,29 @@ class TwoStageFineBank(unittest.TestCase):
                 (p/'summary.json').write_text(json.dumps(changed))
                 with self.assertRaisesRegex(ValueError, 'quarter-period failure'):
                     probe.depth_evidence(p)
+
+    def test_prepared_native_graph_and_all_four_exact_decks_reproduce(self):
+        parent = probe.ROOT/'build/diagnostics/two_stage_fine_bank_v322/4092d10edbdce08c'
+        if not (parent/'manifest.json').exists():
+            self.skipTest('requires actual prepared two-stage bank')
+        manifest = json.loads((parent/'manifest.json').read_text())
+        identity = manifest['identity']
+        self.assertEqual(parent.name, hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()[:16])
+        self.assertEqual((identity['max_workers'], identity['priority']), (1, 1))
+        self.assertEqual(identity['guards'], probe.guard_inputs(identity['inputs']))
+        bank, observations, revision = self.assembled()
+        self.assertEqual((parent/'bank.spice').read_text(), bank)
+        self.assertEqual(probe.sha(parent/'bank.spice'), manifest['bank_sha256'])
+        self.assertEqual(identity['observations'], observations)
+        self.assertEqual(identity['native_revision'], revision)
+        self.assertEqual(identity['specs'], probe.specifications())
+        for k, task in enumerate(manifest['tasks']):
+            file = parent/str(k)/'bench.cir'
+            self.assertEqual(task['id'], str(k))
+            self.assertEqual(task['spec'], probe.specifications()[k])
+            self.assertEqual(file.read_text(), probe.fixture(parent, identity, task['spec']))
+            self.assertEqual(probe.sha(file), task['deck_sha256'])
+        self.assertFalse(manifest['qualified_phy'])
 
 
 if __name__ == '__main__':

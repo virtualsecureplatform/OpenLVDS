@@ -13262,3 +13262,43 @@ one priority-1 worker under the unchanged six-engine budget, with full
 historical binding before/after and all nonhistorical-raw guards per lease.
 Existing and partial experiments cannot be restarted. No new native
 two-stage-bank timing verdict or physical/RC admission exists yet.
+
+### Prepared depth-reduction pilot and completed tapered 40% endpoint
+
+Preparation completes at `two_stage_fine_bank_v322/4092d10edbdce08c`,
+binding **2423 inputs** and **2326 per-lease guards**. Its exact native
+graph, census, control/gate maps and all four original decks reproduce
+in **seven targeted tests, no skips, 5.152 s**. The new test is outside
+the captured source closure; captured producers/helpers remain unchanged.
+Log: `build/two-stage-fine-bank-v322-prepared-tests.log`.
+Preparation unit `openlvds-two-stage-fine-bank-prepare-v322`, invocation
+`a50f5767b0df446090661ba44929c825`, exits zero; log:
+`build/two-stage-fine-bank-v322-prepare.log`.
+
+Run unit `openlvds-two-stage-fine-bank-v322`, invocation
+`b6cb86e6f4e14f51a55f9daf5f305768`, is active, checking the full captured
+inputs before requesting its first lease. It uses one priority-1 worker
+under the unchanged six-engine dispatcher. Log:
+`build/two-stage-fine-bank-v322-run.log`. No new depth-reduction native
+waveform or timing admission exists yet. The separate MIM pilot's first
+ticket `mim_isolated_fine_bank_v321_0` has a verified held live owner;
+its source unit also remains live. No engine budget, ticket or healthy
+native process was changed to dispatch either experiment.
+
+The P6/N4 first-restorer variant's original fine31/40% case also completes:
+`tapered_regenerated_bank_v310/c10259773d77c082/2`. All original native
+point gates pass, with rising delay 856.982836--859.157226 ps, falling
+delay 869.631451--870.063985 ps, maximum slew 129.806774 ps, period error
+2.173058 ps and rising/falling history spans 2.174390/0.432534 ps.
+Independent full native replay
+`tapered_bank_stage_replay/20261107T012628Z/summary.json` reproduces
+every metric and all eight stage histories with zero sum residual,
+covering 1503 MOS and 173 programming gates. Both 40% and 60% fine31
+endpoints now pass for this variant, but zero and coarse cases remain
+required; endpoint passes do not establish overlap or bank admission.
+
+Replay unit `openlvds-tapered-fine-forty-stage-v310-completed`, invocation
+`bfda3420d9d84de8a695eae81e9759a0`, exits zero; log:
+`build/tapered-fine-forty-stage-v310-completed.log`. The unchanged helper
+binds selected complete case/library/code evidence, without revalidating
+every historical parent input or claiming intrinsic component delays.

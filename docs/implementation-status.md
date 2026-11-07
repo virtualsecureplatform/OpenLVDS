@@ -45,9 +45,18 @@ proofs at `retained_mim_fine_rc_v320/ddf3c29ce3fc44da`; substitution behind
 the isolated driver is implemented in v321, with six targeted tests passing.
 The eight-case MIM pilot is prepared at
 `mim_isolated_fine_bank_v321/d7b9c9202d5285da`, with seven targeted tests
-passing. Its active runner is checking the full captured inputs before queueing;
+passing and a verified live first queue owner under the unchanged dispatcher;
 no MIM-bank native verdict exists. Fresh bank physical/RC and complete timing qualification
 remain required.
+
+An independent latency candidate is prepared at
+`two_stage_fine_bank_v322/4092d10edbdce08c`. It connects the two existing TG
+levels directly and removes the group inversion and one post-fine inversion
+together, preserving noninverting public behavior. Original fine cells,
+coarse units and all 173 programming gates remain; the native census becomes
+1365 MOS/34 MIM. Seven prepared-artifact tests pass. Its runner is active,
+checking inputs before its first lease; no new native timing verdict exists.
+Both alternatives still require complete point screens and fresh bank qualification.
 
 Current architecture work (2026-11-06):
 
