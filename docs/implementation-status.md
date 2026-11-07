@@ -75,7 +75,22 @@ full replay `mim_bank_stage_replay/20261107T051122Z` reproduces every
 rising delay 566.303--570.220 ps, falling delay 655.404--655.421 ps,
 maximum slew 79.712 ps and maximum period error 3.917 ps. Replacing
 fine capacitors alone does not clear the four-stage zero-code latency
-gate. Remaining original MIM cases continue unchanged.
+gate. Its fine31/60% endpoint now also fails period/history: maximum
+period error 38.716 ps and rising history span 39.277 ps, while voltage,
+controls, all eight pulses and 88.808 ps slew pass. Full replay
+`mim_bank_stage_replay/20261107T053907Z` reproduces every original metric;
+38.056 ps of the rising history occurs across the loaded fine inverter,
+with zero stage/history residual. Read-only recovery analysis
+`mim_fine_recovery/20261107T054257Z` samples all 31 enabled cells at all
+eight source events and reproduces the loaded-stage delays. At source
+10% rising crossing, before the selected-node transition, fine_node is
+0.000038 V initially but 0.238680 V at event eight; the native capacitor
+node on the NMOS pass terminal is 0.000012 V initially and 0.474379 V
+finally. The prior fine_node half-supply falling crossing precedes the
+source by 373.794--375.927 ps after startup. This supports incomplete
+recovery with MIM cells as well; it does not isolate transistor causality
+or admit a calibration-conditioning architecture. Remaining original
+MIM cases continue unchanged; this candidate already has two failed points.
 
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.

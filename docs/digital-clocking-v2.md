@@ -14527,3 +14527,62 @@ Read-only helper `build/summarize-tapered-p6-coverage-20261107.py`, unit
 `3f360b4e9aef4b40a9ecdefefeee1a0c`, exits zero. Log:
 `build/tapered-p6-coverage-native-replay.log`. These are component RC with
 ideal new shared wires, not dense/common-code, routed/PVT/DLL/PHY proof.
+
+
+### MIM fine31/60% also fails history; native state diagnosis
+
+The original v321 2x2-MIM fine31/60% case completes at SS40/410 MHz
+with zero numerical errors and fails period/history. All eight pulses,
+control settling, native terminal stress and 88.808348 ps maximum slew
+pass. Maximum period error is **38.715823 ps**, rising delay spans
+712.064519--751.341949 ps and falling delay 772.828025--774.959711 ps.
+The first-to-last rising change is **39.276581 ps**.
+
+Full replay `mim_bank_stage_replay/20261107T053907Z` reproduces every
+original native metric for 1467 MOS and 173 programming gates. Rising
+first-minus-last stage differences are +1.166169 ps input-to-selected,
++38.055887 ps selected-to-fine_node, +0.063292 ps at the next restorer
+and -0.008767 ps at the final inverter. Their sum and all eight event
+sums have zero residual. Unit
+`openlvds-mim-fine-sixty-native-stage-replay-v321`, invocation
+`e8de118ec1c042c0995e4b54d7a90c6a`, exits zero; log:
+`build/mim-fine-sixty-native-stage-replay-v321.log`.
+
+Read-only receipt `mim_fine_recovery/20261107T054257Z` observes all
+31 enabled native three-MOS/two-MIM cells at every original source
+10% rise and 90% fall. It reproduces every original point metric and
+the independent loaded-stage delay array. Before the selected-node
+transition at each source 10% rise, fine_node changes from 0.000038 V
+initially to 0.238680 V at event eight. Actual capacitor nodes are:
+
+| Native proxy | First source rise (V) | Eighth source rise (V) |
+| --- | ---: | ---: |
+| NMOS pass capacitor terminal | 0.000012 | 0.474379 |
+| PMOS pass capacitor terminal | 0.000011 | 0.484494 |
+| Clamp capacitor terminal | 0.000011 | 0.484303 |
+| NMOS pass NODE terminal | 0.000036 | 0.248834 |
+| PMOS pass NODE terminal | 0.000038 | 0.238803 |
+
+All 31 cells share these values at stored precision in the existing
+component-RC/ideal-shared-wire fixture; no physical mismatch or PVT
+spread is inferred. Actual EN/ENB at the eighth rise are
+1.778417/-0.004875 V and the original gate-control checks pass.
+The interval from the preceding fine_node half-supply falling crossing
+to the next source 10% rise is 373.794--375.927 ps after startup.
+At the eighth source 90% fall, fine_node is 1.705091 V and the NMOS
+pass capacitor terminal is 1.644364 V. Both edge types and every
+startup event remain included.
+
+This shows persistent operating-state differences with MIM capacitors
+as well as the earlier MOS-capacitor bank. It supports recovery-aware
+drive/cell design or actual hardware-counted waveform conditioning as
+the next architecture investigation; it does not isolate a device-level
+cause or prove full-chain calibration error. Capacitor replacement alone
+has not cleared the zero-code or fine-history gates. The original v321
+40%/coarse and 2x3 cases continue unchanged; no failed case is dropped.
+
+Helper `build/analyze-mim-fine-recovery-20261107.py`, unit
+`openlvds-mim-fine-recovery-native-analysis`, invocation
+`237e09811051449591354d3215f4ab9a`, exits zero. Log:
+`build/mim-fine-recovery-native-analysis.log`. No new circuit, native
+admission or physical/PVT/PHY qualification follows from the diagnosis.
