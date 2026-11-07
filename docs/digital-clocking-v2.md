@@ -12851,3 +12851,37 @@ translation/arguments, rejection of header-only activity, observation
 failure tolerance and retention of partial artifacts/runtime receipts.
 Log: `build/numeric-threaded-binary-v318-tests.log`. A new full native
 comparison is still required; no speedup or backend admission follows.
+
+### Corrected full native thread experiment (v319)
+
+`scripts/probe_numeric_native_threads_v319.py` prepares a separate
+versioned trial using v318's verified numeric initialization. It does
+not modify the frozen v314 trial. Preparation requires the unchanged
+source/host/frontend audit, remeasurement of both original passing v263
+fine31 duty endpoints and exact reproduction of their translated deck
+hashes. Both original 25 ns input decks are copied byte for byte.
+
+The three sequential cases remain **60%/one thread, 40%/one thread,
+40%/two threads**, SS40/410 MHz, all eight startup cycles and all
+1529 native MOS/173 programming gates/86 controls. All original gates
+and the additional **0.1 ps timing / 1 mV native-terminal/control parity**
+bounds remain unchanged. Startup recipes and their runtime files/hashes
+are checked explicitly; nested startup artifacts are retained in each
+case's file inventory.
+
+Full historical input hashes are verified before/after the campaign;
+every other captured circuit/code/model/audit input is guarded on each
+lease. One worker uses priority 2 under the unchanged six-lease budget.
+No existing state can be restarted. A paired speed ratio is withheld
+unless full native parity, actually observed worker counts, private
+numeric initialization, unchanged translation and pinned runtime all
+pass. Even then, the result is limited to the contended paired case;
+backend/PHY admission stays false.
+
+The combined v318/v319 regression passes **14 tests without skips in
+2.643 s**. It includes the actual source/host/private-startup audit,
+unchanged original translated native decks, rejection of false audit
+or runtime assertions, all control prerequisites for a speed result,
+complete guard coverage and restart protection. Log:
+`build/numeric-thread-v318-v319-tests.log`. These tests do not provide
+a new native runtime result or any analog/PHY qualification.
