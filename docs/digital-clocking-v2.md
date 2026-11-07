@@ -15173,3 +15173,41 @@ invocation `96e234938e39406fab5b16d0c219244b`, exits zero. Log:
 The unchanged circuit now has five passing boundary points, including
 the retained source. Seven points remain; this endpoint does not supply
 stopped-high, SS40, shared-wire, all-PVT or whole-clock admission.
+
+
+### P40 recorded-input deck passes independent prepared-circuit verification
+
+Preparation v341 now exits zero at
+`loaded_pullup_recovery_v341/27234677e3639f9b`. The original producer's
+single native case enters the existing priority/aging dispatcher with
+one worker, priority 1 and no budget/ticket changes. Its coordinator
+`openlvds-loaded-pullup-recovery-v341`, invocation
+`e0c99624502a4d64ab2f0e0ef778170f`, starts only after the preparation
+unit has completed naturally with exit zero. Helper:
+`build/launch-loaded-pullup-recovery-v341-20261107.py`; log:
+`build/loaded-pullup-recovery-v341.log`.
+
+Independent read-only receipt
+`loaded_pullup_prepared_replay/20261107T075030Z` reconstructs the
+intervention directly from the qualified v340 numerical model and the
+retained baseline circuit. It reproduces the generated 433-MOS circuit,
+all 377 non-loaded MOS maps, 31 fine cells, 62 controls, 93 programming
+gates and the complete actual fixture. It also rehashes the original
+native source case, reads its full raw trace and regenerates every
+selected-node PWL point: all **13000 points from 0 through 25 ns** match
+the captured source byte-for-byte. Both retained P20/P24 metric objects
+and the original passing baseline guard match. No waveform event is
+removed or shifted.
+
+The independent receipt binds its selected prepared/source/material/code
+files and rechecks them after analysis. It is scoped to the generated
+circuit/source/material/guards rather than every historical ancestry
+hash; the original producer's full validation remains separate.
+Helper: `build/verify-loaded-pullup-prepared-v341-20261107.py`; unit
+`openlvds-loaded-pullup-prepared-replay-v341`, invocation
+`9a56cc333bc346d498c1eff2c59720d7`, exits zero. Log:
+`build/loaded-pullup-prepared-replay-v341.log`.
+
+No native P40 transient result is available at this checkpoint. Prepared
+equivalence does not establish recovery, voltage safety, input loading,
+zero-code latency, coarse/fine range, PVT, shared-wire RC or PHY admission.

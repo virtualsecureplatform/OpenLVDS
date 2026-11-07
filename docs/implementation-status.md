@@ -168,6 +168,13 @@ science tests pass with no skips. Exact top-level pin calls and the
 This candidate has no native transient result yet. Upstream loading,
 zero-code quarter latency and the existing fine/coarse range failures
 remain required; stronger pull-up is not a range repair or bank admission.
+Preparation now exits zero at
+`loaded_pullup_recovery_v341/27234677e3639f9b`, and the original single
+case is queued under the unchanged dispatcher. Independent generated-deck
+verification `loaded_pullup_prepared_replay/20261107T075030Z` reproduces
+the actual qualified-component circuit, all retained terminal maps and
+all 13000 original native source points byte-for-byte. This verifies the
+prepared circuit and waveform, with no P40 timing admission.
 
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.
