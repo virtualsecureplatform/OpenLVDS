@@ -14832,3 +14832,54 @@ five corners at 0/25/40 C remain required afterward. Even a complete
 passing twelve-point component screen cannot grant clock/DCC/DLL/PHY
 qualification. The original v317 60% results belong to the smaller circuit
 and are not substituted for tests of the resized shunt.
+
+
+### MIM 40% endpoint passes; recovery contrast is reproduced
+
+The v321 2x2-MIM fine31/40% SS40/410 MHz point completes without
+numerical error and passes all individual native gates. Rising delay
+is 751.341949--752.493070 ps, falling delay 709.287884--709.666000 ps,
+maximum period error 1.146743 ps and maximum slew 88.912481 ps.
+Full replay `mim_bank_stage_replay/20261107T062630Z` reproduces every
+original metric for 1467 MOS and 173 programming gates; all signed
+stage/history sums have zero residual. The loaded-stage first-minus-last
+rising change is 1.374353 ps, versus 38.055887 ps in the unchanged
+circuit's 60% endpoint. Unit
+`openlvds-mim-fine-forty-native-stage-replay-v321`, invocation
+`b501a7be35f447ecbfa5a1e9cf51f69f`, exits zero; log:
+`build/mim-fine-forty-native-stage-replay-v321.log`.
+
+Matching receipt `mim_fine_recovery/20261107T063227Z` observes all
+31 enabled native cells at all eight original fixed source events,
+reproduces the full original point metrics and the signed loaded-stage
+array, and retains both edge directions. Before the eighth selected-node
+transition at the source 10% rise, fine_node is 0.012573187 V and the
+NMOS-pass capacitor terminal 0.020130329 V. Their initial values are
+0.000037960/0.000012355 V. The unchanged 60% point instead reaches
+0.238680023/0.474378929 V at the eighth source rise. The prior fine-node
+half-supply falling crossing precedes the source rise by
+927.047--927.430 ps at 40%, versus 373.794--375.927 ps at 60%.
+At the eighth 40% source rise, actual EN/ENB are
+1.798120/-0.000247 V; programming-control checks pass. At the eighth
+source 90% fall, fine_node is 1.491178314 V and the capacitor terminal
+1.127160489 V. All 31 cells agree at recorded precision in the existing
+ideal-shared-wire component fixture; no mismatch/PVT spread is inferred.
+
+The controlled duty comparison supports recovery-dependent operating
+state with MIM capacitors, not an isolated device causal model. It keeps
+the original zero-code and 60% failures and supplies no common-code,
+routed/PVT/DLL/PHY admission. Read-only helper:
+`build/analyze-mim-fine-recovery-forty-20261107.py`; unit
+`openlvds-mim-fine-forty-recovery-native-analysis`, invocation
+`f439ea85af8c4ad09baa7af24c3e83d1`, exits zero. Log:
+`build/mim-fine-forty-recovery-native-analysis.log`.
+
+The separate v334 counter campaign preparation also exits zero at
+`large_shunt_counter_boundaries_v334/89ff7c952da2161a`. Its retained
+point 0 independently reproduces the complete passing v332 metrics and
+records the original native file hashes in retained_case.json, without
+another SPICE execution. The eleven new points remain pending under
+its original two-worker/six-lease limits. The v333 recovery baseline has
+entered actual native simulation; its P24 branch remains gated on the
+complete baseline's waveform, safety/control and all-eight-event checks.
+Neither coordinator start grants a new native or physical qualification.

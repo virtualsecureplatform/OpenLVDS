@@ -101,6 +101,17 @@ source by 373.794--375.927 ps after startup. This supports incomplete
 recovery with MIM cells as well; it does not isolate transistor causality
 or admit a calibration-conditioning architecture. Remaining original
 MIM cases continue unchanged; this candidate already has two failed points.
+Its fine31/40% endpoint now passes all individual gates. Full replay
+`mim_bank_stage_replay/20261107T062630Z` reproduces all 1467-MOS/173-control
+metrics: maximum period error 1.147 ps, rising/falling history spans
+1.151/0.378 ps and maximum slew 88.912 ps. Matching all-31-cell recovery
+analysis `mim_fine_recovery/20261107T063227Z` reproduces loaded-stage
+history of 1.374 ps. At the eighth source rising event, fine_node is
+0.012573 V and the NMOS-pass capacitor terminal 0.020130 V, versus
+0.238680/0.474379 V at 60%. The preceding fine-node half-supply fall
+is 927.047--927.430 ps earlier at 40%, versus about 374 ps at 60%.
+This strengthens the recovery-state evidence; it does not remove the
+60% or zero-code failures or qualify a full calibration architecture.
 
 The next recovery experiment is implemented in
 `probe_loaded_fine_recovery_v333.py`. It retains all 31 fine cells and
@@ -199,8 +210,10 @@ every original metric and exact limiting samples. The source coordinator
 also completes final input validation and exits zero. The unchanged
 circuit is now extended by v334 to SS0/SS40, 40/50/60% duty and both
 stopped levels at 410 MHz: one retained verified trace and eleven new
-native points, with eight targeted tests passing. Preparation and its
-sequential coordinator are live under the unchanged six-slot dispatcher.
+native points, with eight targeted tests passing. Preparation completes at
+`large_shunt_counter_boundaries_v334/89ff7c952da2161a`; its coordinator
+reproduces the retained point successfully and queues the new points
+under the unchanged six-slot dispatcher.
 The remaining boundaries, actual added-MIM geometry, new shared RC and
 full clock/PVT/PHY qualification remain required. The old v317 60%
 passes do not qualify the resized-shunt circuit at those conditions.
