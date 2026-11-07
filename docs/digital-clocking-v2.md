@@ -12920,3 +12920,85 @@ positive transient time. Its measured wall time is 1085.230663 s on the
 shared machine. This is valid native physics evidence with a failed
 thread-configuration prerequisite, not a one-thread speed result.
 Original receipt and continuing campaign are retained unchanged.
+
+### Completed isolation-sizing families remain rejected
+
+V201 `742b7d3b91c0b3b7` and v220 `9e4d0f5b90541807` each finish all
+**eight cases without solver errors**. These variants retain the old
+BUF8 output. Their original conservative fine-to-first-coarse overlap
+results are:
+
+| Isolation driver | Rising overlap (ps) | Falling overlap (ps) |
+| --- | ---: | ---: |
+| P20/N10 | −69.849204 | 63.005732 |
+| P24/N12 | −67.538335 | 42.774722 |
+| P20/N16 | −14.365337 | −22.121285 |
+| P24/N16 | −44.080013 | −7.785938 |
+
+Every family retains a negative overlap and its component hypothesis
+is false. Individual coarse cases passing their native transport checks
+do not repair the family-level gap or prior zero/history failures.
+No full bank or PHY admission follows.
+
+Unchanged v262 analysis independently reproduces all eight complete
+coarse-code I/O delays and signed stage sums for the P24/N12 and
+P24/N16 cases, with zero agreement/sum residual. Receipt:
+`isolated_bank_stage_latency_v262/34a531ee3e967373`, observing all
+1479/1483 native MOS vectors over 25 ns. Unit
+`openlvds-balanced-discharge-coarse-v262-completed`, invocation
+`af4f24b290b24b0b95f9c9a6cca07e29`, exits successfully; log:
+`build/balanced-discharge-coarse-v262-completed.log`.
+
+The newly complete P24/N16 zero-code case retains **−223.875613 ps**
+of quarter-period headroom, while its other original native point
+checks pass. Receipt
+`isolated_bank_stage_latency_v262/8fa63de2e9cff396` reproduces all eight
+I/O delays and stage sums exactly for the full 1483-MOS trace. Its
+falling loaded-stage ranges are 285.519712–285.538875 ps at the mux,
+200.600017–200.603545 ps across isolation/fine, and
+347.491436–347.493455 ps at the old output buffer. Unit
+`openlvds-discharge-p24n16-zero-stage-v262-completed`, invocation
+`6805c4bed4654676bdc8001e8de8b15f`, exits successfully; log:
+`build/discharge-p24n16-zero-stage-v262-completed.log`.
+These v262 receipts replay crossing timing; native voltage/control
+verdicts remain the original producer measurements. Loaded differences
+are not intrinsic component delays or bounds for another circuit/code.
+
+### First P6/N4 tapered-restorer endpoint and its measured tradeoff
+
+V310 case 1 completes at SS40/410 MHz, 60% duty, coarse0/fine31,
+100 ps input slew and 20 fF load. All original individual native
+terminal/control, eight-pulse, epoch, period/history and 250 ps slew
+checks pass. Rise delay is **843.852909–856.982837 ps**, fall delay
+**906.835667–907.066440 ps**, maximum output slew **129.728941 ps**,
+maximum period error **13.102284 ps**, and rise/fall history spans
+**13.129928/0.230773 ps**. This is one endpoint, not a latency/overlap
+or whole-variant qualification.
+
+Read-only full native replay
+`build/reports/tapered_bank_stage_replay/20261107T002819Z/summary.json`
+reproduces every original metric, all **1503 MOS/173 programming gates**
+and all eight five-node stage histories. Stage sums reproduce I/O with
+zero residual. Unit `openlvds-tapered-fine-sixty-stage-v310-completed`,
+invocation `670f4de91c4e41498a668ed1c8406f20`, exits successfully; log:
+`build/tapered-fine-sixty-stage-v310-completed.log`. The retained script
+binds selected case/library/code hashes; it does not revalidate all
+historical lineage inputs or supply bank/PVT admission.
+
+Comparing the eight-edge stage means with the original regular-pair
+60% receipt `regular_regenerated_stages_v300/7481cc36631a6493` gives:
+
+| Section | Change in rising mean (ps) | Change in falling mean (ps) |
+| --- | ---: | ---: |
+| Input to selected | +0.067 | +0.055 |
+| Isolation/fine | −15.317 | −12.718 |
+| First restorer | +106.722 | +109.086 |
+| Final restorer | +36.812 | +32.986 |
+
+The measured reduction before the restorer is outweighed by increased
+downstream delays at this endpoint. This supports continuing the
+separate preconditioner-before-fine experiment, whose first lease has
+now been acquired, rather than assuming a smaller post-fine restorer
+improves zero-code latency. No prediction for unmeasured zero/coarse
+codes is made. All remaining v310/v315 runs and failed sizing evidence
+are retained; the overall PHY remains unqualified.
