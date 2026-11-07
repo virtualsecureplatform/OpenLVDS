@@ -15086,3 +15086,90 @@ Both SS0 40% and 50% stopped levels now pass in this unchanged circuit:
 one retained source and three new simulated points. Eight native points
 remain. The SS0/60% stopped-low point has entered native simulation;
 no remaining duty, temperature or shared-wire result is inferred.
+
+
+### P40/N16 recovery driver: new native material and one-factor replay
+
+The completed P20/P24 experiment improves period error from 62.135232
+to 39.914162 ps and loaded rising history from 61.848388 to 38.341191 ps,
+but still fails. The next candidate strengthens the regular pull-up to
+40 x 1 um fingers while retaining N16 x 0.65 um, all L=0.15 um, and a
+2x2 um output MIM. This doubles pull-up width from P20 without increasing
+pull-down strength. The inference is that greater pull-up current may
+improve recovery; no extrapolated timing is accepted. Its increased input
+load still needs whole-bank latency and range qualification.
+
+Native inspection `recovery_driver_pcells_v338/e292902d8c9c4b10`
+passes both N16 and P40 primitives with zero DRC and exact finger counts,
+dimensions, connected gates and named bulk. Full physical artifact
+`recovery_fine_driver_physical_v339/9462b5bca99a0905` passes zero DRC,
+strict unique LVS and all 57 native primitives: 56 MOS and one MIM.
+Every diffusion and bulk access is physically strapped, including the
+actual contacted unlabeled drain end; no ideal net alias is introduced.
+
+Fresh actual-GDS local RC
+`recovery_fine_driver_rc_v340/be4316b0effe7c22` passes with 1707 raw
+resistors and 805 parasitic capacitors. Exact positive-conductance
+reduction removes 155 algebraic nodes and retains 1664 resistors. Native
+topology, dimensions and extracted junction parameters are preserved;
+strict collapsed LVS uniquely matches. Four independent terminal-current
+witnesses pass with maximum current error 2.664535e-14 A and relative
+solver residual at most 1.520964e-15. All local/extracted output hashes
+are checked after completion. Extraction:
+`build/extracted/753d33f131909948/openlvds_recovery_p40n16_v339/`.
+Unit `openlvds-recovery-fine-driver-rc-v340`, invocation
+`c3f871df801d40f0b9e756ab28d1d5d7`, exits zero; log:
+`build/recovery-fine-driver-rc-v340.log`.
+
+Six targeted CAD tests pass in 0.021 s without skips. Science discovery
+executes four and reports two explicit missing-KLayout skips with no
+import errors. Logs: `build/recovery-driver-v338-v340-final-tests.log`
+and `build/recovery-driver-v338-v340-science-tests.log`. Implementation
+commit: `1e02fd8`. The retained primitive and physical logs are
+`build/recovery-driver-pcells-v338.log` and
+`build/recovery-fine-driver-v339.log`.
+
+The next producer `probe_loaded_pullup_recovery_v341.py` substitutes
+only this qualified loaded driver in the baseline's recorded-input stage.
+There are **433 native MOS**, including all 377 non-loaded MOS with
+unchanged terminal maps; all 31 original fine cells, 62 controls, 93
+programming gates and the final P20/N16 inverter remain unchanged. Its
+source must be the naturally completed two-case v333 campaign with
+passing full baseline parity and independently replayed P24 failure.
+The original selected-node PWL is copied byte-for-byte, with all 13000
+points from 0 through 25 ns and all eight startup events. No sample is
+trimmed, shifted, fitted or discarded. Only one new SPICE case is added,
+with one worker, priority 1 and the unchanged global six leases.
+
+Four intervention tests pass in 0.275 s without skips. Their negative
+controls exposed why checking internal MOS names alone cannot detect
+some public-port changes behind distributed RC. The producer therefore
+also requires the complete exact retained top-level call list, including
+every fine-cell attachment, final-stage input and 1 mOhm replay boundary.
+Log: `build/loaded-pullup-recovery-v341-final-tests.log`; implementation
+commit: `7a330c7`. Preparation unit
+`openlvds-loaded-pullup-recovery-prepare-v341`, invocation
+`20d397df7cf548138a745d1398cd65c1`, is validating original inputs; log:
+`build/loaded-pullup-recovery-prepare-v341.log`.
+
+There is no P40 transient timing result yet. This component/replay work
+does not admit upstream input loading, zero-code quarter latency, common
+fine/coarse range, new shared wires, other PVT or the delivered DLL/PHY.
+The original P20/P24 failures and all timing/safety gates remain retained.
+
+
+### SS0 60% duty stopped-low counter boundary independently passes
+
+V334 case 4 (SS0, 410 MHz, 60% duty, stopped low) completes without
+error and passes every original component point gate. Its minimum
+remaining low window is **136.893239 ps** and peak terminal difference
+**1.909668330 V**. Independent full replay
+`large_shunt_counter_boundary_replay/20261107T074340Z` reproduces all
+808 native MOS metrics and exact limiting samples, including both
+REQUEST stages. Unit `openlvds-large-shunt-cold-sixty-low-native-replay`,
+invocation `96e234938e39406fab5b16d0c219244b`, exits zero. Log:
+`build/large-shunt-cold-sixty-low-native-replay.log`.
+
+The unchanged circuit now has five passing boundary points, including
+the retained source. Seven points remain; this endpoint does not supply
+stopped-high, SS40, shared-wire, all-PVT or whole-clock admission.

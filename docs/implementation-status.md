@@ -146,6 +146,29 @@ pulse counts and slew pass; the original 20 ps period/history gates still
 fail. Stronger pull-up helps recovery but this intervention remains
 rejected, with every startup event included. No bank admission follows.
 
+The next recovery intervention keeps N16 and strengthens only the loaded
+driver's pull-up to P40. Actual native finger inspection v338 and full
+P40/N16 layout v339 pass: zero DRC, strict unique LVS, 40 regular PFET
+fingers of 1 um and 16 regular NFET fingers of 0.65 um, all L=0.15 um,
+plus the original-size 2x2 output MIM. Fresh actual-GDS local RC v340
+passes at `recovery_fine_driver_rc_v340/be4316b0effe7c22`: 1707 raw
+resistors/805 parasitic capacitors, 1664 reduced resistors and 155
+eliminated algebraic nodes, preserved native parameters/topology and
+independent current error at most 2.665e-14 A. Six targeted CAD tests
+pass without skips; four also execute under the science interpreter,
+with two explicit CAD skips.
+
+`probe_loaded_pullup_recovery_v341.py` implements a single 433-MOS
+recorded-input intervention, retaining all 377 non-loaded MOS maps,
+31 fine cells, 62 controls, 93 programming gates, final P20/N16 stage
+and every original waveform point. Complete P20/P24 metrics, baseline
+parity and the independent P24 replay gate its preparation. Four
+science tests pass with no skips. Exact top-level pin calls and the
+1 mOhm boundary are checked separately from internal RC MOS names.
+This candidate has no native transient result yet. Upstream loading,
+zero-code quarter latency and the existing fine/coarse range failures
+remain required; stronger pull-up is not a range repair or bank admission.
+
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.
 All other point gates pass. Full replay
@@ -243,7 +266,12 @@ also passes every component point gate with the same 358.889535 ps
 minimum low window and 1.914712731 V peak stress. Full replay
 `large_shunt_counter_boundary_replay/20261107T073309Z` reproduces all
 808-MOS metrics and exact limiting samples. Four of twelve points are
-now complete, including the retained source. The remaining eight new points continue
+now complete, including the retained source. Case 4, SS0/410 MHz/60%
+duty stopped low, also passes every component point gate: minimum
+remaining window 136.893239 ps and peak terminal stress 1.909668330 V.
+Full replay `large_shunt_counter_boundary_replay/20261107T074340Z`
+reproduces every 808-MOS metric and exact limiting sample. Five of twelve
+points are now complete. The remaining seven new points continue
 under the unchanged six-slot dispatcher.
 The remaining boundaries, actual integrated counter geometry, new shared RC and
 full clock/PVT/PHY qualification remain required. The old v317 60%
