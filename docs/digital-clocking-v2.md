@@ -14672,3 +14672,64 @@ restarting the old run. Retained helper:
 `build/run-output-shunt-v332-after-v331-20261107.py`; log:
 `build/request-taper-output-shunt-v332.log`. The new point remains pending;
 coordinator startup or input preparation supplies no electrical pass.
+
+
+### Recorded-input fine-stage recovery experiment (v333)
+
+The native MIM and MOS-capacitor traces both retain substantial recovery
+state and loaded-stage history. Before introducing another complete bank
+variant, `probe_loaded_fine_recovery_v333.py` isolates the loaded stage
+behind the actual v322 selected-node waveform. It keeps the exact 95
+fine-path instance calls: 31 native control buffers, 31 control inverters,
+31 five-MOS fine cells, the loaded P20/N16 inverter and the final P20/N16
+inverter. The baseline has **413 native MOS**, with every retained true
+terminal map unchanged from the completed 1365-MOS parent. Original
+component definitions and their internal RC remain unchanged. An explicit
+1 mOhm diagnostic boundary connects the internal selected node to a PWL
+source containing **every original adaptive sample from 0 through 25 ns**.
+There is no time shift, voltage clipping, downsampling or startup trimming.
+
+The original full eight-cycle SS40/410 MHz/60% clock stimulus, external
+programming sources, 20 fF load, integration settings and full 25 ns stop
+are retained. All 62 fine control nodes and 93 programming-gate proxies
+remain observed, along with every actual native MOS terminal. Timing,
+terminal-stress and control limits retain their original definitions.
+Baseline parity independently compares all eight rising/falling events
+at the input, selected node, fine node and output, plus the full retained
+native voltage trajectories at every original source sample. Numerical
+parity limits are **0.25 ps crossing error / 2 mV voltage error**; these
+are additional diagnostic-equivalence gates, not relaxed clock limits.
+
+Only a baseline with successful waveform parity and native safety,
+control and pulse checks can launch the second experiment. It replaces
+only the loaded inverter with the already physically/RC-qualified
+P24/N16 master from `discharge_fine_driver_rc_v219/7a09244f3f729a64`.
+The final inverter, all 31 fine cells and control circuits remain unchanged;
+the P24 branch has **417 native MOS**. A failed/missing baseline blocks
+the driver run and is retained, rather than restarting or fitting an offset.
+Both branches record signed loaded/final-stage delays and the fine-node
+state at every original source edge. All startup events remain included.
+
+This experiment intentionally fixes the selected-node waveform. It cannot
+measure the stronger driver's input-loading penalty on the mux, new
+zero-code quarter delay, common fine/coarse overlap or routed-bank timing.
+Any useful local recovery change must return to the complete native bank
+with all original gates and actual new shared RC. Neither branch can
+admit the bank, DLL or PHY. The separate common-range failure remains
+mandatory to repair; this diagnostic addresses the recovery mechanism.
+
+Six targeted tests pass in 0.159 s, with no skips. They check all native
+maps/components, the one-driver change, all-sample PWL serialization,
+original fixture/probe retention, rejection of missing cells/shared
+passives, and blocking after failed baseline parity/safety. Log:
+`build/loaded-fine-recovery-v333-final-tests.log`; implementation commit:
+`99c006c`. Preparation unit `openlvds-loaded-fine-recovery-prepare-v333`,
+invocation `9063924042064518b9addb21eb4227c2`, validates the naturally
+complete parent and qualified native driver materials. Sequential unit
+`openlvds-loaded-fine-recovery-v333`, invocation
+`71d5fb4366cb49348ae5894e397e2aea`, waits for successful preparation and
+uses the container-relative artifact path. Logs:
+`build/loaded-fine-recovery-prepare-v333.log` and
+`build/loaded-fine-recovery-v333.log`. It uses one worker, priority 1,
+under the unchanged global six-lease dispatcher. Native results remain
+pending; no new circuit geometry or electrical admission is claimed.

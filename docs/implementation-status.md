@@ -102,6 +102,22 @@ recovery with MIM cells as well; it does not isolate transistor causality
 or admit a calibration-conditioning architecture. Remaining original
 MIM cases continue unchanged; this candidate already has two failed points.
 
+The next recovery experiment is implemented in
+`probe_loaded_fine_recovery_v333.py`. It retains all 31 fine cells and
+native control buffers/inverters, the loaded inverter and final inverter:
+413 MOS with unchanged terminal maps. Every recorded selected-node point
+from the completed v322 fine31/60% trace is replayed through an explicit
+1 mOhm diagnostic boundary. Baseline comparison includes all eight events
+and all retained native terminal voltages; it must agree within 0.25 ps
+and 2 mV and pass native safety/control/pulse checks before the qualified
+P24/N16 loaded-driver experiment may run. The P24 branch has 417 MOS;
+all other retained components and the full 25 ns stimulus stay unchanged.
+Six targeted tests pass. Preparation and a sequential run coordinator are
+live, using one worker under the same six leases. This omits upstream
+loading and therefore cannot qualify quarter delay, fine/coarse range or
+the full bank, even if local history improves. No native result is yet
+available from this diagnostic.
+
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.
 All other point gates pass. Full replay
