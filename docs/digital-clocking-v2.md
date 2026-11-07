@@ -14273,3 +14273,76 @@ geometry, joint RC, DLL or PHY qualification. The known bank timing
 failures remain retained, and the v330 40% startup-stress point remains
 required before actual counter routing. Running native experiments,
 frozen producers, original evidence and all limits remain unchanged.
+
+### Fine-cell state recovery and calibration operating-state concern
+
+Read-only receipt
+`two_stage_fine_recovery/20261107T043907Z` extends the complete v322
+fine31/60% replay. It observes every actual native MOS-capacitor gate,
+pass-gate connection and programming gate in **all 31 enabled fine
+cells**, at all eight original source events. It reproduces every
+original point metric and exactly reproduces the separately retained
+signed loaded-stage delays. No sample, circuit, threshold or source
+waveform changes.
+
+The rising samples are fixed at the source input's 10% crossing. At
+each sample, selected is still below 0.18 V, so the fine inverter's
+input transition has not arrived. The corresponding voltages are:
+
+| Native node | Cycle 1 (V) | Cycle 2 (V) | Cycle 8 (V) |
+| --- | ---: | ---: | ---: |
+| fine_node | 1.801288 | 1.547003 | 1.546885 |
+| PMOS capacitor gate, mean over 31 cells | 1.800287 | 1.328410 | 1.328091 |
+| NMOS capacitor gate, mean over 31 cells | 1.800282 | 1.327825 | 1.327506 |
+| NODE at native NMOS pass terminal | 1.801284 | 1.546962 | 1.546844 |
+| CAP at native NMOS pass terminal | 1.800291 | 1.328976 | 1.328658 |
+
+All 31 cells have identical sampled values at stored precision in this
+component-RC/ideal-shared-wire fixture. This is not a physical mismatch
+or PVT-spread result. At the eighth rising sample, the actual programmed
+EN/ENB gates are 1.806817/0.004079 V; the original programming-control
+checks pass. Low-state snapshots at the source's falling 90% crossing
+are near ground: fine_node is 0.007680 V in cycle 1 and 0.004883 V in
+cycle 8, and capacitor gates are about 0.0127 V and 0.0081 V. At those
+samples selected remains above 1.62 V. The source event definitions and
+both transition directions are retained in the receipt.
+
+After the first cycle, the measured interval from the preceding
+fine_node 0.9 V rising crossing to the next source 10% rising crossing
+is 445.925--446.133 ps. The loaded-stage first-minus-last rising-event
+delay remains **61.846054 ps**. These are state and crossing observations,
+not a capacitor-charge integral or an isolated-transistor causal model.
+They identify different initial/periodic operating states that a
+calibration implementation must account for.
+
+The current `openlvds_tag_launch_v2.v` explicitly enables one isolated
+raw-reference pulse per path. `openlvds_phase_trial_v2.v` arms its
+single-event observers before launch and waits `SETTLE_CYCLES` after
+launch; that wait covers event/arbiter/CDC settling, not periodic bank
+preconditioning. The configuration's `raw_settled` acknowledgement also
+does not itself provide a waveform conditioning mechanism.
+
+**Inference to verify natively:** an isolated-pulse calibration may
+measure a different bank state from periodic payload clocks. The
+observed first/steady difference is large enough that this cannot be
+assumed away by switch settling or the later DCC/payload warmup. This
+does not establish a measured full-chain calibration error: the actual
+isolated launcher, conditioning, detector and delivered chain still
+need coupled native proof.
+
+Evaluate a hardware-counted conditioning burst followed by tagged
+output-edge capture, or another architecture that explicitly matches
+the periodic operating state. Such a change must retain all startup
+edges, enforce observer epochs and exact pulse counts, prove voltage
+safety throughout, and characterize capture/settling at every required
+code/clock/PVT point. Software window trimming or subtracting a fitted
+timing offset supplies no such proof. The existing static-periodic
+failures and all original timing gates remain retained and unqualified.
+No new architecture is admitted by this analysis.
+
+The retained helper is
+`build/analyze-two-stage-fine-recovery-20261107.py`. Unit
+`openlvds-two-stage-fine-recovery-native-analysis`, invocation
+`33e58cd877224bf0acf063c862da45ed`, exits zero; log:
+`build/two-stage-fine-recovery-native-analysis.log`. Existing bank and
+counter experiments continue unchanged.

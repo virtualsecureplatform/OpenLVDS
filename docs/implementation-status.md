@@ -42,6 +42,17 @@ every metric and locates +61.846 ps of the +62.182 ps first-to-last rising
 delay change across the loaded fine inverter. The 40% fine endpoint,
 coarse overlap and later qualification remain open; the zero-code pass
 does not admit this candidate or resolve loaded fine-stage history.
+Read-only recovery analysis now samples all 31 enabled fine cells at all
+eight fixed source events. At the source's rising 10% crossing, before
+the selected-node transition, fine_node is 1.801288 V in cycle 1 but
+1.546885 V in cycle 8; the PMOS/NMOS capacitor gates change from about
+1.80028 V to 1.32809/1.32751 V. The complete trace and 61.846 ps loaded-stage
+history reproduce at `two_stage_fine_recovery/20261107T043907Z`.
+The current RTL launches isolated pulses and waits after launch; it does
+not periodically precondition the bank. Matching calibration and payload
+operating state therefore needs native proof before admission. A physically
+counted conditioning burst with tagged capture is a candidate architecture
+to evaluate, with all startup events retained; no gate is waived here.
 
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.
