@@ -65,8 +65,11 @@ independent full native replay and parity: **0.037923 ps** maximum crossing
 error and **0.725312 mV** maximum terminal-voltage error. Voltage, control
 and pulse checks pass; the original timing-history failure is reproduced.
 The stronger branch has been released under the unchanged one-worker,
-priority-2/six-lease limits. Its result is pending. Full-bank loading,
-quarter headroom and range remain required after any local recovery pass.
+priority-2/six-lease limits. Its saved live prefix now contains eight
+paired events per polarity: rising-delay span improves to **15.528 ps**,
+while pre-driver rising latency increases about **62 ps**. Complete native
+results remain pending. Full-bank loading, quarter headroom and range
+remain required after any local recovery pass.
 
 The zero-code bank is still advancing slowly before its first edge. The isolated-cell
 diagnostic v353 tests all four static decoder input states and both logic
@@ -78,7 +81,7 @@ decoder stack node alone does not reproduce the bank slowdown. These
 200 ps static traces cannot qualify bank timing. Artifact:
 `bank_static_cells_v353/bcddf749044d0786`.
 
-A separate diagnostic ngspice observer v356 is building from the pinned
+A separate diagnostic ngspice observer v356 now builds successfully from the pinned
 version-42 source. All added logging regions are removable to recover
 the original numerical source exactly, including iteration/step rules.
 This is preparation for identifying convergence versus truncation costs;
@@ -87,8 +90,8 @@ campaigns continue with the pinned production engine. An unmodified-data
 reference v357 captures the first 200 ps of the original zero-code run:
 **1431 records × 6855 vectors**, with **0.000488 ps** minimum accepted step.
 The copied point-count header is normalized and original header/payload
-hashes are retained. Build completion and observer waveform comparisons
-remain pending; neither artifact qualifies bank timing.
+hashes are retained. The logging-off/on observer comparisons are queued
+under the unchanged six leases; neither artifact qualifies bank timing.
 
 New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357 all pass: **43 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,

@@ -16226,3 +16226,41 @@ after the separate build completes. It retains all native vectors,
 uses one priority-2 worker under the existing six leases, reports both
 voltage and step statistics, and makes no automatic bank admission or
 claim that the original slowdown's cause is proven. It has not run yet.
+
+
+### Completed observer build and observed pull-up improvement
+
+V356 finishes compilation successfully and writes its executable/source
+proof in the artifact above. The production runtime descriptor remains
+unchanged. Host coordinator
+`build/run-observer-after-build-v358-20261107.py` binds the original build
+process identity and releases the prepared two-prefix diagnostic only
+after its complete build summary appears. Unit:
+`openlvds-step-observer-prefix-after-build-v358`, invocation
+`485e8a08a2e14484a827e1e176715e72`; log:
+`build/step-observer-prefix-after-build-v358.log`. Prepared diagnostic:
+`build/reports/step_observer_prefix_diagnostic/20261107T130431Z`.
+Its logging-off run is queued at priority 2 under the unchanged six
+leases; voltage comparisons, event counters and cause attribution remain
+pending. Merely completing compilation does not establish numerical
+equivalence or permit this executable to replace qualification jobs.
+
+V355's stronger-pull-up engine remains live. Retained selected-vector
+prefix `restored_recovery_prefix_stages/20261107T130924Z` includes all
+eight paired rising and falling events. Rising delays are **839.981 ps**
+initially and approximately **824.454 ps** later, a **15.528 ps** span;
+falling delays span approximately **0.037 ps**. The local history trend
+improves from the matched baseline's **52.174 ps** span.
+
+The same prefix measures the loading cost retained by this experiment:
+pre-driver rising delay grows from roughly **178–181 ps** to **241–243 ps**,
+and falling delay from roughly **201 ps** to **241 ps**. Thus stronger
+fine pull-up changes both recovery and latency. Original selected-node
+drive is still a fixed diagnostic boundary; a successful complete local
+point would require the complete bank's zero/quarter, fine40, coarse-range
+and actual input-loading checks. Full 25 ns native safety and timing
+results are still pending, and the original full run continues.
+Frozen capture helper:
+`build/capture-restored-recovery-prefix-stages-v355-20261107.py`; log:
+`build/restored-recovery-pullup-prefix-stages-v355.log`. This prefix cannot
+admit the recovery circuit or a complete bank.
