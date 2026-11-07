@@ -14627,3 +14627,48 @@ leases. Eleven targeted v330/v331/v332 tests pass in 0.486 s without
 skips; log: `build/request-taper-output-shunt-v332-tests.log`. Added MIM
 geometry and shared-wire RC remain unqualified even if the native point
 passes. No voltage sweep or qualification threshold changes are introduced.
+
+
+### Two-stage bank completes all four points and fails common range
+
+The original v322 coarse1/fine0 SS40/410 MHz/50% case passes all
+individual point gates. Rising delay is 801.915080--811.332560 ps,
+falling delay 663.758623--664.589758 ps, maximum slew 115.918536 ps
+and maximum period error 9.412155 ps. Full replay
+`two_stage_bank_native_replay/20261107T055002Z` reproduces every
+original metric for 1365 MOS and 173 programming gates; signed stage
+and first-to-last history sums have zero residual on both edge types.
+Unit `openlvds-two-stage-coarse-native-replay`, invocation
+`599769b96e0943608ba8e88a221c9223`, exits zero; log:
+`build/two-stage-coarse-native-replay.log`.
+
+The complete four-case campaign has zero errors, final full input
+validation passes, and its original coordinator exits zero. Its aggregate
+rejects the hypothesis: conservative fine/coarse overlap is
+**-197.347718 ps rising / -107.859465 ps falling**. The 60% fine-history
+failure remains. Zero-code quarter headroom +38.637 ps, the passing
+40% endpoint, and the passing coarse point do not remove either failure.
+Both common code range and periodic recovery need repair in the next
+architecture; no current bank candidate is admitted.
+
+Coverage receipt `two_stage_bank_coverage/20261107T055202Z` binds all
+four independently reproduced native cases, verifies their captured
+inputs, and reproduces the complete campaign aggregate with the unchanged
+producer comparison function. Read-only helper
+`build/summarize-two-stage-bank-coverage-20261107.py`, unit
+`openlvds-two-stage-bank-coverage-native-replay`, invocation
+`60a0234a722241fa9fea7da2b81d7804`, exits zero. Log:
+`build/two-stage-bank-coverage-native-replay.log`. Dense/common-code,
+new shared RC, other PVT, DLL/PHY and physical qualification remain open.
+
+The separate v331 counter-shunt source also completes its final full
+input validation and exits zero with one case, zero numerical errors
+and its retained failed terminal screen. The v332 sequential coordinator
+`openlvds-request-taper-output-shunt-v332`, invocation
+`465df0b7c7e54a2f94768e3d1fc0df7e`, verifies that terminal state and
+starts immutable 5x5-shunt preparation. It uses container-relative
+artifact paths and the existing native producer/dispatcher, without
+restarting the old run. Retained helper:
+`build/run-output-shunt-v332-after-v331-20261107.py`; log:
+`build/request-taper-output-shunt-v332.log`. The new point remains pending;
+coordinator startup or input preparation supplies no electrical pass.

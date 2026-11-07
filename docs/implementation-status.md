@@ -40,8 +40,9 @@ span 62.182 ps, despite passing voltage, controls, pulses and 150.144 ps
 slew. Full replay `two_stage_bank_native_replay/20261107T035323Z` reproduces
 every metric and locates +61.846 ps of the +62.182 ps first-to-last rising
 delay change across the loaded fine inverter. The 40% fine endpoint now
-passes all original point gates; coarse overlap and later qualification
-remain open. The zero-code pass
+passes all original point gates. Its coarse point also passes individually,
+but complete four-point coverage fails rising/falling fine/coarse overlap
+at -197.348/-107.859 ps. The zero-code pass
 does not admit this candidate or resolve loaded fine-stage history.
 Read-only recovery analysis now samples all 31 enabled fine cells at all
 eight fixed source events. At the source's rising 10% crossing, before
@@ -67,6 +68,15 @@ versus about 445.93 ps at 60%. Loaded-stage rising history is 5.623 ps
 at 40%, versus 61.846 ps at 60%. This same-circuit duty comparison
 supports recovery-state dependence; it does not isolate device causality
 or establish a full-chain calibration error. The 60% failure remains.
+The v322 campaign is now terminal complete, four cases and zero errors,
+with final input validation and coordinator exit zero. Full coarse replay
+`two_stage_bank_native_replay/20261107T055002Z` reproduces every original
+1365-MOS/173-control metric and signed stage/history sum with zero
+residual. Its individual rise/fall delays are 801.915--811.333 ps and
+663.759--664.590 ps, maximum slew 115.919 ps and period error 9.412 ps.
+Receipt `two_stage_bank_coverage/20261107T055202Z` binds all four full
+native replays and reproduces the stored native aggregate. Range overlap
+and history both require repair; depth reduction alone is rejected.
 
 The MIM-only v321 2x2 zero-code point also completes and fails quarter
 headroom at -45.665 ps, while its other point gates pass. Independent
