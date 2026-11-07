@@ -13002,3 +13002,40 @@ now been acquired, rather than assuming a smaller post-fine restorer
 improves zero-code latency. No prediction for unmeasured zero/coarse
 codes is made. All remaining v310/v315 runs and failed sizing evidence
 are retained; the overall PHY remains unqualified.
+
+### Retained MIM fine-cell RC qualification (v320, 2026-11-07)
+
+The completed regular-bank pilot has insufficient fine/coarse overlap, so
+the retained MIM fine-cell alternative now has current component RC proofs.
+`scripts/qualify_retained_mim_fine_rc_v320.py` checks the exact original
+2x2 and 2x3 GDS-derived models and independent legacy receipts, retains all
+old bytes, and adds strict native parameter/topology checks, elementwise
+passivity, regenerated exact reduction and an independent Schur
+terminal-current witness. It performs no new extraction or bank substitution.
+
+Context `retained_mim_fine_rc_v320/ddf3c29ce3fc44da` passes both components,
+binding 76 repository inputs and two external PDK/setup files. Each retains
+three MOS and two intentional MIM devices, the exact five public ports,
+all native dimensions and supplied junction parameters. Both strict native
+LVS checks pass. The four clamped-terminal DC witnesses give maximum current
+errors of 2.487e-14 A (2x2) and 3.952e-14 A (2x3), within the unchanged
+1e-9 A absolute / 1e-8 relative tolerances; capacitor/device/port invariants
+also pass. These witnesses are component RC proofs, not transient equivalence
+or bank timing admission. The original component DRC/LVS receipts remain
+unchanged; no fresh geometry or extraction is claimed.
+
+The first launch failed during import, before creating a context, because
+a convenience helper imported NumPy into the CAD interpreter. Its log
+`build/retained-mim-fine-rc-v320.log` is retained. Removing that unnecessary
+dependency before any source capture allowed the CAD-only qualification to
+complete as `openlvds-retained-mim-fine-rc-cad-v320`, invocation
+`7ca2ab5a383042b58f3c20c180c53b09`, exit zero. Successful log:
+`build/retained-mim-fine-rc-cad-v320.log`.
+
+A subsequent retention check verifies the prepared binding, refuses an
+attempt to execute the existing complete context, then verifies every
+context file and original input remains unchanged. Log:
+`build/retained-mim-fine-rc-v320-retention-check.log`. Both current models
+remain unavailable for bank admission until a new controlled bank pilot
+passes zero delay, both duty endpoints and coarse overlap, followed by
+fresh bank physical/RC, dense/update and full PVT/clock checks.
