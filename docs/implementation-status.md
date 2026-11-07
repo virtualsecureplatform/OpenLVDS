@@ -39,8 +39,9 @@ fails period/history: maximum period error 62.131 ps and rising history
 span 62.182 ps, despite passing voltage, controls, pulses and 150.144 ps
 slew. Full replay `two_stage_bank_native_replay/20261107T035323Z` reproduces
 every metric and locates +61.846 ps of the +62.182 ps first-to-last rising
-delay change across the loaded fine inverter. The 40% fine endpoint,
-coarse overlap and later qualification remain open; the zero-code pass
+delay change across the loaded fine inverter. The 40% fine endpoint now
+passes all original point gates; coarse overlap and later qualification
+remain open. The zero-code pass
 does not admit this candidate or resolve loaded fine-stage history.
 Read-only recovery analysis now samples all 31 enabled fine cells at all
 eight fixed source events. At the source's rising 10% crossing, before
@@ -53,6 +54,19 @@ not periodically precondition the bank. Matching calibration and payload
 operating state therefore needs native proof before admission. A physically
 counted conditioning burst with tagged capture is a candidate architecture
 to evaluate, with all startup events retained; no gate is waived here.
+
+The matching 40% fine31 replay at
+`two_stage_bank_native_replay/20261107T045805Z` reproduces every original
+1365-MOS/173-control metric: maximum period error 3.837 ps, rising/falling
+history spans 3.860/0.570 ps and maximum slew 147.878 ps. Matching recovery
+analysis `two_stage_fine_recovery/20261107T050033Z` samples all 31 cells
+and eight source events. At the eighth source rising 10% crossing,
+fine_node is 1.754257 V and capacitor gates are 1.726593/1.726468 V.
+The preceding fine_node half-supply rise is about 968.63 ps earlier,
+versus about 445.93 ps at 60%. Loaded-stage rising history is 5.623 ps
+at 40%, versus 61.846 ps at 60%. This same-circuit duty comparison
+supports recovery-state dependence; it does not isolate device causality
+or establish a full-chain calibration error. The 60% failure remains.
 
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.
@@ -224,14 +238,13 @@ Its fine31/60% case also completes and fails period/history at 47.460 ps,
 despite passing all eight pulses, voltage, controls and 135.179 ps slew.
 Full replay `preconditioned_bank_stage_replay/20261107T020053Z` reproduces
 every metric and locates 43.530 ps of the 47.455 ps first-to-last rising-event
-change across the loaded fine inverter. Remaining cases continue; both
-completed failures prevent admission.
+change across the loaded fine inverter. Both failures prevent admission.
 The same bank's fine31/40% point now passes all original point gates.
 Full replay `preconditioned_bank_stage_replay/20261107T033230Z` reproduces
 all 1511-MOS metrics: maximum period error 6.275 ps, rising/falling
 history spans 6.279/0.144 ps, maximum slew 135.179 ps, and peak terminal
-difference 1.876381 V. The coarse point remains open; this passing endpoint
-does not remove the zero-code or 60% failures.
+difference 1.876381 V. This passing endpoint does not remove the zero-code
+or 60% failures.
 The coarse point now also completes and passes its individual checks;
 full replay `preconditioned_bank_stage_replay/20261107T045814Z` reproduces
 every native metric and signed stage history. The v315 campaign is

@@ -14371,3 +14371,38 @@ failure remain; passing 40% and coarse point checks do not remove them.
 All four traces and independent stage replays are retained. No new
 geometry, shared RC, PVT or PHY admission follows from this completed
 failed family.
+
+
+### Matching 40% fine-cell recovery comparison (2026-11-07)
+
+The completed v322 fine31/40% point passes every original point gate.
+Full replay `two_stage_bank_native_replay/20261107T045805Z` reproduces
+all 1365 native MOS and 173 programming-gate metrics. Rising delay is
+672.307227--676.167277 ps, falling delay 556.730293--557.299983 ps,
+maximum slew 147.878182 ps and maximum period error 3.836662 ps.
+Signed rising first-minus-last stage differences are -0.532099 ps at
+the mux, +5.623344 ps across the loaded fine inverter and -1.231935 ps
+at the final inverter, summing to +3.859309 ps with zero residual.
+
+Matching receipt `two_stage_fine_recovery/20261107T050033Z` samples all
+31 enabled fine cells at all eight original source events and reproduces
+the full original metrics and signed loaded-stage array. At the source
+10% rising crossing, before the selected-node transition, fine_node is
+1.801288 V initially and 1.754257 V at event eight; corresponding PMOS
+and NMOS capacitor gates are initially about 1.80028 V and finally
+1.726593/1.726468 V. The prior fine_node half-supply rising crossing
+precedes the next source event by about 968.63 ps after startup.
+
+At 60%, the unchanged circuit instead has about 445.93 ps recovery,
+1.546885 V fine_node, 1.328091/1.327506 V capacitor gates and 61.846054 ps
+loaded-stage rising history. This comparison supports duty-dependent
+recovery state as a repair target. It is not an isolated-device causal
+experiment or coupled full-chain calibration measurement. All startup
+cycles and the failed 60% result remain included; no admission follows.
+
+Read-only helper `build/analyze-two-stage-fine-recovery-forty-20261107.py`,
+unit `openlvds-two-stage-fine-forty-recovery-native-analysis`, invocation
+`f111b9349033482da9d54e71193afeca`, exits zero. The matching full replay
+unit `openlvds-two-stage-fine-forty-native-replay`, invocation
+`2ccb572a1d124b89a71a75c569e28b8e`, also exits zero. Both logs remain in
+build with their unit names. No captured producer or native fixture changes.
