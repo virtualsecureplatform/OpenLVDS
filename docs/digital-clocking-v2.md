@@ -16449,3 +16449,45 @@ preserved. This is not a production-engine change or PHY admission.
 Both new campaigns remain running/queued at this checkpoint; no healthy
 simulation was stopped. Clock coverage remains 390/400/410 MHz at
 40/50/60% duty, fixed supplies and 0/25/40 °C, without a voltage sweep.
+
+### Completed observer replay and the next counter PVT batch
+
+The v358 observer producer is now terminal with two complete, error-free
+branches. New read-only helper `scripts/replay_completed_step_observer_v363.py`
+reproduces all original step statistics and all-vector reference errors,
+verifies exact equality of logging-off/on saved vectors and time grids,
+and analyzes the actual `ngspice.log` using the tested v361 parser.
+It preserves the original producer, including its empty console-log event
+counts. Receipt:
+`completed_step_observer_replay_v363/20261107T144648Z`. A separate full
+rehash confirms all **1196** original manifest input files unchanged,
+including container-only PDK/tool paths.
+
+Both branches have 1429 records ending at 200 ps, 319 steps below 0.01 ps,
+and maximum reference voltage error 5.409006575973763e-13 V across 6854
+voltage vectors. The complete logging-on interval records 458 paired
+positive-time Newton iteration-limit/rejected-step events, 1428 Newton
+successes and 1427 truncation decisions. Every limit has iteration 101,
+status 103, last node `vdd#branch`, no device and model flag zero. There
+are no charge-truncation cuts or truncation rejections and no logging cap.
+The operating-point event is excluded. Cached trouble fields still need
+the controlled v362 numerical experiment; no active timing or PHY verdict
+follows from a quiet 200 ps prefix.
+
+The existing frozen v354 replay helper independently reproduces complete
+original 808-MOS actual-shared-RC measurements and exact limiting terminal
+samples for new simulation IDs **14, 15, 16, 17, 24**. Receipt:
+`routed_counter_pvt_native_replay/20261107T144650Z`.
+
+| IDs | Process / temperature | Clock / duty | Stopped levels | Smallest remaining low window |
+| --- | --- | --- | --- | --- |
+| 14, 15 | SS / 40 °C | 400 MHz / 40% | High, low | 442.895 ps |
+| 16, 17 | SS / 40 °C | 400 MHz / 50% | High, low | 399.276 ps |
+| 24 | SS / 0 °C | 390 MHz / 60% | High | 202.988 ps |
+
+All original component gates pass. Maximum native terminal difference in
+this batch is 1.9138134325736127 V. An initial replay invocation included
+IDs 18–23 and correctly rejected them because they are retained pilot
+cases, not new simulations; the corrected explicit batch above completed.
+No producer result was changed. Full counter PVT coverage, delay-bank
+timing, common codes, routed integration and full-link gates remain open.

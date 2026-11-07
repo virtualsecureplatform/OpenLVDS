@@ -107,6 +107,14 @@ failures and rejected steps, all naming `vdd#branch`, with zero device-model
 nonconvergence flags and no charge-truncation cuts. The last-failure fields
 are cached, so a controlled experiment is still required.
 
+The observer now completes both branches. Independent full native replay
+v363 reproduces all original step/parity metrics and confirms identical
+logging-on/off saved vectors and time grids. The complete **200 ps** log
+has **458** positive-time iteration-limit rejections, still all naming
+`vdd#branch`, with zero model flags and no charge-truncation cuts. All
+**1196** original context-file hashes independently match. Receipt:
+`completed_step_observer_replay_v363/20261107T144648Z`.
+
 Diagnostic v362 adds only an external **1 mA** load across the ideal fixed
 1.8 V bench supply. This translates the ideal supply-source current and
 its relative convergence norm; it leaves circuit voltage constraints and
@@ -117,6 +125,16 @@ under the same leases. Quiet production and observer parity precede a
 gated active-waveform comparison against the original failing fine60
 case. The original timing failure must remain reproduced. These checks
 do not qualify bank timing or change the production engine.
+
+Five additional actual-shared-RC counter PVT points (IDs 14–17 and 24)
+now independently reproduce every original native metric and limiting
+terminal sample. They cover SS40/400 MHz at 40/50% duty and
+SS0/390 MHz at 60%, including both stopped levels for IDs 14–17.
+All component gates pass; the smallest remaining low window in this batch
+is **202.988 ps**, and the largest terminal difference is **1.913813 V**.
+Receipt: `routed_counter_pvt_native_replay/20261107T144650Z`. Retained
+pilot IDs 18–23 are not new simulations. The 270-point campaign continues;
+this batch does not establish all-PVT or integrated clock qualification.
 
 New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359/v360/v361/v362 all pass: **62 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
