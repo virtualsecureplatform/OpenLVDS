@@ -13087,3 +13087,47 @@ voltage clipping, timing exclusions or a changed REQUEST slew.
 This first point is not an all-corner repair verdict. The stopped-high
 SS0 and both SS40 cases remain required, followed by actual whole-counter
 layout/shared RC and the complete clock/PVT/DCC qualification chain.
+
+### Controlled MIM fine-bank implementation (v321)
+
+`scripts/probe_mim_isolated_fine_bank_v321.py` implements the retained MIM
+alternative as a controlled replacement of only the 31 MOSCAP fine cells
+behind the original regular bank's P20/N16 isolation driver. The two
+variants use the exact 2x2/2x3 native RC models qualified by v320. Coarse
+tree, group regeneration, isolation and both output restorers remain
+byte-preserved. The existing unused 2x3 definition is reused only if it
+matches the qualified model exactly; duplicate or changed definitions
+are rejected. No capacitance is scaled or substituted by an ideal load.
+
+Each bank contains **1467 native MOS and 74 MIM devices**: the previous
+five-MOS/one-MIM fine unit becomes three MOS/two MIM, removing 62 MOS
+and adding 31 MIM devices across the 31 cells. Every non-fine native
+terminal map remains unchanged. Observation mapping explicitly replaces
+the 93 old fine programming-gate records with all 93 actual R-separated
+MIM switch gates, retaining **173 programming gates and 86 logical
+controls** overall. Every native MOS terminal remains saved and checked.
+
+The eight cases cover both variants at SS/40 C, 410 MHz, zero/50%,
+fine31/60%, fine31/40% and coarse1/50%. They retain the full eight startup
+cycles, original 25 ns fixture, 100 ps input, 20 fF output, 1.8 V, Gear
+and original tolerances. Zero-quarter headroom, both duty endpoints,
+unwrapped positive delays, pulse integrity, 20 ps period/history,
+250 ps slew, actual controls and native stress all remain required.
+Conservative overlap must be positive on both edges within each variant.
+
+Preparation requires the complete original four-case range failure and
+remeasures every original native result, plus the exact complete v320
+proofs. Full historical evidence is hashed before/after the run. Each
+lease checks every captured input except historical diagnostic raw traces,
+which are not new DUT inputs. One priority-1 worker uses the unchanged
+six-engine dispatcher. Existing or partial contexts cannot be restarted.
+Shared inter-cell wires remain ideal; a pilot pass would still require
+fresh whole-bank physical/RC, dense/update and complete PVT/clock proof.
+
+All **six targeted tests pass without skips in 5.243 s**, using the pinned
+science interpreter. They exercise both actual extracted assemblies,
+non-fine preservation, every programming/terminal observation, exact
+original fixtures, rejected wiring/namespace/coverage changes, per-variant
+admission failures, and the actual qualified MIM inputs. Log:
+`build/mim-isolated-fine-bank-v321-tests.log`. These are implementation
+checks; no new MIM-bank transient verdict exists yet.
