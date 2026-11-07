@@ -14497,3 +14497,33 @@ under unit `openlvds-request-taper-output-shunt-native-v331`, invocation
 `build/request-taper-output-shunt-native-v331.log`. The producer retains
 its original full input validation and existing dispatcher lease; no circuit,
 input checks, old simulation or captured artifact is changed.
+
+
+### All four P6 points complete; falling code overlap still fails
+
+The v310 P6 coarse1/fine0 point completes at SS40/410 MHz/50% and passes
+its individual gates. Rising delay is 833.922428--836.823421 ps, falling
+delay 935.657269--935.674026 ps, maximum slew 106.175600 ps and maximum
+period error 2.900902 ps. Full replay
+`tapered_bank_stage_replay/20261107T051839Z` reproduces every original
+native metric for 1503 MOS and 173 programming gates, with zero residual
+in signed stage/history sums on both edge types. Unit
+`openlvds-tapered-coarse-native-stage-v310`, invocation
+`e2a57972b6a64f3f9e75dcebf7817322`, exits zero; log:
+`build/tapered-coarse-native-stage-v310.log`.
+
+Coverage receipt `tapered_p6_coverage/20261107T051953Z` binds the four
+completed P6 cases and all four independent full native replays,
+rechecks their captured inputs, and reproduces the original conservative
+fine/coarse overlap formula using all eight rising/falling events.
+Overlap is **+7.029488 ps rising / -66.042575 ps falling**. Together
+with the retained **-135.749132 ps** zero-code headroom, this rejects
+the P6 component hypothesis despite the individual fine/coarse passes.
+No event, duty endpoint or timing gate is removed. The P10 cases remain
+pending; the complete eight-case campaign is not claimed finished.
+
+Read-only helper `build/summarize-tapered-p6-coverage-20261107.py`, unit
+`openlvds-tapered-p6-coverage-native-replay`, invocation
+`3f360b4e9aef4b40a9ecdefefeee1a0c`, exits zero. Log:
+`build/tapered-p6-coverage-native-replay.log`. These are component RC with
+ideal new shared wires, not dense/common-code, routed/PVT/DLL/PHY proof.

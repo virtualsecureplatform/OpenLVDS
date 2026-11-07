@@ -85,7 +85,15 @@ All other point gates pass. Full replay
 Rising delay is 655.262--659.179 ps and falling delay 745.485--745.505 ps;
 maximum slew is 106.162 ps and period error 3.917 ps. Signed stage and
 history sums have zero residual. Its passing fine endpoints do not admit
-this sizing variant; the original remaining P6/P10 cases continue unchanged.
+this sizing variant. Its coarse point now passes individual gates, but
+full four-point native coverage still rejects P6: conservative rising/falling
+fine/coarse overlap is +7.029/-66.043 ps. Full coarse replay
+`tapered_bank_stage_replay/20261107T051839Z` reproduces all original
+1503-MOS/173-control metrics and signed stage sums with zero residual.
+Receipt `tapered_p6_coverage/20261107T051953Z` binds all four independent
+native replays and reproduces both overlap limits and the retained
+-135.749 ps zero-code headroom failure. All four P6 points are complete;
+the P10 cases and the eight-case campaign remain in progress unchanged.
 
 The corrected numeric-thread campaign v319 now completes all three
 native cases with zero errors. Independent full replay
