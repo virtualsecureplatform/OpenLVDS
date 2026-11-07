@@ -7,9 +7,15 @@ import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
-import verify_counter_escape_contacts_v329 as checker
+try:
+    import verify_counter_escape_contacts_v329 as checker
+except ModuleNotFoundError as error:
+    if error.name != 'klayout':
+        raise
+    checker = None
 
 
+@unittest.skipIf(checker is None, 'requires pinned CAD KLayout interpreter')
 class EscapeContactTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

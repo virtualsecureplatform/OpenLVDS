@@ -3,6 +3,16 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Regression discovery correction (2026-11-07): the seven v328/v329 CAD
+escape tests now use the repository's explicit missing-KLayout guard.
+The NumPy-only interpreter discovers seven named skips without import
+errors; the pinned CAD interpreter executes all seven checks successfully
+with no skips. Other missing-module errors still propagate. Only test
+modules outside the captured producer inputs change; all frozen physical
+producers, receipts and live native runs remain unchanged. Logs:
+`build/counter-escape-science-discovery-after-fix.log` and
+`build/counter-escape-cad-after-discovery-fix.log`.
+
 New bank evidence (2026-11-07): the two-stage architecture v322 completes
 its SS40/410 MHz, zero-code, 50% duty case and passes every original
 point gate. Its quarter-period headroom is **+38.637 ps**, improving

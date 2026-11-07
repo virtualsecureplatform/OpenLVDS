@@ -7,9 +7,15 @@ import unittest
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
-import plan_counter_buffer_escapes_v328 as planner
+try:
+    import plan_counter_buffer_escapes_v328 as planner
+except ModuleNotFoundError as error:
+    if error.name != 'klayout':
+        raise
+    planner = None
 
 
+@unittest.skipIf(planner is None, 'requires pinned CAD KLayout interpreter')
 class NativeBufferEscapeTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
