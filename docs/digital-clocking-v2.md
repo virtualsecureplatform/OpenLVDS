@@ -16568,3 +16568,78 @@ while preserving noninverting transport, all eight startup events,
 Reducing a pair of restoration inversions is a candidate to assess with
 actual native tap/fine input loading; simply admitting the local recovery
 or widening the quarter-period budget would not meet the existing goal.
+
+### Paired-restoration removal targets the observed minimum latency
+
+V365 implements one architecture intervention motivated by the retained
+v364 zero-code crossings, not a sizing sweep. It starts from the exact
+prepared v360 recovered-fine bank. Four group INV16 restorers and the
+following P10/N8 pre-driver are removed together. Both parallel root TGs
+for each group now take `tree0_k` directly, and the verified two-P40/N16
+fine wrapper takes `selected` directly. Balanced two-INV16 coarse units,
+all eight root TGs, all 31 original plus 31 copied fine units, final
+P20/N16 inverter, component definitions, controls and gate maps remain.
+
+```mermaid
+flowchart LR
+  IN --> C[Balanced coarse bank]
+  C --> M[Root TG mux]
+  M -->|selected| F[P80/N32 fine inverter]
+  F -->|fine_node| O[P20/N16 output inverter]
+  F --- K[31 fine enables with two units each]
+  O --> OUT
+```
+
+The group inverter and pre-driver logically cancel for every valid group
+selection, so removing both leaves the fine input polarity unchanged.
+`selected` is now noninverting relative to IN, `fine_node` inverting,
+and OUT noninverting. The coarse units each retain two inversions. This
+logical argument does not prove native loading, recovery, glitches or
+code range: the selected tap now drives the larger fine input directly.
+Those are the reason for a fresh full-bank screen.
+
+The exact reachable inventory is **1980 MOS/130 MIM**, removing 146 MOS
+and nine MIM associated with the five removed native cells. All **86
+controls/266 programming gates** remain independently observed. The
+transform rejects altered root/group/pre/fine calls, dangling removed
+signals, any unrelated component-definition/terminal-map change, or an
+unexpected native inventory. Preparation requires the retained byte-bound
+partial zero-latency failure and its independent replay; it explicitly
+rejects a receipt claiming full completion or omitting captured files.
+It never treats that partial evidence as bank admission.
+
+Six targeted tests pass in **0.618 s**, zero skips. They cover actual
+native inventory and programming gates, all logical group selections,
+component preservation, invalid topology/evidence rejection, generated
+PDK library paths, complete input events and unchanged aggregate gates.
+Log: `build/direct-balanced-bank-v365-tests.log`.
+
+Prepared artifact: `direct_balanced_bank_v365/7a6d5e1732c144c3`.
+Independent preflight receipt:
+`direct_balanced_bank_preflight/20261107T150826Z`. It rebinds every captured
+input, regenerates the native topology/maps/decks, translates all four
+fixtures and checks the real `.lib` path, complete 16 input transitions,
+and absence of removed stage observations. Each fixture requests **6429
+native voltage vectors**; time is added automatically by ngspice. The
+first preflight helper incorrectly required time in the requested voltage
+list and rejected before simulation. That helper/log remain retained;
+corrected helper `build/verify-direct-balanced-bank-prepared-v365b-20261107.py`
+passes without changing any prepared circuit or producer input.
+
+Unit: `openlvds-direct-balanced-bank-v365`, invocation
+`da1c1ef9684c4c68a83e92f1108a83e4`; log:
+`build/direct-balanced-bank-v365.log`. Two priority-1 workers queue under
+the unchanged global six leases. All existing healthy jobs continue.
+The original zero50/fine31-60/fine31-40/coarse1-50 points retain SS40,
+410 MHz, fixed 1.8 V, 100 ps input slew, 20 fF output, 25 ns duration and
+eight startup events. Original quarter/20 ps history/20 ps period/250 ps
+slew/native terminal/control/pulse/epoch gates and positive rise/fall
+coarse overlaps remain required. No current-centering offset is applied.
+
+Frozen completed-point replay helper
+`build/replay-direct-balanced-bank-native-v365-20261107.py` uses the
+correct `+,+,-,+` input/selected/fine/output histories and all 1980 MOS
+terminals. It retains original failed point metrics even if crossings
+are missing or extra, without choosing a new epoch. Actual next-bank
+loading, new shared routing/RC, dense/update tests, common legal codes,
+all PVT, full DLL/DCC integration and PHY qualification remain open.

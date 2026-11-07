@@ -30,8 +30,11 @@ A baseline-parity-gated native experiment passes with stronger fine pull-up:
 difference, independently replayed. That same change is now in a complete
 bank undergoing the original zero/duty/coarse and overlap checks. A fixture
 metadata error prevented the first launch from simulating; the corrected
-campaign preserves the PDK library path and has six regression checks. The
-earlier original simulations continue. The retained
+campaign preserves the PDK library path and has six regression checks.
+The next native experiment removes the group-restorer/pre-driver pair while
+keeping the verified fine pull-up and balanced coarse cells. Its complete
+four-point screen is queued with the original timing and voltage limits.
+Earlier simulations continue. The retained
 two-stage P40/N16 bank passes both fine-duty endpoints but fails zero-code
 quarter headroom at −63.862 ps and conservative coarse overlap at
 −156.507/−180.349 ps (rise/fall). It is not an admitted bank.

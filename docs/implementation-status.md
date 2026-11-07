@@ -92,6 +92,20 @@ four-point screen with two priority-1 workers under the unchanged six
 leases. Full-bank zero/quarter, duty/range, actual next-bank loading,
 routed RC and PVT results remain required.
 
+V365 implements a focused minimum-latency architecture experiment: remove
+the four group restorers and following pre-driver together, feeding the
+root TG mux directly from balanced coarse taps and its selected output
+directly into the verified two-P40/N16 fine inverter. The removed pair
+cancels logically; the two remaining inversions preserve noninverting
+transport. Actual native tap loading and timing must still pass.
+The reachable circuit has **1980 MOS/130 MIM**, retaining **86 controls**,
+all **266 programming gates**, the 16 balanced coarse units and all
+62 fine units. Artifact: `direct_balanced_bank_v365/7a6d5e1732c144c3`.
+All four full 25 ns/eight-event fixtures and complete input binding pass
+preflight; each requests **6429 voltage vectors**. The fresh zero/duty/
+coarse screen is queued with two priority-1 workers under the unchanged
+six leases. No production circuit, running campaign or gate was changed.
+
 The zero-code bank is still advancing slowly before its first edge. The isolated-cell
 diagnostic v353 tests all four static decoder input states and both logic
 states of the native restoration/fine/coarse cells, with the exact v352
@@ -149,7 +163,7 @@ Receipt: `routed_counter_pvt_native_replay/20261107T144650Z`. Retained
 pilot IDs 18–23 are not new simulations. The 270-point campaign continues;
 this batch does not establish all-PVT or integrated clock qualification.
 
-New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359/v360/v361/v362/v364 all pass: **66 tests**, zero
+New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359/v360/v361/v362/v364/v365 all pass: **72 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
 scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
 
