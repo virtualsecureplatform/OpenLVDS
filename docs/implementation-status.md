@@ -3,17 +3,21 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
-Latest software verification (2026-11-07): the complete regression at
-code revision `7be8db2` passes 2649 tests in 948.223 s, with 67 explicit
-CAD skips. Exactly those 67 test IDs then execute under the pinned CAD
-interpreter and all pass in 76.231 s, with no skips, failures or errors.
-All 2649 distinct tests have therefore executed successfully across the
-two environments. Receipt:
-`full_regression_cad_completion/20261107T043212Z`; logs:
-`build/full-regression-after-escape-discovery-fix.log` and
-`build/full-regression-exact-cad-skips.log`. Subsequent changes before
-this record are documentation only. This verifies software/fixture/CAD
+Latest full software verification (2026-11-07): the complete regression
+at code revision `89e10bd` passes **2688 tests in 1025.181 s**, with 81
+explicit CAD skips. Exactly those 81 test IDs execute under the pinned
+CAD interpreter and all pass in **94.082 s**, with zero skips, failures
+or errors. All 2688 distinct tests in that cohort have therefore executed
+successfully across the two environments. Receipt:
+`full_regression_p40_cad_completion/20261107T082613Z`; logs:
+`build/full-regression-after-p40-v341.log` and
+`build/full-regression-p40-exact-cad.log`. The subsequently added v342
+full-bank producer has four separately passing targeted tests; it is
+outside that full-regression cohort. These verify software/fixture/CAD
 checks; native circuit, full PVT, routed RC and PHY gates remain open.
+
+The previous 2649-test/67-CAD-test baseline at `7be8db2` remains retained
+in `full_regression_cad_completion/20261107T043212Z` and its original logs.
 
 Regression discovery correction (2026-11-07): the seven v328/v329 CAD
 escape tests now use the repository's explicit missing-KLayout guard.
@@ -320,7 +324,15 @@ full replay `large_shunt_counter_boundary_replay/20261107T080542Z`
 reproduces all 808-MOS metrics and exact limiting samples. Its minimum
 remaining low window is 426.812298 ps and peak terminal difference
 1.937055384 V, leaving 12.944616 mV below the original limit.
-Seven of twelve points now pass. The remaining five SS40 points continue
+The matching SS40/40% stopped-high case 7 also passes, with identical
+426.812298 ps minimum window and 1.937055384 V peak stress. Full replay
+`large_shunt_counter_boundary_replay/20261107T082231Z` reproduces all
+808-MOS metrics and exact limiting samples. Eight of twelve points now
+pass. Case 8, SS40/50% duty stopped low, also passes: minimum window
+353.994258 ps and peak terminal difference 1.916684766 V. Full replay
+`large_shunt_counter_boundary_replay/20261107T082815Z` reproduces all
+808-MOS metrics and exact limiting samples. Nine of twelve points now
+pass. The remaining three SS40 points continue
 under the unchanged six-slot dispatcher.
 The remaining boundaries, actual integrated counter geometry, new shared RC and
 full clock/PVT/PHY qualification remain required. The old v317 60%

@@ -15,28 +15,24 @@ and the remaining link bring-up work.
 
 The selected [digital clocking v2](docs/digital-clocking-v2.md) architecture is
 under implementation: calibrated four-phase clock generation, symmetric DCC,
-RX deskew and explicit framed startup training. Its measured balanced delay
-bank passes the component three-point screen, with 110.126 ps zero-code quarter
-headroom and positive rising/falling coarse overlap of 58.070/167.461 ps.
+RX deskew and explicit framed startup training.
 
-The actual bank now passes routing with zero violations, streamed native GDS
-with zero DRC and a unique LVS match, exact native masks/hierarchy/placements,
-and its 1,453-MOS/42-MIM inventory. Complete actual joint-RC qualification also
-passes: original extraction preserved, measured fine-device junctions, strict
-native topology/parameters, passive reduction and independent current witness.
-The complete native SS/40°C full-bank zero screen passes at repeated
-486.497/532.941 ps rise/fall delay, 174.364 ps maximum output slew, and
-76.815 ps fastest-quarter headroom. First-coarse passes, while fine31 misses
-the unchanged 250 ps slew limit at 265.033 ps. Both output-guard repair prototypes pass their three-point hypothesis screen;
-the unguarded variant reaches 222.248 ps fine31 slew. The new native output cell passes DRC/LVS, exact MOS parameters and fresh
-component RC. The new 1,453-MOS/40-MIM whole-bank GDS also passes DRC/LVS and output-only
-mask checks. Fresh whole-bank RC passes, and native zero passes at 486.850/522.734 ps
-rise/fall delay, 153.913 ps slew and 87.021 ps quarter headroom. Fine31/first-coarse and six sampled boundary points pass. Continuous periodic
-fine31 clocks fail period/repeatability: the internal loaded mux node does not
-restore its rail between edges. Output swing, voltage and slew checks still
-pass. The first isolated INV1 cases restore mux swing but lose all output pulses.
-A stronger native INV8/NAND2_8 component-RC pilot is preparing; full
-frequency/duty and physical validation remain required.
+The current delay-bank candidate uses two-level transmission-gate selection,
+switched fine-capacitor loads, a P40/N16 loaded inverter and a final P20/N16
+inverter. The new loaded driver passes native layout and local RC qualification.
+Its recorded-input native fine-stage test at SS/40°C, 410 MHz and 60% duty
+passes the original 20 ps period/history limits: maximum period error is
+8.589 ps and loaded-stage rising history is 5.345 ps, with all eight startup
+events retained. The complete-bank four-point screen is preparing to test actual
+input loading, zero-code quarter headroom, both fine-duty endpoints and coarse
+range overlap. The retained baseline still fails common coarse/fine range.
+
+The counter startup repair adds a native 5×5 µm MIM shunt. Nine of twelve
+SS0/SS40, 40/50/60% duty and stopped-clock boundary points now pass with
+independent full native replays. The added capacitor passes DRC, strict LVS
+and fresh actual-GDS local RC. The complete boundary screen and new whole-counter
+geometry/shared-wire RC remain required. Earlier physical and simulation
+artifacts, including failures, remain available in the implementation notes.
 
 Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
 dense common legal codes, complete delay range, all PVT, calibrated clock-chain

@@ -15388,3 +15388,71 @@ completion, then starts the original producer with the exact relative
 artifact path. Helper: `build/launch-pullup-two-stage-bank-v342-20261107.py`;
 log: `build/pullup-two-stage-bank-v342.log`. No full-bank P40 timing or
 range result is available yet.
+
+
+### Both SS40 40% duty stopped levels independently pass
+
+V334 case 7 (SS40, 410 MHz, 40% duty, stopped high) completes without
+error and passes every original component point gate. Its minimum
+remaining low window is 426.812298 ps and peak terminal difference
+1.937055384 V. Full replay
+`large_shunt_counter_boundary_replay/20261107T082231Z` reproduces all
+808 MOS metrics and exact limiting samples. Unit
+`openlvds-large-shunt-hot-forty-high-native-replay`, invocation
+`62cb2add51ee46978f609a6c17984c40`, exits zero; log:
+`build/large-shunt-hot-forty-high-native-replay.log`.
+
+Both SS40/40% stopped levels and all six SS0 boundaries now pass in
+the unchanged 808-MOS/57-MIM circuit. Four SS40 points remain: 50%
+and 60% duty at both stopped levels. The twelve-point terminal screen,
+whole-counter geometry/shared RC and later PVT/clock/PHY gates remain
+required; no result is extrapolated to those remaining conditions.
+
+
+### Complete software regression through P40 recovery and exact CAD completion
+
+The full science regression at code revision
+`89e10bdd00bf26b73a62e9fcd49d667cda47c903` passes **2688 tests in
+1025.181 s**, with 81 explicit CAD skips. The pinned CAD interpreter then
+executes exactly those 81 named IDs; all pass in **94.082 s**, with zero
+skips, failures or errors. Selected and executed ID lists match exactly.
+All 2688 distinct tests in that cohort have therefore executed successfully
+across the two environments. This includes the new capacitor material/RC
+and P40 component/recovery checks. The subsequently added v342 producer
+and its four passing targeted tests are outside this full-regression cohort.
+
+Receipt: `full_regression_p40_cad_completion/20261107T082613Z`. It binds
+the complete science log, original start metadata, exact-skip runner,
+coordinator and selected test-source hashes, and rechecks them after CAD
+execution. Logs: `build/full-regression-after-p40-v341.log` and
+`build/full-regression-p40-exact-cad.log`. Science unit
+`openlvds-full-regression-after-p40-v341`, invocation
+`56c07ba1345f4ecaa6befd51b3f064dc`, and exact-CAD coordinator
+`openlvds-full-regression-p40-exact-cad`, invocation
+`ac404d1e785d421cb0db373a496f241f`, both exit zero. Helpers:
+`build/run-full-regression-after-p40-cad-skips-20261107.py` and
+`build/launch-full-regression-after-p40-cad-20261107.py`.
+
+These are software/fixture/CAD checks. They supply no additional native
+clock/PVT, common-range, whole-bank shared-RC or delivered PHY admission.
+No healthy native simulation is stopped or restarted for this regression.
+
+
+### SS40 50% duty stopped-low boundary independently passes
+
+V334 case 8 (SS40, 410 MHz, 50% duty, stopped low) completes without
+error and passes every original component point gate. Minimum remaining
+low window is **353.994258 ps** and peak terminal difference
+**1.916684766 V**. Full replay
+`large_shunt_counter_boundary_replay/20261107T082815Z` reproduces all
+808 MOS metrics and exact limiting samples. Unit
+`openlvds-large-shunt-hot-fifty-low-native-replay`, invocation
+`5f2a5ba45bd4492ab3c20a0bca4c60dd`, exits zero; log:
+`build/large-shunt-hot-fifty-low-native-replay.log`.
+
+Nine of twelve unchanged-circuit native boundaries now pass. Remaining
+SS40 points are 50% stopped high and 60% at both stopped levels. Final
+twelve-point validation, whole-counter integration/shared RC and later
+PVT/clock/PHY qualification remain open. The README now describes the
+actual P40 recovery candidate and current counter repair rather than
+the superseded weak-driver pilot.
