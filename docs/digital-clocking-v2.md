@@ -14346,3 +14346,28 @@ The retained helper is
 `33e58cd877224bf0acf063c862da45ed`, exits zero; log:
 `build/two-stage-fine-recovery-native-analysis.log`. Existing bank and
 counter experiments continue unchanged.
+
+### Reordered bank completes four cases and fails overall coverage
+
+`preconditioned_fine_bank_v315/03aec7bd64badc04` is now terminal
+complete: four cases, zero errors. Coarse1/fine0 at SS40/410 MHz/50%
+passes all individual point checks. Its rising delay is
+750.377570--753.371877 ps, falling delay 845.898940--845.915900 ps,
+maximum slew 94.514402 ps, maximum period error 2.994238 ps, and
+rising/falling history spans 2.994307/0.016960 ps.
+
+Full replay `preconditioned_bank_stage_replay/20261107T045814Z`
+reproduces every original native metric for 1511 MOS and 173 programming
+gates, using the actual conditioned/fine_node polarities. Stage and
+first-to-last history sums have zero residual on both edge types.
+Unit `openlvds-preconditioned-coarse-native-replay-v315`, invocation
+`00f4b04238854ead8ca3d7737070fc53`, exits zero; log:
+`build/preconditioned-coarse-native-replay-v315.log`.
+
+The complete native aggregate rejects the component hypothesis:
+conservative overlap is **-152.833994 ps rising / -59.693470 ps falling**.
+The zero-code quarter failure (-46.310768 ps) and 60% period/history
+failure remain; passing 40% and coarse point checks do not remove them.
+All four traces and independent stage replays are retained. No new
+geometry, shared RC, PVT or PHY admission follows from this completed
+failed family.

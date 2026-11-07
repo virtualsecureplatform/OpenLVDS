@@ -232,6 +232,13 @@ all 1511-MOS metrics: maximum period error 6.275 ps, rising/falling
 history spans 6.279/0.144 ps, maximum slew 135.179 ps, and peak terminal
 difference 1.876381 V. The coarse point remains open; this passing endpoint
 does not remove the zero-code or 60% failures.
+The coarse point now also completes and passes its individual checks;
+full replay `preconditioned_bank_stage_replay/20261107T045814Z` reproduces
+every native metric and signed stage history. The v315 campaign is
+terminal complete, four cases and zero errors, but its overall hypothesis
+fails. Conservative rising/falling overlap is -152.834/-59.693 ps,
+in addition to the retained zero-code and 60% failures. This closes the
+reordered-bank candidate without physical or electrical admission.
 Clock coverage remains 390/400/410 MHz with
 40/50/60% input duty, fixed supplies, and five process corners at 0/25/40 C.
 
