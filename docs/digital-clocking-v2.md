@@ -15507,3 +15507,59 @@ two SS40/60% stopped-level points remain, followed by the campaign's
 terminal full input validation. Whole-counter integration stays gated
 on all twelve points; no remaining duty, physical/shared-RC or all-PVT
 result is inferred from the ten passes.
+
+
+### All twelve shunted-counter boundaries pass
+
+The v334 campaign at `large_shunt_counter_boundaries_v334/89ff7c952da2161a`
+is terminal complete: twelve cases, zero errors, final input validation
+successful and coordinator exit zero. All original point gates pass for
+SS/0°C and SS/40°C, 410 MHz, 40/50/60% duty and both stopped-clock levels.
+Independent full native replays reproduce all twelve points, including
+the final SS40/60% low/high receipts
+`large_shunt_counter_boundary_replay/20261107T084219Z` and
+`large_shunt_counter_boundary_replay/20261107T091013Z`.
+
+Worst startup remaining low window is **133.876 ps** at SS40/60%.
+Worst terminal difference is **1.937055 V** at SS40/40%, leaving
+**12.945 mV** to the original 1.95 V screen. The native harness contains
+808 MOS and 57 MIM capacitors. This clears the component boundary gate
+for integration; whole-counter geometry/shared-wire RC, all PVT and
+full DLL/PHY admission remain required.
+
+The new immutable v343 preflight binds these twelve original points and
+their independent replays before comparing the actual 23 physical macro
+roles against the passed circuit. The added native 5×5 µm capacitor connects
+Y to `low0_sn` and its bottom electrode to `VGND`. The core reference has
+744 MOS/51 MIM; downstream harness loads account for the remaining
+64 MOS/6 MIM. Preflight checks topology, parameters and strict LVS only;
+it does not generate the new whole-counter routing or extracted RC.
+
+
+### P40 recovery passes with actual full-bank input loading
+
+V342 case 1 at `pullup_two_stage_bank_v342/6fb0494678a32ddc/1`
+completes all 25 ns and passes every original individual point gate at
+SS40, 410 MHz, fine31 and 60% duty. Maximum period error is
+**9.599933 ps**, down from the original P20 bank's **62.131412 ps**.
+Maximum output slew is **154.250460 ps**. All eight startup events,
+actual mux input loading, 1385 native MOS, 34 MIM and 173 programming
+gates remain included. Independent full replay
+`pullup_bank_native_replay/20261107T090609Z` reproduces all original
+metrics and signed stage histories, binding the independently checked
+prepared bank and matching original baseline case.
+
+Loaded-stage first-to-last rising history falls from **61.846054 ps**
+to **8.826278 ps**. Added delay is also real: complete rising delays are
+777.929–787.529 ps and falling delays 496.463–496.707 ps. This point
+does not require the zero-code quarter check; its pass does not establish
+zero-code headroom or range overlap. The other three original points,
+common legal codes, routed RC and full PVT remain required.
+
+The retained four-stage P10 zero point, v310 case 4, also completes its
+full 25 ns. Independent replay
+`tapered_bank_stage_replay/20261107T090015Z` reproduces every original
+1511-MOS/173-programming-gate metric and signed stage sum. Voltage,
+controls, pulse transport, slew and period/history pass, but zero-code
+quarter headroom is **−88.316692 ps**. This rejects that candidate's
+zero-code timing despite its 3.917144 ps maximum period error.

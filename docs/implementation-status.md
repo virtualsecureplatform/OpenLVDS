@@ -3,6 +3,25 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+Current input-clock duty coverage is **40%, 50% and 60%**, with 40–60%
+as the limits, at 390/400/410 MHz. This is recorded in
+`clocking_duty_v2_2.json`; the output-clock timing requirements remain in force.
+
+Latest native results (2026-11-07): all twelve v334 counter boundaries
+pass, including final input validation. Each has an independent full native
+replay. The v342 complete-bank fine31/60% point passes with actual input
+loading and **9.600 ps** maximum period error. Its zero-code, 40% fine and
+coarse results remain required. The older v310 P10 four-stage zero point
+fails quarter-period headroom at **−88.317 ps**. Exact receipts and scope
+are recorded in the latest entries of `digital-clocking-v2.md`.
+
+The new v343 integration preflight checks the 23-macro counter reference,
+native parameters and shunt electrode connections against the passed circuit
+before whole-counter geometry and RC work. Its four targeted tests pass in
+0.320 s with zero skips (`build/shunted-counter-preflight-v343-tests-current.log`).
+They are separate from the full-regression cohort below; preflight execution
+is ongoing.
+
 Latest full software verification (2026-11-07): the complete regression
 at code revision `89e10bd` passes **2688 tests in 1025.181 s**, with 81
 explicit CAD skips. Exactly those 81 test IDs execute under the pinned

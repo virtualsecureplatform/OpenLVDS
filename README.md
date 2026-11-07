@@ -23,15 +23,16 @@ inverter. The new loaded driver passes native layout and local RC qualification.
 Its recorded-input native fine-stage test at SS/40°C, 410 MHz and 60% duty
 passes the original 20 ps period/history limits: maximum period error is
 8.589 ps and loaded-stage rising history is 5.345 ps, with all eight startup
-events retained. The complete-bank four-point screen is queued to test actual
-input loading, zero-code quarter headroom, both fine-duty endpoints and coarse
-range overlap. The retained baseline still fails common coarse/fine range.
+events retained. The complete-bank fine31/60% point also passes with actual
+input loading: maximum period error is 9.600 ps. Zero-code quarter headroom,
+the 40% fine endpoint and coarse range overlap remain under test.
+The retained baseline still fails common coarse/fine range.
 
-The counter startup repair adds a native 5×5 µm MIM shunt. Ten of twelve
+The counter startup repair adds a native 5×5 µm MIM shunt. All twelve
 SS0/SS40, 40/50/60% duty and stopped-clock boundary points now pass with
 independent full native replays. The added capacitor passes DRC, strict LVS
-and fresh actual-GDS local RC. The complete boundary screen and new whole-counter
-geometry/shared-wire RC remain required. Earlier physical and simulation
+and fresh actual-GDS local RC. The boundary campaign completes with zero errors;
+new whole-counter geometry/shared-wire RC remain required. Earlier physical and simulation
 artifacts, including failures, remain available in the implementation notes.
 
 Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
