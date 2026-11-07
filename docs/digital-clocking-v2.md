@@ -16673,8 +16673,9 @@ Read-only closure helper `build/close-mim-bank-screen-v321-20261107.py`
 binds the terminal original report, rederives its complete comparison,
 checks coverage by all eight independent native stage replays, checks
 every original result/file against those receipts and rehashes their
-combined inputs. It also regenerates the prepared native circuit/maps/
-fixtures with captured model/runtime context, excluding historical raw
+combined inputs. It validates prepared native library hashes, rebuilds
+terminal maps and regenerates fixtures with captured model/runtime
+context, excluding historical raw
 ancestry outside these selected complete cases. Receipt:
 `mim_bank_complete_screen_replay/20261107T151504Z`; log:
 `build/mim-complete-screen-replay-v321.log`. All eight replays reproduce
