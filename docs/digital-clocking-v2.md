@@ -13571,3 +13571,33 @@ component type needed for later whole-counter physical work, alongside
 the v323/v324 REQUEST buffer. SS40, new whole-counter placement/shared RC,
 loaded native timing, all PVT and the 20--250 ps reference-slew domain
 still require validation. No active counter model or admission flag changes.
+
+### Legacy thread experiment completes with invalid one-thread configuration
+
+`native_thread_count_v314/e32ffaa3ebc26f18` now completes all three
+original full 25 ns cases with zero errors. Every original native gate,
+edge timing, terminal peak and control deviation reproduces exactly.
+The runtime observations nevertheless reject the intended one-thread
+comparison:
+
+| Case | Requested threads | Observed active-worker samples | Configuration matches request | Contended wall time (s) |
+| --- | ---: | --- | --- | ---: |
+| 0, fine31/60% | 1 | 2 workers: 3084; 1 worker: 1 | No | 1085.231 |
+| 1, fine31/40% | 1 | 2 workers: 4895; 1 worker: 1 | No | 1545.711 |
+| 2, fine31/40% | 2 | 2 workers: 4889 | Yes | 1535.875 |
+
+These complete observations agree with the recorded ngspice 42 option-type
+diagnosis: the old `-D num_threads=1` argument does not supply the numeric
+setting read by native circuit setup. The third case's observed count
+matches the requested/default two; it does not prove numeric `-D`
+initialization. Original data, code, logs and aggregate fields remain
+unchanged. In particular, the legacy producer's stored wall ratio
+`0.9936368665` compares runs both observed with two workers and **must not
+be interpreted as a one-thread/two-thread speed ratio**. Its aggregate
+`configured_thread_counts_observed` and `backend_admitted` remain false.
+
+The separately prepared v319 experiment uses private numeric initialization
+and positive-transient worker observation. Its first full one-thread case
+has already reproduced all native metrics; its remaining original cases
+continue. No global solver/thread setting, running circuit or electrical
+qualification changes because the legacy campaign has finished.
