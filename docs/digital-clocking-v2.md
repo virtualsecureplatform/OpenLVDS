@@ -15068,3 +15068,21 @@ Log: `build/counter-output-mim5-rc-v337-tests.log`. Unit
 `8467980eefb8473e8147bb2a633634ea`, exits zero after final input validation;
 log: `build/counter-output-mim5-rc-v337.log`. The full v334 boundary
 screen remains required before whole-counter placement/integration.
+
+
+### SS0 nominal-duty stopped-high counter boundary independently passes
+
+V334 case 3 (SS0, 410 MHz, 50% duty, stopped high) completes without
+error and passes every original component point gate. Its minimum
+remaining low window is 358.889535 ps and peak terminal difference
+1.914712731 V. Full replay
+`large_shunt_counter_boundary_replay/20261107T073309Z` reproduces all
+808 native MOS metrics and exact limiting terminal samples. Unit
+`openlvds-large-shunt-cold-fifty-high-native-replay`, invocation
+`6730766af9104284ba2b391f9c9bdea5`, exits zero; log:
+`build/large-shunt-cold-fifty-high-native-replay.log`.
+
+Both SS0 40% and 50% stopped levels now pass in this unchanged circuit:
+one retained source and three new simulated points. Eight native points
+remain. The SS0/60% stopped-low point has entered native simulation;
+no remaining duty, temperature or shared-wire result is inferred.

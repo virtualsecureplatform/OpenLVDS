@@ -238,7 +238,12 @@ full replays `large_shunt_counter_boundary_replay/20261107T065234Z`
 and `20261107T065804Z` reproduce all 808 native MOS metrics and exact
 limiting terminal samples. Minimum remaining low windows are
 440.492072/358.889535 ps; peak terminal differences are
-1.935719803/1.914712731 V. The remaining nine new points continue
+1.935719803/1.914712731 V. Case 3, SS0/410 MHz/50% duty stopped high,
+also passes every component point gate with the same 358.889535 ps
+minimum low window and 1.914712731 V peak stress. Full replay
+`large_shunt_counter_boundary_replay/20261107T073309Z` reproduces all
+808-MOS metrics and exact limiting samples. Four of twelve points are
+now complete, including the retained source. The remaining eight new points continue
 under the unchanged six-slot dispatcher.
 The remaining boundaries, actual integrated counter geometry, new shared RC and
 full clock/PVT/PHY qualification remain required. The old v317 60%
