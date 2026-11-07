@@ -16,6 +16,20 @@ window by 81.334 ps in both traces, while stopped-high PREPARE clears
 `strong_counter_clear_diagnosis_v266/7898a3df49531f9f` and
 `counter_low_windows_v305/2e1f49e3e7801289` retain the separate causes.
 
+The fast-clear shared-RC counter v269 also completes its SS40/410 MHz,
+60% stopped-low case. Independent full replay reproduces every native
+metric for all 644 observed MOS: clearing and terminal stress pass, but
+startup ordering fails. Fixed original epochs put low0, low1 and armed
+98.143, 1.239 and 3.401 ps beyond their guaranteed-low windows,
+respectively. Their actual clock voltages are 0.504254, 0.183899 and
+0.190722 V against the unchanged 0.18 V low limit. PREPARE and RESET_N
+clear 672.669 and 714.718 ps before REQUEST reassertion; peak terminal
+difference is 1.932172 V. Receipts
+`fast_clear_counter_clear_diagnosis_v299/05cf6dbc905a78f5` and
+`counter_low_windows_v305/125ae40984574c3a` separate successful clearing
+from the remaining startup timing failure. The stronger CLK-drive repair
+remains under test; this older case supplies no electrical admission.
+
 Independent full v306 SS0/50% stopped-low replay at
 `matched_counter_native_replay/20261107T014034Z` also confirms the unrepaired
 matched buffer's voltage failure at nominal duty: minimum clock-low window

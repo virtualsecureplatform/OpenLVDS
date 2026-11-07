@@ -13673,3 +13673,40 @@ both the proposed schematic and collapsed v317 reference with the LVS
 setup/report. All new-counter geometry, shared-wire RC, counter timing,
 all-PVT, electrical and PHY qualification flags remain false. The two
 remaining SS40 v317 cases and all later admission gates are still required.
+
+### Fast-clear shared-RC counter: hot 60% startup diagnosis
+
+The completed v269 case 10 is SS/40 C, 410 MHz, 60% duty, stopped low,
+with the original 100 ps RCLK edge, 20 ps REQUEST edge and full 26 ns
+native trace. Read-only replay with unchanged v299 reproduces every
+original metric and observes all 644 native MOS. Receipt
+`fast_clear_counter_clear_diagnosis_v299/05cf6dbc905a78f5` confirms that
+held-before-request, stopped-clock clear/reassert, intermediate clearing
+and the 1.95 V terminal screen pass. Peak terminal difference is
+1.932171789 V. PREPARE falls at 22327.331 ps and RESET_N at 22285.282 ps,
+leaving 672.669 and 714.718 ps before REQUEST reassertion at 23000 ps.
+Phase arming, alternating phase order and counter feasibility fail.
+
+Unchanged v305 independently measures the actual guaranteed-low windows
+in the original startup epochs, without wrapping events into later cycles.
+Receipt `counter_low_windows_v305/125ae40984574c3a` reproduces the original
+low-voltage gate exactly:
+
+| Assertion | Remaining guaranteed-low window (ps) | Actual CLK (V) | In original low window |
+| --- | ---: | ---: | --- |
+| low0 | -98.143241 | 0.504254 | No |
+| low1 | -1.238592 | 0.183899 | No |
+| armed | -3.400788 | 0.190722 | No |
+
+All three assertions exceed the unchanged 0.18 V guaranteed-low limit.
+This is a startup timing failure despite successful clearing and safe
+terminal stress. It supports retaining the stronger CLK buffers in the
+separate REQUEST-taper repair; it does not establish that repair's SS40
+or whole-counter shared-RC performance.
+
+Native replay log: `build/fast-clear-hot-sixty-low-v299.log`, completed
+successfully under invocation `44035c1bff72435b88fee97c243736b7`.
+Fixed-window analysis log: `build/fast-clear-hot-sixty-low-windows-v305.log`,
+completed successfully under invocation `9eb6737c4dc647aca9361ebd0b2b8f24`.
+Both receipts retain their complete input hashes; all original simulations,
+measurement producers and limits remain unchanged.
