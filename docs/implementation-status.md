@@ -128,8 +128,15 @@ Six targeted tests pass. Preparation now completes successfully at
 source points in a 590039-byte PWL file. The sequential native coordinator
 is live, using one worker under the same six leases. This omits upstream
 loading and therefore cannot qualify quarter delay, fine/coarse range or
-the full bank, even if local history improves. No native result is yet
-available from this diagnostic.
+the full bank, even if local history improves. The baseline now completes
+and passes parity: maximum crossing error 0.031273 ps and maximum
+retained-terminal voltage error 0.587997 mV across all eight events and
+all 413 MOS. Safety/control/pulse gates pass, while its original history
+failure remains (62.135 ps period error, 61.848 ps loaded-stage rising
+history). Independent full replay
+`loaded_fine_baseline_replay/20261107T063932Z` reproduces every metric
+and parity result. This unlocks the P24 diagnostic; that result remains
+pending and supplies no bank admission.
 
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.

@@ -14883,3 +14883,40 @@ its original two-worker/six-lease limits. The v333 recovery baseline has
 entered actual native simulation; its P24 branch remains gated on the
 complete baseline's waveform, safety/control and all-eight-event checks.
 Neither coordinator start grants a new native or physical qualification.
+
+
+### Retained fine-stage baseline passes full native waveform parity
+
+The v333 baseline completes its full 25 ns native simulation normally.
+It reproduces the full bank with maximum 0.9 V crossing error
+**0.031272815 ps** and maximum retained-terminal voltage error
+**0.587997 mV**, within the original diagnostic gates of 0.25 ps/2 mV.
+All eight rising/falling events and the full trajectories of all 413
+native MOS terminals are compared; no startup event or sample is removed.
+Native safety, controls, pulse counts, swing and epochs pass. Native
+analysis/elapsed times in its log are 365.6/400.319 s; this is a smaller
+forced-input diagnostic, not a full-bank or simulator speed benchmark.
+
+The baseline preserves the original failure: maximum period error is
+62.135232 ps and loaded-stage first-minus-last rising history
+61.848388 ps, versus 62.131412/61.846054 ps in the original full-bank
+point. At the first/eighth source 10% rise, fine_node is
+1.801289008/1.546892331 V; the full-bank operating-state difference
+is retained. Both signed loaded/final-stage sums have zero residual.
+Passing numerical parity does not qualify these failed clock timings.
+
+Independent receipt
+`loaded_fine_baseline_replay/20261107T063932Z` rehashes the completed
+native case, exact parent trace, libraries, PWL source and captured code,
+then independently reproduces every native metric and the complete
+baseline-parity result. Helper:
+`build/replay-loaded-fine-baseline-v333-20261107.py`; unit
+`openlvds-loaded-fine-baseline-native-replay-v333`, invocation
+`2095c2a77c4d4647aa0c87236731a984`, exits zero. Log:
+`build/loaded-fine-baseline-native-replay-v333.log`.
+
+The successful baseline guard unlocks only the queued P24/N16 diagnostic.
+Its native result remains pending. Actual mux loading, zero-code quarter
+delay, fine/coarse overlap, new shared RC, other PVT and full DLL/PHY
+qualification still require complete-bank evidence. No original bank
+failure or hardware admission gate is replaced by this equivalence proof.
