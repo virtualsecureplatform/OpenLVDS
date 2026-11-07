@@ -13481,3 +13481,47 @@ and original inputs remain unchanged. Log:
 `build/request-taper-buffer-v323-v324-retention-check.log`. Captured
 producer/helper closures remain frozen. No active counter model, healthy
 SPICE process, solver tolerance, voltage limit or dispatcher setting changes.
+
+### Reordered fine31/60% history failure localized (v315)
+
+`preconditioned_fine_bank_v315/03aec7bd64badc04/1` completes all 25 ns
+at SS40/410 MHz, coarse0/fine31, 60% duty. It preserves all eight input
+and output pulses, full swing, positive unwrapped delays, native voltage
+and control safety. Maximum output slew is 135.179193 ps. However,
+maximum period error is **47.460026 ps** and rising delay span is
+**47.460199 ps**, failing the original 20 ps limits. Falling delay span
+is 0.035749 ps. Rising delays range from 600.537883 to 647.998081 ps;
+falling delays range from 791.973685 to 792.009434 ps.
+
+Complete independent replay
+`preconditioned_bank_stage_replay/20261107T020053Z/summary.json` reproduces
+all original native metrics and all eight correctly polarized node events.
+The signed first-minus-last changes associated with the external rising
+input/output event are:
+
+| Loaded section | First-minus-last delay (ps) |
+| --- | ---: |
+| Input to selected | -0.188962 |
+| Selected to conditioned | +1.513379 |
+| Conditioned to fine_node | +43.530339 |
+| Fine_node to output | +2.599879 |
+| Total | +47.454635 |
+
+The loaded fine-inverter contribution dominates the measured startup
+history change. Its rising-event stage range is 143.395080--186.930208 ps.
+The corresponding falling-event total first-minus-last change is only
+0.035450 ps. Both edge decompositions and their history sums have zero
+residual. These are loaded crossing differences, not intrinsic device
+delays or proof that a particular replacement will pass.
+
+This is a second completed v315 rejection, in addition to its zero-code
+quarter-period failure. Remaining original cases continue; startup pulses
+are retained in all scoring. The separate MIM and two-stage pilots must
+establish their own full histories, electrical gates and overlap before
+any physical bank admission. No current codebook or active model changes.
+The unchanged polarity-correct replay helper runs as
+`openlvds-preconditioned-fine-sixty-stages-v315`, invocation
+`7ef1771249d54aaf847775a5c741975b`, exit zero; log:
+`build/preconditioned-fine-sixty-stages-v315.log`. Its scope binds the
+selected complete case/library/code, without revalidating all historical
+ancestors or qualifying another circuit/PVT.

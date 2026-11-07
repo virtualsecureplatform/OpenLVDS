@@ -57,7 +57,12 @@ The reordered fine bank (v315) now completes its zero-code case:
 voltage, controls, eight pulses, slew and period/history pass, but quarter
 headroom is still -46.311 ps. Full native/stage replay reproduces every
 metric at `preconditioned_bank_stage_replay/20261107T011544Z`.
-Its remaining cases continue; the zero failure prevents admission.
+Its fine31/60% case also completes and fails period/history at 47.460 ps,
+despite passing all eight pulses, voltage, controls and 135.179 ps slew.
+Full replay `preconditioned_bank_stage_replay/20261107T020053Z` reproduces
+every metric and locates 43.530 ps of the 47.455 ps first-to-last rising-event
+change across the loaded fine inverter. Remaining cases continue; both
+completed failures prevent admission.
 Clock coverage remains 390/400/410 MHz with
 40/50/60% input duty, fixed supplies, and five process corners at 0/25/40 C.
 
