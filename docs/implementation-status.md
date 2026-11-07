@@ -42,13 +42,27 @@ range repair. Current experiment v352 inserts P10/N8 restoration before
 a balanced fine driver, restores mux groups, doubles fine units and uses
 balanced coarse cells. Its full 2086-MOS/139-MIM, 86-control/266-programming-gate
 four-point screen runs at `restored_balanced_bank_v352/67d491be912b3621`.
-The fine31/60% live prefix already shows a **52.168 ps** rising-delay span,
-exceeding the unchanged 20 ps history gate. The first-to-second difference
-is **52.157 ps**, of which **48.113 ps** occurs in the loaded fine stage.
+The fine31/60% case now completes and independently reproduces every
+original native metric. It fails with a **52.168 ps** rising-delay span
+and **52.157 ps** period error, exceeding the unchanged 20 ps limits.
+Output slew is **133.204 ps**; native voltage, controls and pulse checks
+pass. The first-to-last loaded fine-stage contribution is **48.123 ps**.
 Fine-node recovery reaches only about **1.430 V** at later input rising
 10% crossings, versus about **1.800 V** initially. This is retained partial
-evidence; full native timing/safety, the remaining points, real next-bank
-input loading and routed RC remain open. Original simulations continue.
+evidence that is now supported by the complete stage-history replay.
+The remaining points, real next-bank input loading and routed RC remain
+open. Original simulations continue.
+
+V355 tests recovery behind the exact completed selected-node waveform.
+It retains the native P10/N8 pre-stage, final P20/N16, all 62 fine units
+and their 186 programming gates. Baseline parity over all **622 MOS**
+terminals must pass **0.25 ps/2 mV**, plus pulse/control/stress checks,
+before replacing two fine P20/N16 cells with two qualified P40/N16 cells
+(**662 MOS**, P80/N32 equivalent). Both branches retain **66 MIM** and
+the complete 25 ns/eight-startup-event stimulus. Artifact:
+`restored_fine_recovery_v355/b88568e79d9ee803`; one priority-2 worker queues
+under the unchanged six leases. No recovery success, full-bank loading,
+quarter headroom or range repair is inferred from this local experiment.
 
 The zero-code bank is still advancing slowly before its first edge. The isolated-cell
 diagnostic v353 tests all four static decoder input states and both logic
@@ -60,7 +74,7 @@ decoder stack node alone does not reproduce the bank slowdown. These
 200 ps static traces cannot qualify bank timing. Artifact:
 `bank_static_cells_v353/bcddf749044d0786`.
 
-New targeted checks v348/v349/v350/v351/v352/v353/v354 all pass: **29 tests**, zero
+New targeted checks v348/v349/v350/v351/v352/v353/v354/v355 all pass: **35 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
 scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
 

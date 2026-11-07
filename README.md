@@ -20,7 +20,11 @@ RX deskew and explicit framed startup training.
 The current delay-bank experiment adds restoration before the fine stage,
 balances coarse and fine drive, and doubles the fine units per enable.
 It uses qualified native component RC, retains a noninverting four-inversion
-path, and is running the original zero/duty/coarse screen. The retained
+path. Its completed fine31/60% test fails the 20 ps timing-history limit
+with a 52.168 ps span, localized mainly to incomplete fine-stage recovery.
+A baseline-parity-gated experiment now tests stronger native fine pull-up
+while retaining the pre-driver and both fine banks. The other original
+zero/duty/coarse tests continue. The retained
 two-stage P40/N16 bank passes both fine-duty endpoints but fails zero-code
 quarter headroom at −63.862 ps and conservative coarse overlap at
 −156.507/−180.349 ps (rise/fall). It is not an admitted bank.

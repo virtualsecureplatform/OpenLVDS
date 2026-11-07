@@ -16047,3 +16047,88 @@ Frozen helpers:
 `build/restored-bank-fine-sixty-prefix-stages.log` and
 `build/restored-bank-fine-sixty-prefix-recovery.log`. This selected-vector
 prefix is partial diagnostic evidence and cannot qualify a bank.
+
+
+### Full restored-bank fine60 failure replay and native recovery intervention
+
+V352 case 1 naturally completes its full 25 ns simulation, with no case
+error. All eight startup events are retained. Rising delay span is
+**52.168205 ps**, maximum period error **52.157290 ps**; both fail the
+unchanged 20 ps limits. Falling delay span is **0.064508 ps**. Output slew
+is **133.204110 ps**, and pulse/full-swing/epoch/control/native-stress
+checks pass. The zero-code, fine40 and coarse cases remain required and
+their original simulations continue. This candidate cannot be admitted
+on the passing voltage and slew checks.
+
+Complete independent receipt:
+`build/reports/pullup_bank_native_replay/20261107T121501Z/summary.json`.
+Although stored under the earlier replay namespace, its case, native
+counts and regenerated architecture explicitly bind **v352**. It
+reproduces every original metric for **2086 MOS/266 programming gates**,
+then independently decomposes all eight events using the correct
+`IN +, selected −, pre_out +, fine_node −, OUT +` polarities. First-minus-last
+stage contributions are **−0.054961/3.067935/48.122744/1.032417 ps**.
+The loaded fine stage accounts for most of the timing change. Unit:
+`openlvds-restored-bank-fine-sixty-native-replay-v352`, invocation
+`8acb0fb3eb04401fb41b15863621f61c`; log:
+`build/restored-bank-fine-sixty-native-replay-v352.log`. Frozen helper:
+`build/replay-restored-balanced-bank-native-v352-20261107.py`.
+
+V355 implements a focused intervention behind the **actual completed
+selected-node waveform**, using every one of its **15130 native samples**,
+from zero through 25 ns, in a 679419-byte PWL source. An explicit 1 mOhm
+diagnostic boundary drives the retained selected node. No time shift,
+waveform clipping, downsampling or startup removal is applied.
+The diagnostic retains all 127 fine-path calls: P10/N8 pre-restoration,
+two P20/N16 loaded inverters, final P20/N16, all 31 original fine units,
+all 31 copies, and all fine control buffers/inverters. Baseline inventory
+is **622 MOS/66 MIM**, with **62 logical controls/186 programming gates**;
+every retained native terminal map and component definition is unchanged.
+
+Before any intervention runs, baseline parity must compare all 622 MOS
+terminals at every original source time, and all eight rising/falling
+events at each of the five path nodes. Additional parity limits are
+**0.25 ps crossing error/2 mV voltage error**. Baseline pulse, epoch,
+control and stress gates must also pass. Failure blocks the intervention
+and preserves both cases; it never relaxes the clock's history gate.
+
+After successful parity, only the loaded two-P20/N16 wrapper becomes
+two existing physically/RC-qualified P40/N16 cells: **P80/N32 equivalent**,
+**662 MOS/66 MIM**. The P10/N8 pre-driver remains native and therefore
+experiences the new driver input load. This tests whether doubling the
+pull-up strength restores recovery with both fine banks attached. The
+final driver, fine/control devices, 25 ns stop, eight input cycles,
+fixed 1.8 V, 20 fF load, Gear/KLU/settings and native limits remain.
+The selected-node boundary still omits upstream mux loading; even a
+successful local result requires return to the complete bank, with
+zero-code quarter headroom, both-polarity range and fresh shared RC.
+
+Artifact: `restored_fine_recovery_v355/b88568e79d9ee803`. Unit:
+`openlvds-restored-fine-recovery-v355`, invocation
+`ae2d957fad8c4707bd5fd43faca81a02`; log:
+`build/restored-fine-recovery-v355.log`. One priority-2 worker uses the
+unchanged global six leases; the baseline is live and parity is pending.
+Six targeted tests pass in **1.063 s**, zero skips. Log:
+`build/restored-fine-recovery-v355-tests-final.log`. Tests cover exact
+native inventories/maps, all 186 programming gates, unchanged pre/final
+loading, the single wrapper intervention, all-sample PWL round-trip,
+full fixture retention and blocking after failed parity/safety. The
+initial test log is retained; its failed expectation was the decimal
+spelling of an exactly round-tripped 25 ns float, corrected to compare
+all serialized sample values directly.
+
+
+### First newly simulated full-matrix counter point independently passes
+
+V354 case 6, SS40/390 MHz/60% stopped high, passes all original point
+checks. Independent complete 808-MOS replay
+`routed_counter_pvt_native_replay/20261107T122157Z` reproduces all metrics
+and exact limiting samples: **206.496068 ps** remaining low window and
+**1.913334 V** peak terminal difference. Unit:
+`openlvds-routed-counter-first-new-native-replay-v354`, invocation
+`3986807cd54a41599e6079bf391dc5b8`; log:
+`build/routed-counter-first-new-native-replay-v354.log`. Frozen generic
+helper `build/replay-routed-counter-pvt-native-v354-20261107.py` accepts
+explicit completed fresh case IDs and binds the same actual-GDS RC
+certificate. The complete 270-point matrix remains running; this single
+new point does not establish full counter PVT or clock/PHY admission.
