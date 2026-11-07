@@ -31,6 +31,16 @@ delay change across the loaded fine inverter. The 40% fine endpoint,
 coarse overlap and later qualification remain open; the zero-code pass
 does not admit this candidate or resolve loaded fine-stage history.
 
+The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
+zero-code/50% point and fails quarter headroom at **-135.749 ps**.
+All other point gates pass. Full replay
+`tapered_bank_stage_replay/20261107T042750Z` reproduces every metric for
+1503 MOS and 173 programming gates, including all eight startup cycles.
+Rising delay is 655.262--659.179 ps and falling delay 745.485--745.505 ps;
+maximum slew is 106.162 ps and period error 3.917 ps. Signed stage and
+history sums have zero residual. Its passing fine endpoints do not admit
+this sizing variant; the original remaining P6/P10 cases continue unchanged.
+
 The corrected numeric-thread campaign v319 now completes all three
 native cases with zero errors. Independent full replay
 `numeric_thread_native_replay/20261107T034441Z` reproduces all original

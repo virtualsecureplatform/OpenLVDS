@@ -14195,3 +14195,48 @@ pass before the corrected floorplan/escape proposal is rendered and
 physically qualified. Shared-counter RC, broad clock/PVT, electrical and
 PHY admission flags remain false; no qualification follows from these
 four point passes alone.
+
+### P6/N4 post-fine restorer: complete zero-code latency failure
+
+The v310 case 0 completes the original full 25 ns/eight-cycle SS40,
+410 MHz, coarse0/fine0, 50% duty, 100 ps input and 20 fF fixture.
+Only the first post-fine restorer differs from the regular bank: its
+qualified P6/N4 component replaces that P20/N16 stage, retaining the
+original mux, fine cells, isolation driver and final P20/N16 stage.
+The actual native inventory remains 1503 MOS with 173 programming gates.
+
+Pulses, epoch/order, native voltage, controls, slew and period/history
+pass. The quarter-period check fails with **-135.749132 ps headroom**.
+Rising delay is 655.261553--659.179356 ps, falling delay
+745.484508--745.505229 ps, maximum output slew 106.161605 ps, maximum
+period error 3.916722 ps, and rising/falling history spans
+3.917802/0.020721 ps. Peak terminal difference is 1.873824932 V.
+This is a latency failure despite stable repeated timing.
+
+Independent full replay
+`tapered_bank_stage_replay/20261107T042750Z` reproduces every original
+metric and all eight signed stage histories. Both stage and history sums
+have zero residual. The measured stage-delay ranges are:
+
+| Stage | Rising-event range (ps) | Falling-event range (ps) |
+| --- | ---: | ---: |
+| IN to selected | 233.742--237.333 | 278.062--278.080 |
+| selected to fine_node | 158.079--158.400 | 194.709--194.712 |
+| fine_node to restored_b | 168.974--168.979 | 180.366--180.367 |
+| restored_b to OUT | 94.466--94.467 | 92.343--92.351 |
+
+These are actual correctly polarized crossing differences, not intrinsic
+device delays or predictions for another code. The P6 variant's earlier
+passing fine31/40% and /60% points do not remove this zero-code failure.
+The original coarse point and P10/N8 variant continue unchanged; no
+additional sizing sweep or timing-limit relaxation follows from this
+result. Use the retained depth/fine-stage evidence and pending MIM results
+to guide any later architecture change.
+
+The frozen replay helper is
+`build/analyze-tapered-bank-stages-v310-20261107.py`. Unit
+`openlvds-tapered-zero-stage-v310-completed`, invocation
+`aac6775e8220435eb3a9d42edd3be4b2`, exits zero; log:
+`build/tapered-zero-stage-v310-completed.log`. Original native source,
+waveform, fixture, safety/timing gates and failed artifacts remain intact;
+bank, routed RC, PVT, DLL and PHY admission remain false.
