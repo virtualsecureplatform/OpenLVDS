@@ -13961,3 +13961,31 @@ counter renderer must consume these port-specific paths and connection
 heights rather than the old straight M4 formula, then qualify the actual
 output. The final v317 native timing point remains required before that
 routing step.
+
+### Reordered fine bank: complete 40% endpoint passes, failures remain
+
+The v315 case 2 completes its original 25 ns, eight-cycle SS40/410 MHz,
+coarse0/fine31, 40% duty fixture. Every original point gate passes.
+The unchanged read-only helper independently reproduces all native
+metrics and correctly polarized stage histories at
+`build/reports/preconditioned_bank_stage_replay/20261107T033230Z/summary.json`:
+1511 MOS, 173 programming gates, rising delay 641.719--647.998 ps,
+falling delay 786.222--786.366 ps, maximum slew 135.179 ps, maximum
+period error 6.275 ps, and rising/falling history spans 6.279/0.144 ps.
+Peak terminal difference is 1.876381426 V. Both signed stage sums and
+first-to-last history sums have zero residual.
+
+For rising events, the loaded fine inverter contributes +7.396 ps to
+first-minus-last delay, compared with +43.530 ps in the failed 60%
+trace. Other stage changes partially offset it at 40%, giving the
+passing total history. These are actual crossing differences across
+the complete startup sequence, not an isolated-device causal proof.
+The zero-code quarter failure (-46.311 ps) and 60% period/history
+failure (47.460 ps) remain; the passing 40% endpoint does not admit
+this bank. The final original coarse point continues under the same
+dispatcher without a fixture, threshold or architecture change.
+
+Unit `openlvds-preconditioned-fine-forty-stages-v315`, invocation
+`00ae521cb7f14b2a8a6a6245511e9cd5`, exits zero. Log:
+`build/preconditioned-fine-forty-stages-v315.log`. The original failed
+cases, native waveforms, producer and replay helper remain unchanged.

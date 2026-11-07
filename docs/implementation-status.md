@@ -139,6 +139,12 @@ Full replay `preconditioned_bank_stage_replay/20261107T020053Z` reproduces
 every metric and locates 43.530 ps of the 47.455 ps first-to-last rising-event
 change across the loaded fine inverter. Remaining cases continue; both
 completed failures prevent admission.
+The same bank's fine31/40% point now passes all original point gates.
+Full replay `preconditioned_bank_stage_replay/20261107T033230Z` reproduces
+all 1511-MOS metrics: maximum period error 6.275 ps, rising/falling
+history spans 6.279/0.144 ps, maximum slew 135.179 ps, and peak terminal
+difference 1.876381 V. The coarse point remains open; this passing endpoint
+does not remove the zero-code or 60% failures.
 Clock coverage remains 390/400/410 MHz with
 40/50/60% input duty, fixed supplies, and five process corners at 0/25/40 C.
 
