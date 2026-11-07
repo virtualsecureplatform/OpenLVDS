@@ -13446,3 +13446,38 @@ Physical unit `openlvds-request-taper-buffer-physical-v323`, invocation
 layout with native parameter/mask proof. Counter placement/shared RC,
 actual buffer-loading transients, SS40, full PVT and PHY admission remain
 required; the active v317 source pilot is unchanged.
+
+### Fresh complete REQUEST-buffer local RC (v324)
+
+`scripts/qualify_request_taper_buffer_rc_v324.py` consumes the complete
+passing v323 native layout, preserving its exact public ports, all original
+stage masks/placements and supplied junction parameters. New extraction
+includes the actual M3 supply joins and M4 interstage link. Qualification
+completes at `request_taper_buffer_rc_v324/39c432524ec4f06d`, binding
+402 repository inputs, the original PDK/tool fingerprints and the pinned
+independent math runtime.
+
+Fresh extraction `a594acf6a7f28b7a` passes with **1730 positive resistors
+and 473 nonnegative parasitic capacitors**, plus the unchanged 54 native
+MOS/two intentional MIM devices. Exact positive-conductance reduction
+regenerates byte-for-byte, producing 1646 resistors and eliminating 307
+algebraic nodes while retaining every protected device/capacitor/public
+statement. Elementwise passivity, strict native parameter comparison and
+independent collapsed-topology LVS all pass.
+
+The independent Schur proof passes four clamped-terminal DC witnesses at
+563 boundary nodes, with maximum current discrepancy **1.865175e-14 A**,
+within the unchanged 1e-9 A absolute / 1e-8 relative tolerances. Both systems
+have zero floating components, and capacitor/device/port invariants pass.
+This mathematical result preserves the RC network; loaded native transient
+and whole-counter qualification are still required.
+
+Unit `openlvds-request-taper-buffer-rc-v324`, invocation
+`cc13bbdaf1c44df185a77b3bbec1da4d`, exits zero. Log:
+`build/request-taper-buffer-rc-v324.log`. A subsequent check validates both
+prepared v323/v324 bindings, attempts each already-complete execution,
+confirms the explicit retention rejection, and verifies all context files
+and original inputs remain unchanged. Log:
+`build/request-taper-buffer-v323-v324-retention-check.log`. Captured
+producer/helper closures remain frozen. No active counter model, healthy
+SPICE process, solver tolerance, voltage limit or dispatcher setting changes.

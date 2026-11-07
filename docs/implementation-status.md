@@ -47,7 +47,13 @@ and limiting sample: startup margin is 232.798 ps and peak stress is
 1.917961 V. Both SS40 cases and whole-counter shared RC remain required.
 The repair retains the final REQUEST drivers, both clock-buffer
 stages, counter logic, 20 ps REQUEST edges and all original voltage/timing
-limits. The reordered fine bank (v315) now completes its zero-code case:
+limits. A real 54-MOS/2-MIM REQUEST-buffer component now passes zero DRC,
+strict native LVS, unchanged stage masks/junctions and fresh complete local
+RC qualification at `request_taper_buffer_physical_v323/8cfc7cf7b15b78c9`
+and `request_taper_buffer_rc_v324/39c432524ec4f06d`. This supplies actual
+interstage-wire RC for later counter integration; SS40, whole-counter
+shared RC and electrical qualification remain pending.
+The reordered fine bank (v315) now completes its zero-code case:
 voltage, controls, eight pulses, slew and period/history pass, but quarter
 headroom is still -46.311 ps. Full native/stage replay reproduces every
 metric at `preconditioned_bank_stage_replay/20261107T011544Z`.
