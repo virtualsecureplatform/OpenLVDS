@@ -14477,3 +14477,16 @@ Read-only helper `build/analyze-mim-bank-stages-v321-20261107.py`, unit
 `8b5ee808255c4402b079b2c347620983`, exits zero. Log:
 `build/mim-zero-native-stage-replay-v321.log`. No full-family/PVT/shared-RC
 or PHY admission follows from this single completed zero-code point.
+
+
+The v331 preparation completes successfully at
+`request_taper_output_shunt_v331/e9773c61bc0555cc`; unit
+`openlvds-request-taper-output-shunt-prepare-v331`, invocation
+`62df1404795549f9b06de2097f0c1b57`, exits zero. The native coordinator
+`openlvds-request-taper-output-shunt-v331`, invocation
+`296cc9e4c66647a4a9794a89686c0268`, starts the prepared producer after
+that verified successful preparation. It preserves the original full
+input validation and queues through the existing lease mechanism.
+Logs are `build/request-taper-output-shunt-prepare-v331.log` and
+`build/request-taper-output-shunt-v331.log`. Preparation and coordinator
+startup supply no native pass result; the repaired point remains pending.
