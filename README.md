@@ -22,9 +22,11 @@ balances coarse and fine drive, and doubles the fine units per enable.
 It uses qualified native component RC, retains a noninverting four-inversion
 path. Its completed fine31/60% test fails the 20 ps timing-history limit
 with a 52.168 ps span, localized mainly to incomplete fine-stage recovery.
-A baseline-parity-gated experiment now tests stronger native fine pull-up
-while retaining the pre-driver and both fine banks. The other original
-zero/duty/coarse tests continue. The retained
+A baseline-parity-gated native experiment passes with stronger fine pull-up:
+15.528 ps history span, 137.643 ps output slew and 1.857343 V peak terminal
+difference, independently replayed. That same change is now in a complete
+bank undergoing the original zero/duty/coarse and overlap checks. The
+earlier original simulations continue. The retained
 two-stage P40/N16 bank passes both fine-duty endpoints but fails zero-code
 quarter headroom at −63.862 ps and conservative coarse overlap at
 −156.507/−180.349 ps (rise/fall). It is not an admitted bank.

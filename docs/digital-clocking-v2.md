@@ -16264,3 +16264,80 @@ Frozen capture helper:
 `build/capture-restored-recovery-prefix-stages-v355-20261107.py`; log:
 `build/restored-recovery-pullup-prefix-stages-v355.log`. This prefix cannot
 admit the recovery circuit or a complete bank.
+
+
+### Verified local recovery passes; complete bank intervention starts
+
+V355 now naturally completes both native cases, **zero errors/zero guarded
+cases**, including final input validation. The stronger branch retains all
+eight startup cycles through the full 25 ns stop. Every local pulse,
+epoch, period/history, output-slew, control and MOS-stress check passes:
+
+| Metric | Stronger pull-up result |
+| --- | ---: |
+| Rising-delay span | 15.527733 ps |
+| Falling-delay span | 0.037279 ps |
+| Maximum period error | 15.523839 ps |
+| Maximum output slew | 137.642776 ps |
+| Peak native terminal difference | 1.857343 V |
+
+Complete independent receipt
+`restored_fine_recovery_native_replay/20261107T132134Z` reproduces every
+original metric for **662 MOS/186 programming gates**, all selected-node
+source samples and the exact limiting native sample. Unit:
+`openlvds-restored-recovery-pullup-native-replay-v355`, invocation
+`e2ad0a4343b542eda850dd3a17d46372`; log:
+`build/restored-recovery-pullup-native-replay-v355.log`. This establishes
+the selected-waveform local recovery intervention, with its measured
+pre-driver loading cost. Zero-code quarter headroom, real mux interaction,
+coarse/fine overlap, routed RC and PVT are not inferred from the pass.
+
+V359 returns **exactly this intervention** to the complete native bank.
+Only `Xfine_isolate` changes from the original two-P20/N16 wrapper to the
+independently replayed two-P40/N16 wrapper. The complete P10/N8 pre-stage,
+both TG mux levels, four group restorers, all sixteen balanced coarse
+units, all 62 fine units/control circuits and final P20/N16 remain.
+Every unrelated native component definition and terminal map remains
+exact. Qualified P40 numerical definitions must match the successful local
+case. New inventory: **2126 MOS/139 MIM**, **86 controls/266 programming
+gates**. The four-inversion noninverting path is retained.
+
+Preparation requires the terminal passing two-case local experiment,
+successful baseline parity and both independent native replay receipts.
+It does not capture mutable state from the still-running earlier full
+bank. It launches four fresh full-native points: zero/50%, fine31/60%,
+fine31/40% and coarse1/fine0/50%, SS40/410 MHz, all eight startup cycles,
+25 ns, 100 ps input and original 20 fF load. Original quarter, period,
+history, pulse/slew/control/stress and both-polarity conservative overlap
+gates remain. No replay boundary appears in the full-bank fixtures.
+
+Artifact: `pullup_restored_bank_v359/00eb592d8b55496a`. Unit:
+`openlvds-pullup-restored-bank-v359`, invocation
+`bc460db640f846df9ac68e50a984a2b0`; log:
+`build/pullup-restored-bank-v359.log`. Two priority-1 workers use the
+unchanged global six leases. Full native results remain pending. This
+retains the original 20 fF screen; actual next-bank loading, new shared
+routing/RC, dense/update/periodic codes, 15 PVT and PHY checks remain.
+
+Five targeted tests pass in **1.053 s**, zero skips. They verify all native
+counts/gates, unchanged unrelated components and full upstream topology,
+the exact successful wrapper, original fixture/stimulus coverage and
+rejection after any failed individual gate or either negative overlap.
+Log: `build/pullup-restored-bank-v359-tests.log`.
+
+
+### Completed larger-MIM alternative points are retained and rejected
+
+The older v321 2×3 MIM alternative completes zero/fine60/fine40 cases
+4/5/6. Independent full metric/stage replays are respectively
+`mim_bank_stage_replay/20261107T125455Z`, `20261107T125515Z` and
+`20261107T125540Z`. The zero point fails quarter headroom at **−45.272 ps**;
+fine60 fails with **90.643 ps** rising history span and **86.129 ps**
+period error. Fine40 passes its individual gates. These counterexamples
+reject the larger-MIM family despite that one pass; its remaining original
+coarse simulation continues and is preserved. No new variant is launched.
+Unit: `openlvds-completed-mim23-native-replays-v321`, invocation
+`e236a90aa9a14efbba3969f5156ff570`; log:
+`build/completed-mim23-native-replays-v321.log`. This is read-only native
+replay work, not extra SPICE simulations or a substitute for the current
+full-bank qualification.

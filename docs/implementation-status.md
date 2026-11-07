@@ -64,12 +64,16 @@ the complete 25 ns/eight-startup-event stimulus. Artifact:
 independent full native replay and parity: **0.037923 ps** maximum crossing
 error and **0.725312 mV** maximum terminal-voltage error. Voltage, control
 and pulse checks pass; the original timing-history failure is reproduced.
-The stronger branch has been released under the unchanged one-worker,
-priority-2/six-lease limits. Its saved live prefix now contains eight
-paired events per polarity: rising-delay span improves to **15.528 ps**,
-while pre-driver rising latency increases about **62 ps**. Complete native
-results remain pending. Full-bank loading, quarter headroom and range
-remain required after any local recovery pass.
+The stronger branch now completes all original local native checks and
+independent replay: rising span **15.528 ps**, period error **15.524 ps**,
+output slew **137.643 ps** and peak terminal difference **1.857343 V**.
+Pre-driver rising latency increases about **62 ps**. V359 now returns
+exactly that verified change to a complete **2126-MOS/139-MIM** bank,
+retaining all 86 controls/266 programming gates. Artifact:
+`pullup_restored_bank_v359/00eb592d8b55496a`. Its original four-point native
+screen is running with two priority-1 workers under the unchanged six
+leases. Full-bank zero/quarter, duty/range, actual next-bank loading,
+routed RC and PVT results remain required.
 
 The zero-code bank is still advancing slowly before its first edge. The isolated-cell
 diagnostic v353 tests all four static decoder input states and both logic
@@ -93,7 +97,7 @@ The copied point-count header is normalized and original header/payload
 hashes are retained. The logging-off/on observer comparisons are queued
 under the unchanged six leases; neither artifact qualifies bank timing.
 
-New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357 all pass: **43 tests**, zero
+New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359 all pass: **48 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
 scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
 
