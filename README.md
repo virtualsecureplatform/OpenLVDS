@@ -25,7 +25,9 @@ with a 52.168 ps span, localized mainly to incomplete fine-stage recovery.
 A baseline-parity-gated native experiment passes with stronger fine pull-up:
 15.528 ps history span, 137.643 ps output slew and 1.857343 V peak terminal
 difference, independently replayed. That same change is now in a complete
-bank undergoing the original zero/duty/coarse and overlap checks. The
+bank undergoing the original zero/duty/coarse and overlap checks. A fixture
+metadata error prevented the first launch from simulating; the corrected
+campaign preserves the PDK library path and has six regression checks. The
 earlier original simulations continue. The retained
 two-stage P40/N16 bank passes both fine-duty endpoints but fails zero-code
 quarter headroom at −63.862 ps and conservative coarse overlap at

@@ -67,11 +67,15 @@ and pulse checks pass; the original timing-history failure is reproduced.
 The stronger branch now completes all original local native checks and
 independent replay: rising span **15.528 ps**, period error **15.524 ps**,
 output slew **137.643 ps** and peak terminal difference **1.857343 V**.
-Pre-driver rising latency increases about **62 ps**. V359 now returns
+Pre-driver rising latency increases about **62 ps**. V359 returned
 exactly that verified change to a complete **2126-MOS/139-MIM** bank,
 retaining all 86 controls/266 programming gates. Artifact:
-`pullup_restored_bank_v359/00eb592d8b55496a`. Its original four-point native
-screen is running with two priority-1 workers under the unchanged six
+`pullup_restored_bank_v359/00eb592d8b55496a`. All four fixtures failed before
+simulation because metadata replaced the PDK library path with the macro
+name; this gives no circuit verdict. The retained failure is corrected in
+v360, which keeps the library path and macro name in separate fields.
+Artifact `pullup_restored_bank_v360/8dba212d4f9eafd5` is running the same
+four-point screen with two priority-1 workers under the unchanged six
 leases. Full-bank zero/quarter, duty/range, actual next-bank loading,
 routed RC and PVT results remain required.
 
@@ -96,11 +100,25 @@ reference v357 captures the first 200 ps of the original zero-code run:
 The copied point-count header is normalized and original header/payload
 hashes are retained. The observer's completed logging-off run matches all
 6854 voltage vectors at the original sample times within **5.409×10⁻¹³ V**
-and reproduces the tiny-step behavior. Its logging-on run remains pending
-under the unchanged six leases; the cause is not yet established.
-These quiet-prefix checks do not qualify bank timing.
+and reproduces the tiny-step behavior. Analysis v361 reads the actual
+`ngspice.log`, rather than the console redirect. A frozen logging-on
+prefix through **89.568 ps** contains **282** paired Newton iteration-limit
+failures and rejected steps, all naming `vdd#branch`, with zero device-model
+nonconvergence flags and no charge-truncation cuts. The last-failure fields
+are cached, so a controlled experiment is still required.
 
-New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359 all pass: **48 tests**, zero
+Diagnostic v362 adds only an external **1 mA** load across the ideal fixed
+1.8 V bench supply. This translates the ideal supply-source current and
+its relative convergence norm; it leaves circuit voltage constraints and
+device/voltage tolerances unchanged. It is not a voltage sweep or a macro
+change, and the extra bench load must be excluded from chip power.
+Artifact `supply_current_centering_v362/508e395be9fbc556` is running/queued
+under the same leases. Quiet production and observer parity precede a
+gated active-waveform comparison against the original failing fine60
+case. The original timing failure must remain reproduced. These checks
+do not qualify bank timing or change the production engine.
+
+New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359/v360/v361/v362 all pass: **62 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
 scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
 

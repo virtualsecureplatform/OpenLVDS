@@ -16403,3 +16403,49 @@ Unit: `openlvds-full-bank-completion-replays-v359`, invocation
 `build/full-bank-completion-replays-v359.log`. Queue receipt:
 `pullup_restored_bank_replay_queue/20261107T135817Z`. No new-bank point
 has completed yet; full-bank qualification remains pending.
+
+### Corrected full-bank fixtures and traced supply-current experiment
+
+The preceding v359 running status is superseded: all four points failed
+before simulation because `identity.model` contained the macro name rather
+than the SKY130 `.lib` path. All failed artifacts remain retained; no
+circuit conclusion follows. V360 separates `model` and `macro_top`, checks
+the absolute PDK path and generated library directive, and retains exactly
+the v359 circuit, original gates and four-point screen. Six targeted tests
+pass. Artifact: `pullup_restored_bank_v360/8dba212d4f9eafd5`; unit:
+`openlvds-pullup-restored-bank-v360`, invocation
+`bb84d613f79d429f9660e9faea3f060a`. The replacement read-only completion
+watcher is `openlvds-full-bank-completion-replays-v360`, invocation
+`d195b712d480414facdd5ae204eb0997`, with queue receipt
+`pullup_restored_bank_replay_queue/20261107T143926Z`.
+
+V361 corrects diagnostic analysis to read `ngspice.log`: ngspice's `-o`
+redirect places observer stderr there, not in `console.log`. No captured
+producer or running helper was edited. Frozen receipt
+`step_trace_analysis_v361/20261107T142415Z` ends at 89.56830078125012 ps
+and contains 282 positive-time paired iteration-limit failures/rejections,
+all naming `vdd#branch`, with device flag zero and no charge-truncation
+cuts. There are 865 Newton successes and 864 truncation decisions. Cached
+last-failure fields identify a testable bottleneck, not a proven complete
+cause. Three targeted parser/classification tests pass.
+
+V362 tests one bench-only numerical change: `I_BENCH_CURRENT_CENTER VDD 0
+0.001` across the existing ideal fixed 1.8 V source. Mathematically chip
+voltages remain unchanged and original I(VDD) equals centered I(VDD) plus
+1 mA. The current-relative convergence norm changes explicitly; voltage
+and device tolerances do not. Exclude this external load from chip power.
+Five targeted tests pass, including voltage invariance/current translation
+and rejection of source-current feedback. Artifact:
+`supply_current_centering_v362/508e395be9fbc556`; unit:
+`openlvds-supply-current-centering-v362`, invocation
+`633fb505199d4c58afe0bca2c1cd9107`.
+
+Three sequential diagnostic cases compare the original 2086-MOS bank:
+quiet production, quiet observer and gated active production. Quiet
+voltage parity must be within 1 µV; the active case additionally requires
+fewer than half the original quiet steps, then 2 mV full-voltage and
+0.25 ps event parity. Original failed timing classifications must be
+preserved. This is not a production-engine change or PHY admission.
+Both new campaigns remain running/queued at this checkpoint; no healthy
+simulation was stopped. Clock coverage remains 390/400/410 MHz at
+40/50/60% duty, fixed supplies and 0/25/40 °C, without a voltage sweep.
