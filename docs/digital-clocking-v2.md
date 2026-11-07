@@ -13408,3 +13408,41 @@ original slot and entered positive native transient time. Host process
 with a held live owner; the original six-engine budget and all healthy
 simulations remain unchanged. No MIM-bank or two-stage-bank point result
 exists yet; partial waveforms do not supply timing or physical admission.
+
+### Physical REQUEST-taper buffer component (v323)
+
+`scripts/build_request_taper_buffer_v323.py` builds the actual P10/N8 ->
+P20/N16 positive buffer used by the v317 REQUEST repair. It places the two
+qualified inverter masters unchanged, joins their supply rows on M3, and
+routes the first output to the second input on M4 above both native
+footprints. The public interface is `A X VGND VPWR`. Both previously
+replayed SS0 stopped-level points are bound as the component's motivation;
+SS40 and whole-counter admission remain separate.
+
+Context `request_taper_buffer_physical_v323/8cfc7cf7b15b78c9` completes
+with **zero Magic DRC errors and strict native LVS passing**. It contains
+**54 native MOS and two MIM devices**, preserving all original model
+dimensions and supplied junction parameters, with zero newly inferred
+junction devices. Stored instance placements and all 22 native mask
+layers match each original master after Magic's GDS round trip. New
+geometry is confined to top-level M3/M4 connections and public accesses.
+The integration LEF retains actual restricted signal and supply rails.
+The context binds 372 repository inputs and three external PDK files.
+
+Five targeted CAD tests pass without skips in **4.238 s**, checking the
+actual native reference, two-stage connectivity and gate/cap inventory,
+route geometry, rejected stage/access changes, stored-mask preservation,
+a deliberately changed-mask negative control, and both real SS0 replay
+bindings. Log: `build/request-taper-buffer-v323-correct-node-tests.log`.
+An initial assertion used the schematic's private-node spelling instead
+of the inventory parser's `native____` prefix; only that test expectation
+was corrected before source capture. The failed preflight log is retained
+at `build/request-taper-buffer-v323-tests.log`; no physical or native
+waveform was changed to obtain the passing tests.
+
+Physical unit `openlvds-request-taper-buffer-physical-v323`, invocation
+`33670bc2146f40ffa4cb343e4d67c16f`, exits zero. Log:
+`build/request-taper-buffer-physical-v323.log`. This is a complete component
+layout with native parameter/mask proof. Counter placement/shared RC,
+actual buffer-loading transients, SS40, full PVT and PHY admission remain
+required; the active v317 source pilot is unchanged.
