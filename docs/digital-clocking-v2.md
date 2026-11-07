@@ -13787,3 +13787,43 @@ coarse1/fine0 at 50% for conservative overlap. A zero-code pass alone
 does not admit either endpoint, overlap, updates, dense/common codebooks,
 shared-wire RC, 15-PVT coverage, the DLL or PHY. Existing candidates keep
 running unchanged; no new bank variant is launched from this single pass.
+
+### REQUEST-taper repair: complete SS40 stopped-low point passes
+
+The v317 case 2 completes the original full 26 ns fixture at SS/40 C,
+410 MHz, 60% duty, stopped low, 100 ps RCLK and 20 ps REQUEST edges.
+All original functional and terminal-stress gates pass: held-before-request,
+phase arming, alternating phase order, intermediate/arm clearing, and
+stopped-clock clear/reassert. Independent full replay at
+`build/reports/request_taper_native_replay/20261107T031301Z/summary.json`
+reproduces all original native metrics for 808 MOS and the exact limiting
+samples in both REQUEST buffer stages and the whole counter.
+
+Minimum remaining guaranteed-low startup window is **233.577084 ps**,
+at low0; low1 and armed have 306.092534 and 305.921630 ps. All three
+actual clock voltages remain below the unchanged 0.18 V low threshold;
+minimum low-voltage margin is 0.178368797 V. The old fast-clear SS40
+stopped-low case missed those windows by 98.143, 1.239 and 3.401 ps.
+The repaired result covers this actual native component circuit, with
+ideal new shared wires; it is not a claim about routed-counter timing.
+
+Whole-counter peak terminal difference is **1.949082665 V**, only
+**0.917335 mV** below the unchanged 1.95 V limit. The limiting device is
+`XD:XR:Xlow0_set_pair:X11`, drain/body, at 23206.5 ps: native drain
+1.944063841 V and local body -0.005018824 V. REQUEST first-stage peak is
+1.895762331 V and final-stage peak is 1.910916996 V. Both parallel REQUEST
+roles reproduce these peaks. No threshold or device parameter is relaxed.
+
+The unchanged read-only helper
+`build/replay-request-taper-native-20261107.py 2` exits zero under unit
+`openlvds-request-taper-hot-low-native-replay-v317`, invocation
+`709417437dab4a54a2fe8d8e501b11f2`. Log:
+`build/request-taper-hot-low-native-replay-v317.log`. The receipt retains
+the selected circuit, complete waveform, fixture/library and measurement
+source hashes; it does not requalify every historical ancestor.
+
+Three of the four original v317 points now pass and reproduce
+independently: both SS0 stopped levels and SS40 stopped low. The final
+SS40 stopped-high point remains required before the timing-gated physical
+counter integration. Fresh whole-counter geometry/shared-wire RC and
+its native timing, stress, full clock/PVT and PHY gates remain open.

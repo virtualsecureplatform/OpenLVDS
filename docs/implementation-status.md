@@ -79,7 +79,14 @@ counter's limiting low0 setter reaches 1.949317 V, leaving only 0.683 mV
 below 1.95 V. The stopped-high full replay
 `request_taper_native_replay/20261107T014342Z` also reproduces every metric
 and limiting sample: startup margin is 232.798 ps and peak stress is
-1.917961 V. Both SS40 cases and whole-counter shared RC remain required.
+1.917961 V. Its SS40 stopped-low case now also passes every original
+point gate. Full replay `request_taper_native_replay/20261107T031301Z`
+reproduces all 808-MOS metrics and limiting samples: minimum startup
+window is 233.577 ps, REQUEST final-stage peak is 1.910917 V, and the
+low0 setter's drain/body peak is 1.949083 V at 23206.5 ps. Only 0.917 mV
+remains below the unchanged 1.95 V limit. The final SS40 stopped-high
+case and whole-counter shared RC remain required; three point passes
+do not establish full PVT or electrical qualification.
 The repair retains the final REQUEST drivers, both clock-buffer
 stages, counter logic, 20 ps REQUEST edges and all original voltage/timing
 limits. A real 54-MOS/2-MIM REQUEST-buffer component now passes zero DRC,
