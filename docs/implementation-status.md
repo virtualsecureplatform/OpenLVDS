@@ -146,12 +146,22 @@ minimum startup window is 536.137 ps. Worst drain/body stress is
 -0.007459 V. The connected storage input reaches 1.972593 V; its
 worst gate/body difference is 1.972767 V at 3621.5 ps. REQUEST-buffer
 failures are removed, but the remaining output excursion blocks routing.
-The source already includes two 3x3 um setter output MIM guards; the next
-single-variable hypothesis adds one more native 3x3 um shunt on low0_sn,
-retaining every original MOS, component RC and full 26 ns fixture. That
-added geometry and shared wiring require later physical/RC proof even
-if the native diagnostic passes. The four 60% passes remain valid at
-those points but do not admit the counter across the required duty range.
+The source already includes two 3x3 um setter output MIM guards. The
+additional 3x3 um shunt trial v331 now completes its full native case:
+startup/ordering/clearing pass, with 499.777 ps minimum startup window,
+but stress still fails at 1.959349 V. Full replay
+`request_taper_output_shunt_stress/20261107T054654Z` reproduces every
+808-MOS metric and the exact peaks of all 16 remaining failures: eight
+setter MOS and eight storage MOS. Worst setter drain/body stress is
+at 3617.5 ps, drain 1.951880 V and body -0.007469 V. The added shunt
+reduces peak stress by 19.249 mV and startup window by 36.360 ps; it
+does not clear the 1.95 V gate. The next single-variable hypothesis
+resizes only that additional MIM from 3x3 to 5x5 um, keeping 808 MOS/
+57 MIM and the full 26 ns fixture. Eleven targeted v330/v331/v332 tests
+pass. The sizing hypothesis remains unqualified; actual native timing,
+all other duty/stopped-level/PVT boundaries and new physical/shared RC
+must still pass. The four old 60% passes remain valid at those points
+but do not admit either shunt candidate across the required duty range.
 
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,
 40/50/60% duty, both-stopped-level cases without numerical errors. Only

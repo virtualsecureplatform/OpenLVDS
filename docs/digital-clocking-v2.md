@@ -14586,3 +14586,44 @@ Helper `build/analyze-mim-fine-recovery-20261107.py`, unit
 `237e09811051449591354d3215f4ab9a`, exits zero. Log:
 `build/mim-fine-recovery-native-analysis.log`. No new circuit, native
 admission or physical/PVT/PHY qualification follows from the diagnosis.
+
+
+### Additional 3x3 output shunt reduces stress but still fails
+
+The v331 SS0/410 MHz/40% stopped-low case completes its full 26 ns
+native fixture without numerical error. All functional gates pass,
+including startup/ordering/clearing/reassertion. Minimum remaining
+startup window is **499.776680 ps**, versus 536.136999 ps without the
+extra capacitor. Peak terminal stress falls from 1.978597913 V to
+**1.959349302 V**, still above the unchanged 1.95 V limit. Sixteen
+MOS fail: eight Xlow0_set_pair and eight Xlow0_q. The source remains
+blocked from routing and from broader electrical admission.
+
+Full replay `request_taper_output_shunt_stress/20261107T054654Z`
+reproduces every original metric for all 808 MOS, and all 16 exact
+failed-device peak samples. Worst setter X11 drain/body stress occurs
+at 3617.5 ps: drain 1.951880056 V, body -0.007469246 V, gate
+1.728238242 V and source 0.751297068 V. CLK is 0.005761406 V,
+REQUEST 1.8 V, request_i 1.442018519 V and low0 0.016988498 V.
+The new shunt reduces the native stress peak by **19.248611 mV** and
+minimum startup window by **36.360319 ps**. These are measured effects
+of the single additional 3x3 MIM, not routed/PVT sizing guarantees.
+
+Read-only helper `build/diagnose-request-taper-output-shunt-stress-20261107.py`,
+unit `openlvds-request-taper-output-shunt-stress-native-replay`, invocation
+`bc6f8d39f2914a8da3159e3a0d3adcfb`, exits zero. Log:
+`build/request-taper-output-shunt-stress-native-replay.log`.
+
+The next immutable experiment `probe_request_taper_output_shunt_v332.py`
+resizes only the additional capacitor from 3x3 to 5x5 um. Native MOS,
+all other component RC/cards, 808-MOS/57-MIM census, full 26 ns stimulus,
+saved vectors and original gates remain unchanged. Including the two
+original 3x3 guards, total output guard area changes from 27 to 43
+square micrometres. This is a data-guided sizing hypothesis to test;
+no predicted stress/timing value supplies admission. Preparation requires
+the naturally terminal, final-hash-verified v331 source and its exact
+16-device diagnosis. It uses one worker, priority 1, with the same six
+leases. Eleven targeted v330/v331/v332 tests pass in 0.486 s without
+skips; log: `build/request-taper-output-shunt-v332-tests.log`. Added MIM
+geometry and shared-wire RC remain unqualified even if the native point
+passes. No voltage sweep or qualification threshold changes are introduced.
