@@ -53,6 +53,11 @@ RC qualification at `request_taper_buffer_physical_v323/8cfc7cf7b15b78c9`
 and `request_taper_buffer_rc_v324/39c432524ec4f06d`. This supplies actual
 interstage-wire RC for later counter integration; SS40, whole-counter
 shared RC and electrical qualification remain pending.
+The matching CLK component now also passes native physical/local-RC proof
+at `regular_clock_buffer_v325/9d3380b4eca0696f`: two unchanged P20/N16
+stages, 72 MOS/two MIM, zero DRC, strict LVS and independent Schur proof.
+Both buffer component types are available for future physical counter
+integration; the active source pilot and its qualification gates are unchanged.
 The reordered fine bank (v315) now completes its zero-code case:
 voltage, controls, eight pulses, slew and period/history pass, but quarter
 headroom is still -46.311 ps. Full native/stage replay reproduces every

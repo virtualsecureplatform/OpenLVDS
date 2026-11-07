@@ -13525,3 +13525,49 @@ The unchanged polarity-correct replay helper runs as
 `build/preconditioned-fine-sixty-stages-v315.log`. Its scope binds the
 selected complete case/library/code, without revalidating all historical
 ancestors or qualifying another circuit/PVT.
+
+### Matching regular CLK buffer physical and local-RC qualification (v325)
+
+The older `clock_buffer_pair_physical_v2` implements two parallel BUF8
+cells. The v317 architecture instead requires two P20/N16 inverters in
+series in each CLK role. `scripts/build_regular_clock_buffer_v325.py`
+builds that exact positive component from one qualified P20/N16 GDS
+master, instantiated twice. The public interface remains `A X VGND VPWR`;
+actual M3 supply joins and an M4 interstage route are included. Native
+master masks and supplied junction parameters remain unchanged.
+
+Context `regular_clock_buffer_v325/9d3380b4eca0696f` completes **zero-error
+Magic DRC, strict native LVS, and complete local-RC qualification**. Its
+native inventory is **72 MOS and two MIM devices**: 40 regular PMOS,
+32 regular NMOS, with no newly inferred junctions. All 22 native mask
+layers match the original master. Stored stage multiplicity/placements
+are verified, and a subsequent check confirms both instances use R0 with
+unit magnification. Restricted integration LEF preserves real signal and
+supply accesses. The context binds 373 repository inputs, three external
+PDK files and the pinned tools/math runtime.
+
+Fresh extraction `03c9065084735c5b` has **2253 positive resistors and
+636 nonnegative parasitic capacitors**. Exact reduction regenerates to
+2174 resistors with 386 algebraic nodes eliminated. Native dimensions,
+all supplied junctions, strict collapsed topology, every capacitor/device/
+port invariant and elementwise passivity pass. Four independent Schur
+DC witnesses at 742 boundary nodes pass with maximum current discrepancy
+**2.309264e-14 A**, within unchanged 1e-9 A absolute / 1e-8 relative
+tolerances; neither system has floating components.
+
+Four targeted CAD tests pass without skips in **0.575 s**, exercising
+the actual native reference, dimensions/junctions, two-stage gate/cap
+connectivity, route geometry, single-master/two-instance GDS preservation,
+and rejected model/access/multiplicity changes. Log:
+`build/regular-clock-buffer-v325-tests.log`. Completed-context execution
+is subsequently refused with all inputs/files unchanged; the actual
+instance orientation check passes. Log:
+`build/regular-clock-buffer-v325-retention-check.log`.
+
+Unit `openlvds-regular-clock-buffer-v325`, invocation
+`ef6e620c1540455a8a02f018af374682`, exits zero; log:
+`build/regular-clock-buffer-v325-run.log`. This supplies the second buffer
+component type needed for later whole-counter physical work, alongside
+the v323/v324 REQUEST buffer. SS40, new whole-counter placement/shared RC,
+loaded native timing, all PVT and the 20--250 ps reference-slew domain
+still require validation. No active counter model or admission flag changes.
