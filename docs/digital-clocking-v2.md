@@ -13710,3 +13710,26 @@ Fixed-window analysis log: `build/fast-clear-hot-sixty-low-windows-v305.log`,
 completed successfully under invocation `9eb6737c4dc647aca9361ebd0b2b8f24`.
 Both receipts retain their complete input hashes; all original simulations,
 measurement producers and limits remain unchanged.
+
+The final stopped-high case 11 also completes, and unchanged v299
+independently reproduces every original native metric at
+`fast_clear_counter_clear_diagnosis_v299/a04289ad2ebfa9cb`. Its PREPARE
+and RESET_N clear headrooms are **163.695462 and 199.736419 ps**;
+peak terminal difference is **1.897615004 V**, within 1.95 V. Unchanged
+v305 receipt `counter_low_windows_v305/571c6b882071675e` finds exactly the
+same three startup clock voltages and negative windows as case 10.
+The stopped level changes the later clearing trace, not this identical
+startup history. Logs are `build/fast-clear-hot-sixty-high-v299.log`
+(invocation `f713d3a3d1824764a866633ceaff0e74`) and
+`build/fast-clear-hot-sixty-high-windows-v305.log`
+(invocation `2d71217482e54522bf47fb67f32a9fa5`); both units exit zero.
+
+The original v269 state is now terminal `complete`, **12 cases, zero
+errors**. Its producer census is eight functional passes (40/50%, both
+temperatures and stopped levels), four startup-ordering failures (all
+60% cases), and twelve passes each for stopped-clock clearing and native
+terminal stress. Independent full hot/cold 60% receipts retain the
+startup cause separately from successful clearing. This closes the old
+family as a failed candidate within the required 40--60% duty range;
+neither this census nor any passing subset admits the repaired circuit,
+counter shared RC, full PVT coverage or PHY.

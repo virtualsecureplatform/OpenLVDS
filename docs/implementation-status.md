@@ -29,6 +29,15 @@ difference is 1.932172 V. Receipts
 `counter_low_windows_v305/125ae40984574c3a` separate successful clearing
 from the remaining startup timing failure. The stronger CLK-drive repair
 remains under test; this older case supplies no electrical admission.
+The final stopped-high case also reproduces independently at
+`fast_clear_counter_clear_diagnosis_v299/a04289ad2ebfa9cb` and
+`counter_low_windows_v305/571c6b882071675e`: identical startup misses,
+but PREPARE/RESET_N clear 163.695/199.736 ps before REQUEST reassertion
+and peak terminal difference is 1.897615 V. The original v269 campaign is
+complete, 12 cases with zero numerical errors. Its eight 40/50% cases
+pass function; all four 60% cases fail startup ordering. All twelve pass
+clearing and terminal stress. The family remains rejected at the required
+60% boundary; no cases or thresholds are removed.
 
 Independent full v306 SS0/50% stopped-low replay at
 `matched_counter_native_replay/20261107T014034Z` also confirms the unrepaired
