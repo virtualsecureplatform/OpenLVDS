@@ -12797,3 +12797,57 @@ epoch. The REQUEST taper targets the separate measured internal-gate
 overvoltage; even successful component tests must be followed by fresh
 counter routing/RC and full native startup/clear qualification. SS40 and
 the remaining clock/PVT/DCC/PHY requirements remain outstanding.
+
+### Numeric ngspice thread initialization correction (v318)
+
+The requested one-thread v314 case starts naturally at PID 2102452.
+Host `/proc` observation finds **two independently advancing worker
+threads during positive transient time**, despite the literal
+`-D num_threads=1` argument. This is an initialization failure for the
+intended comparison; it is not evidence of one-thread performance.
+The healthy frozen v313/v314 run is retained and continues unchanged.
+
+Audit of the matching Ubuntu **42+ds-3build1** package source identifies
+the cause: `main.c` stores `-D name=value` as `CP_STRING`;
+`cktsetup.c` requests `num_threads` as `CP_NUM` and falls back to two;
+`variable.c` does not coerce a string into that numeric type. Source
+archives match the SHA256 values in the official package descriptor:
+[Ubuntu source descriptor](https://archive.ubuntu.com/ubuntu/pool/universe/n/ngspice/ngspice_42+ds-3build1.dsc),
+[ngspice 42 source archive](https://archive.ubuntu.com/ubuntu/pool/universe/n/ngspice/ngspice_42+ds.orig.tar.gz).
+Archives, extracted relevant files, packaging patches and checksum
+manifest are retained under `build/tools/ngspice-42-option-audit`.
+
+New `scripts/run_numeric_threaded_binary_v318.py` uses a private
+case-local `.spiceinit`, selected through the child's
+`SPICE_USERINIT_DIR`, to issue numeric `set num_threads=1` or `2`
+before circuit setup. It preserves the exact original translated deck,
+binary, models, KLU, tolerances, save vectors and transient. No global
+backend setting or existing run is modified. It records startup-file
+loading/hash, actual worker observations, wall/child CPU time and full
+native validation. Active-thread sampling now requires positive
+transient time, so a large binary header alone is not counted as
+active simulation. Observer errors never terminate a healthy child.
+
+Retained audit
+`build/reports/numeric_thread_startup_v318/20261107T000751Z/summary.json`
+binds the verified source archives, host worker snapshots and successful
+private startup checks for both counts. These frontend checks execute
+no operating point or transient and do not prove native thread parity
+or speed. Unit `openlvds-numeric-thread-startup-host-audit-v318`,
+invocation `c6e0f0746b5f486896fecade166478a5`, exits successfully.
+Log: `build/numeric-thread-startup-host-audit-v318.log`.
+
+The initial audit attempt could not see a host PID from the container's
+PID namespace; that failed script/log and partial directory are retained
+(`build/numeric-thread-startup-audit-v318.log`). The successful audit
+uses the immutable host snapshot
+`build/reports/numeric_thread_live_v318/first-host-observation.json`
+and keeps the frontend checks in the CAD environment. No solver was
+stopped or restarted.
+
+Eight runner tests pass without skips in **2.826 s**, including actual
+private startup loading, strict numeric count selection, unchanged
+translation/arguments, rejection of header-only activity, observation
+failure tolerance and retention of partial artifacts/runtime receipts.
+Log: `build/numeric-threaded-binary-v318-tests.log`. A new full native
+comparison is still required; no speedup or backend admission follows.
