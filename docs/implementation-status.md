@@ -165,16 +165,34 @@ and every original waveform point. Complete P20/P24 metrics, baseline
 parity and the independent P24 replay gate its preparation. Four
 science tests pass with no skips. Exact top-level pin calls and the
 1 mOhm boundary are checked separately from internal RC MOS names.
-This candidate has no native transient result yet. Upstream loading,
-zero-code quarter latency and the existing fine/coarse range failures
-remain required; stronger pull-up is not a range repair or bank admission.
+The complete 25 ns native case now passes its original local gates:
+maximum period error **8.589091 ps**, loaded rising history **5.344567 ps**,
+maximum output slew 148.408624 ps and peak native terminal difference
+1.855861475 V. All eight startup events, controls, pulses and voltage
+checks remain included. Independent full replay
+`loaded_pullup_native_replay/20261107T081416Z` reproduces every metric
+for 433 MOS and binds the original prepared/source proof. The producer
+finishes final input validation and exits zero, one case and zero errors.
+Upstream loading, zero-code quarter latency and the existing fine/coarse
+range failures remain required; this local recovery pass is not bank admission.
 Preparation now exits zero at
 `loaded_pullup_recovery_v341/27234677e3639f9b`, and the original single
-case has entered native simulation under the unchanged dispatcher. Independent generated-deck
+case completes under the unchanged dispatcher. Independent generated-deck
 verification `loaded_pullup_prepared_replay/20261107T075030Z` reproduces
 the actual qualified-component circuit, all retained terminal maps and
 all 13000 original native source points byte-for-byte. This verifies the
 prepared circuit and waveform, with no P40 timing admission.
+
+The full-bank intervention `probe_pullup_two_stage_bank_v342.py` is now
+implemented: 1385 MOS/34 MIM, retaining all 1329 non-loaded MOS maps,
+86 controls, 173 programming gates, every unrelated top-level call and
+component definition. It requires the complete independently replayed
+passing P40 recovery before preparation. Its four original SS40/410 MHz
+points cover zero/50%, fine31/60%, fine31/40% and coarse1/50%, preserving
+every clock/load/stimulus and the original quarter/overlap gates. Four
+targeted tests pass in 0.461 s without skips. Preparation is validating
+inputs, with two campaign workers under the same six-engine budget.
+There is no full-bank P40 timing or range result yet.
 
 An older weak-NAND/two-copy fine bank now completes its coarse1/fine0
 point (v187 case 15, SS40/410 MHz/50% duty) and fails pulse transport.

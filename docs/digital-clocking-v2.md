@@ -15311,3 +15311,80 @@ acquires an existing dispatcher lease and enters actual native
 simulation. No P40 timing result is available at this checkpoint;
 prepared-deck equivalence and component RC passes remain separate
 from its required transient safety/recovery checks.
+
+
+### P40 native recorded-input recovery passes the original timing gates
+
+V341 completes its full 25 ns native case without error. Independent
+replay `loaded_pullup_native_replay/20261107T081416Z` reproduces all
+original metrics for 433 MOS, 62 controls and 93 programming gates,
+binding the full prepared-circuit/source proof. All eight startup events
+and both polarities remain included; no fitted offset or discarded
+cycle is used.
+
+| Loaded inverter | Maximum period error (ps) | Loaded rising history (ps) | Fine node at eighth source rising 10% crossing (V) |
+| --- | ---: | ---: | ---: |
+| P20/N16 baseline | 62.135232 | 61.848388 | 1.546892331 |
+| P24/N16 | 39.914162 | 38.341191 | 1.613986496 |
+| P40/N16 | **8.589091** | **5.344567** | **1.739756376** |
+
+The P40 case passes the original 20 ps period/repeatability gates, all
+pulse/epoch/order checks, the 250 ps downstream slew domain and every
+native stress/control check. Maximum output slew is 148.408624 ps and
+maximum terminal difference 1.855861475 V. Loaded rising delays change
+from 360.872771 ps initially to 355.528204 ps on event eight; the final
+stage changes from 121.632605 to 121.789934 ps. Loaded falling history
+is -0.028032 ps. Both signed stage sums have zero residual. At the eighth
+source falling 90% crossing, fine_node is 0.008826924 V. The stronger
+pull-up improves high-state recovery while the retained N16 still
+discharges the node close to ground.
+
+The original producer subsequently completes final input validation and
+exits zero: one case, zero errors, no PHY admission. Independent replay
+unit `openlvds-loaded-pullup-native-replay-v341`, invocation
+`51f2c518fe4b45d18732586c7a02ec5d`, exits zero; log:
+`build/loaded-pullup-native-replay-v341.log`. Helper:
+`build/replay-loaded-pullup-native-v341-20261107.py`. This pass is scoped
+to the native recorded-input component intervention. Actual upstream
+loading, quarter-period latency, fine/coarse overlap, dense/update/PVT,
+new shared RC and full DLL/PHY qualification remain open.
+
+
+### Full-bank P40 input-loading, latency and range screen (v342)
+
+`probe_pullup_two_stage_bank_v342.py` now implements the next actual-bank
+test, replacing only the loaded P20/N16 master with qualified P40/N16
+in the complete two-stage v322 bank. It has **1385 MOS and 34 MIM**:
+all 1329 non-loaded MOS maps, 86 controls, 173 programming gates,
+coarse/TG/fine components, final P20/N16 inverter and unrelated native
+definitions/calls are preserved. The real selected-node load is present;
+there is no replay voltage source or diagnostic boundary in this bank.
+New shared wires remain ideal and unqualified.
+
+The four original SS40/410 MHz native points are zero code at 50%,
+fine31 at 60%, fine31 at 40%, and coarse1/fine0 at 50%. Every original
+100 ps source waveform, 20 fF output load, programming voltage, 25 ns
+stop, eight startup cycles and native observation remains. Admission
+still requires zero-code quarter headroom, all individual original
+timing/safety/epoch gates, and positive conservative coarse/fine overlap
+on both edge directions. The comparison reuses the original v322
+aggregation limits; the existing negative overlaps remain rejected.
+
+Preparation requires the naturally complete, independently replayed
+passing v341 result and the retained complete failed v322 reference.
+The campaign has two workers at priority 1, retaining the global six
+leases and existing tickets. Four targeted tests pass in 0.461 s with
+no skips: complete native census/retention, unchanged full fixtures,
+component miswiring rejection and original failed-range/incomplete
+coverage rejection. Log: `build/pullup-two-stage-bank-v342-tests.log`;
+implementation commit: `8a76a14`.
+
+Preparation unit `openlvds-pullup-two-stage-bank-prepare-v342`, invocation
+`f3609a125f0c4666a4b40d91f8999b6b`, is validating captured inputs; log:
+`build/pullup-two-stage-bank-prepare-v342.log`. Coordinator
+`openlvds-pullup-two-stage-bank-v342`, invocation
+`199e20c0ab994efba04b4c87bdf11547`, waits for its natural successful
+completion, then starts the original producer with the exact relative
+artifact path. Helper: `build/launch-pullup-two-stage-bank-v342-20261107.py`;
+log: `build/pullup-two-stage-bank-v342.log`. No full-bank P40 timing or
+range result is available yet.
