@@ -190,13 +190,20 @@ but stress still fails at 1.959349 V. Full replay
 setter MOS and eight storage MOS. Worst setter drain/body stress is
 at 3617.5 ps, drain 1.951880 V and body -0.007469 V. The added shunt
 reduces peak stress by 19.249 mV and startup window by 36.360 ps; it
-does not clear the 1.95 V gate. The next single-variable hypothesis
-resizes only that additional MIM from 3x3 to 5x5 um, keeping 808 MOS/
-57 MIM and the full 26 ns fixture. Eleven targeted v330/v331/v332 tests
-pass. The sizing hypothesis remains unqualified; actual native timing,
-all other duty/stopped-level/PVT boundaries and new physical/shared RC
-must still pass. The four old 60% passes remain valid at those points
-but do not admit either shunt candidate across the required duty range.
+does not clear the 1.95 V gate. Resizing only that additional MIM to
+5x5 um (v332, still 808 MOS/57 MIM) now passes the full native point:
+440.492 ps startup window, all functional checks passing, and peak
+stress 1.935720 V, leaving 14.280 mV below 1.95 V. Full replay
+`request_taper_large_shunt_native_replay/20261107T061754Z` reproduces
+every original metric and exact limiting samples. The source coordinator
+also completes final input validation and exits zero. The unchanged
+circuit is now extended by v334 to SS0/SS40, 40/50/60% duty and both
+stopped levels at 410 MHz: one retained verified trace and eleven new
+native points, with eight targeted tests passing. Preparation and its
+sequential coordinator are live under the unchanged six-slot dispatcher.
+The remaining boundaries, actual added-MIM geometry, new shared RC and
+full clock/PVT/PHY qualification remain required. The old v317 60%
+passes do not qualify the resized-shunt circuit at those conditions.
 
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,
 40/50/60% duty, both-stopped-level cases without numerical errors. Only

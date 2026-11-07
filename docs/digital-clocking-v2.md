@@ -14764,3 +14764,71 @@ P10 zero-code/40%/coarse coverage and the complete eight-case campaign
 remain open. A passing fine endpoint supplies no bank, range, PVT or
 physical admission and does not establish the result of the separate
 P24 loaded-driver recovery experiment.
+
+
+### The 5x5 shunt passes the measured startup-stress boundary
+
+The unchanged v332 SS0/410 MHz/40% stopped-low circuit completes its
+full 26 ns native fixture with zero numerical errors and passes every
+original point gate. Its minimum remaining startup window is
+**440.492072 ps**. Peak MOS terminal stress is **1.935719803 V**,
+with no failed MOS among all 808 and **14.280197 mV** margin to the
+unchanged 1.95 V limit. Startup/order/arming/clearing/reassertion all pass.
+Final full input validation completes and the coordinator exits zero.
+
+Independent full replay
+`request_taper_large_shunt_native_replay/20261107T061754Z` reproduces
+every original native metric and the limiting terminal samples, including
+both stages of both REQUEST buffers. Worst setter X11 drain/body stress
+occurs at 3617.5 ps: drain 1.928238356 V, body -0.007481447 V, gate
+1.727605274 V and source 0.751902262 V. Helper
+`build/replay-request-taper-large-shunt-native-20261107.py`, unit
+`openlvds-request-taper-large-shunt-native-replay`, invocation
+`f54004ac4f454ef2b583b3c2ab398aa1`, exits zero. Log:
+`build/request-taper-large-shunt-native-replay.log`. This fixes the
+measured native component boundary; it is not a routed/all-PVT counter
+or PHY admission. No voltage, clock edge or timing/stress gate changed.
+
+### Extend the same circuit across the original counter boundaries (v334)
+
+`probe_large_shunt_counter_boundaries_v334.py` tests the exact same
+5x5-shunt libraries at SS0/SS40, 410 MHz, 40/50/60% duty and both stopped
+clock levels. It retains the complete passed v332 trace as point 0 and
+simulates only the **eleven remaining** points. Retained provenance is
+explicit in its task and retained_case receipt; the native raw trace is
+not copied, overwritten or resubmitted. Each new point preserves all
+808 MOS, 57 MIM, 100 ps RCLK, 20 ps REQUEST, the complete 26 ns fixture
+and every original observation and acceptance limit. The libraries are
+byte-identical to the passed source. No new geometry is supplied.
+
+Preparation requires the naturally terminal source with successful final
+hash validation, its passing full native remeasurement, and the independent
+exact limiting-sample replay. The run independently reproduces the retained
+point, and all twelve table entries must have complete passing native
+measurements, positive startup windows and all 808 stress entries passing.
+Missing points or a failed gate cannot admit the component. The campaign
+uses two workers, priority 1, under the unchanged global six leases.
+Stable supplies and all previous failed traces are preserved.
+
+Eight targeted v334/v332 tests pass in 0.936 s without skips. They verify
+full temperature/duty/stop coverage, exactly one retained plus eleven new
+native runs, unchanged full stimuli/probes, and rejection of incomplete,
+failed or numerically invalid stress/window results. Log:
+`build/large-shunt-counter-boundaries-v334-tests.log`; implementation
+commit `1ede3d6`. Preparation unit
+`openlvds-large-shunt-counter-boundaries-prepare-v334`, invocation
+`c8dfa0b81e994abab4318671cc6265c6`, is started. Sequential unit
+`openlvds-large-shunt-counter-boundaries-v334`, invocation
+`f4da50ee9d7841adaae440239649ea8b`, waits for successful preparation
+and starts the original producer using a container-relative path. Logs:
+`build/large-shunt-counter-boundaries-prepare-v334.log` and
+`build/large-shunt-counter-boundaries-v334.log`; helper:
+`build/launch-large-shunt-counter-boundaries-v334-20261107.py`.
+
+The eleven new native results remain pending. This screen must pass
+before committing to physical counter integration of the new capacitor.
+Fresh actual MIM/wire geometry, DRC/LVS/shared RC, 390/400 MHz and all
+five corners at 0/25/40 C remain required afterward. Even a complete
+passing twelve-point component screen cannot grant clock/DCC/DLL/PHY
+qualification. The original v317 60% results belong to the smaller circuit
+and are not substituted for tests of the resized shunt.
