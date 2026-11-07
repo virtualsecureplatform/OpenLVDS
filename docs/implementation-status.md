@@ -278,7 +278,14 @@ duty stopped low, also passes every component point gate: minimum
 remaining window 136.893239 ps and peak terminal stress 1.909668330 V.
 Full replay `large_shunt_counter_boundary_replay/20261107T074340Z`
 reproduces every 808-MOS metric and exact limiting sample. Five of twelve
-points are now complete. The remaining seven new points continue
+points are now complete. Case 5, SS0/410 MHz/60% duty stopped high,
+also passes, and full replay
+`large_shunt_counter_boundary_replay/20261107T075736Z` reproduces all
+808-MOS metrics and exact limiting samples. All six SS0 boundary
+points now pass: 40/50/60% duty at both stopped levels, retaining every
+26 ns trace and original timing/stress gate. The minimum remaining
+window is 136.893239 ps; worst terminal stress is 1.935719803 V at 40%.
+The six SS40 points continue
 under the unchanged six-slot dispatcher.
 The remaining boundaries, actual integrated counter geometry, new shared RC and
 full clock/PVT/PHY qualification remain required. The old v317 60%

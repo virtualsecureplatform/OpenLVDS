@@ -15211,3 +15211,41 @@ Helper: `build/verify-loaded-pullup-prepared-v341-20261107.py`; unit
 No native P40 transient result is available at this checkpoint. Prepared
 equivalence does not establish recovery, voltage safety, input loading,
 zero-code latency, coarse/fine range, PVT, shared-wire RC or PHY admission.
+
+
+### Complete SS0 counter boundary subset independently passes
+
+V334 case 5, SS0/410 MHz/60% duty stopped high, completes without
+error and passes every original component point gate. Full replay
+`large_shunt_counter_boundary_replay/20261107T075736Z` reproduces all
+808 native MOS metrics and exact limiting samples. Unit
+`openlvds-large-shunt-cold-sixty-high-native-replay`, invocation
+`d31cb3944d2649548b338675eff38a1f`, exits zero. Log:
+`build/large-shunt-cold-sixty-high-native-replay.log`.
+
+All six SS0 points now pass with independent native replays: the exact
+same 808-MOS/57-MIM circuit, 410 MHz, 100 ps RCLK, 20 ps REQUEST and
+full 26 ns traces. The two stopped levels agree in their startup minima
+and peaks, while both full stopped-clock clear/reassert checks also pass.
+
+| Input duty | Stopped levels passed | Minimum remaining low window (ps) | Peak terminal difference (V) |
+| --- | --- | ---: | ---: |
+| 40% | low and high | 440.492072 | 1.935719803 |
+| 50% | low and high | 358.889535 | 1.914712731 |
+| 60% | low and high | 136.893239 | 1.909668330 |
+
+Point 0 is the retained original source replay at
+`request_taper_large_shunt_native_replay/20261107T061754Z`; no duplicate
+SPICE run is counted. New points 1--5 have complete native replays at
+`large_shunt_counter_boundary_replay/20261107T065234Z`,
+`20261107T065804Z`, `20261107T073309Z`, `20261107T074340Z` and
+`20261107T075736Z`, respectively. The independent point-0 reuse check
+and original file hashes remain in the v334 retained-case record.
+
+The minimum remaining window across the SS0 subset is 136.893239 ps.
+The worst terminal difference is 1.935719803 V at 40%, retaining
+14.280197 mV below the original 1.95 V limit. These results complete
+only the six SS0 boundaries. All six SS40 points, the terminal twelve-point
+campaign/final validation, new whole-counter GDS/LVS/shared RC and
+subsequent clock/PVT/PHY qualification remain required. Whole-counter
+integration stays gated on the complete twelve-point screen.
