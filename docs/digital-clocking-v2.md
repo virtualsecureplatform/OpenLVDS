@@ -13370,3 +13370,41 @@ Replay unit `openlvds-counter-nominal-duty-native-replay-v306`, invocation
 checks selected complete case/library/code evidence, not all historical
 lineage or another circuit/PVT. The v317 repair, MIM-bank and two-stage
 bank campaigns remain separate and continue without restarts.
+
+### Both stopped levels pass the REQUEST-taper SS0 pilot subset
+
+`request_taper_counter_v317/a9021aae03b1ad1c/1` completes the original
+SS/0 C, 410 MHz, 60% duty, stopped-high 26 ns fixture. All original
+startup, phase ordering, stopped-clock clearing and native voltage gates
+pass. Full independent replay
+`request_taper_native_replay/20261107T014342Z/summary.json` reproduces
+every original metric and exact limiting sample across all 808 MOS.
+Minimum remaining guaranteed-low window is **232.797724 ps**, and
+minimum CLK low-voltage margin is **0.178552662 V**. These initial
+startup values match the already verified stopped-low case.
+
+The stopped-high whole-counter peak is now **1.917960886 V**, at
+`XD:XR:Xlow0_set_pair:X6`, drain/source, at 23134.5 ps. Both final
+REQUEST drivers peak at **1.909009944 V**, gate/body, at 23004.5 ps;
+the first-stage peak is 1.894593133 V. The unrepaired matched stopped-high
+counter reached 1.961919403 V and failed the same 1.95 V limit. No edge,
+native sample, gate or limit is changed to obtain this passing result.
+
+Replay uses the unchanged
+`build/replay-request-taper-native-20261107.py` helper with explicit case
+1. Unit `openlvds-request-taper-high-stop-native-replay-v317`, invocation
+`108907381ecc4795997505043c53b07c`, exits zero; log:
+`build/request-taper-high-stop-native-replay-v317.log`. The receipt binds
+selected complete case/library/code evidence, not every historical ancestor
+or another circuit/temperature. Together with the earlier case-0 receipt,
+both original stopped levels now independently pass at SS0. The worst
+observed margin remains case 0's **0.683363 mV** at the low0 setter.
+Both SS40 cases, new counter layout/shared RC and full clock/PVT/DCC/PHY
+qualification remain required. The candidate is not electrically admitted.
+
+The MIM fine-bank pilot's first zero-code simulation has now acquired its
+original slot and entered positive native transient time. Host process
+2116362 is verified live and advancing. The two-stage bank remains queued
+with a held live owner; the original six-engine budget and all healthy
+simulations remain unchanged. No MIM-bank or two-stage-bank point result
+exists yet; partial waveforms do not supply timing or physical admission.

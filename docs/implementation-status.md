@@ -35,14 +35,17 @@ difference; matched buffers increase that window to 234.258 ps but reach
 stopped-clock clearing pass in both cases. This is component RC with ideal
 shared wiring, not whole-counter electrical qualification.
 
-The REQUEST-only P10/N8 first-stage repair (v317) now passes its complete
-first case (SS/0 C, 410 MHz, 60% duty, stopped low). Independent replay
+The REQUEST-only P10/N8 first-stage repair (v317) now passes both complete
+SS/0 C, 410 MHz, 60% duty stopped-level cases. Its first stopped-low replay
 `request_taper_native_replay/20261107T010347Z/summary.json` reproduces every
 original metric and the exact limiting native samples. Startup margin is
 232.798 ps. REQUEST final-stage peak stress falls to 1.909018 V; the whole
 counter's limiting low0 setter reaches 1.949317 V, leaving only 0.683 mV
-below 1.95 V. The remaining three cases and whole-counter shared RC are
-required. The repair retains the final REQUEST drivers, both clock-buffer
+below 1.95 V. The stopped-high full replay
+`request_taper_native_replay/20261107T014342Z` also reproduces every metric
+and limiting sample: startup margin is 232.798 ps and peak stress is
+1.917961 V. Both SS40 cases and whole-counter shared RC remain required.
+The repair retains the final REQUEST drivers, both clock-buffer
 stages, counter logic, 20 ps REQUEST edges and all original voltage/timing
 limits. The reordered fine bank (v315) now completes its zero-code case:
 voltage, controls, eight pulses, slew and period/history pass, but quarter
@@ -64,7 +67,8 @@ proofs at `retained_mim_fine_rc_v320/ddf3c29ce3fc44da`; substitution behind
 the isolated driver is implemented in v321, with six targeted tests passing.
 The eight-case MIM pilot is prepared at
 `mim_isolated_fine_bank_v321/d7b9c9202d5285da`, with seven targeted tests
-passing and a verified live first queue owner under the unchanged dispatcher;
+passing. Its first zero-code native simulation has started and is advancing
+under the unchanged dispatcher;
 no MIM-bank native verdict exists. Fresh bank physical/RC and complete timing qualification
 remain required.
 
