@@ -19,9 +19,15 @@ Fresh actual-GDS shared-wire RC v350 also passes. The native core remains
 Both initial hot boundaries in v351 pass every original native point gate
 with independent complete replays: SS40/60% stopped high has **150.325 ps**
 remaining window and **1.913408 V** peak terminal difference; SS40/40%
-stopped low has **382.394 ps** and **1.913718 V**. Cases 0–10 now pass with
-independent complete native replays; the final case 11 remains live. The
-twelve-point campaign continues at `local_setter_shared_rc_v351/b8297d638d69090d`.
+stopped low has **382.394 ps** and **1.913718 V**. All twelve actual-RC cases
+now complete with zero errors and independent complete native replays. Worst
+remaining window is **146.981 ps**, peak terminal difference **1.913718 V**.
+The passing pilot is `local_setter_shared_rc_v351/b8297d638d69090d`.
+V354 now extends this unchanged counter to **270** combinations: five
+processes × three temperatures × three frequencies × three duties × both
+stopped levels. Twelve proven traces are retained, 258 are new. Artifact:
+`routed_counter_pvt_v354/e2ddd3b50438d28e`; two workers at priority 2 use the
+unchanged six global leases. Full counter PVT results remain pending.
 Physical/RC artifacts: `shunted_counter_physical_v349/2090d79ff6a2bad2`
 and `shunted_counter_rc_v350/b68f93094c2a579a`. Earlier failed and passing
 variants remain retained.
@@ -36,17 +42,25 @@ range repair. Current experiment v352 inserts P10/N8 restoration before
 a balanced fine driver, restores mux groups, doubles fine units and uses
 balanced coarse cells. Its full 2086-MOS/139-MIM, 86-control/266-programming-gate
 four-point screen runs at `restored_balanced_bank_v352/67d491be912b3621`.
-New bank timing results, real next-bank input loading and routed RC remain open.
+The fine31/60% live prefix already shows a **52.168 ps** rising-delay span,
+exceeding the unchanged 20 ps history gate. The first-to-second difference
+is **52.157 ps**, of which **48.113 ps** occurs in the loaded fine stage.
+Fine-node recovery reaches only about **1.430 V** at later input rising
+10% crossings, versus about **1.800 V** initially. This is retained partial
+evidence; full native timing/safety, the remaining points, real next-bank
+input loading and routed RC remain open. Original simulations continue.
 
-The bank is advancing slowly before its first edge. A new isolated-cell
+The zero-code bank is still advancing slowly before its first edge. The isolated-cell
 diagnostic v353 tests all four static decoder input states and both logic
 states of the native restoration/fine/coarse cells, with the exact v352
-library, original models, solver and fixed 1.8 V. One worker queues at
-priority 2 under the unchanged global six leases. It is a performance
-diagnosis; its 200 ps static traces cannot qualify bank timing. Artifact:
+library, original models, solver and fixed 1.8 V. All twelve diagnostic
+cases complete with zero errors: 108 records each, 2 ps median and
+1.869 ps mean accepted step, no steps below 0.01 ps. The isolated weak
+decoder stack node alone does not reproduce the bank slowdown. These
+200 ps static traces cannot qualify bank timing. Artifact:
 `bank_static_cells_v353/bcddf749044d0786`.
 
-New targeted checks v348/v349/v350/v351/v352/v353 all pass: **24 tests**, zero
+New targeted checks v348/v349/v350/v351/v352/v353/v354 all pass: **29 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
 scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
 

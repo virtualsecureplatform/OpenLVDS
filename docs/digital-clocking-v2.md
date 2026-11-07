@@ -15960,3 +15960,90 @@ zero skips, including rejection of altered interfaces and confirmation
 that tiny-step diagnostic results cannot admit a bank. Test log:
 `build/bank-static-cells-v353-tests.log`. Native diagnostic results remain
 pending; no cause or bank timing qualification is claimed.
+
+
+### Actual-RC counter pilot closes; full PVT boundary matrix starts
+
+V351 now completes **12/12**, zero errors, final input validation and a
+passing `actual_shared_counter_timing_pilot_passed` aggregate. Case 11 is
+independently reproduced in
+`local_setter_shared_rc_native_replay/20261107T120227Z`, completing the
+eleven-case coverage listed above. Its remaining window is **150.325 ps**,
+peak terminal difference **1.913368 V**. Across all twelve points, minimum
+remaining window is **146.981 ps**, maximum terminal difference
+**1.913718 V**. This closes the shared-wire startup repair pilot, not PVT
+or complete-clock qualification. Final replay unit:
+`openlvds-local-setter-final-native-replay-v351`, invocation
+`e8d10f9a967840d0932d79cc6d4391fe`; log:
+`build/local-setter-final-native-replay-v351.log`.
+
+V354 extends exactly those native cells and actual-GDS shared wires to
+**270** combinations: `tt/ff/ss/fs/sf`, 0/25/40 °C, 390/400/410 MHz,
+40/50/60% duty and both stopped-clock levels. It requires the naturally
+complete passing pilot and all twelve bound independent native replays.
+Twelve existing points are retained by exact task/deck/raw/result evidence;
+**258 new full 26 ns traces** fill the remaining combinations. All 808
+MOS/57 MIM, native terminal maps, original loads, fixed 1.8 V and original
+1 ps maximum step and solver settings remain. There is no supply sweep.
+Every original startup/clear/arming/low-window/stress gate is retained.
+
+Artifact: `routed_counter_pvt_v354/e2ddd3b50438d28e`. Unit:
+`openlvds-routed-counter-pvt-v354`, invocation
+`3ba73da00f724b10a087f75c3ce397fc`; log:
+`build/routed-counter-pvt-v354.log`. Two workers run at priority 2 within
+the unchanged global six leases and original queue aging. The campaign
+has started and native results are pending. Counter-only PVT coverage
+cannot admit the full DLL/DCC or PHY.
+
+Five targeted checks pass in **1.197 s**, zero skips, covering the exact
+270-point product, twelve retained/258 fresh tasks, mandatory full replay
+coverage and raw binding, all native fixture corners and rejection of a
+single failed point. Log: `build/routed-counter-pvt-v354-tests-final.log`.
+The initial test log is retained: its expected transient line incorrectly
+used the bank's 2 ps maximum step; the counter fixture correctly retained
+its original **1 ps** step throughout. No producer settings changed.
+
+
+### Static-cell isolation closes; coupled fine-stage history error observed
+
+V353 completes all **12** static diagnostics with zero errors. Every trace
+has **108 records**, **2 ps median**, **1.869159 ps mean** and **0.02 ps minimum**
+accepted step, with no steps below 0.01 ps. Peak terminal difference is
+at most 1.800001 V. The isolated `A=1/B=0` decoder stack node is about
+**1.336660 V**, yet that cell also takes normal steps. The weak stack
+node by itself therefore does not reproduce the full bank's slow stepping.
+The result does not exclude interactions in the coupled circuit or reveal
+the solver's limiting test; no solver or model change follows from it.
+
+The v352 fine31/60% engine has now passed its first edges. Retained native
+selected-stage prefix
+`restored_bank_prefix_stages/20261107T120737Z` contains seven rising and
+six falling paired events. Receipt
+`restored_bank_prefix_recovery/20261107T120903Z` independently reads the
+copied six-vector binary and binds its exact source/header/helper hashes.
+Observed rising delays are **721.670 ps** initially and approximately
+**669.501 ps** thereafter, a **52.168 ps** span exceeding the unchanged
+20 ps history limit. First-minus-second stage contributions are:
+
+| Stage | Difference (ps) |
+| --- | ---: |
+| Selection | −0.055 |
+| Pre-fine restoration | 3.068 |
+| Loaded fine driver | 48.113 |
+| Final restoration | 1.032 |
+
+At the initial input rising 10% crossing, `fine_node` is **1.800002 V**;
+at later corresponding crossings it is about **1.4296 V**. At the
+pre-fine output rising 10% crossings, it is **1.808111 V** initially and
+about **1.6083 V** thereafter. These observations support incomplete
+fine-stage recovery as the source of most of the startup history error.
+They do not establish a successful sizing repair or another architecture.
+The original full native run continues, including all terminal safety
+and remaining timing gates; zero, fine40 and coarse results remain needed.
+
+Frozen helpers:
+`build/capture-restored-bank-prefix-stages-20261107.py` and
+`build/analyze-restored-bank-prefix-recovery-20261107.py`. Logs:
+`build/restored-bank-fine-sixty-prefix-stages.log` and
+`build/restored-bank-fine-sixty-prefix-recovery.log`. This selected-vector
+prefix is partial diagnostic evidence and cannot qualify a bank.
