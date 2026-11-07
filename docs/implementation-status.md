@@ -5,6 +5,25 @@ The SKY130 macro implementation and reproducible build flows are present.
 
 New counter evidence (2026-11-07):
 
+The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,
+40/50/60% duty, both-stopped-level cases without numerical errors. Only
+four functional cases pass: stopped-low at 40/50%, at both temperatures.
+Every stopped-high case fails clear/reassert, and all 60% cases fail startup
+ordering; all twelve producer terminal-stress screens pass. Independent
+full SS40/60% replay confirms low0 misses its original guaranteed-low
+window by 81.334 ps in both traces, while stopped-high PREPARE clears
+24.864 ps after REQUEST reasserts. Receipts
+`strong_counter_clear_diagnosis_v266/7898a3df49531f9f` and
+`counter_low_windows_v305/2e1f49e3e7801289` retain the separate causes.
+
+Independent full v306 SS0/50% stopped-low replay at
+`matched_counter_native_replay/20261107T014034Z` also confirms the unrepaired
+matched buffer's voltage failure at nominal duty: minimum clock-low window
+improves from 249.412 to 460.242 ps, but peak stress is 1.962008 V against
+the unchanged 1.95 V limit. The REQUEST-stage repair remains required
+across the allowed clock duty range; a larger storage guard alone does
+not resolve the completed startup/clear failures.
+
 The complete SS/0 C, 410 MHz, 60% duty, stopped-high comparison confirms
 the same startup/stress tradeoff as the stopped-low comparison. Independent
 full native replay at

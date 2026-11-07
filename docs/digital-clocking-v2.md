@@ -13302,3 +13302,71 @@ Replay unit `openlvds-tapered-fine-forty-stage-v310-completed`, invocation
 `build/tapered-fine-forty-stage-v310-completed.log`. The unchanged helper
 binds selected complete case/library/code evidence, without revalidating
 every historical parent input or claiming intrinsic component delays.
+
+### Complete stronger-storage pilot and nominal-duty buffer diagnosis
+
+`strong_storage_counter_shared_rc_v232/efea3a7d04b05ec7` now completes
+all twelve original SS/0 C and SS/40 C, 410 MHz, 40/50/60% duty,
+both-stopped-level shared-RC cases with zero numerical errors. Its
+aggregate timing pilot fails. Producer reports pass native terminal
+stress in all twelve cases; only the four stopped-low 40/50% functional
+cases pass. All six stopped-high cases fail clear/reassert timing, and
+all four 60% cases fail startup ordering. This complete pilot rejects
+the stronger-storage-only alternative, without changing any circuit,
+fixture, timing/voltage limit or failed evidence.
+
+The two last SS40/60% cases (10/11) have independent full-native replay
+at `strong_counter_clear_diagnosis_v266/7898a3df49531f9f`. Every original
+metric reproduces across all 612 native MOS. The detailed clearing result
+separates the two stopped levels:
+
+| Stopped level | PREPARE clear headroom before REQUEST reassert (ps) | RESET_N clear headroom (ps) | Peak terminal difference (V) |
+| --- | ---: | ---: | ---: |
+| Low | +674.465 | +715.050 | 1.935701 |
+| High | -24.864 | +200.094 | 1.897626 |
+
+REQUEST reasserts at 23000 ps. In the stopped-high case PREPARE falls
+at 23024.864 ps, even though the final voltage after 24 ns passes. Thus
+the failure is late asynchronous clearing, not a missing final LOW or
+a native voltage failure. Replay unit
+`openlvds-strong-counter-hot-sixty-v266-completed`, invocation
+`5104f7a3a442443a9899f84abcdd067f`, exits zero; log:
+`build/strong-counter-hot-sixty-v266-completed.log`.
+
+Fixed-epoch low-window receipt
+`counter_low_windows_v305/2e1f49e3e7801289` independently reproduces
+the original low-phase voltage gate. Both stopped levels share the same
+startup result:
+
+| Assertion | Remaining guaranteed-low window (ps) | Actual CLK voltage (V) |
+| --- | ---: | ---: |
+| low0 | -81.334 | 0.458640 |
+| low1 | +15.998 | 0.129673 |
+| armed | +1.659 | 0.174634 |
+
+The first assertion misses the original CLK < 0.18 V window, independently
+of the later stopped-high clear failure. No event is reassigned to a later
+cycle and no threshold is relaxed. Window-analysis unit
+`openlvds-strong-counter-hot-sixty-windows-v305`, invocation
+`0da5abc2f6ed46ee999ed6764ea7e1b6`, exits zero; log:
+`build/strong-counter-hot-sixty-windows-v305.log`. These new independent
+receipts cover the two SS40/60% traces; the twelve-case census and other
+point verdicts remain the original producer results.
+
+The nominal-duty paired component experiment also completes its first
+SS0/410 MHz/50%, stopped-low pair (v306 cases 4/5). Independent full
+native replay `matched_counter_native_replay/20261107T014034Z` reproduces
+every original metric. The baseline passes its point gates with a
+249.412407 ps minimum clock-low window and 1.901941830 V peak stress.
+Matched buffers pass startup, phase and clearing gates and increase the
+window to 460.241823 ps, but fail terminal stress at **1.962007612 V**.
+The original 1.95 V limit is retained. The REQUEST-drive repair is
+required at nominal duty as well as the 60% endpoint; these point results
+do not qualify the ideal shared wiring or the whole counter.
+
+Replay unit `openlvds-counter-nominal-duty-native-replay-v306`, invocation
+`6d432652cc7c4f66951884cc50619a22`, exits zero; log:
+`build/counter-nominal-duty-native-replay-v306.log`. The unchanged helper
+checks selected complete case/library/code evidence, not all historical
+lineage or another circuit/PVT. The v317 repair, MIM-bank and two-stage
+bank campaigns remain separate and continue without restarts.
