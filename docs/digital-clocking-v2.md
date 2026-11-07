@@ -14077,3 +14077,40 @@ Keep the final existing 60% point, all later full clock/PVT requirements
 and all source cases. This adds an earlier evidence-driven gate within
 the already required 40--60% duty range; no passing subset or relaxed
 voltage limit admits the candidate.
+
+### Two-stage bank: 60% fine endpoint fails loaded-stage history
+
+The unchanged v322 case 1 completes the full 25 ns, eight-cycle
+SS40/410 MHz/coarse0/fine31/60% fixture. Pulses, epoch/order, native
+voltage, control settling and slew pass; maximum slew is 150.143527 ps.
+Period and repeated-delay checks fail: **62.131412 ps maximum period
+error** and **62.182435 ps rising history span**, against the unchanged
+20 ps limits. Falling history span is 0.206332 ps. Rising delay is
+613.984841--676.167276 ps and falling delay 592.028230--592.234563 ps.
+
+Independent replay
+`two_stage_bank_native_replay/20261107T035323Z` reproduces every original
+metric for 1365 MOS and 173 programming gates, with every startup cycle
+included. The signed first-minus-last rising-event decomposition is:
+
+| Stage | First-minus-last delay (ps) |
+| --- | ---: |
+| IN to selected | +3.397101 |
+| selected to loaded fine_node | +61.846054 |
+| fine_node to OUT | -3.061121 |
+| Total | +62.182034 |
+
+Stage and history sums have zero residual for both external edge types.
+The loaded fine inverter dominates this measured startup variation;
+the positive zero-code quarter margin does not solve that variation.
+This observation does not isolate a particular transistor or prove that
+the independently running MIM-cell alternative will repair it.
+
+The existing 40% and coarse cases continue unchanged. This failed 60%
+point prevents admission despite the earlier zero-code pass. Retain
+the candidate and all limits; use the new stage evidence together with
+the native MIM results before choosing a further fine-cell change.
+Unit `openlvds-two-stage-fine-sixty-native-replay`, invocation
+`fca52454fcdc474e8c837830e4ec1d3f`, exits zero; log:
+`build/two-stage-fine-sixty-native-replay.log`. The replay helper and
+original circuit/fixture/waveforms remain unchanged.

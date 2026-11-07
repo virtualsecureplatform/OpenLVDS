@@ -12,8 +12,14 @@ metric for 1365 MOS and 173 programming-gate observations. Rising delay
 is 563.902--571.119 ps, falling delay 457.010--457.265 ps, maximum slew
 109.605 ps, maximum period error 7.218 ps, and peak terminal difference
 1.873843 V. All eight startup cycles remain included. This supports the
-depth reduction at this one point; both fine31 duty endpoints, coarse
-overlap, shared-wire RC, dense codes and all-PVT qualification remain open.
+depth reduction at that point, but its completed fine31/60% case now
+fails period/history: maximum period error 62.131 ps and rising history
+span 62.182 ps, despite passing voltage, controls, pulses and 150.144 ps
+slew. Full replay `two_stage_bank_native_replay/20261107T035323Z` reproduces
+every metric and locates +61.846 ps of the +62.182 ps first-to-last rising
+delay change across the loaded fine inverter. The 40% fine endpoint,
+coarse overlap and later qualification remain open; the zero-code pass
+does not admit this candidate or resolve loaded fine-stage history.
 
 The corrected numeric-thread campaign v319 now completes all three
 native cases with zero errors. Independent full replay
