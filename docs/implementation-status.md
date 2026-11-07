@@ -19,8 +19,9 @@ Fresh actual-GDS shared-wire RC v350 also passes. The native core remains
 Both initial hot boundaries in v351 pass every original native point gate
 with independent complete replays: SS40/60% stopped high has **150.325 ps**
 remaining window and **1.913408 V** peak terminal difference; SS40/40%
-stopped low has **382.394 ps** and **1.913718 V**. The twelve-point campaign
-continues at `local_setter_shared_rc_v351/b8297d638d69090d`.
+stopped low has **382.394 ps** and **1.913718 V**. Cases 0–10 now pass with
+independent complete native replays; the final case 11 remains live. The
+twelve-point campaign continues at `local_setter_shared_rc_v351/b8297d638d69090d`.
 Physical/RC artifacts: `shunted_counter_physical_v349/2090d79ff6a2bad2`
 and `shunted_counter_rc_v350/b68f93094c2a579a`. Earlier failed and passing
 variants remain retained.
@@ -37,7 +38,15 @@ balanced coarse cells. Its full 2086-MOS/139-MIM, 86-control/266-programming-gat
 four-point screen runs at `restored_balanced_bank_v352/67d491be912b3621`.
 New bank timing results, real next-bank input loading and routed RC remain open.
 
-New targeted checks v348/v349/v350/v351/v352 all pass: **20 tests**, zero
+The bank is advancing slowly before its first edge. A new isolated-cell
+diagnostic v353 tests all four static decoder input states and both logic
+states of the native restoration/fine/coarse cells, with the exact v352
+library, original models, solver and fixed 1.8 V. One worker queues at
+priority 2 under the unchanged global six leases. It is a performance
+diagnosis; its 200 ps static traces cannot qualify bank timing. Artifact:
+`bank_static_cells_v353/bcddf749044d0786`.
+
+New targeted checks v348/v349/v350/v351/v352/v353 all pass: **24 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
 scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
 

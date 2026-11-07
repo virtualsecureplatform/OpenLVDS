@@ -32,9 +32,9 @@ and fresh actual-GDS local RC. The boundary campaign completes with zero errors;
 the complete physical reference passes strict topology/parameter preflight.
 Actual shared wiring exposed a 15.758 ps first-startup window miss at SS40/60%.
 A direct local setter-output route now passes DRC, strict LVS and fresh RC
-certification. Both hot 40%/60% boundary points pass full native simulation
-and independent replay, with 382.39/150.33 ps remaining windows. The complete
-new twelve-point screen and later PVT/integration checks remain required.
+certification. Eleven new boundary points pass full native simulation and
+independent replay, including both hot 40%/60% boundaries with 382.39/150.33 ps
+remaining windows. The final point and later PVT/integration checks remain required.
 Earlier physical and simulation artifacts, including failures, remain available
 in the implementation notes.
 

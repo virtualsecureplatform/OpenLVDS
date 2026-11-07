@@ -15904,3 +15904,59 @@ Unit `openlvds-restored-balanced-bank-v352`, invocation
 two workers at priority 1 within the global six leases. New timing remains
 pending. Actual next-bank input loading, fresh joint routing/RC, dense and
 update/periodic codes, all 15 PVT, whole-clock and PHY checks remain required.
+
+
+### Eleven actual-RC local-route counter points independently reproduced
+
+V351 cases 0–10 now complete with no case errors and every original startup,
+arming, clear, ordering and native-terminal point gate passing. Independent
+complete original-metric and limiting-sample replays cover all eleven:
+
+| Cases | Receipt under `build/reports/local_setter_shared_rc_native_replay/` |
+| --- | --- |
+| 0, 1 | `20261107T111442Z` |
+| 2–8 | `20261107T114608Z` |
+| 9, 10 | `20261107T115850Z` |
+
+The SS0/60% points retain **146.981 ps** minimum low-window margin; SS40/50%
+retains **353.162 ps**. The final SS40/60% stopped-low case 11 is still live;
+this is not yet a complete twelve-point certificate or all-PVT qualification.
+Latest replay unit: `openlvds-local-setter-midpoint-native-replay-v351-v2`,
+invocation `12e2f4b7f1b8499c839188b9578208c3`; log:
+`build/local-setter-midpoint-native-replay-v351-v2.log`. An earlier replay
+invocation used the NumPy-only interpreter and failed at KLayout import;
+its log `build/local-setter-additional-midpoint-native-replay-v351.log`
+is retained. The successful invocation uses the existing combined
+counter-physical runtime; it makes no circuit or producer changes.
+
+
+### Same-model static-cell timestep diagnosis
+
+The two v352 engines remain live and advance before the first input edge.
+Read-only bounded tail receipt
+`native_quiet_window_diagnostic/20261107T115947Z` captures 512 complete
+records from each, preserving source process identities and raw bytes.
+Mean recorded steps are **0.254/0.596 ps**. Largest voltage ranges are
+only **1.601/3.760 nV**, both at the decoder stack node near **1.336598 V**.
+This shows quiet electrical outputs during the observed windows; it does
+not establish which device or solver test limits steps.
+
+V353 isolates that hypothesis with the complete unchanged v352 library:
+four static AND2 input combinations, plus both input logic states for the
+native INV16, P10/N8, parallel fine driver and balanced coarse cell. The
+fixtures retain SS40, fixed 1.8 V, native body ties and device parameters,
+Gear/KLU, `reltol=1e-4`, `abstol=1e-12`, 20 fF load and 2 ps maximum step.
+Each **200 ps static diagnostic** saves every native MOS terminal and
+reports accepted-step statistics, voltage ranges and terminal stress.
+These fixtures neither replace nor shorten the original full bank traces.
+No altered model, initial condition or solver branch is introduced.
+
+Artifact `bank_static_cells_v353/bcddf749044d0786` queues one worker at
+priority 2 under the unchanged six global leases. Unit:
+`openlvds-bank-static-cells-v353`, invocation
+`1be19b46032b45238e76bd6cf642ff57`; log:
+`build/bank-static-cells-v353.log`. Four targeted tests pass in **0.781 s**,
+zero skips, including rejection of altered interfaces and confirmation
+that tiny-step diagnostic results cannot admit a bank. Test log:
+`build/bank-static-cells-v353-tests.log`. Native diagnostic results remain
+pending; no cause or bank timing qualification is claimed.
