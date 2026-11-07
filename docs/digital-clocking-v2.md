@@ -13905,3 +13905,59 @@ timing gate remains required before physical routing; this plan supplies
 no routed-wire DRC, native LVS, new shared RC, counter timing, PVT or PHY
 qualification. Existing frozen layout/RC producers and live experiments
 remain unchanged.
+
+### Port-specific M4/M5 escape proposal and boundary-contact proof
+
+`scripts/plan_counter_buffer_escapes_v328.py` implements a concrete escape
+proposal for the four physical buffer instances. A rises on M4 to 2 um
+above its native footprint, then runs left to its M3 spine. X receives
+M4/M5 landing pads at its actual public port and drops by 2 um on M5
+before running left to its separate spine. The M5 width is 1.6 um;
+proposed via4 cuts/pads are 1.8/2.2 um. The changed spine connection
+heights are explicit in the receipt for the future physical renderer.
+The output track offset keeps the left landing below the nearby RCLK
+bus; actual spacing and via rules still require full physical checks.
+
+Receipt `counter_buffer_escape_plan_v328/34a91d9cf9e8e4ae` removes the
+old eight M4 overlaps. It checks proposed escapes against the planned
+M4/M5 escapes, buses and landing rectangles, and against actual native
+M4/M5 polygons across all **22 instances/seven master types**. Only
+native merged polygons touching an actual same-net public port on that
+layer are allowed. There are **704 native-layer comparisons**, with
+zero foreign positive-area intersections. Actual buffer M5 drawing
+polygons are empty; native M4 interstage and port polygons remain intact.
+No counter GDS or component masks are modified by the proposal.
+
+Positive-area checks alone miss shared-edge/corner contacts.
+`scripts/verify_counter_escape_contacts_v329.py` therefore separately
+requires no such contacts between proposed different-net rectangles,
+or between buffer additions and foreign native polygons. Receipt
+`counter_escape_contact_check_v329/e2d9db89c15c5d2d` passes all 704
+native-layer checks and planned-rectangle boundary checks. The synthetic
+shared-edge/corner cases and a deliberate native interstage-edge contact
+prove this distinction; the earlier area-only checker misses those cases.
+
+Seven targeted tests pass with no skips: four in
+`tests/test_counter_buffer_escapes_v328.py`, three in
+`tests/test_counter_escape_contacts_v329.py`. They use actual native
+component masks and planned global buses, reproduce the eight old
+overlaps, and reject deliberate native interstage/global RCLK shorts as
+well as boundary-only contacts. Logs:
+`build/counter-buffer-escapes-v328-tests.log` and
+`build/counter-escape-contacts-v329-tests.log`.
+
+Both producer units exit zero. Escape-plan invocation:
+`3d92d5bbc2f346ec94a0fa4574670f70`, log
+`build/counter-buffer-escape-plan-v328.log`. Boundary-check invocation:
+`6a1d7d229b3e47bd95d16fec782c9431`, log
+`build/counter-escape-contacts-v329.log`. The receipts bind unchanged
+floorplan/material inputs and their producers; existing frozen geometry
+and native experiments remain unchanged.
+
+This resolves the identified contacts in a proposed escape geometry.
+It does not prove minimum spacing, via legality, complete connectivity,
+native DRC/LVS, shared RC, timing, PVT or PHY performance. The future
+counter renderer must consume these port-specific paths and connection
+heights rather than the old straight M4 formula, then qualify the actual
+output. The final v317 native timing point remains required before that
+routing step.

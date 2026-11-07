@@ -121,8 +121,14 @@ Further escape analysis finds eight same-row different-net M4 overlaps
 if the old straight-escape renderer is used with these new ports. Receipt
 `counter_m4_escape_conflicts/20261107T032434Z` retains their exact planned
 coordinates. The v327 plan fixes footprint fit only and is not directly
-routable by the old renderer. Port-specific signal escapes must be
-implemented and checked before GDS/DRC/LVS/shared-RC qualification.
+routable by the old renderer. A new v328 escape plan raises A on M4 and
+takes X across M5; receipt `counter_buffer_escape_plan_v328/34a91d9cf9e8e4ae`
+removes the planned positive-area overlaps. The stricter v329 receipt
+`counter_escape_contact_check_v329/e2d9db89c15c5d2d` also excludes shared-edge
+and corner contacts: 704 native-layer checks across all 22 instances,
+with seven targeted tests passing. This supplies a concrete escape plan,
+not a counter GDS; minimum spacing/vias, actual routing, DRC/LVS and fresh
+shared RC remain required after the final v317 timing gate.
 The reordered fine bank (v315) now completes its zero-code case:
 voltage, controls, eight pulses, slew and period/history pass, but quarter
 headroom is still -46.311 ps. Full native/stage replay reproduces every
