@@ -13601,3 +13601,26 @@ and positive-transient worker observation. Its first full one-thread case
 has already reproduced all native metrics; its remaining original cases
 continue. No global solver/thread setting, running circuit or electrical
 qualification changes because the legacy campaign has finished.
+
+### Corrected one-thread native parity completes both duty endpoints
+
+`numeric_native_threads_v319/3d8fb25e4ae0db0e/1` completes the unchanged
+SS40/410 MHz/fine31/40% 25 ns fixture with private numeric initialization.
+All **6032 sampled thread counts** and **5547 active-worker observations**
+are one. Initialization is loaded and unchanged, the pinned runtime and
+original deck translation match, and the complete native transient validates.
+All original point gates reproduce with **zero** timing, terminal-peak and
+control-deviation differences.
+
+Together with case 0's 60% result, both original fine31 duty endpoints now
+pass native parity with an observed single worker. This covers the same
+regular-bank component at SS40, not another bank, corner or PHY. Contended
+40% wall time is 1797.107 s, child user time 1699.965 s and system time
+2.396 s. The numeric two-thread 40% case remains required for the planned
+paired comparison; no speed ratio, global thread change or backend admission
+is inferred from these partial campaign results.
+
+The two-stage bank's first zero-code native run has also started, with
+host process 2119463 verified live and advancing. It retains the original
+four-case fixture and all startup cycles. No completed bank point verdict
+exists yet; no partial waveform supplies admission.
