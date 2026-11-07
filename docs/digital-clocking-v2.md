@@ -14733,3 +14733,34 @@ uses the container-relative artifact path. Logs:
 `build/loaded-fine-recovery-v333.log`. It uses one worker, priority 1,
 under the unchanged global six-lease dispatcher. Native results remain
 pending; no new circuit geometry or electrical admission is claimed.
+
+
+### Prepared recovery boundary and verified P10 endpoint
+
+The v333 preparation exits zero at
+`loaded_fine_recovery_v333/53cd1cb8b555e03e`. Its selected-node source
+retains all **13000** native points, from zero through 25 ns, in a
+590039-byte PWL file. The captured maps contain 413 baseline MOS and
+417 P24 MOS, with the same 62 fine controls and 93 programming gates.
+The native coordinator starts using the container-relative artifact path
+and the original full input validation. No baseline parity or P24 native
+result is yet available; both the 0.25 ps/2 mV numerical parity gates
+and all native safety/event gates remain mandatory.
+
+The separate v310 P10/N8 fine31/60% SS40/410 MHz point completes without
+numerical error and passes its individual native gates. Full replay
+`tapered_bank_stage_replay/20261107T061059Z` reproduces every original
+metric for 1511 MOS and 173 programming gates. Rising delay is
+754.371786--768.133216 ps and falling delay 833.991737--834.259818 ps;
+maximum period error is 13.728947 ps and maximum slew 101.651137 ps.
+The first-minus-last rising change is 13.761056 ps, with 12.877623 ps
+across the loaded fine inverter. Signed stage/history sums have zero
+residual on both edges. Unit
+`openlvds-tapered-p10-fine-sixty-native-replay`, invocation
+`114e453df1434766bb203ddc52250fe6`, exits zero; log:
+`build/tapered-p10-fine-sixty-native-replay.log`.
+
+P10 zero-code/40%/coarse coverage and the complete eight-case campaign
+remain open. A passing fine endpoint supplies no bank, range, PVT or
+physical admission and does not establish the result of the separate
+P24 loaded-driver recovery experiment.

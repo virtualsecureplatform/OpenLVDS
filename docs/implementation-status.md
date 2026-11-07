@@ -112,8 +112,10 @@ and all retained native terminal voltages; it must agree within 0.25 ps
 and 2 mV and pass native safety/control/pulse checks before the qualified
 P24/N16 loaded-driver experiment may run. The P24 branch has 417 MOS;
 all other retained components and the full 25 ns stimulus stay unchanged.
-Six targeted tests pass. Preparation and a sequential run coordinator are
-live, using one worker under the same six leases. This omits upstream
+Six targeted tests pass. Preparation now completes successfully at
+`loaded_fine_recovery_v333/53cd1cb8b555e03e`, retaining all 13000 native
+source points in a 590039-byte PWL file. The sequential native coordinator
+is live, using one worker under the same six leases. This omits upstream
 loading and therefore cannot qualify quarter delay, fine/coarse range or
 the full bank, even if local history improves. No native result is yet
 available from this diagnostic.
@@ -135,6 +137,13 @@ Receipt `tapered_p6_coverage/20261107T051953Z` binds all four independent
 native replays and reproduces both overlap limits and the retained
 -135.749 ps zero-code headroom failure. All four P6 points are complete;
 the P10 cases and the eight-case campaign remain in progress unchanged.
+The P10/N8 fine31/60% point now also passes all individual gates.
+Full replay `tapered_bank_stage_replay/20261107T061059Z` reproduces
+all 1511-MOS/173-control metrics and signed stage/history sums with zero
+residual: maximum period error 13.729 ps, rising/falling history spans
+13.761/0.268 ps and maximum slew 101.651 ps. Its remaining zero-code,
+40% and coarse points are still required; this endpoint does not admit
+P10 or replace the separate loaded-driver recovery experiment.
 
 The corrected numeric-thread campaign v319 now completes all three
 native cases with zero errors. Independent full replay
