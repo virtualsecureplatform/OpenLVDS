@@ -44,16 +44,16 @@ failing the unchanged 1.95 V limit. Exact-sample diagnosis
 72 REQUEST final-stage MOS, eight low0-setter MOS and 16 low0-storage MOS.
 The worst setter drain/body stress occurs at 3587.467 ps during startup,
 not only at REQUEST reassertion. This requires a 40% test of the unchanged
-REQUEST-taper candidate before physical routing; the three existing 60%
+REQUEST-taper candidate before physical routing; the four existing 60%
 passes do not cover this newly measured boundary.
 That unchanged-circuit experiment is now implemented and prepared at
 `request_taper_forty_boundary_v330/ce0c4012334987a4`, with its coordinator
 started under the existing six-slot dispatcher. It keeps byte-identical
 candidate libraries, all 808 MOS/56 MIM, full 26 ns observation and original
 limits. Five targeted tests pass; only duty and the provenance title differ
-from the completed SS0/60% fixture. This diagnostic point and the final
-existing 60% point must pass before counter routing; broad clock/PVT
-qualification remains required afterward.
+from the completed SS0/60% fixture. This diagnostic point must pass before
+counter routing; the original four-point 60% campaign has now completed
+successfully, while broad clock/PVT qualification remains required.
 
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,
 40/50/60% duty, both-stopped-level cases without numerical errors. Only
@@ -108,8 +108,9 @@ difference; matched buffers increase that window to 234.258 ps but reach
 stopped-clock clearing pass in both cases. This is component RC with ideal
 shared wiring, not whole-counter electrical qualification.
 
-The REQUEST-only P10/N8 first-stage repair (v317) now passes both complete
-SS/0 C, 410 MHz, 60% duty stopped-level cases. Its first stopped-low replay
+The REQUEST-only P10/N8 first-stage repair (v317) now completes all four
+SS0/SS40, 410 MHz, 60% duty stopped-level cases with zero errors and a
+passing component hypothesis. Its first stopped-low replay
 `request_taper_native_replay/20261107T010347Z/summary.json` reproduces every
 original metric and the exact limiting native samples. Startup margin is
 232.798 ps. REQUEST final-stage peak stress falls to 1.909018 V; the whole
@@ -123,8 +124,13 @@ reproduces all 808-MOS metrics and limiting samples: minimum startup
 window is 233.577 ps, REQUEST final-stage peak is 1.910917 V, and the
 low0 setter's drain/body peak is 1.949083 V at 23206.5 ps. Only 0.917 mV
 remains below the unchanged 1.95 V limit. The final SS40 stopped-high
-case and whole-counter shared RC remain required; three point passes
-do not establish full PVT or electrical qualification.
+case also passes; full replay `request_taper_native_replay/20261107T035935Z`
+reproduces every original 808-MOS metric and limiting sample, with
+233.577 ps startup window and 1.917129 V peak stress. All four cases
+are independently replayed and the coordinator's final input checks
+pass. The new 40% startup-stress point and whole-counter shared RC remain
+required; these four passes do not establish broad clock/PVT or electrical
+qualification.
 The repair retains the final REQUEST drivers, both clock-buffer
 stages, counter logic, 20 ps REQUEST edges and all original voltage/timing
 limits. A real 54-MOS/2-MIM REQUEST-buffer component now passes zero DRC,

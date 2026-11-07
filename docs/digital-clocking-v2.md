@@ -14160,3 +14160,38 @@ the next circuit repair; do not route the rejected candidate. A pass
 would permit the planned physical integration, not release the counter:
 other clock/duty/stopped-level/PVT points, full native geometry, spacing,
 via legality, DRC/LVS, fresh whole-counter RC and PHY gates remain open.
+
+### Original REQUEST-taper 60% campaign completes all four points
+
+`request_taper_counter_v317/a9021aae03b1ad1c` is now terminal complete:
+**four cases, zero errors**, final full input checks passed, and
+`request_taper_component_hypothesis_passed=true`. All original point
+gates pass at SS0/SS40, 410 MHz, 60% duty, both stopped levels. The
+original coordinator exits zero. Each case has also been independently
+replayed with unchanged measurement code and exact native limiting samples.
+
+| Temperature | Stopped level | Minimum startup low window (ps) | Peak stress (V) |
+| --- | ---: | ---: | ---: |
+| 0 C | 0 | 232.797724 | 1.949316637 |
+| 0 C | 1 | 232.797724 | 1.917960886 |
+| 40 C | 0 | 233.577084 | 1.949082665 |
+| 40 C | 1 | 233.577084 | 1.917128542 |
+
+The final hot stopped-high replay is
+`request_taper_native_replay/20261107T035935Z`. It reproduces every
+original metric for all 808 MOS. The limiting whole-counter device
+is `XD:XR:Xlow0_set_pair:X6`, D--S, at 23134.5 ps. REQUEST first-stage
+and final-stage peaks are 1.895754389 and 1.910909543 V, respectively;
+both parallel roles reproduce them. Unit
+`openlvds-request-taper-hot-high-native-replay-v317`, invocation
+`76ce390638944111a7245d80c53dd876`, exits zero; log:
+`build/request-taper-hot-high-native-replay-v317.log`.
+
+The minimum stress headroom across these four points is still only
+0.683 mV, in the cold stopped-low case. This complete component screen
+does not cover the newly exposed 40% startup-stress boundary, other
+clock/slew/PVT conditions or new shared wiring. The new v330 point must
+pass before the corrected floorplan/escape proposal is rendered and
+physically qualified. Shared-counter RC, broad clock/PVT, electrical and
+PHY admission flags remain false; no qualification follows from these
+four point passes alone.
