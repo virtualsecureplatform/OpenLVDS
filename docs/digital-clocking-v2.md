@@ -14114,3 +14114,49 @@ Unit `openlvds-two-stage-fine-sixty-native-replay`, invocation
 `fca52454fcdc474e8c837830e4ec1d3f`, exits zero; log:
 `build/two-stage-fine-sixty-native-replay.log`. The replay helper and
 original circuit/fixture/waveforms remain unchanged.
+
+### Unchanged REQUEST repair gets an earlier 40% startup-stress test (v330)
+
+`scripts/probe_request_taper_forty_boundary_v330.py` implements one native
+diagnostic point at SS0/410 MHz/40% duty, stopped low, 100 ps RCLK and
+the original 20 ps REQUEST edge. It uses the exact existing v317 candidate
+libraries, not a resized cell or new counter architecture. The loaded
+circuit remains 808 MOS/56 MIM. The 26 ns fixture, supplies, solver,
+models, tolerances, observations, stopped-clock protocol and all timing/
+voltage gates are retained. The test targets the independently measured
+35.117 mV startup overstress of the unrepaired matched-buffer control.
+
+Preparation independently reproduces the original complete 40% matched
+metrics and all 96 failed samples, including the 16 storage failures
+and setter X11's startup drain/body peak. It binds the unchanged v317
+manifest/libraries and immutable material ancestry, excluding that live
+campaign's mutable state and pending final case from its inputs.
+No original experiment, artifact or captured producer is changed.
+
+Context `request_taper_forty_boundary_v330/ce0c4012334987a4` contains
+2911 captured inputs, 2809 nonhistorical-raw guards, one complete deck,
+byte-identical candidate libraries and the original 808-MOS observation
+map. Per-lease guards exclude only historical diagnostic raw traces;
+preparation and the final receipt retain their full hashes. It uses
+one worker at priority 1 in the unchanged global six-slot dispatcher.
+
+Five targeted tests pass with no skips. They verify the exact new
+boundary, compare the generated deck with the completed 60% fixture
+(only title and RCLK waveform differ), regenerate the unchanged native
+terminal map, and reject incomplete or reassertion-only failure evidence.
+Log: `build/request-taper-forty-boundary-v330-tests.log`.
+
+Preparation unit `openlvds-request-taper-forty-boundary-prepare-v330`,
+invocation `c6684c2445794241857ff369fbe3fb38`, exits zero; log:
+`build/request-taper-forty-boundary-prepare-v330.log`. Run coordinator
+`openlvds-request-taper-forty-boundary-v330`, invocation
+`4fd91d98c83a43f4b94ca9f60d04bd3c`, has started; log:
+`build/request-taper-forty-boundary-v330.log`. No native result exists yet.
+
+Before counter routing, require both this new point and the final
+existing v317 60% point to pass all unchanged gates. If the new point
+fails, use its exact native setter/storage/REQUEST samples to select
+the next circuit repair; do not route the rejected candidate. A pass
+would permit the planned physical integration, not release the counter:
+other clock/duty/stopped-level/PVT points, full native geometry, spacing,
+via legality, DRC/LVS, fresh whole-counter RC and PHY gates remain open.

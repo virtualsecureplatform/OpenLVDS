@@ -46,6 +46,14 @@ The worst setter drain/body stress occurs at 3587.467 ps during startup,
 not only at REQUEST reassertion. This requires a 40% test of the unchanged
 REQUEST-taper candidate before physical routing; the three existing 60%
 passes do not cover this newly measured boundary.
+That unchanged-circuit experiment is now implemented and prepared at
+`request_taper_forty_boundary_v330/ce0c4012334987a4`, with its coordinator
+started under the existing six-slot dispatcher. It keeps byte-identical
+candidate libraries, all 808 MOS/56 MIM, full 26 ns observation and original
+limits. Five targeted tests pass; only duty and the provenance title differ
+from the completed SS0/60% fixture. This diagnostic point and the final
+existing 60% point must pass before counter routing; broad clock/PVT
+qualification remains required afterward.
 
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,
 40/50/60% duty, both-stopped-level cases without numerical errors. Only
