@@ -254,8 +254,14 @@ zero-area Text-marker XOR artifact, with unchanged fabrication geometry.
 The corrected checker is a new immutable version; no captured producer
 or failed artifact is overwritten. Five CAD tests pass with no skips;
 science discovery reports exactly five explicit missing-KLayout skips.
-This is component material only: new counter placement, wiring, LVS,
-shared RC and all-PVT timing remain unqualified.
+Fresh actual-GDS local RC also passes at
+`counter_output_mim5_rc_v337/75108e50b46db51f`: two positive resistors,
+five parasitic capacitors, one unchanged native 5x5 MIM, exact reduction
+regeneration and strict wire-collapsed native LVS. Independent terminal
+current witnesses have zero residual/error; no algebraic nodes are
+eliminated in this small component. Three targeted CAD admission tests
+pass with no skips. This is component material/local RC only: new counter
+placement, wiring, LVS, shared RC and all-PVT timing remain unqualified.
 
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,
 40/50/60% duty, both-stopped-level cases without numerical errors. Only

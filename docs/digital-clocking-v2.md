@@ -15036,3 +15036,35 @@ Logs: `build/counter-output-mim5-v336-final-tests.log` and
 This qualifies the standalone native capacitor material only. It adds
 no counter placement/wiring/shared-RC or native PVT timing qualification.
 The failed v335 artifact and all captured producer sources remain intact.
+
+
+### Actual-GDS local RC of the additional native 5x5 MIM passes
+
+`qualify_counter_output_mim5_rc_v337.py` now binds the complete v336
+physical artifact and its output hashes, then freshly extracts distributed
+RC from its actual GDS. It requires the same Y/VGND electrode order,
+positive/passive R/C, exactly one native MIM with preserved parameters,
+exact reduction regeneration, independent terminal-current witnesses
+and strict wire-collapsed native LVS. Prior or partial extraction targets
+are retained rather than overwritten.
+
+Artifact `counter_output_mim5_rc_v337/75108e50b46db51f` completes and
+passes: **2 resistors, 5 parasitic capacitors and one unchanged native
+5x5 MIM**, with no MOS. Raw and reduced networks are elementwise passive.
+The exact reducer eliminates zero algebraic nodes and retains both
+resistors. Four independent clamped-terminal DC witnesses have zero
+maximum current error and solver residual; invariant capacitor/device/
+port statements match. Strict native topology LVS uniquely matches.
+Eight local output hashes and both extracted netlist hashes are also
+checked after completion. This is a component RC proof, not a transient
+clock or full counter shared-wire qualification.
+
+Extraction: `build/extracted/0ac6c328fc43d164/`
+`openlvds_counter_output_mim5_v336/`. Three CAD tests pass in 0.003 s,
+with no skips, covering actual passed material and rejection of partial
+states, changed dimensions/inventory/masks/labels and failed DRC/LVS.
+Log: `build/counter-output-mim5-rc-v337-tests.log`. Unit
+`openlvds-counter-output-mim5-rc-v337`, invocation
+`8467980eefb8473e8147bb2a633634ea`, exits zero after final input validation;
+log: `build/counter-output-mim5-rc-v337.log`. The full v334 boundary
+screen remains required before whole-counter placement/integration.
