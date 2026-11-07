@@ -16341,3 +16341,65 @@ Unit: `openlvds-completed-mim23-native-replays-v321`, invocation
 `build/completed-mim23-native-replays-v321.log`. This is read-only native
 replay work, not extra SPICE simulations or a substitute for the current
 full-bank qualification.
+
+
+### Low-duty full-bank point and observer control independently verified
+
+The original v352 fine31/40% point completes with all individual native
+gates passing: rising/falling history spans **7.694523/0.376763 ps**,
+maximum period error **7.681576 ps**, maximum output slew **133.204038 ps**.
+Complete independent native replay
+`pullup_bank_native_replay/20261107T134917Z` reproduces all original
+**2086-MOS/266-programming-gate** metrics and stage histories. Unit:
+`openlvds-restored-bank-fine-forty-native-replay-v352`, invocation
+`24d45ed06be44492a6866b07e2c127a2`; log:
+`build/restored-bank-fine-forty-native-replay-v352.log`. This does not
+remove the same bank's completed 60% history failure or establish the
+new v359 bank's zero/coarse/duty results.
+
+The v358 observer control (`off`) now completes the full **200 ps quiet
+diagnostic**, with zero error. It has **1429 records**, versus the frozen
+original prefix's 1431 records ending just before 200 ps. At all original
+sample times, every one of **6854 saved voltage vectors** matches within
+**5.409007×10⁻¹³ V**; the largest difference is at `fine_node`. The
+observer also reproduces the very small accepted steps:
+
+| Statistic | Logging-off observer |
+| --- | ---: |
+| Minimum step | 0.000488281 ps |
+| Median step | 0.031250000 ps |
+| Mean step | 0.140056022 ps |
+| Maximum step | 2 ps |
+| Steps below 0.01 ps | 319 |
+| Wall time including model/startup work | 1607.030 s |
+
+Result:
+`build/reports/step_observer_prefix_diagnostic/20261107T130431Z/off/summary.json`.
+The source-current, device and truncation observations are intentionally
+absent with logging disabled. The logging-on run remains pending. This
+control supports using the observer to investigate the original quiet
+stepping; it does not identify the cause, qualify active clock transport
+or replace the production runtime.
+
+
+### Full-bank verification follows each naturally completed point
+
+Read-only coordinator
+`build/verify-bank-points-as-complete-v359-20261107.py` watches the actual
+original v359 Python process identity. As each atomic point summary
+appears, it invokes frozen helper
+`build/replay-pullup-restored-bank-native-v359-20261107.py` to regenerate
+the prepared circuit/maps/fixtures, bind the completed original files and
+reproduce every original **2126-MOS/266-programming-gate** measurement.
+Correctly polarized eight-event stage histories are checked where present.
+For a failed point with missing/extra crossings, the verifier retains the
+original failed metrics and records the available event counts instead
+of fitting an epoch or declaring the circuit passing. Producer errors
+and replay errors are retained explicitly. It starts no additional SPICE
+simulations and changes neither running jobs nor their priorities.
+
+Unit: `openlvds-full-bank-completion-replays-v359`, invocation
+`0143392dd65c4869945b78f0fc8866fa`; log:
+`build/full-bank-completion-replays-v359.log`. Queue receipt:
+`pullup_restored_bank_replay_queue/20261107T135817Z`. No new-bank point
+has completed yet; full-bank qualification remains pending.

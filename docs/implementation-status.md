@@ -94,8 +94,11 @@ campaigns continue with the pinned production engine. An unmodified-data
 reference v357 captures the first 200 ps of the original zero-code run:
 **1431 records × 6855 vectors**, with **0.000488 ps** minimum accepted step.
 The copied point-count header is normalized and original header/payload
-hashes are retained. The logging-off/on observer comparisons are queued
-under the unchanged six leases; neither artifact qualifies bank timing.
+hashes are retained. The observer's completed logging-off run matches all
+6854 voltage vectors at the original sample times within **5.409×10⁻¹³ V**
+and reproduces the tiny-step behavior. Its logging-on run remains pending
+under the unchanged six leases; the cause is not yet established.
+These quiet-prefix checks do not qualify bank timing.
 
 New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359 all pass: **48 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
