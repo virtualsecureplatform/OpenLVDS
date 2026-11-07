@@ -3,6 +3,27 @@
 The SKY130 macro implementation and reproducible build flows are present.
 **The link is still in electrical bring-up and is not released.**
 
+New counter evidence (2026-11-07):
+
+The complete SS/0 C, 410 MHz, 60% duty, stopped-high comparison confirms
+the same startup/stress tradeoff as the stopped-low comparison. Independent
+full native replay at
+`matched_counter_native_replay/20261107T005528Z/summary.json` reproduces
+every original measurement for v306 cases 2 and 3. The baseline has
+17.580 ps minimum remaining clock-low window and 1.893681 V peak terminal
+difference; matched buffers increase that window to 234.258 ps but reach
+1.961919 V, exceeding the unchanged 1.95 V limit. Phase ordering and
+stopped-clock clearing pass in both cases. This is component RC with ideal
+shared wiring, not whole-counter electrical qualification.
+
+The REQUEST-only P10/N8 first-stage repair (v317) has started its first
+native case; no completed repair verdict exists yet. It retains the final
+REQUEST drivers, both clock-buffer stages, counter logic, 20 ps REQUEST
+edges and all original voltage/timing limits. The reordered fine bank
+(v315) is still running its zero-code case. Neither candidate is admitted
+by partial waveforms. Clock coverage remains 390/400/410 MHz with
+40/50/60% input duty, fixed supplies, and five process corners at 0/25/40 C.
+
 Current architecture work (2026-11-06):
 
 The current measured balanced b2 bank passes the component-model three-point
