@@ -14484,9 +14484,16 @@ The v331 preparation completes successfully at
 `openlvds-request-taper-output-shunt-prepare-v331`, invocation
 `62df1404795549f9b06de2097f0c1b57`, exits zero. The native coordinator
 `openlvds-request-taper-output-shunt-v331`, invocation
-`296cc9e4c66647a4a9794a89686c0268`, starts the prepared producer after
-that verified successful preparation. It preserves the original full
-input validation and queues through the existing lease mechanism.
+`296cc9e4c66647a4a9794a89686c0268`, attempted the prepared producer after
+that verified successful preparation but failed before native execution: a
+host absolute path was not visible inside Apptainer. Its failed helper/log
+are retained. The prepared artifact had no state or partial native run.
 Logs are `build/request-taper-output-shunt-prepare-v331.log` and
 `build/request-taper-output-shunt-v331.log`. Preparation and coordinator
 startup supply no native pass result; the repaired point remains pending.
+The corrected direct invocation uses the container-relative artifact path
+under unit `openlvds-request-taper-output-shunt-native-v331`, invocation
+`8b23526eb28046749ac6d376b9d46dc4`. Log:
+`build/request-taper-output-shunt-native-v331.log`. The producer retains
+its original full input validation and existing dispatcher lease; no circuit,
+input checks, old simulation or captured artifact is changed.
