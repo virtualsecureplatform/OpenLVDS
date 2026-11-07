@@ -16,13 +16,30 @@ difference; matched buffers increase that window to 234.258 ps but reach
 stopped-clock clearing pass in both cases. This is component RC with ideal
 shared wiring, not whole-counter electrical qualification.
 
-The REQUEST-only P10/N8 first-stage repair (v317) has started its first
-native case; no completed repair verdict exists yet. It retains the final
-REQUEST drivers, both clock-buffer stages, counter logic, 20 ps REQUEST
-edges and all original voltage/timing limits. The reordered fine bank
+The REQUEST-only P10/N8 first-stage repair (v317) now passes its complete
+first case (SS/0 C, 410 MHz, 60% duty, stopped low). Independent replay
+`request_taper_native_replay/20261107T010347Z/summary.json` reproduces every
+original metric and the exact limiting native samples. Startup margin is
+232.798 ps. REQUEST final-stage peak stress falls to 1.909018 V; the whole
+counter's limiting low0 setter reaches 1.949317 V, leaving only 0.683 mV
+below 1.95 V. The remaining three cases and whole-counter shared RC are
+required. The repair retains the final REQUEST drivers, both clock-buffer
+stages, counter logic, 20 ps REQUEST edges and all original voltage/timing
+limits. The reordered fine bank
 (v315) is still running its zero-code case. Neither candidate is admitted
 by partial waveforms. Clock coverage remains 390/400/410 MHz with
 40/50/60% input duty, fixed supplies, and five process corners at 0/25/40 C.
+
+The original regular-pair bank (v263) completes all four native cases with
+no numerical errors, but fails the component hypothesis: zero-code quarter
+headroom is -57.034 ps and conservative fine/coarse overlap is
+-44.976/-121.970 ps rising/falling. Independent full coarse-case replay
+`regular_regenerated_stages_v300/3f782ffe5c4d326b` reproduces all original
+metrics. Its guarded physical, transport, dense, PVT and full-range followers
+reject the failed source. They are retained without reruns or admission.
+The retained 2x2/2x3 MIM fine cells now both pass current native/Schur RC
+proofs at `retained_mim_fine_rc_v320/ddf3c29ce3fc44da`; substitution behind
+the isolated driver still requires a new bank pilot and fresh bank qualification.
 
 Current architecture work (2026-11-06):
 

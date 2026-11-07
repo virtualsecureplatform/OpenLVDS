@@ -13039,3 +13039,51 @@ context file and original input remains unchanged. Log:
 remain unavailable for bank admission until a new controlled bank pilot
 passes zero delay, both duty endpoints and coarse overlap, followed by
 fresh bank physical/RC, dense/update and full PVT/clock checks.
+
+### Completed regular-bank pilot and first REQUEST-taper result (2026-11-07)
+
+`regular_regenerated_bank_v263/7fa8c46ce9db679e` completes all four
+original native cases without numerical errors. Its first-coarse point
+passes every individual input/output timing, 250 ps slew, period/history,
+native voltage and control gate. Rising delay is 757.282--760.177 ps and
+falling delay is 856.921--856.938 ps. Maximum output slew is 80.105 ps,
+maximum period error is 2.894 ps, and all eight pulses remain present.
+Complete coarse-case replay `regular_regenerated_stages_v300/3f782ffe5c4d326b`
+reproduces all original metrics and all eight signed stage histories.
+Log: `build/regular-coarse-native-stages-v300-completed.log`; unit
+`openlvds-regular-coarse-native-stages-v300-completed`, invocation
+`531f1c26a6314417838bf4aa6801d7bd`, exit zero.
+
+The aggregate component hypothesis nevertheless fails. Conservative
+overlap between both fine31 duty endpoints and coarse1 is **-44.976 ps
+rising / -121.970 ps falling**, in addition to the previously verified
+zero-code quarter headroom of **-57.034 ps**. Thus the original regular
+bank needs both latency and range repair. Its existing physical,
+transport, dense, PVT and full-range followers terminate on their source
+gates; their failure records and all native artifacts remain retained.
+The separate v310/v315 variants continue unchanged. An individual
+coarse-point pass does not admit a codebook or the bank.
+
+`request_taper_counter_v317/a9021aae03b1ad1c/0` completes the original
+SS/0 C, 410 MHz, 60% duty, stopped-low 26 ns fixture. It passes every
+original point check: startup, phase order, asynchronous clearing,
+terminal stress and control behavior. Independent replay
+`request_taper_native_replay/20261107T010347Z/summary.json` reproduces all
+original metrics and exact limiting samples, with 232 inputs bound.
+The read-only helper is `build/replay-request-taper-native-20261107.py`;
+log `build/request-taper-first-native-replay-v317.log`, unit
+`openlvds-request-taper-first-native-replay-v317`, invocation
+`3c34f128623c43c2988bf858e586879a`, exit zero.
+
+Minimum remaining guaranteed-low window is **232.798 ps**, preserving
+nearly all the matched driver's 234.258 ps while reducing the final
+REQUEST driver's worst gate/body difference to **1.909018 V** at
+23004.5 ps (both parallel drivers). The whole-counter peak is now
+`XD:XR:Xlow0_set_pair:X11`, drain/body **1.949316637 V** at 23203.5 ps,
+only **0.683363 mV** below the unchanged 1.95 V limit. The first-stage
+REQUEST peak is 1.894603 V. These are full-trace native values, without
+voltage clipping, timing exclusions or a changed REQUEST slew.
+
+This first point is not an all-corner repair verdict. The stopped-high
+SS0 and both SS40 cases remain required, followed by actual whole-counter
+layout/shared RC and the complete clock/PVT/DCC qualification chain.
