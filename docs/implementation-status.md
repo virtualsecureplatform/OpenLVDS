@@ -68,6 +68,15 @@ at 40%, versus 61.846 ps at 60%. This same-circuit duty comparison
 supports recovery-state dependence; it does not isolate device causality
 or establish a full-chain calibration error. The 60% failure remains.
 
+The MIM-only v321 2x2 zero-code point also completes and fails quarter
+headroom at -45.665 ps, while its other point gates pass. Independent
+full replay `mim_bank_stage_replay/20261107T051122Z` reproduces every
+1467-MOS/173-control metric and signed stage sum with zero residual:
+rising delay 566.303--570.220 ps, falling delay 655.404--655.421 ps,
+maximum slew 79.712 ps and maximum period error 3.917 ps. Replacing
+fine capacitors alone does not clear the four-stage zero-code latency
+gate. Remaining original MIM cases continue unchanged.
+
 The v310 P6/N4 first-restorer variant now completes its SS40/410 MHz,
 zero-code/50% point and fails quarter headroom at **-135.749 ps**.
 All other point gates pass. Full replay

@@ -14443,3 +14443,37 @@ is intended to reduce the measured output excursion; native timing and
 stress must prove it. Added capacitor geometry, routed connection and
 fresh RC remain required afterward. The unchanged v317 candidate is
 blocked from routing by the completed v330 failure.
+
+
+### Native output-shunt trial implemented; MIM zero-code result
+
+`probe_request_taper_output_shunt_v331.py` implements the single added
+3x3 um native MIM hypothesis at the completed SS0/410 MHz/40% stopped-low
+boundary. All original component-RC libraries, 808 native MOS terminal
+maps and the complete 26 ns stimulus/saved vectors are preserved; only
+the extra low0_sn-to-VGND capacitor and fixture provenance title change.
+The native inventory is 808 MOS/57 MIM. Preparation requires the complete
+failed v330 replay and all captured input hashes. It uses one worker,
+priority 1, under the unchanged global six-engine dispatcher. Eight
+targeted v330/v331 tests pass in 0.494 s with no skips; log:
+`build/request-taper-output-shunt-and-boundary-tests.log`. Code commit
+`02c729d` retains the immutable producer and circuit-preservation tests.
+The source candidate is still rejected; no timing or physical gate is
+admitted by implementing the trial.
+
+Separately, the v321 2x2-MIM zero-code point completes at SS40/410 MHz/50%.
+It fails only its quarter-period point gate: headroom is -45.664776 ps.
+Independent full replay `mim_bank_stage_replay/20261107T051122Z`
+reproduces all original metrics for 1467 MOS and 173 programming gates.
+Rising delay is 566.303393--570.220116 ps, falling delay
+655.404255--655.420873 ps, maximum slew 79.712219 ps and maximum period
+error 3.916878 ps. Signed four-stage and history sums have zero residual
+on both edge types. Fine-cell replacement alone has not removed the
+four-stage zero-code latency failure; the remaining original cases
+continue without gate changes or restarts.
+
+Read-only helper `build/analyze-mim-bank-stages-v321-20261107.py`, unit
+`openlvds-mim-zero-native-stage-replay-v321`, invocation
+`8b5ee808255c4402b079b2c347620983`, exits zero. Log:
+`build/mim-zero-native-stage-replay-v321.log`. No full-family/PVT/shared-RC
+or PHY admission follows from this single completed zero-code point.
