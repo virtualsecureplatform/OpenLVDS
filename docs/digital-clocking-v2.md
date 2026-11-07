@@ -14032,3 +14032,48 @@ Unit `openlvds-numeric-thread-native-comparison-replay`, invocation
 `ab2c1ea7ed384626bb19136f46a49e45`, exits zero; log:
 `build/numeric-thread-native-comparison-replay.log`. The original v319
 coordinator also exits zero after its final full input checks.
+
+### Matched-buffer 40% boundary exposes additional startup stress
+
+The v306 cases 8/9 complete SS/0 C, 410 MHz, 40% duty, stopped low,
+100 ps RCLK and the original 20 ps REQUEST fixture. Independent full
+replay `matched_counter_native_replay/20261107T034822Z` reproduces every
+original metric. Baseline case 8 passes all point checks with minimum
+remaining clock-low window 376.867905 ps and terminal peak 1.946433774 V.
+Matched case 9 passes startup ordering and clearing, and improves that
+window to 564.899117 ps, but fails terminal stress at 1.985117147 V.
+
+Exact-sample receipt `matched_counter_stress/20261107T034837Z` reproduces
+all **96 failed device peaks**: 36 in each REQUEST final stage, eight
+in `Xlow0_set_pair`, and 16 in `Xlow0_q`. The worst groups are:
+
+| Native group | Peak difference (V) | Time (ps) | Terminal pair |
+| --- | ---: | ---: | --- |
+| low0 setter X11 | 1.985117147 | 3587.466533 | D--B |
+| low0 storage | 1.979144126 | 3591.466533 | G--B |
+| REQUEST final stages | 1.962066696 | 3404.5 | G--B |
+
+The limiting setter has drain 1.977608036 V and local body
+-0.007509111 V. At that sample, CLK is 0.006095 V, REQUEST 1.8 V,
+internal request_i 1.445217 V and low0 0.017913 V. This is an early
+startup excursion, distinct from the previously diagnosed 60% REQUEST
+reassertion peak near 23000 ps. The 40% failure also includes storage
+devices that were absent from that earlier 80-device failure census.
+These are observed native terminal samples; an intrinsic-device causal
+model or repair success is not inferred from them.
+
+Both read-only units exit zero. Full replay invocation:
+`5c9f39a531a64dfe8ee08736dfcf3ad2`, log
+`build/matched-counter-forty-low-native-replay-v306.log`. Stress diagnosis
+invocation: `ae81217092964e55babf62611282e0fc`, log
+`build/matched-counter-forty-stress-v306.log`. The new exact-sample helper
+`build/diagnose-matched-counter-forty-stress-20261107.py` is a separate
+case-9 copy; the frozen earlier case-1 helper is unchanged.
+
+The measured startup peak is 35.117 mV above the unchanged 1.95 V limit.
+Therefore front-load a test of the unchanged REQUEST-taper candidate
+at this exact SS0/40% stopped-low boundary before physical routing.
+Keep the final existing 60% point, all later full clock/PVT requirements
+and all source cases. This adds an earlier evidence-driven gate within
+the already required 40--60% duty range; no passing subset or relaxed
+voltage limit admits the candidate.

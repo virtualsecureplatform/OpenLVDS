@@ -28,6 +28,19 @@ backend and electrical admission remain false.
 
 New counter evidence (2026-11-07):
 
+The newly completed SS0/410 MHz/40% stopped-low matched-buffer pair
+reveals a worse startup-stress boundary. Full replay
+`matched_counter_native_replay/20261107T034822Z` reproduces both cases:
+the baseline passes with 376.868 ps startup window and 1.946434 V peak;
+matched buffers improve that window to 564.899 ps but reach 1.985117 V,
+failing the unchanged 1.95 V limit. Exact-sample diagnosis
+`matched_counter_stress/20261107T034837Z` reproduces 96 failed devices:
+72 REQUEST final-stage MOS, eight low0-setter MOS and 16 low0-storage MOS.
+The worst setter drain/body stress occurs at 3587.467 ps during startup,
+not only at REQUEST reassertion. This requires a 40% test of the unchanged
+REQUEST-taper candidate before physical routing; the three existing 60%
+passes do not cover this newly measured boundary.
+
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,
 40/50/60% duty, both-stopped-level cases without numerical errors. Only
 four functional cases pass: stopped-low at 40/50%, at both temperatures.
