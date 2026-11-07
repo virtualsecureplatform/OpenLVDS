@@ -13209,3 +13209,56 @@ and system time 2.676 s. The remaining 40% one-thread and two-thread cases
 are required for the planned comparison. These observations establish that
 numeric initialization controls actual native workers, not a speed benefit.
 No global solver/thread setting is changed; backend admission remains false.
+
+### Direct two-level mux and two-inverter fine-path experiment (v322)
+
+The complete v315 zero-code replay still misses the fastest quarter period
+by 46.311 ps despite passing every other point gate. The next independent
+latency experiment is implemented in `scripts/probe_two_stage_fine_bank_v322.py`.
+It removes the four group INV8 pairs between the TG levels, connects both
+original parallel root TGs in each branch directly to that branch's
+first-level output, and removes the first post-fine P20/N16 inverter.
+The original loaded isolation inverter and final P20/N16 driver remain.
+
+The selected path becomes:
+
+`coarse tap (+) -> first TG -> parallel root TGs -> selected (+) ->
+P20/N16 with original fine load -> fine_node (-) -> P20/N16 -> OUT (+)`.
+
+The removed group inversion and post-fine inversion form a pair, preserving
+noninverting public behavior. Both root TG copies are rewired for all four
+branches; no stale regenerated/restored_b node remains. The experiment
+retains the original MOSCAP fine cells to isolate path depth from the
+separate v321 MIM substitution. Intermediate regeneration previously helped
+a different loaded bank; removing it is a hypothesis that requires fresh
+native pulse/slew/timing evidence, not an assumed improvement.
+
+The actual native census is **1365 MOS and 34 MIM**, removing 164 MOS and
+nine local guard MIM devices with the deleted macros. Every remaining
+component definition, transistor size/model and local RC network is
+byte-preserved. Only the eight root TG data maps and final-driver input
+map change among retained devices. All **173 actual programming-gate maps
+and 86 logical controls** are unchanged; all remaining native MOS terminals
+are saved. First-level outputs are also explicitly observed.
+
+Preparation requires the complete failed regular-bank source and the exact
+independent v315 zero-code stage diagnosis, including passing pulse,
+voltage, control, period/history and 250 ps slew gates. Four cases retain
+SS40/410 MHz, zero/50%, fine31/60%, fine31/40%, coarse1/50%, eight full
+startup cycles, 25 ns, 100 ps input, 20 fF output, fixed 1.8 V, original
+Gear/tolerances and every existing native gate. Both-edge conservative
+coarse overlap remains required. New inter-macro wires are ideal;
+component timing cannot qualify whole-bank routing or the PHY.
+
+All **six targeted tests pass without skips in 3.323 s**, checking actual
+native inventory and unchanged components/maps, both parallel root paths,
+polarity across all sixteen coarse selections, complete original fixtures
+and terminal observations, rejected partial wiring and failed/missing
+admission evidence. Log: `build/two-stage-fine-bank-v322-tests.log`.
+Source preparation is live under `openlvds-two-stage-fine-bank-prepare-v322`,
+invocation `a50f5767b0df446090661ba44929c825`; log:
+`build/two-stage-fine-bank-v322-prepare.log`. The prepared runner will use
+one priority-1 worker under the unchanged six-engine budget, with full
+historical binding before/after and all nonhistorical-raw guards per lease.
+Existing and partial experiments cannot be restarted. No new native
+two-stage-bank timing verdict or physical/RC admission exists yet.
