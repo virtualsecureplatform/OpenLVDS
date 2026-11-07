@@ -16132,3 +16132,97 @@ helper `build/replay-routed-counter-pvt-native-v354-20261107.py` accepts
 explicit completed fresh case IDs and binds the same actual-GDS RC
 certificate. The complete 270-point matrix remains running; this single
 new point does not establish full counter PVT or clock/PHY admission.
+
+
+### Recovery baseline independently matches all retained native terminals
+
+V355 baseline case 0 completes its full 25 ns trace with zero errors.
+All **622 native MOS/186 programming gates**, all eight startup events
+and all original selected-node source samples remain. Maximum native
+crossing error against the completed full bank is **0.037923 ps**;
+maximum terminal-voltage error is **0.725312 mV**, passing the additional
+0.25 ps/2 mV parity gates. Native peak terminal difference is
+**1.837755 V**, output slew **133.185680 ps**. Voltage, controls and pulse
+checks pass. Rising span **52.173737 ps** and period error **52.162225 ps**
+reproduce the failed timing history rather than admitting the baseline.
+
+Independent complete receipt
+`restored_fine_recovery_native_replay/20261107T124325Z` reproduces all
+metrics, full native parity, all-sample source regeneration and the exact
+limiting native sample. Unit:
+`openlvds-restored-recovery-baseline-native-replay-v355`, invocation
+`0defc11f355b403ca7b11bc24c044568`; log:
+`build/restored-recovery-baseline-native-replay-v355.log`. Frozen generic
+helper `build/replay-restored-fine-recovery-v355-20261107.py` accepts explicit
+completed recovery case IDs. The passing baseline gate releases the
+two-P40/N16 intervention. Its native result remains pending; upstream
+loading, zero-code quarter headroom and full code-range checks remain.
+
+The new counter's 390 MHz/40% stopped-high/low cases 8 and 9 also complete
+and independently reproduce all original metrics in
+`routed_counter_pvt_native_replay/20261107T123828Z`. Unit
+`openlvds-routed-counter-390-forty-native-replay-v354`, invocation
+`a2ddfc88f06c428591243c8b79c32e60`; log:
+`build/routed-counter-390-forty-native-replay-v354.log`. Case 7's independent
+receipt is `routed_counter_pvt_native_replay/20261107T122451Z`, unit
+`openlvds-routed-counter-first-new-low-native-replay-v354`, invocation
+`fc99a5c0128b4346ba42051bd0ac24c9`. These are selected points of the still
+running 270-point matrix, not full PVT admission.
+
+
+### Removable source observer and complete quiet-prefix reference
+
+The full zero-code bank still advances slowly before its first edge,
+where isolated native cells took ordinary steps. Inspection of the pinned
+ngspice-42 source shows `NIiter` enforces at least **100 iterations** before
+returning its iteration-limit error; the transient driver cuts a
+nonconverged step by eight. Neither fact proves that this path causes
+the observed slowdown, rather than charge truncation or another cost.
+
+V356 builds a **separate diagnostic executable** from the already pinned
+Ubuntu source/patch archives. It adds opt-in, bounded observations at
+Newton success/limit, transient rejection/truncation decisions, per-model
+truncation and native BSIM4-generation/capacitor charge states. The
+observation proof strips every marked logging region and requires exact
+recovery of the original package source. It preserves every original
+charge call and all original iteration limits, tolerances and step rules.
+Compiler and executable provenance are recorded; a new build still needs
+numerical comparison with the production runtime before attributing any
+observations to it. Qualification jobs continue on their pinned runtime.
+
+Build artifact:
+`build/tools/ngspice42-step-observer-v356/67d47f2680c332a2`. Unit:
+`openlvds-step-observer-build-v356`, invocation
+`79793a7eba134838a4910e2a885950ec`; log:
+`build/step-observer-build-v356.log`. The build uses two compiler workers;
+it introduces no extra SPICE slots. It is currently compiling. Four tests
+pass in **0.745 s**, zero skips:
+`build/step-observer-v356-tests-final.log`. The initial rejected insertion
+was ambiguous between operating-point and transient error branches;
+the final guarded insertion identifies the transient branch explicitly.
+
+V357 freezes **all 6855 saved native vectors**, not just public nodes,
+from zero through the last original record at or before 200 ps. Receipt:
+`quiet_native_reference_v357/20261107T124136Z`. It copies **1431 records**,
+ending at **199.934023 ps**, with the original 78,476,040-byte payload
+unchanged. Minimum/mean/maximum accepted steps are
+**0.000488/0.139814/2 ps**. Source PID/start identity, raw inode, original
+header, exact payload, manifest, bank and fixture hashes are retained.
+The copied raw has its point-count field normalized for normal readers;
+the original solver/raw are untouched. The native complete-file parser
+successfully validates the copied **1431×6855** array, including finite
+vectors and monotonic time. This remains a partial quiet reference,
+not full transport or terminal-safety qualification.
+
+Four reference tests pass in **0.006 s**, zero skips, checking all-vector
+payload preservation, sole header-count normalization and rejection of
+missing startup, incomplete/nonfinite/nonmonotonic data and ambiguous
+vector tables. Logs: `build/quiet-reference-v357-tests-final.log`,
+`build/quiet-reference-v357-capture.log`,
+`build/quiet-reference-v357-parser-validation.log`.
+Prepared helper `build/run-step-observer-prefix-v358-20261107.py` will
+compare logging-off/on **200 ps diagnostic** traces with this reference
+after the separate build completes. It retains all native vectors,
+uses one priority-2 worker under the existing six leases, reports both
+voltage and step statistics, and makes no automatic bank admission or
+claim that the original slowdown's cause is proven. It has not run yet.

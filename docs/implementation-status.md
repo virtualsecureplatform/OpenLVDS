@@ -60,9 +60,13 @@ terminals must pass **0.25 ps/2 mV**, plus pulse/control/stress checks,
 before replacing two fine P20/N16 cells with two qualified P40/N16 cells
 (**662 MOS**, P80/N32 equivalent). Both branches retain **66 MIM** and
 the complete 25 ns/eight-startup-event stimulus. Artifact:
-`restored_fine_recovery_v355/b88568e79d9ee803`; one priority-2 worker queues
-under the unchanged six leases. No recovery success, full-bank loading,
-quarter headroom or range repair is inferred from this local experiment.
+`restored_fine_recovery_v355/b88568e79d9ee803`. Its baseline now passes
+independent full native replay and parity: **0.037923 ps** maximum crossing
+error and **0.725312 mV** maximum terminal-voltage error. Voltage, control
+and pulse checks pass; the original timing-history failure is reproduced.
+The stronger branch has been released under the unchanged one-worker,
+priority-2/six-lease limits. Its result is pending. Full-bank loading,
+quarter headroom and range remain required after any local recovery pass.
 
 The zero-code bank is still advancing slowly before its first edge. The isolated-cell
 diagnostic v353 tests all four static decoder input states and both logic
@@ -74,7 +78,19 @@ decoder stack node alone does not reproduce the bank slowdown. These
 200 ps static traces cannot qualify bank timing. Artifact:
 `bank_static_cells_v353/bcddf749044d0786`.
 
-New targeted checks v348/v349/v350/v351/v352/v353/v354/v355 all pass: **35 tests**, zero
+A separate diagnostic ngspice observer v356 is building from the pinned
+version-42 source. All added logging regions are removable to recover
+the original numerical source exactly, including iteration/step rules.
+This is preparation for identifying convergence versus truncation costs;
+source inspection alone does not establish the cause. Qualification
+campaigns continue with the pinned production engine. An unmodified-data
+reference v357 captures the first 200 ps of the original zero-code run:
+**1431 records × 6855 vectors**, with **0.000488 ps** minimum accepted step.
+The copied point-count header is normalized and original header/payload
+hashes are retained. Build completion and observer waveform comparisons
+remain pending; neither artifact qualifies bank timing.
+
+New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357 all pass: **43 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
 scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
 
