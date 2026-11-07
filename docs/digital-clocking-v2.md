@@ -16491,3 +16491,16 @@ IDs 18–23 and correctly rejected them because they are retained pilot
 cases, not new simulations; the corrected explicit batch above completed.
 No producer result was changed. Full counter PVT coverage, delay-bank
 timing, common codes, routed integration and full-link gates remain open.
+
+The original v352 zero-code engine remains live and advances through
+24.29 ns, close to the 25 ns endpoint but still with very small steps.
+No completion is inferred from progress. A read-only completion watcher
+now covers only its pending zero/coarse IDs 0 and 3, avoiding duplicate
+fine-duty replays. It binds original coordinator PID 2174391 and start
+ticks, then invokes the frozen v352 full native replay helper after each
+atomic point summary appears. It retains producer/replay errors and
+never starts SPICE or changes existing jobs. Helper:
+`build/verify-original-bank-zero-coarse-v352-20261107.py`; unit:
+`openlvds-original-bank-zero-coarse-replays-v352`, invocation
+`9eebe94eb56545c493af7b5b648befe4`; log:
+`build/original-bank-zero-coarse-replays-v352.log`.
