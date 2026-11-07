@@ -16504,3 +16504,67 @@ never starts SPICE or changes existing jobs. Helper:
 `openlvds-original-bank-zero-coarse-replays-v352`, invocation
 `9eebe94eb56545c493af7b5b648befe4`; log:
 `build/original-bank-zero-coarse-replays-v352.log`.
+
+### Native zero-code crossing snapshot exposes a separate latency miss
+
+New `scripts/analyze_live_bank_history_v364.py` captures only complete
+records already present in the original live v352 zero-code raw. It
+retains a six-vector time/stage projection, original header, full original
+record-prefix SHA256, inode, byte/frame counts and PID/start-tick binding.
+The original prepared circuit, models, runtime and fixtures are checked
+inside Apptainer with `source.bound(full=False)`; live PID checks and
+projection run on the host because Apptainer `--containall` has a separate
+PID namespace. An initial invocation entirely inside Apptainer could not
+see the host PID and produced no capture. The corrected host capture
+leaves the native producer untouched.
+
+Four targeted tests pass in **0.067 s** in the pinned science environment
+and **0.120 s** on the host, with zero skips. They cover signed causal
+stage events through four inversions, unchanged 410 MHz quarter limit,
+incomplete last pulses without event invention, rejection of noncausal
+epoch pairing, preservation of original record bytes and exclusion of
+partial trailing records. Only selected vectors are checked for finite
+values; this projection expressly cannot establish full native stress.
+Logs: `build/live-bank-history-v364-tests.log` and
+`build/live-bank-history-v364-host-tests.log`.
+
+Capture: `live_bank_history_v364/20261107T145500Z`, through
+**24318.59271484107 ps**, 24235 original complete frames. All eight
+positive and negative crossings occur at every retained stage. No epoch
+is wrapped or reassigned. Observed total rise delays are
+638.951–643.761 ps; fall delays are 702.009–702.041 ps. The exact original
+zero-code gate uses both polarities and the fixed fastest-clock quarter:
+**609.7560975609756 ps** at 410 MHz. Observed headroom is therefore
+**−92.2853839432189 ps**. Even rising events alone exceed this budget.
+
+| Stage | First rising-path delay | First falling-path delay |
+| --- | --- | --- |
+| IN → selected | 217.510 ps | 253.230 ps |
+| selected → pre_out | 180.867 ps | 200.753 ps |
+| pre_out → fine_node | 155.987 ps | 165.279 ps |
+| fine_node → OUT | 84.586 ps | 82.779 ps |
+
+The captured events otherwise retain full swing, causal pulse order and
+the original epoch, with 4.810023 ps rising-history span, 0.032535 ps
+falling-history span, 4.809219 ps maximum period error and 94.147064 ps
+maximum output slew. These are prefix timing metrics, not completed-run
+gate results. A future quiet interval cannot erase an already observed
+latency miss; later glitches, controls or stress can still add failures.
+
+Independent read-only helper
+`build/replay-live-bank-history-v364-20261107.py` rehashes the original
+native record prefix, matches every projected sample directly to those
+bytes and reproduces the captured crossings/metrics. Receipt:
+`live_bank_history_replay_v364/20261107T145755Z`. It retains explicit
+`source_waveform_complete=False` and `qualified_phy=False`.
+
+This makes minimum path latency a separate required repair from fine60
+recovery. The passing local P80 pull-up cannot establish zero-code
+headroom or upstream loading. Keep the full v360 intervention unchanged
+and obtain its actual zero/coarse/duty decomposition. The next bank
+architecture must reduce the complete selected/pre/fine path latency
+while preserving noninverting transport, all eight startup events,
+20 ps history/period limits and conservative positive coarse overlap.
+Reducing a pair of restoration inversions is a candidate to assess with
+actual native tap/fine input loading; simply admitting the local recovery
+or widening the quarter-period budget would not meet the existing goal.

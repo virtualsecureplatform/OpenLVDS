@@ -53,6 +53,19 @@ evidence that is now supported by the complete stage-history replay.
 The remaining points, real next-bank input loading and routed RC remain
 open. Original simulations continue.
 
+Read-only live-history capture v364 now retains all eight zero-code
+events through **24.318593 ns** of the original 25 ns run. Rising delays
+reach **643.761 ps**, falling delays **702.041 ps**; the unchanged
+410 MHz quarter-period budget is **609.756 ps**, so observed headroom
+is **−92.285 ps**. Period/history/slew checks on the captured events
+pass, with **4.809 ps** period error, **4.810 ps** rising-history span
+and **94.147 ps** maximum output slew. This identifies a minimum-latency
+problem separate from fine60 recovery. It is partial timing evidence:
+complete native voltage/control and final-waveform checks remain pending.
+Artifact: `live_bank_history_v364/20261107T145500Z`. The selected samples
+and crossing metrics are rebound to the original native record bytes by
+a separate read-only replay. No running circuit or stimulus was changed.
+
 V355 tests recovery behind the exact completed selected-node waveform.
 It retains the native P10/N8 pre-stage, final P20/N16, all 62 fine units
 and their 186 programming gates. Baseline parity over all **622 MOS**
@@ -136,7 +149,7 @@ Receipt: `routed_counter_pvt_native_replay/20261107T144650Z`. Retained
 pilot IDs 18–23 are not new simulations. The 270-point campaign continues;
 this batch does not establish all-PVT or integrated clock qualification.
 
-New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359/v360/v361/v362 all pass: **62 tests**, zero
+New targeted checks v348/v349/v350/v351/v352/v353/v354/v355/v356/v357/v359/v360/v361/v362/v364 all pass: **66 tests**, zero
 skips, separate from the full-regression cohort below. Exact logs, receipts,
 scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
 

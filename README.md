@@ -22,6 +22,9 @@ balances coarse and fine drive, and doubles the fine units per enable.
 It uses qualified native component RC, retains a noninverting four-inversion
 path. Its completed fine31/60% test fails the 20 ps timing-history limit
 with a 52.168 ps span, localized mainly to incomplete fine-stage recovery.
+A retained live zero-code snapshot captures all eight events and already
+shows a separate quarter-period latency miss: 702.041 ps maximum delay
+against 609.756 ps at 410 MHz. Its complete native run remains pending.
 A baseline-parity-gated native experiment passes with stronger fine pull-up:
 15.528 ps history span, 137.643 ps output slew and 1.857343 V peak terminal
 difference, independently replayed. That same change is now in a complete
