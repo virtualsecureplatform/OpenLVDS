@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import numpy as np
 from capture_native_live_tail_v290 import process
 from regenerated_bank_periodic_measure_v67 import crossings, timing
@@ -108,9 +109,23 @@ def capture(pid):
     raw = ROOT/binding['raw']
     if raw != PARENT/'0/bench.raw':
         raise ValueError('Require original live v352 zero-code engine')
-    manifest = source.bound(PARENT, full=False)
+    # Live engines have host PIDs; --containall gives tools a separate /proc.
+    # Keep process checks here and validate PDK/runtime context in Apptainer.
+    manifest_sha = source.sha(PARENT/'manifest.json')
+    checked = subprocess.run([str(ROOT/'scripts/env.sh'), '--tools', '--ngspice',
+                              'build/tools/exact-rc-venv/bin/python', '-c',
+                              "import sys; sys.path.insert(0, 'scripts'); "
+                              'import probe_restored_balanced_bank_v352 as p; '
+                              "p.bound(p.ROOT/'build/diagnostics/restored_balanced_bank_v352/67d491be912b3621', full=False)"],
+                             cwd=ROOT, capture_output=True, text=True)
+    if checked.returncode:
+        raise ValueError('Container native-context validation failed: '+checked.stdout+checked.stderr)
+    if source.sha(PARENT/'manifest.json') != manifest_sha:
+        raise ValueError('Original manifest changed during container validation')
+    manifest = json.loads((PARENT/'manifest.json').read_text())
     paths = [Path(__file__), ROOT/'scripts/capture_native_live_tail_v290.py',
              ROOT/'scripts/regenerated_bank_periodic_measure_v67.py',
+             ROOT/'scripts/env.sh', Path(source.__file__),
              PARENT/'manifest.json', PARENT/'bank.spice', PARENT/'0/bench.cir']
     inputs = {str(p.relative_to(ROOT)): source.sha(p) for p in paths}
     header, data, metadata = project(raw)
@@ -122,7 +137,10 @@ def capture(pid):
     (out/'original_header.bin').write_bytes(header)
     np.savez(out/'selected_native_history.npz', data=data, names=np.asarray(NODES))
     files = {name: source.sha(out/name) for name in ('original_header.bin', 'selected_native_history.npz')}
+    (out/'native-context-validation.log').write_text(checked.stdout+checked.stderr)
+    files['native-context-validation.log'] = source.sha(out/'native-context-validation.log')
     report = dict(process=binding, inputs=inputs, task=manifest['tasks'][0], files=files,
+                  original_context_validated_in_container=True, numpy=np.__version__,
                   **metadata, **result)
     (out/'summary.json').write_text(json.dumps(report, indent=2, allow_nan=False)+'\n')
     print(out, flush=True)
