@@ -15738,3 +15738,169 @@ Complete upstream receipts bind the native baseline; historical raw traces
 are not rehashed by this producer. New native results are pending. Complete
 RC certification alone supplies no timing, all-PVT, other-clock, DLL or PHY
 admission.
+
+
+### Complete P40 bank screen rejects zero latency and common range
+
+V342 at `pullup_two_stage_bank_v342/6fb0494678a32ddc` is now naturally
+terminal complete: four cases, zero errors and final input validation.
+All four independent complete native replays bind their original metrics.
+The last coarse receipt is `pullup_bank_native_replay/20261107T102955Z`,
+unit `openlvds-pullup-bank-coarse-native-replay-v342`, invocation
+`f340bb91b1ca44dbb5794ac34af8f900`.
+Coarse1/fine0 individually passes, with rising delays 924.190–934.436 ps,
+falling delays 626.551–627.909 ps and 10.231597 ps maximum period error.
+Conservative four-point overlaps are **−156.506773 ps rising** and
+**−180.348587 ps falling**. Together with zero-code headroom −63.862432 ps,
+these reject the P40 two-stage bank despite both passing fine-duty endpoints.
+
+Read-only v348 analysis at `bank_latency_analysis_v348/b595ea5eba2a50e6`
+binds six complete independent native replay receipts for P20/P40 zero and
+40%/60% fine endpoints. Three threshold-matching tests pass in 0.001 s,
+zero skips; a clipped transition cannot borrow another pulse's crossing.
+Actual selected-node maximum rising slew is 658.139 ps for P20 zero and
+825.403 ps for P40 zero. P40 fine60 has 446.102/644.775 ps fine-node rise/fall
+slews. At fine40, that internal node never reaches the 10% low threshold
+within any of its eight pulses, although regenerated OUT passes its gates.
+Its current waveform therefore supplies no direct-output qualification;
+an altered load/topology needs fresh native tests.
+
+Fine-node voltage before the eighth input rising 10% event at 60% duty
+improves from 1.546885 V to 1.721929 V with P40. The analysis also expands
+actual native inventories: coarse units have four P/four N input fingers
+and sixteen P/sixteen N output fingers; qualified `parallel_inv8_v110`
+is an inverting group with sixteen P/sixteen N fingers and two MIM.
+Names alone are not drive-strength counts. Analysis unit
+`openlvds-bank-latency-analysis-v348`, invocation
+`6c91da4522dd4c13aa9953ab53a39783`; log:
+`build/bank-latency-analysis-v348.log`. These observations change no circuit,
+solver, old trace, timing threshold or PHY admission.
+
+
+### Actual shared wiring isolates a first-startup miss; local route repairs it
+
+V347 first hot 40%/stopped-low point passes the full original native gates.
+Independent replay `shunted_counter_shared_rc_native_replay/20261107T101717Z`
+reproduces every 808-MOS metric and exact limiting samples: minimum remaining
+window 191.549543 ps; peak terminal difference 1.914698519 V.
+The hot 60%/stopped-high point fails only its first `low0` low-phase window:
+remaining window **−15.758061 ps**, with CLK already at **0.339849 V** at
+the assertion. The later `low1`/`armed` windows are +170.389/+169.649 ps;
+arming, stopped-clock clear/reassert and every native voltage screen pass.
+Peak terminal difference is 1.920650599 V. Full independent replay
+`shunted_counter_shared_rc_native_replay/20261107T102354Z` reproduces the
+failure. Original campaign/processes and all failed artifacts remain intact.
+
+V349 replaces only the first setter's long two-spine/M5-bus output route
+by a direct M4 connection from the existing local shunt's Y electrode to
+Q.A. The native 5×5 capacitor and short local ground return remain.
+The capacitor end is M4 and receives no new via3 into its bottom electrode;
+the Q input end receives its original compact M3/M4 landing. Every other
+placement, phase-logic instance and native parameter remains.
+
+Four targeted tests pass in 1.367 s, zero skips, including actual full-layer
+native-contact checks, mixed-layer via placement and preservation of all
+other routes/placements. Actual geometry
+`shunted_counter_physical_v349/2090d79ff6a2bad2` passes zero DRC, unique
+strict LVS, 744 MOS/51 MIM, all supplied junctions, native masks/hierarchy
+and electrical labels under the recorded font-height policy.
+GDS SHA: `2da65cb4455d2ce04aff751c02972ccbec792cb6634be37e9a976d9f39950df3`.
+Unit `openlvds-local-setter-physical-v349`, invocation
+`3fab94ac561049f6b354bc415de068e9`; log:
+`build/local-setter-physical-v349.log`.
+
+V350 fresh RC at `shunted_counter_rc_v350/b68f93094c2a579a` completes and
+passes: 20533 raw resistors, 4407 parasitic capacitors, 17087 reduced
+resistors after 4639 exact algebraic-node eliminations. Four independent
+DC witnesses on 6227 boundary nodes pass with maximum absolute current
+error 8.188e-11 A, no floating components and preserved native parameters,
+junctions, topology and all seven public ports. Four guard tests pass in
+0.135 s, zero skips. Unit `openlvds-local-setter-rc-v350`, invocation
+`b6bb2e58b25342a0a887be6928700b98`; log:
+`build/local-setter-rc-v350.log`.
+
+Read-only report `local_setter_wire_capacitance/20261107T104646Z` partitions
+the complete certified raw networks by resistor connectivity. The sum of
+linear parasitic capacitance from the first-setter net to external nets
+falls from **93.92996 fF to 25.74049 fF**. This excludes native MOS/MIM
+capacitances and interprets external nodes as clamped; it is not an
+operating-waveform effective capacitance or a timing proof. The first helper
+and failure log are retained: its bare-net-name assumption was invalid for
+extresist's `.n`/`.t` nodes. The second helper requires one unambiguous
+resistor-connected named net and performs no source/model modification.
+
+V351 runs twelve fresh native transients with all actual reduced R/C and
+the original full 26 ns loaded protocol. Its first two hot points both pass
+every original point gate:
+
+| Point | Remaining low window | Peak terminal difference |
+| --- | ---: | ---: |
+| SS40, 410 MHz, 60%, stopped high | 150.325093 ps | 1.913407640 V |
+| SS40, 410 MHz, 40%, stopped low | 382.394259 ps | 1.913717999 V |
+
+Independent complete replay
+`local_setter_shared_rc_native_replay/20261107T111442Z` reproduces every
+808-MOS metric and exact limiting sample for both. Native/core/load counts
+remain 808/744/64 MOS, with 57 total MIM and the original 20 fF load.
+Unit `openlvds-local-setter-hot-boundaries-native-replay-v351`, invocation
+`fa0fa1b55f4c4caf83a0aaea58759dd8`; log:
+`build/local-setter-hot-boundaries-native-replay-v351.log`.
+The full campaign at `local_setter_shared_rc_v351/b8297d638d69090d`
+continues with two workers, priority 1 and unchanged global six leases.
+Four preparation tests pass in 0.719 s with zero skips. Unit
+`openlvds-local-setter-shared-rc-v351`, invocation
+`f340785c3ced4f6d9f24099476a13a7b`; log:
+`build/local-setter-shared-rc-v351.log`. The two passes do not establish
+the remaining boundaries, all PVT, full clock/DCC or PHY qualification.
+
+
+### Staged-restoration and balanced coarse/fine bank experiment
+
+V352 implements one new candidate after the complete failed v342 screen
+and v348 slew analysis. The four-section calibrated DLL/DCC architecture
+and noninverting section interface remain. Inside one section:
+
+```mermaid
+flowchart LR
+    I[IN] --> C[Coarse chain: two balanced INV16 stages per unit]
+    I --> M0[First TG selection level]
+    C --> M0
+    M0 --> G[INV16 group restoration]
+    G --> M1[Parallel-root TG selection]
+    M1 --> P[P10/N8 pre-fine restoration]
+    P --> F[Two parallel P20/N16 fine inverters]
+    F --> N[fine_node]
+    E[31 enables: two original fine units per enable] --- N
+    N --> R[P20/N16 final inverter]
+    R --> O[OUT]
+```
+
+Group, pre-fine, fine and final stages give four inversions, preserving
+positive overall polarity. The root mux drives the smaller P10/N8 input;
+the balanced P40/N32 equivalent fine driver follows that restoration.
+Every coarse unit uses two qualified inverting groups in series, replacing
+the original 4-to-16-finger taper. Each fine enable drives two unchanged
+qualified fine units. The final inverter retains output regeneration.
+This is a hypothesis to address mux slew, fine recovery and coarse/fine
+range together; its native timing is not inferred from topology.
+
+All existing component definitions remain byte-identical. The candidate
+contains **2086 MOS/139 MIM**, 86 logical controls and **266** individually
+mapped programming gates, including all 93 gates of the duplicated fine
+units. Original 173 maps remain exact. Five tests pass in 0.708 s with zero
+skips, checking topology, every native inventory/gate, retained component
+definitions, fixture coverage and rejection of old zero/range failures.
+The aggregate checks individual gates as well as the compound point flag.
+Log: `build/restored-balanced-bank-v352-tests-final.log`.
+
+Prepared artifact `restored_balanced_bank_v352/67d491be912b3621` runs
+zero/50%, fine31/60%, fine31/40% and coarse1/fine0/50%, all at SS40/410 MHz.
+Original eight startup events, 25 ns stop, 100 ps input, fixed 1.8 V,
+20 fF load, 20 ps period/history, 250 ps output slew, quarter headroom,
+both-polarity range overlap and full native voltage/control checks remain.
+Unit `openlvds-restored-balanced-bank-v352`, invocation
+`0606ac8f9b524f50aed0f0004814541e`; log:
+`build/restored-balanced-bank-v352.log`. The unchanged dispatcher allows
+two workers at priority 1 within the global six leases. New timing remains
+pending. Actual next-bank input loading, fresh joint routing/RC, dense and
+update/periodic codes, all 15 PVT, whole-clock and PHY checks remain required.

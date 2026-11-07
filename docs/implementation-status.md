@@ -7,41 +7,39 @@ Current input-clock duty coverage is **40%, 50% and 60%**, with 40–60%
 as the limits, at 390/400/410 MHz. This is recorded in
 `clocking_duty_v2_2.json`; the output-clock timing requirements remain in force.
 
-Latest native results (2026-11-07): all twelve v334 counter boundaries
-pass, including final input validation. Each has an independent full native
-replay. Both v342 complete-bank fine31 endpoints pass with actual input
-loading: **6.877 ps** maximum period error at 40% and **9.600 ps** at 60%.
-Its zero-code point fails quarter headroom at **−63.862 ps**, independently
-replayed; the coarse result remains required. The older v310 P10 four-stage zero point
-fails quarter-period headroom at **−88.317 ps**. Exact receipts and scope
-are recorded in the latest entries of `digital-clocking-v2.md`.
+Latest counter results (2026-11-07): the twelve component-RC boundaries v334
+pass, but actual shared wiring v347 exposes an isolated first `low0` startup
+window miss of **15.758 ps** at SS40/60%. All voltage, arming and clear
+checks pass; the two later low-phase assertions retain positive margin.
+The local first-setter route v349 now passes zero DRC, unique strict LVS,
+native masks/hierarchy/electrical labels and every supplied junction parameter.
+Fresh actual-GDS shared-wire RC v350 also passes. The native core remains
+744 MOS/51 MIM, with the original 64-MOS/6-MIM downstream loads.
 
-The v343 integration preflight passes for the 23-macro counter reference,
-native parameters and shunt electrode connections against the passed circuit
-before whole-counter geometry and RC work. Exact complete artifact:
-`shunted_counter_material_preflight_v343/2f9db359a6e7711c`.
-Its four targeted tests pass in
-0.320 s with zero skips (`build/shunted-counter-preflight-v343-tests-current.log`).
-The new v344 physical generator has five passing targeted tests in 0.318 s,
-zero skips (`build/shunted-counter-physical-v344-tests-third.log`). Its actual
-23-macro routing at `shunted_counter_physical_v344/4656736040717545`
-fails: 18 DRC violations, LVS pin mismatches with CLK/supply shorts and
-extracted junction differences. The failed artifact is retained; shared-wire
-RC was gated on a corrected passing physical version. V345 now passes complete
-physical checks: zero DRC violations, unique strict LVS, all 744 MOS/51 MIM,
-supplied junctions, native masks/hierarchy and electrical labels preserved.
-Artifact: `shunted_counter_physical_v345/7ac98cd80b7cddbe`.
-V346 also completes and passes fresh actual-GDS shared-wire RC certification:
-`shunted_counter_rc_v346/9119f78d7918f67f`. Native timing with this wiring
-remains required. Four v345 tests pass in 0.736 s and four v346 tests in
-0.040 s, zero skips. V347 implements twelve fresh loaded native transients
-with the complete reduced RC network and unchanged original downstream loads,
-starting with SS40/40% stopped low and SS40/60% stopped high. Its four targeted
-tests pass in 0.715 s, zero skips. The prepared campaign is running at
-`shunted_counter_shared_rc_v347/35dfc581c44af1ed`, under
-`openlvds-shunted-counter-shared-rc-v347`; timing results remain pending.
-These targeted checks are separate
-from the full-regression cohort below.
+Both initial hot boundaries in v351 pass every original native point gate
+with independent complete replays: SS40/60% stopped high has **150.325 ps**
+remaining window and **1.913408 V** peak terminal difference; SS40/40%
+stopped low has **382.394 ps** and **1.913718 V**. The twelve-point campaign
+continues at `local_setter_shared_rc_v351/b8297d638d69090d`.
+Physical/RC artifacts: `shunted_counter_physical_v349/2090d79ff6a2bad2`
+and `shunted_counter_rc_v350/b68f93094c2a579a`. Earlier failed and passing
+variants remain retained.
+
+The P40 bank v342 now completes all four points, final input validation,
+and four independent native replays. Fine-duty points pass, but zero-code
+quarter headroom is **−63.862 ps** and conservative coarse/fine overlaps
+are **−156.507/−180.349 ps** (rise/fall). It is rejected. Full-trace slew
+analysis v348 measures up to **825.403 ps** selected-node rising slew
+and clipped or slow fine-node transitions, supporting restoration and a
+range repair. Current experiment v352 inserts P10/N8 restoration before
+a balanced fine driver, restores mux groups, doubles fine units and uses
+balanced coarse cells. Its full 2086-MOS/139-MIM, 86-control/266-programming-gate
+four-point screen runs at `restored_balanced_bank_v352/67d491be912b3621`.
+New bank timing results, real next-bank input loading and routed RC remain open.
+
+New targeted checks v348/v349/v350/v351/v352 all pass: **20 tests**, zero
+skips, separate from the full-regression cohort below. Exact logs, receipts,
+scope and circuit diagram are in the latest `digital-clocking-v2.md` entries.
 
 Latest full software verification (2026-11-07): the complete regression
 at code revision `89e10bd` passes **2688 tests in 1025.181 s**, with 81

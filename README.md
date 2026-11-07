@@ -17,27 +17,26 @@ The selected [digital clocking v2](docs/digital-clocking-v2.md) architecture is
 under implementation: calibrated four-phase clock generation, symmetric DCC,
 RX deskew and explicit framed startup training.
 
-The current delay-bank experiment uses two-level transmission-gate selection,
-switched fine-capacitor loads, a P40/N16 loaded inverter and a final P20/N16
-inverter. The new loaded driver passes native layout and local RC qualification.
-Its recorded-input native fine-stage test at SS/40°C, 410 MHz and 60% duty
-passes the original 20 ps period/history limits: maximum period error is
-8.589 ps and loaded-stage rising history is 5.345 ps, with all eight startup
-events retained. The complete-bank fine31 points also pass with actual
-input loading at 40% and 60% duty: maximum period errors are 6.877 ps and
-9.600 ps. Its zero-code quarter headroom fails at −63.862 ps; the native
-replay locates added rising delay in both selection and the loaded stage.
-The coarse overlap result remains under test.
-The retained baseline still fails common coarse/fine range.
+The current delay-bank experiment adds restoration before the fine stage,
+balances coarse and fine drive, and doubles the fine units per enable.
+It uses qualified native component RC, retains a noninverting four-inversion
+path, and is running the original zero/duty/coarse screen. The retained
+two-stage P40/N16 bank passes both fine-duty endpoints but fails zero-code
+quarter headroom at −63.862 ps and conservative coarse overlap at
+−156.507/−180.349 ps (rise/fall). It is not an admitted bank.
 
 The counter startup repair adds a native 5×5 µm MIM shunt. All twelve
 SS0/SS40, 40/50/60% duty and stopped-clock boundary points now pass with
 independent full native replays. The added capacitor passes DRC, strict LVS
 and fresh actual-GDS local RC. The boundary campaign completes with zero errors;
 the complete physical reference passes strict topology/parameter preflight.
-The corrected whole-counter GDS now passes DRC, strict LVS and fresh shared-wire
-RC certification. Transient timing with that wiring remains required. Earlier physical and simulation
-artifacts, including failures, remain available in the implementation notes.
+Actual shared wiring exposed a 15.758 ps first-startup window miss at SS40/60%.
+A direct local setter-output route now passes DRC, strict LVS and fresh RC
+certification. Both hot 40%/60% boundary points pass full native simulation
+and independent replay, with 382.39/150.33 ps remaining windows. The complete
+new twelve-point screen and later PVT/integration checks remain required.
+Earlier physical and simulation artifacts, including failures, remain available
+in the implementation notes.
 
 Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
 dense common legal codes, complete delay range, all PVT, calibrated clock-chain
