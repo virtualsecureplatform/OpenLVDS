@@ -15563,3 +15563,178 @@ full 25 ns. Independent replay
 controls, pulse transport, slew and period/history pass, but zero-code
 quarter headroom is **−88.316692 ps**. This rejects that candidate's
 zero-code timing despite its 3.917144 ps maximum period error.
+
+
+### Physical counter integration starts after complete material admission
+
+V343 completes successfully at
+`shunted_counter_material_preflight_v343/2f9db359a6e7711c`. All twelve
+native boundary points and independent replays bind; the actual 23-macro
+reference passes strict unique topology equivalence and preserves every
+native parameter, including supplied junction geometry. The core remains
+744 MOS/51 MIM and the loaded harness 808 MOS/57 MIM. This receipt verifies
+materials and topology, before new geometry or shared-wire RC.
+
+V344 implements the new geometry at
+`shunted_counter_physical_v344/4656736040717545`. Existing 22 placements,
+separated buffer escapes and three direct feedbacks remain. The native
+5×5 µm capacitor is placed at (85.000, 14.380) µm in the setter/Q gutter.
+Its Y electrode connects to the first setter's `low0_sn` output; its bottom
+electrode returns through a short M5 bridge to that setter's own M4 ground
+rail. Five targeted tests pass in 0.318 s with zero skips, checking actual
+native mask contacts, retained placement/escapes, incorrect electrodes and
+annotation policy. Initial test logs are retained separately.
+
+The existing tap master has identical `VGND`/`VPWR` labels at the same
+positions/layers, but font heights 125 and 156 in different qualified GDS
+libraries. V344 compares all non-text fabrication geometry on every layer,
+native hierarchy and electrical labels, allowing only text font-height
+presentation differences. Tests verify that changing a label's content,
+position or layer still fails equivalence. This changes no native mask.
+
+An isolated environment combines NumPy 2.1.3, SciPy 1.14.1 and KLayout 0.30.7;
+setup is `bash scripts/setup_counter_physical_python_v344.sh`. Invoke the
+producer through `scripts/env.sh --tools --ngspice` with
+`build/tools/counter-physical-venv/bin/python`. The physical identity binds
+the completed full-evidence preflight receipt, non-waveform inputs, consumed
+material/code and runtime files. Historical native raw traces are retained
+as upstream hashes and are not rehashed by the geometry producer. New DRC,
+strict LVS, actual extracted native inventory and integrated native-mask
+witness are required; no physical or timing pass is inferred from tests.
+Unit `openlvds-shunted-counter-physical-v344`, invocation
+`c3577251a6f047a4bbbc1599dc9736ba`, has failed. Log:
+`build/shunted-counter-physical-v344.log`.
+
+The actual run reports 18 DRC violations: M3 spacing around the larger
+buffers and M5 spacing at buffer output escapes and the local capacitor
+return. Strict LVS fails top-level pin matching and reports CLK/supply
+shorts. The native inventory comparison also rejects changed extracted
+junction geometry. The failed GDS, DRC, LVS and state are retained.
+The earlier contact-only tests do not cover M3 native-spine interaction
+or minimum spacing. A new physical version must repair those defects
+and pass the complete gates before extraction can start.
+
+
+### Both complete-bank fine-duty endpoints independently pass
+
+V342 fine31/40% case 2 completes at SS40/410 MHz and passes every original
+individual point gate. Maximum period error is **6.876683 ps** and maximum
+slew **153.871703 ps**. Independent full replay
+`pullup_bank_native_replay/20261107T093733Z` reproduces every original
+1385-MOS/173-programming-gate metric, including all eight startup events
+and actual mux input loading. Together with the 60% receipt this verifies
+both input-duty endpoints for this fine code. Zero-code quarter headroom,
+coarse overlap, dense/update/periodic code coverage, routed RC and all PVT
+remain required.
+
+The older 2×2 MIM family's v321 coarse case 3 also completes and passes
+its individual gates. Full replay
+`mim_bank_stage_replay/20261107T093821Z` reproduces all original
+1467-MOS/173-programming-gate metrics and signed stage histories. That
+family still fails its zero-code quarter and 60% fine history gates;
+the coarse pass does not admit it. Its 2×3 family remains in the original
+captured campaign.
+
+
+### Repaired whole-counter geometry and fresh shared-wire RC pass
+
+The v344 failure identifies three foreign native M3 contacts: the parallel
+clock supply stems pass through M3 in the first REQUEST/CLK buffers. V345
+moves both parallel buffers and their supply stems right by 40 µm, preserving
+every phase-logic placement. It raises the unused-gap RCLK bus to 234 µm,
+and uses uniform 2.2 µm M5 output/shunt-ground strokes at the 2.2 µm via
+pads. This repairs the native M3 shorts and M5 self-notches/spacing.
+
+Four tests reproduce the old native M3 contact and old M5 spacing violations,
+check that the new full M3/M4/M5 additions avoid foreign native metal,
+verify only the intended placements/tracks move, and reject restoration of
+the old supply tracks. All pass in 0.736 s with zero skips. Log:
+`build/shunted-counter-physical-v345-tests.log`.
+
+The actual v345 build at `shunted_counter_physical_v345/7ac98cd80b7cddbe`
+is terminal complete and passes **zero DRC violations and unique strict LVS**.
+All 744 MOS/51 MIM and every supplied native junction parameter are preserved.
+The witness verifies 28 native masters and all 23 placements, masks, hierarchy
+and electrical labels, with the documented text-height policy. GDS SHA-256:
+`c97cf0e648e9ec9f54152d7e7faca1b96df993439cc57df5396b3d888246cf80`.
+Unit `openlvds-shunted-counter-physical-v345`, invocation
+`f1a87bea498248ddb33c01912b069c86`; log:
+`build/shunted-counter-physical-v345.log`.
+
+Fresh extraction/certification v346 at
+`shunted_counter_rc_v346/9119f78d7918f67f` also completes and passes.
+Actual GDS extraction has **20535 resistors and 4381 parasitic capacitors**.
+Exact positive-conductance reduction removes 4643 algebraic nodes and leaves
+17086 resistors. The raw/reduced networks have 13246/8603 nodes and zero
+floating components. Four independent clamped-terminal DC witnesses on
+6216 boundary nodes pass with maximum absolute current error
+**8.052e-11 A**; native parameters, supplied junctions, topology and all seven
+public ports also pass. Reduction regenerates exactly. These DC witnesses
+do not establish transient timing or voltage margin.
+
+V346 guard tests all pass: four tests, 0.040 s, zero skips. Logs:
+`build/shunted-counter-rc-v346-tests.log` and
+`build/shunted-counter-rc-v346.log`. Unit `openlvds-shunted-counter-rc-v346`,
+invocation `3f162433e29343b9a70c7ebc923d1742`. Extracted netlists:
+`build/extracted/13ca6013f3a57574/openlvds_shunted_counter_v345/`.
+New loaded native transients with this shared wiring remain required;
+none of the old component-only twelve passes qualify this new RC timing.
+
+
+### P40 full-bank zero-code latency fails independently
+
+V342 zero-code case 0 completes all 25 ns and passes voltage, controls,
+pulses, slew and period/history, but fails quarter-period headroom at
+**−63.862432 ps**, against the original P20 bank's **+38.637 ps**.
+Independent full replay `pullup_bank_native_replay/20261107T095305Z`
+reproduces all 1385-MOS/173-programming-gate metrics and signed stage sums.
+Maximum period error is 7.336156 ps and maximum slew 118.050676 ps;
+the failing gate is absolute zero-code rising latency, not repeatability.
+
+Rising total delays are 666.282–673.619 ps. In cycle eight, the P40
+change adds **49.397 ps** before the selected node, **45.701 ps** across
+the loaded stage and **7.402 ps** across the final inverter. All three
+measured contributions sum to the additional latency; attribution to a
+specific capacitance requires further analysis. Both fine-duty endpoint
+passes remain valid individual results, but they do not admit this bank.
+The final coarse result and complete overlap comparison remain required
+before selecting the next latency/range repair.
+
+
+### Loaded native counter campaign uses the complete new shared RC
+
+V347 replaces only the active counter call in the original loaded harness
+with the exact v346 reduced block. All **17086 resistors, 4381 parasitic
+capacitors, 744 core MOS and 51 core MIM** remain. The three original native
+loads retain their exact 64 MOS terminal maps, six MIM and 20 fF external
+load. Full loaded inventory is 808 MOS/57 MIM. Native model/dimension and
+supplied junction inventories reproduce the original loaded reference.
+
+The original full 26 ns protocol, fixed 1.8 V, 100 ps input-clock slew,
+20 ps REQUEST transitions, seven clock cycles and stopped/reasserted
+REQUEST checks remain. Every actual resistor-separated native MOS terminal
+is saved; named phase/REQUEST monitors must survive the reduction. Every
+point is a new simulation. The same twelve SS0/SS40, 410 MHz, 40/50/60%
+duty and stopped-level combinations run, with SS40/40% stopped low and
+SS40/60% stopped high first. Original period/clear/arming/order/voltage
+and low-window measurements apply, including every 808-MOS stress screen.
+
+Four targeted tests pass in 0.715 s, zero skips. They verify the real
+network/census and unchanged load maps, reject an omitted wire or missing
+phase monitor, require all twelve fresh specifications, and verify all
+native terminals appear in the full fixture. Logs:
+`build/shunted-counter-shared-rc-v347-tests-second.log` and
+`build/shunted-counter-shared-rc-v347.log`. The earlier test's colon-versus-dot
+probe-notation mismatch is retained in its separate log; the original
+fixture notation and simulator translation are unchanged.
+
+Unit `openlvds-shunted-counter-shared-rc-v347`, invocation
+`f6f6b35ea189405bbcd1edb791d64127`, runs the prepared actual-RC campaign
+at `shunted_counter_shared_rc_v347/35dfc581c44af1ed`. Its first native
+SPICE process is verified live as PID 2169376, with a complete written
+raw record through 1.599280 ns at this checkpoint; this is progress only.
+It uses two workers and priority 1 through the unchanged six-lease dispatcher.
+Complete upstream receipts bind the native baseline; historical raw traces
+are not rehashed by this producer. New native results are pending. Complete
+RC certification alone supplies no timing, all-PVT, other-clock, DLL or PHY
+admission.

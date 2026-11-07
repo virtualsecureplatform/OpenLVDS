@@ -17,22 +17,26 @@ The selected [digital clocking v2](docs/digital-clocking-v2.md) architecture is
 under implementation: calibrated four-phase clock generation, symmetric DCC,
 RX deskew and explicit framed startup training.
 
-The current delay-bank candidate uses two-level transmission-gate selection,
+The current delay-bank experiment uses two-level transmission-gate selection,
 switched fine-capacitor loads, a P40/N16 loaded inverter and a final P20/N16
 inverter. The new loaded driver passes native layout and local RC qualification.
 Its recorded-input native fine-stage test at SS/40°C, 410 MHz and 60% duty
 passes the original 20 ps period/history limits: maximum period error is
 8.589 ps and loaded-stage rising history is 5.345 ps, with all eight startup
-events retained. The complete-bank fine31/60% point also passes with actual
-input loading: maximum period error is 9.600 ps. Zero-code quarter headroom,
-the 40% fine endpoint and coarse range overlap remain under test.
+events retained. The complete-bank fine31 points also pass with actual
+input loading at 40% and 60% duty: maximum period errors are 6.877 ps and
+9.600 ps. Its zero-code quarter headroom fails at −63.862 ps; the native
+replay locates added rising delay in both selection and the loaded stage.
+The coarse overlap result remains under test.
 The retained baseline still fails common coarse/fine range.
 
 The counter startup repair adds a native 5×5 µm MIM shunt. All twelve
 SS0/SS40, 40/50/60% duty and stopped-clock boundary points now pass with
 independent full native replays. The added capacitor passes DRC, strict LVS
 and fresh actual-GDS local RC. The boundary campaign completes with zero errors;
-new whole-counter geometry/shared-wire RC remain required. Earlier physical and simulation
+the complete physical reference passes strict topology/parameter preflight.
+The corrected whole-counter GDS now passes DRC, strict LVS and fresh shared-wire
+RC certification. Transient timing with that wiring remains required. Earlier physical and simulation
 artifacts, including failures, remain available in the implementation notes.
 
 Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
