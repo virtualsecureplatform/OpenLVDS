@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 from copy import deepcopy
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -134,6 +135,30 @@ class MimIsolatedFineBank(unittest.TestCase):
         self.assertTrue(all(p.is_file() for p in files))
         self.assertEqual(identity['version'],
             'retained-mim-fine-cells-unchanged-rc-native-schur-requalification-v320.1')
+
+    def test_prepared_identity_both_libraries_and_all_eight_original_decks_reproduce(self):
+        parent = probe.ROOT/'build/diagnostics/mim_isolated_fine_bank_v321/d7b9c9202d5285da'
+        if not (parent/'manifest.json').exists():
+            self.skipTest('requires actual prepared MIM bank')
+        manifest = json.loads((parent/'manifest.json').read_text())
+        identity = manifest['identity']
+        self.assertEqual(parent.name, hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()[:16])
+        self.assertEqual((identity['max_workers'], identity['priority']), (1, 1))
+        self.assertEqual(identity['guards'], probe.guard_inputs(identity['inputs']))
+        self.assertEqual(identity['specs'], probe.specifications())
+        for variant in probe.MODELS:
+            bank, observations, revision = self.assembled(variant)
+            self.assertEqual((parent/variant/'bank.spice').read_text(), bank)
+            self.assertEqual(probe.sha(parent/variant/'bank.spice'), manifest['libraries'][variant+'/bank.spice'])
+            self.assertEqual(identity['observations'][variant], observations)
+            self.assertEqual(identity['native_revision'][variant], revision)
+        for k, task in enumerate(manifest['tasks']):
+            self.assertEqual(task['id'], str(k))
+            self.assertEqual(task['spec'], probe.specifications()[k])
+            file = parent/str(k)/'bench.cir'
+            self.assertEqual(file.read_text(), probe.fixture(parent, identity, task['spec']))
+            self.assertEqual(probe.sha(file), task['deck_sha256'])
+        self.assertFalse(manifest['qualified_phy'])
 
 
 if __name__ == '__main__':

@@ -13169,3 +13169,43 @@ The read-only helper is
 `openlvds-preconditioned-zero-native-stages-v315`, invocation
 `c5628a1e0f06403b9b4993639babf9cd`, exits zero. The receipt binds the
 selected complete case/library/code, not every historical ancestor input.
+
+### Prepared MIM-bank pilot and first corrected numeric-thread result
+
+The v321 source preparation completes at
+`mim_isolated_fine_bank_v321/d7b9c9202d5285da`, binding **2459 inputs**
+and **2363 per-lease guards**, two exact native bank libraries and eight
+original full-length decks. All four original regular-bank measurements
+reproduce during preparation; both current MIM proof bindings pass.
+Preparation unit `openlvds-mim-isolated-fine-bank-prepare-v321`, invocation
+`aaf5c54c4c25403bac8e8e2a0e189d4e`, exits zero. Log:
+`build/mim-isolated-fine-bank-v321-prepare.log`.
+
+The prepared libraries, terminal/gate maps, revision proofs, identity and
+all eight decks then reproduce in **seven targeted tests, no skips, 6.790 s**.
+Log: `build/mim-isolated-fine-bank-v321-prepared-tests.log`. The added
+prepared-artifact test is outside the captured source closure; captured
+producer/helpers are unchanged. Run unit
+`openlvds-mim-isolated-fine-bank-v321`, invocation
+`7b088e8e3fc24aa5ac7e6a974cbe9627`, is active, checking full captured
+inputs before its first lease. It uses one priority-1 worker without
+changing the global six-engine budget. Log:
+`build/mim-isolated-fine-bank-v321-run.log`. No new MIM native waveform
+or bank qualification is claimed by preparation or software checks.
+
+The corrected numeric-thread campaign now completes its first full case,
+`numeric_native_threads_v319/3d8fb25e4ae0db0e/0`: the unchanged original
+regular-bank SS40/410 MHz/60% fine31 fixture with one numeric thread.
+All **3790 sampled thread counts** are one, and all **3280 active-worker
+observations** identify one active worker. The private initialization is
+loaded and unchanged, original translation and pinned runtime match, and
+the full 25 ns native waveform validates. The producer's complete parity
+check reproduces all original gates and reports **zero** timing, terminal
+peak and control-deviation differences. The stored native result remains
+an individual component point, without bank or PHY admission.
+
+Observed contended wall time is 1189.185 s, child CPU user time 1094.662 s
+and system time 2.676 s. The remaining 40% one-thread and two-thread cases
+are required for the planned comparison. These observations establish that
+numeric initialization controls actual native workers, not a speed benefit.
+No global solver/thread setting is changed; backend admission remains false.

@@ -43,8 +43,10 @@ reject the failed source. They are retained without reruns or admission.
 The retained 2x2/2x3 MIM fine cells now both pass current native/Schur RC
 proofs at `retained_mim_fine_rc_v320/ddf3c29ce3fc44da`; substitution behind
 the isolated driver is implemented in v321, with six targeted tests passing.
-The eight-case MIM pilot is preparing its full source bindings; no MIM-bank
-native verdict exists. Fresh bank physical/RC and complete timing qualification
+The eight-case MIM pilot is prepared at
+`mim_isolated_fine_bank_v321/d7b9c9202d5285da`, with seven targeted tests
+passing. Its active runner is checking the full captured inputs before queueing;
+no MIM-bank native verdict exists. Fresh bank physical/RC and complete timing qualification
 remain required.
 
 Current architecture work (2026-11-06):
