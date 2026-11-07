@@ -14406,3 +14406,40 @@ unit `openlvds-two-stage-fine-forty-recovery-native-analysis`, invocation
 unit `openlvds-two-stage-fine-forty-native-replay`, invocation
 `2ccb572a1d124b89a71a75c569e28b8e`, also exits zero. Both logs remain in
 build with their unit names. No captured producer or native fixture changes.
+
+
+### REQUEST taper fails the 40% output-stress boundary (2026-11-07)
+
+The unchanged 808-MOS/56-MIM v330 point is terminal complete with zero
+numerical errors, but fails the original 1.95 V terminal screen.
+Startup/ordering/clearing/reassertion pass, including a 536.137 ps
+minimum startup window. Independent full replay
+`request_taper_forty_stress/20261107T050742Z` reproduces every stored
+metric and all 24 failed-device exact peak samples. Eight failures
+are in Xlow0_set_pair and 16 in Xlow0_q; REQUEST buffers no longer fail.
+
+Worst setter stress is X11 drain/body, 1.978597913 V at 3617.5 ps.
+The drain is 1.971138766 V, body -0.007459147 V, gate 1.728775865 V,
+and source 0.750775769 V. CLK is 0.005759848 V, REQUEST 1.8 V,
+request_i 1.442393149 V and low0 0.017535422 V. Worst storage stress
+is X25 gate/body, 1.972766864 V at 3621.5 ps; the connected gate is
+1.972592735 V and its body -0.000174129 V. These samples locate the
+remaining startup excursion at the setter output and connected storage
+input. A substrate excursion alone does not explain the excess voltage.
+
+Read-only helper
+`build/diagnose-request-taper-forty-boundary-20261107-v2.py`, unit
+`openlvds-request-taper-forty-stress-native-replay-v2`, invocation
+`b9fd3f48c7334a7fae64957e58a29cb9`, exits zero. The initial helper and
+failed log remain retained: it requested the unsaved internal low0_sn
+alias; v2 uses the actual saved native terminal nodes and existing public
+context vectors. No simulation or producer was modified or rerun.
+
+The retained source already has two physical 3x3 um output MIM guards
+in the setter pair. The next hypothesis adds one further native 3x3 um
+MIM on low0_sn (18 to 27 square micrometres total guard area), without
+changing drive, logic, MOS, REQUEST edges or observation windows. This
+is intended to reduce the measured output excursion; native timing and
+stress must prove it. Added capacitor geometry, routed connection and
+fresh RC remain required afterward. The unchanged v317 candidate is
+blocked from routing by the completed v330 failure.

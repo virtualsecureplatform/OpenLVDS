@@ -103,14 +103,23 @@ The worst setter drain/body stress occurs at 3587.467 ps during startup,
 not only at REQUEST reassertion. This requires a 40% test of the unchanged
 REQUEST-taper candidate before physical routing; the four existing 60%
 passes do not cover this newly measured boundary.
-That unchanged-circuit experiment is now implemented and prepared at
-`request_taper_forty_boundary_v330/ce0c4012334987a4`, with its coordinator
-started under the existing six-slot dispatcher. It keeps byte-identical
-candidate libraries, all 808 MOS/56 MIM, full 26 ns observation and original
-limits. Five targeted tests pass; only duty and the provenance title differ
-from the completed SS0/60% fixture. This diagnostic point must pass before
-counter routing; the original four-point 60% campaign has now completed
-successfully, while broad clock/PVT qualification remains required.
+The unchanged-circuit experiment now completes at
+`request_taper_forty_boundary_v330/ce0c4012334987a4` and fails terminal
+stress despite passing startup, ordering, clearing and reassertion.
+Independent full replay `request_taper_forty_stress/20261107T050742Z`
+reproduces every original metric for all 808 MOS and exact peak samples
+for all 24 failed devices: eight setter MOS and 16 storage MOS. The
+minimum startup window is 536.137 ps. Worst drain/body stress is
+1.978598 V at 3617.5 ps: setter output drain 1.971139 V and body
+-0.007459 V. The connected storage input reaches 1.972593 V; its
+worst gate/body difference is 1.972767 V at 3621.5 ps. REQUEST-buffer
+failures are removed, but the remaining output excursion blocks routing.
+The source already includes two 3x3 um setter output MIM guards; the next
+single-variable hypothesis adds one more native 3x3 um shunt on low0_sn,
+retaining every original MOS, component RC and full 26 ns fixture. That
+added geometry and shared wiring require later physical/RC proof even
+if the native diagnostic passes. The four 60% passes remain valid at
+those points but do not admit the counter across the required duty range.
 
 The stronger-storage shared-RC pilot v232 now completes all 12 SS0/SS40,
 40/50/60% duty, both-stopped-level cases without numerical errors. Only
