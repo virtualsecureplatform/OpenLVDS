@@ -1,0 +1,183 @@
+{
+  "schema": "openlvds-300mhz-v1",
+  "status": "development_unqualified",
+  "qualified_phy": false,
+  "requirements": {
+    "schema_version": 1,
+    "nominal_clock_mhz": 300,
+    "bits_per_cycle": 2,
+    "analog_supply_v": 3.3,
+    "digital_supply_v": 1.8,
+    "reference_v": 1.2,
+    "reference_current_a": 3.5e-05,
+    "supply_sweep": false,
+    "temperatures_c": [
+      0,
+      25,
+      40
+    ],
+    "process_corners": [
+      "tt",
+      "ff",
+      "ss",
+      "fs",
+      "sf"
+    ],
+    "clock_test_mhz": [
+      290,
+      300,
+      310
+    ],
+    "clock_duty": [
+      0.4,
+      0.5,
+      0.6
+    ],
+    "channel_skew_ps": [
+      -100,
+      0,
+      100
+    ],
+    "injected_jitter_pp_ps": 100,
+    "tx_level_qualification": "dc_100ohm",
+    "tx_differential_min_v": 0.25,
+    "tx_differential_max_v": 0.45,
+    "tx_common_mode_min_v": 1.125,
+    "tx_common_mode_max_v": 1.375,
+    "rx_threshold_v": 0.1,
+    "rx_pin_min_v": 0,
+    "rx_pin_max_v": 2.4,
+    "minimum_sampling_margin_ps": 200,
+    "channel": {
+      "differential_impedance_ohm": 100,
+      "max_length_m": 0.2,
+      "max_delay_ns": 1.2,
+      "series_resistance_per_leg_ohm": 1,
+      "pad_capacitance_per_pin_pf": 2,
+      "package_inductance_per_pin_nh": 1,
+      "termination_ohm": 100
+    },
+    "minimum_behavioral_bits": 1000000,
+    "minimum_extracted_nominal_bits": 4096,
+    "minimum_extracted_corner_bits": 512,
+    "pdk": "sky130A",
+    "pdk_version": "1689ac3f2dc763876eaf967227c7dfe831b031ae",
+    "openpll_commit": "36a66f7f12653f77f55f48dbf3d2c984fc495e15"
+  },
+  "clocking": {
+    "schema": "openlvds-digital-clocking-v2.1",
+    "status": "development_unqualified",
+    "qualified_phy": false,
+    "architecture": {
+      "tx": [
+        "openpll",
+        "four_section_digital_dll",
+        "symmetric_rising_event_dcc",
+        "ddr_data_and_dedicated_positive_ph0_clock",
+        "existing_lvds_drivers"
+      ],
+      "rx_clock": [
+        "existing_lvds_receiver",
+        "deskew_dcdl",
+        "single_four_section_digital_dll",
+        "symmetric_rising_event_dcc",
+        "existing_ddr_capture"
+      ],
+      "calibration": "startup_then_freeze",
+      "management_clock_mhz": 25,
+      "background_tracking": false,
+      "data_frequency_recovery": false
+    },
+    "search": {
+      "tx_coarse_counts": [
+        16,
+        32,
+        64
+      ],
+      "rx_coarse_counts": [
+        64,
+        128,
+        256
+      ],
+      "fine_counts": [
+        16,
+        32
+      ],
+      "fine_step_target_ps": 10,
+      "maximum_legal_gap_ps": 20,
+      "rx_extra_range_ps": 500,
+      "selection_order": [
+        "extracted_area",
+        "measured_power",
+        "configuration_order"
+      ]
+    },
+    "timing": {
+      "period_error_ps": 20,
+      "quadrature_error_ps": 50,
+      "mean_half_cycle_error_ps": 50,
+      "detector_zero_bracket_ps": 20,
+      "training_clearance_ps": 250,
+      "payload_margin_ps": 200,
+      "confirmations": 64,
+      "warmup_cycles": 256,
+      "training_frames_per_code": 4,
+      "timeout_management_cycles": 2500000,
+      "clock_loss_management_cycles": 8,
+      "rx_reference_duty_range": [
+        0.4,
+        0.6
+      ],
+      "reference_slew_range_ps": [
+        20,
+        250
+      ]
+    },
+    "training": {
+      "frame_bits": 256,
+      "marker_hex": "ffff0000",
+      "prbs_bits": 224,
+      "prbs_polynomial": "x^7+x^6+1",
+      "prbs_seed_hex": "7f",
+      "bit_order": "msb_first",
+      "end_marker_hex": "0000ffff",
+      "return_lane": false,
+      "controller_holds_training_until_rx_ready": true
+    },
+    "failure_codes": {
+      "none": 0,
+      "clock_loss": 1,
+      "timeout": 2,
+      "range": 3,
+      "ambiguous_epoch": 4,
+      "detector_invalid": 5,
+      "no_eye": 6,
+      "bad_marker": 7,
+      "unqualified_model": 8
+    },
+    "release_gates": [
+      "source_primitive_15pvt",
+      "detector_unequal_slew",
+      "dcc_event_spacing",
+      "calibration_epoch_and_range",
+      "training_all_rotations",
+      "management_cdc_and_faults",
+      "native_drc_lvs_rc",
+      "device_stress",
+      "native_selected_and_boundary_codes",
+      "full_link_45cases",
+      "two_openpll_traces",
+      "million_behavioral_bits",
+      "fresh_joint_rc_and_release"
+    ]
+  },
+  "lane_rate_mbps": 600,
+  "openpll_feedback_divider": 12,
+  "minimum_pilot_duration_ns": 40,
+  "legacy_inputs": {
+    "requirements.json": "0d6b11f3c5ec605d4fa4ba3f0cdbfe20187c403a655203e047621691fb3f7ab3",
+    "clocking_v2.json": "df53da026ad47e4786016c59262f94e53955066a9ad043fbdfd271ee4e5e5aea",
+    "clocking_duty_v2_2.json": "527303bc39e2d8d462cbd761ad4f0dc4a96c62f83c8ceffcda8d232364090934"
+  },
+  "authorization": "300MHz nominal, 290/300/310MHz, 600Mb/s DDR; drain unstarted obsolete 400MHz work; active solvers finish"
+}
