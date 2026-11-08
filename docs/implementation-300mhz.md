@@ -1491,3 +1491,33 @@ It tests the recovery hypothesis rather than assuming that nominal drive
 ratios predict native behavior. Fresh zero/fine-60/fine-40/coarse-one checks,
 active numerical parity, actual loading, routed RC and PVT remain required;
 component and PHY admission are false.
+
+
+### DC-zero ramped-current trial passes the formerly failing P40 parity case
+
+`ramped_current_center_300_v1/4dd1b69e62d555ef` completes its one native
+40 ns case with zero execution errors. The DC-zero 2–4 ps / 1 mA ramp
+preserves **every saved native voltage exactly at t=0** (maximum DC error
+**0.0 V**). Bidirectional complete-waveform parity passes: forward maximum
+**0.246145289 mV**, reverse **0.176565361 mV**, over **6,790 native voltage
+vectors**, including startup and internal decoder nodes. Maximum absolute
+input/output clock-crossing error is **0.000365333 ps**; every aggregate and
+individual terminal/control/programming-gate classification is preserved.
+
+The original genuine physical failure remains failed: rising history is
+**24.349097590 ps**. This differs from the rejected constant-current origins,
+which retained a 33.511 mV internal-node mismatch. The result supports the
+specific DC-initialization hypothesis and admits this exact ramped origin
+for this exact completed reference case only. It does not transfer numerical
+admission to another topology, change any circuit/solver/tolerance gate,
+repair timing, or qualify the PHY.
+
+The native run has **20,015 samples**, compared with 20,010 reference samples;
+full interpolation in both directions is retained. Native elapsed time is
+**1066.313 s**, versus **982.658 s** for the original unshifted reference.
+This case establishes parity, without establishing a solver-speed improvement.
+Queue-inclusive wall time remains separate. Manifest, every native witness,
+original remeasurement, parity result, terminal log and final state are retained
+in the content-addressed campaign. Runtime log:
+`build/ramped-current-center-300-v1.log`. Future circuit experiments may test
+this method but still require fresh active parity for their own full waveforms.
