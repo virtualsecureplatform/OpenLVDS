@@ -580,3 +580,37 @@ pass (0.006 s). The verified source bundle is
 `build/verify-clock-sources-300.log`. It is source evidence only. The physical
 trace has only 11 complete late periods (22 complete DDR bit intervals),
 so it cannot satisfy the 4096-bit native payload budget.
+
+## Parity-gated long physical clock capture
+
+`capture_openpll_long_300.py` prepares a 70 ns KLU pilot followed, only if its
+observed native waveform parity passes, by a genuine 20 us capture. The
+original 70 ns default-solver run is complete and untouched. The pinned
+ngspice-42 runtime confirms compiled KLU support; banner log:
+`build/openpll-klu-runtime-version.log`.
+
+The pilot changes exactly one declaration: `.option klu`. All MOS models,
+geometry, code2/fine12, TT25/1.8 V bias, reset release/edge times, 2 ps steps,
+Gear method and numerical tolerances are unchanged. It compares PLLOUT over
+the entire absolute 0--70 ns interval in both interpolation directions,
+requires <=2 mV observed voltage difference and <=0.25 ps absolute crossing
+error, and forbids phase alignment or rescaling. Only PLLOUT was saved in the
+original source; the proof explicitly does not claim internal-node voltage
+parity. A failed pilot is retained and prevents the long run.
+
+The long deck extends both stop time and the reset pulse's high hold/period,
+so the DCO does not accidentally reset again at 75 ns. It retains the original
+late-window edge extraction and requires at least 4096 complete observed DDR
+bit intervals. The source comes from actual native integration, never repeated
+or scaled short-trace data. Passing this source check would not establish
+actual data-bit transmission, interconnect-R/noise behavior, closed-loop PLL
+jitter or a PHY. Five tests pass (0.016 s), including unchanged-tolerance and
+reset-hold checks, strict absolute waveform parity, and rejection of partial
+or altered references. Log: `build/capture-openpll-long-300-tests.log`.
+
+The live context is `openpll_long_trace_300_v1/7398cf894f0d9e4f`, unit
+`openlvds-long-clock-300-v1`, invocation
+`1e652fbc3dcd4c959f9c43bf0c1d279f`. One worker uses priority 1 for the parity
+pilot and priority 2 for the long capture, under the unchanged global six-slot
+budget. No healthy solver is interrupted. Log: `build/long-clock-300-v1.log`.
+The current stage is the parity pilot; long-capture results remain pending.
