@@ -1193,3 +1193,17 @@ all centered range witnesses before the potentially slow active reference,
 while preserving every case and unchanged final parity/coverage requirements.
 The three updated tests pass in 1.010 s; log:
 `build/medium-pre-distributed-pilot-300-tests-v3.log`.
+
+
+### SS40 source coverage complete across all three frequencies
+
+Independent source replay `dcc_source_native_replay_300/d81e7d30cc0c2a24`
+verifies DCC cases 198–215 at SS40/290 MHz, reproducing all original metrics
+and passing every independent source screen. Log:
+`build/dcc-source-300-ss40-290-replay.log`. Combined with cases 162–197,
+this closes the 54-case SS40 source cohort at 290/300/310 MHz,
+40/50/60% complementary duty, 20/250 ps input slew and 0/±140 ps event
+spacing error. Independently replayed source coverage is 216 cases, including
+the complete SF corner. Other SS temperatures and remaining corners are
+pending; physical DCC, the loaded clock chain and complete PHY remain
+unqualified.
