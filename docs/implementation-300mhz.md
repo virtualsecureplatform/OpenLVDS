@@ -2105,3 +2105,24 @@ refused with `Single-bank native pilot has not completed all five error-free
 cases`, before capture or solver launch. No actual loaded native result exists.
 The runner is a component diagnostic, not shared-wire RC, delay-table, DLL/PVT
 or PHY qualification; those gates remain open.
+
+### Topology-derived recovery diagnostic supports the wider-switch cell
+
+The new extracted cell assigns its NMOS transmission switch to `X1`, whereas
+the original cell used `X3`. The original recovery helper's fixed `X3` MOS
+assumption would select a MIM primitive in the new extraction, so it must not be
+used on this bank. `diagnose_distributed_recovery_300_v4.py` adds the double-TG
+producer through the V3 native-bank registry and resolves representative
+switch-side MOS terminals from actual resistor connectivity. It identifies the
+internal main-MIM plate separately from the control shunt and requires one
+native PFET and one native NFET connecting that plate's resistor network to the
+signal-node resistor network. It checks the actual observation maps against
+the library and retains units 0, 15 and 30 on both pre/fine attachments.
+
+Three actual-library integration tests passed in 0.498 s: both old (`X0/X3`)
+and new (`X0/X1`) leaf assignments resolve 12 representative D/S observations,
+a missing native switch cannot be substituted by a capacitor, and a mismatched
+observed capacitor-side terminal is refused. The fixed 20 ps pre-edge samples,
+all eight startup-inclusive events and voltage-only interpretation remain
+unchanged. Old diagnostics and captured experiments were not modified. This is
+metrology support, not a capacitor-charge or recovery-mechanism proof.
