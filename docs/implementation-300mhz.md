@@ -143,6 +143,19 @@ claimed before its receipt completes. This tool creates a separate receipt,
 takes no SPICE lease and does not edit captured producers, libraries, running
 decks, state files, queue tickets or dispatcher lock inodes.
 
+The two-cell strong-pre-driver pair (cases 2/3) completed separate native
+parity analysis in `distributed_bank_active_parity_300/16b3d621df3f4b44`.
+Every original measurement reproduces. Full-vector parity passes at
+0.316828100 mV maximum error across 6,894 vectors and 40,853 reference samples;
+the worst vector is `v(xd.xtail_load.xb.out.t31)`. Maximum absolute crossing
+error is 0.000860260 ps, and all individual gate classifications are preserved.
+Both original point results remain failed: their approximately 30.89 ps
+rising-history/period errors still exceed 20 ps. Thus this numerical control
+closes origin-equivalence uncertainty for this exact circuit without repairing
+or admitting it. The independent tool was validated against actual complete
+native evidence; the running 14-case producer and every physical limit are
+unchanged. Log: `build/distributed-strong-pre-c2-active-parity-300.log`.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
