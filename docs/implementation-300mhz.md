@@ -2876,3 +2876,27 @@ live after the regression. The entry-boundary trace advanced to 26.235895 ns
 of its required 40 ns during this observation; no partial trace was promoted
 to a timing or electrical result. All captured model, solver and stimulus bytes
 remain unchanged, and all six SPICE slots remain occupied by existing jobs.
+
+### First native entry-boundary point complete
+
+Case 0 of `tg2_entry_domain_pilot_300_v1/b98f2003774d19d6` completed its
+entire 40 ns trace without a numerical error and passes the original two-bank
+screen: SS/40 °C/310 MHz, 250 ps ideal-entry 10–90% slew, 60% duty, both banks
+at zero code with actual next-bank input loading. All eight startup-inclusive
+events and the full native electrical observations are retained.
+
+First-bank quarter headroom is **6.206228 ps**, maximum output slew
+197.525181 ps, rise/fall delay spans 3.921687/0.015327 ps and maximum period
+error 3.921566 ps. The second bank has **37.384497 ps** headroom, maximum
+output slew 88.592703 ps, delay spans 4.673207/0.006801 ps and maximum period
+error 8.594773 ps. The declared ideal entry retains its raw measured maximum
+250.00000000000364 ps; only the previously documented 1e-6 ps comparison
+allowance on the independently verified ideal-source boundary applies.
+Downstream native slew and all other limits remain strict and unchanged.
+
+Independent replay has started through the retained V2 reader; log
+`build/tg2-entry-250ps-duty60-independent-300-v1.log`. No passing replay receipt
+is asserted yet. The 6.21 ps first-bank margin is narrow: common routing and
+additional fanout remain unqualified, as do the other boundary cases, fresh
+unshifted references, all-PVT coverage, calibration and the PHY. The serial
+and combined four-section simulations remain separate active experiments.
