@@ -3181,3 +3181,29 @@ numerical parity. Dispatch is not a completed simulation or qualification.
 The corrected combined materials preparation remains separate and runs no
 simulation; further combined recovery runs await the input-current-origin
 reference experiment. Existing native jobs remain untouched.
+
+### Independent input-current convergence-reference consumer
+
+Corrected combined materials preparation completed as
+`dcc_four_section_materials_300_v2/64b5f8c41cb4eddd`; it remains a
+`prepared_unqualified`, zero-simulation artifact. Existing combined V1 native
+execution is unchanged. The corrected serial V2 controller remains active.
+
+`replay_input_current_origin_300_v1.py` independently consumes the completed
+input-current-origin reference experiment. It requires terminal receipts and
+an error-free complete native point, binds all producer inputs and native
+witnesses, repeats the original baseline and candidate measurements, repeats
+the independent candidate measurement and full bidirectional numerical
+comparison, and checks all hashes again after analysis. An unsuccessful
+numerical comparison remains unsuccessful in the replay receipt. Both
+combined-circuit admission and PHY qualification remain false, even when the
+single-reference comparison passes; each new circuit still requires its own
+fresh parity and physical gates.
+
+Three tests pass using complete binary fixtures: passing and deliberately
+DC/parity-failing native comparisons reproduce with the same classification;
+a modified native witness is rejected; pending results are rejected before
+expensive binding. No SPICE experiment or existing captured dependency was
+changed. The actual input-current experiment is confirmed live and has no
+completed result yet, so no native replay receipt or convergence repair is
+claimed.
