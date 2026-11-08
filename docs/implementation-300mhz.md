@@ -2671,3 +2671,25 @@ symmetry, unchanged original four-bank maps, both actual DCC connections and
 globally distinct device identities. Captured-input validation has started;
 log `build/dcc-four-section-materials-300-v1.log`. Combined simulation and its
 startup-inclusive event/terminal metrology remain to be implemented and run.
+
+`dcc_chain_measure_300_v1.py` adds combined native transport metrology. It
+retains the existing four-section checks, all DCC transistor terminal samples
+and passive-node observations, and verifies the declared ideal reset waveform
+within 1 nV. Both DCCs must start high under reset and produce all sixteen
+alternating output transitions, one after each measured source rising event
+and before the following event. Output swing, 250 ps slew and 20 ps period
+limits apply from the first event. Missing startup events, colliding maps and
+changed phase connections cannot pass. Mean high/low half-cycle errors are
+reported separately with the 50 ps limit; transport success cannot imply phase
+accuracy, and all calibration/detector/routing/PHY qualification flags stay
+false. Internal pulse-generator hold timing and independent combined replay
+remain additional required checks.
+
+Three tests pass in 6.681 s using workspace temporary storage. Complete
+synthetic binary traces check all four sections and both DCCs together, with
+startup terminal overstress and a reset-source discrepancy causing failures.
+Event tests retain all sixteen checks and demonstrate that valid transport can
+still fail mean-half-cycle accuracy; missing initial events are rejected.
+These are measurement tests, not combined native circuit results. Captured
+combined material validation remains active and no combined simulation has
+been launched.
