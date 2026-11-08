@@ -3098,3 +3098,24 @@ producer and witness-hash validation it reproduced the six stored rows,
 reset/output levels. `complete_qualification_trace` and `qualified_phy` remain
 false. The failed combined point remains failed, and its next original task
 and the healthy serial/entry-boundary runs remain under their own controllers.
+
+### Full 250 ps / 40% entry point complete
+
+Case 1 of `tg2_entry_domain_pilot_300_v1/b98f2003774d19d6` completed all
+40 ns without a numerical error and passes the original native two-bank screen
+at SS/40 °C/310 MHz, 250 ps linear 10–90% entry and 40% duty. All startup events,
+terminal samples, controls and original limits are retained.
+
+First-bank quarter headroom is **6.378762 ps**, maximum output slew
+197.525181 ps, rise/fall delay spans 4.582951/0.004242 ps and maximum period
+error 4.582951 ps. The second bank has **37.569986 ps** headroom, maximum
+output slew 88.592028 ps, delay spans 5.790409/0.020610 ps and maximum period
+error 10.372769 ps. Both 250 ps duty extremes now pass their original point
+screens with similarly narrow first-bank headroom; this does not establish
+fanout, routing, all-PVT or full-domain admission.
+
+Independent V2 replay was started for case 1; log
+`build/tg2-entry-250ps-duty40-independent-300-v1.log`. No passing receipt is
+asserted yet. The 20 ps boundary points, fresh unshifted references, source
+coverage, calibration and full PHY remain open. All other running jobs and
+captured circuit/model bytes are unchanged.
