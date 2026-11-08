@@ -508,3 +508,53 @@ The centered MIM4 zero-code point subsequently passes, but with only
 11.610458 ps quarter-period margin under 20 fF. This makes zero latency and
 real loading mandatory gates for any new architecture; the failed fine60
 point remains disqualifying.
+
+## Distributed fine-stage architecture trial launched
+
+`distributed_fine_bank_300.py` implements controlled changes using only the
+retained qualified P80/N32 (two P40/N16) driver and switched-MIM components.
+The stronger pre-driver replaces P10/N8 at the same three-inversion path.
+Capacitance can then be reduced or split over pre_out and fine_node. Coarse
+taps, muxes, group restoration, output driver, controls, numerical models and
+20 fF load remain unchanged. Strengthening the pre-driver also changes the
+load on selected; native zero-code quarter-period checks are mandatory.
+
+| Variant | Pre-node copies/enable | Fine-node copies/enable | Native MOS | Native MIM | Programming gates |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| strong_pre_c4 | 0 | 4 | 2282 | 326 | 452 |
+| strong_pre_c2 | 0 | 2 | 2096 | 202 | 266 |
+| split_c1_c1 | 1 | 1 | 2096 | 202 | 266 |
+| split_c2_c2 | 2 | 2 | 2282 | 326 | 452 |
+
+These isolate strength (original MIM4 versus strong_pre_c4), count
+(strong_pre_c4 versus strong_pre_c2) and placement (each split versus the
+matching unsplit count). All retain 86 logical controls. The exact native
+expansion verifies that changes stay within the declared pre-driver/capacitor
+instances and that every actual programming-gate record still names the
+correct native gate terminal. Qualified subcircuit definitions are unchanged.
+Four native-transform tests pass, including one-factor call comparisons.
+
+`probe_distributed_fine_300.py` requires the completed independent MIM replay
+and recovery diagnosis, including the observed fine-node/switch-side recovery
+loss, before preparation. It binds the full retained physical/native/Schur
+material proof and all original source/profile/model/runtime guards. Two
+fixture/protocol tests pass. All six architecture/pilot tests pass together
+in 5.618 s; log `build/distributed-fine-300-all-tests.log`. Every prepared deck
+also passes the actual native runner translator.
+
+The live context is `distributed_fine_pilot_300_v1/f07675577cda70f9`, unit
+`openlvds-distributed-fine-300-v1`, invocation
+`ef369cc17fdf49ac93600e74b9970253`. Fourteen 40 ns SS40/310MHz cases include
+fresh unshifted/centered fine60 pairs for all four variants, then
+zero/50%, fine31/40% and coarse1/50% for each split candidate. Both numerical
+pairs use the full-vector 2 mV / crossing 0.25 ps limits. The original
+period/history <=20 ps, zero quarter <=806.452 ps, slew <=250 ps, voltage and
+control gates remain unchanged, and both conservative overlaps must be
+positive. Missing events reject a candidate. No capacitor-charge guess,
+phase wrapping, voltage sweep or tolerance change is used.
+
+At most two priority-1 workers use the unchanged six-slot dispatcher; the
+existing healthy jobs continue. Log: `build/distributed-fine-300-v1.log`.
+Even a passing component candidate still requires actual next-bank loading,
+common monotonic all-PVT codes, new routed shared RC, full clock/DLL/DCC/link
+qualification and qualified area/power comparison before release.
