@@ -2153,3 +2153,34 @@ in native ngspice. Fine31/40%, coarse-one, both conservative overlap edges,
 fresh unshifted numerical parity, actual next-bank loading, common routing,
 15 PVT and DLL/PHY qualification remain open. No zero-code result admits a
 bank or authorizes the gated actual-next-bank experiment; `qualified_phy:false`.
+
+### Wider-switch zero-code recovery and stage cost reproduced
+
+Topology-derived diagnostic
+`distributed_voltage_recovery_300_v4/3c14399abd7fe3a0` naturally completed for
+double-TG case 0. It reproduces the complete outer delays and all stage sums
+with **0 ps residual**, retains all eight startup-inclusive events and resolves
+the actual capacitor-side transmission-switch terminals. No native model or
+waveform changed. Log: `build/tg2-p40n32-zero-recovery-300-v4.log`.
+
+Against the original P40/N32 zero-code diagnostic
+`distributed_voltage_recovery_300_v3/c8e3fe8e7a032294`, the last-event stage
+changes are:
+
+| Measured stage | Rising delay change (ps) | Falling delay change (ps) |
+| --- | ---: | ---: |
+| IN → selected | −0.006036 | −0.060885 |
+| selected → pre_out | +11.539030 | +13.105228 |
+| pre_out → fine_node | +13.838746 | +9.353826 |
+| fine_node → OUT | +3.786921 | +2.718260 |
+
+These last-event values describe where the zero-code cost appears; they do not
+replace the complete eight-event extrema/history gates. The coarse-selection
+contribution remains nearly unchanged, while the pre/fine stages account for
+most of the added latency. Across all eight fixed pre-edge voltage samples,
+pre_out's low level is −3.377124…−3.340997 mV (first-to-last change −0.035958 mV)
+and fine_node's high level is 1.809315604…1.809337962 V (first-to-last change
++0.022240 mV). This zero-code observation does not demonstrate enabled-fine
+recovery, added fine span, capacitor charge or a complete causal mechanism.
+The pending fine31/60% run must supply that timing evidence; bank/PHY admission
+remains false.
