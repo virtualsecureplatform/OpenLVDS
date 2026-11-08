@@ -3053,3 +3053,29 @@ deck preservation and complete synthetic binary parity with rejection of a
 changed DC sample or electrical classification. Capture preparation is running;
 log `build/input-current-origin-prepare-300-v1.log`. No new origin trial has
 executed yet, and the combined startup failure remains unresolved.
+
+### Failed-prefix electrical inspection
+
+The aborted combined raw file declares zero points but contains six complete
+stored rows from t=0 through 4.109375e-14 s. It remains invalid for normal
+native trace verification. A separate read-only inspection of all stored rows
+and all 8,496 MOS found a maximum DC terminal span of 1.8 V, zero prefix stress
+violations and a maximum prefix span about 1.8000000000000007 V. DC VDD/IN/reset
+are 1.8/0/0 V; both DCC outputs are 1.7999999914095635 V, as expected under reset.
+Log: `build/dcc-four-section-failed-prefix-inspection-300-v2.log`.
+
+This finds no obvious DC voltage/stress anomaly in the available failed prefix;
+it does not establish the convergence mechanism or transient correctness.
+The initial inspection refused the zero-point header rather than treating it
+as a complete trace. Normal native verifiers and all 40 ns requirements remain
+unchanged.
+
+`inspect_failed_dcc_prefix_300_v1.py` makes the forensic read reproducible. It
+requires the original terminal numerical failure, validates captured producer
+and witness hashes, reads every complete stored record without trimming, and
+limits its report to the pre-clock failed prefix. Its result explicitly sets
+`complete_qualification_trace=false` and `qualified_phy=false`. Two tests pass,
+rejecting complete-trace headers, partial records and nonfinite samples.
+The bound inspection is running separately with log
+`build/dcc-four-section-failed-prefix-bound-inspection-300-v1.log`; input-origin
+capture validation and healthy native jobs continue unchanged.
