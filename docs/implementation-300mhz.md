@@ -2900,3 +2900,34 @@ is asserted yet. The 6.21 ps first-bank margin is narrow: common routing and
 additional fanout remain unqualified, as do the other boundary cases, fresh
 unshifted references, all-PVT coverage, calibration and the PHY. The serial
 and combined four-section simulations remain separate active experiments.
+
+### Entry-boundary independent replay and stage localization
+
+Receipt `tg2_loaded_native_replay_300_v2/0c774319d495dae9` is complete and
+passing for entry case 0. Both the original full remeasurement and independent
+reader reproduce the complete result, including 4,112 MOS, 172 controls and
+532 programming gates. Parameters are unchanged, the source point passes and
+whole-bank/PHY admission remains false. This independently confirms the
+6.206228 ps first-bank headroom, without replacing the remaining domain points
+or fresh numerical references.
+
+An exploratory read-only stage comparison used the retained
+`bank_stage_history_300_v2.stages` helper on the completed actual-loaded zero
+reference and entry case 0. Every saved outer delay reproduces and stage sums
+have zero residual. At the last falling edge:
+
+| Stage | 100 ps / 50% reference (ps) | 250 ps / 60% entry (ps) | Change (ps) |
+| --- | ---: | ---: | ---: |
+| Input to selected node | 333.305196 | 369.592547 | +36.287351 |
+| Selected to pre output | 243.441520 | 238.804002 | -4.637517 |
+| Pre output to fine node | 111.090950 | 110.514225 | -0.576726 |
+| Fine node to output | 81.400728 | 81.334612 | -0.066116 |
+
+Log: `build/tg2-entry-stage-comparison-300-v2.log`. The preceding exploratory
+invocation failed to locate the scripts directory and produced no measurement;
+V2 explicitly supplies that import path. Neither command changes circuit bytes.
+The observed added delay is concentrated before the selected node, making
+input/selection-path experiments more relevant than another fine-stage change
+for this specific margin. This is localization, not mechanism proof: source
+shape, slew and duty all differ between the two points. A controlled comparison
+and actual fanout/routing results are needed before selecting a circuit repair.
