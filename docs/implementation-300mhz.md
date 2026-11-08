@@ -3170,3 +3170,14 @@ pending-case rejection. Captured phase diagnostic V2 accepts the corrected
 producer and preserves unwrapped phase measurement and original transport
 classification; its two binary receipt/tampering tests pass. The existing V1
 consumers and captured/running experiment dependencies remain unchanged.
+
+Corrected serial capture completed full validation as
+`tg2_four_section_zero_pilot_300_v2/ab47d513bae05d29`. It is dispatched by
+`openlvds-tg2-four-section-300-v2`, invocation
+`5c7f8cd0f6e4402384a4fa1a1296fd14` (initial host MainPID 2422562).
+The controller retains one priority-2 native worker under the global six-slot
+lease mechanism, and requires both fresh centered/unshifted cases and full
+numerical parity. Dispatch is not a completed simulation or qualification.
+The corrected combined materials preparation remains separate and runs no
+simulation; further combined recovery runs await the input-current-origin
+reference experiment. Existing native jobs remain untouched.
