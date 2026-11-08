@@ -2304,3 +2304,29 @@ also refuses a modified recorded downstream delay. Synthetic binary fixtures
 are analyzer unit tests, not circuit evidence. Actual preflight against the
 running early loading case 0 correctly refused `Loaded native case is still
 pending: 0`. No loaded timing receipt or admitted bank has been created.
+
+### Wider-switch fine31/40% endpoint independently verified
+
+Double-TG pilot case 2 naturally completed without execution error (native
+elapsed 1043.210 s) and passes its SS/40 °C/310 MHz/40% duty point screen.
+Across all eight events, rising delays are 978.315046…981.949956 ps and falling
+delays 968.611693…968.777014 ps. Rising/falling history spans are
+**3.634910/0.165321 ps**, maximum period error 3.634815 ps and maximum output
+slew 154.888484 ps. The original waveform, startup events and limits are
+unchanged; the history remains below 20 ps and the slew below 250 ps.
+
+Independent replay
+`distributed_family_native_replay_300_v3/0968cc348b4cab51` completed and
+reproduces all original metrics, independent timing, terminal envelope and
+control/programming-gate settling for all 2,056 MOS, 86 controls and 266 actual
+gates. Worst terminal envelope is 1.907313803 V against a 1.95 V limit, passing.
+Log: `build/tg2-p40n32-fine40-native-replay-300-v3.log`.
+
+The zero-code and both fine-duty endpoints now have independently verified
+passing point screens. Neither the fine-40 result nor their combined envelope
+establishes conservative overlap before the new coarse-one result exists.
+Fresh source unshifted parity, actual-next-bank comparisons, common RC, 15 PVT,
+continuous DLL/DCC operation and PHY qualification also remain required. The
+first early actual-next-bank case was confirmed live in native ngspice; no
+loaded timing result is yet available. All bank/PHY admission flags remain
+false.
