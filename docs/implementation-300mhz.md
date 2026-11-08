@@ -128,3 +128,31 @@ errors. Its rising-history span is 1.165129 ps, falling span 0.001525 ps,
 and maximum period error 1.165169 ps. All individual native point gates pass.
 The unshifted comparison and the zero/fine40/coarse endpoints remain pending;
 this single centered point does not admit the bank or prove range overlap.
+
+## Single-driver range experiment launched
+
+The fresh baseline zero/50% point now completes with every individual native
+point gate passing. Its maximum delay is 750.541009 ps, leaving 55.910604 ps
+against the 310 MHz quarter-period limit under the original 20 fF load.
+Baseline fine40, coarse1 and unshifted active parity are still pending.
+
+The next one-factor revision is `native_bank_300_v2/2d31edbabe113146`.
+`single_fine_driver_300.py` removes only branch Xb from the qualified parallel
+fine-driver wrapper, preserving Xa's numerical definition verbatim. Actual
+native expansion verifies 2070 MOS / 138 MIM, all remaining transistor
+connections unchanged, 86 controls and all 266 programming-gate observations.
+No coarse topology, fine capacitance, pre-driver or output load changes.
+
+`openlvds-single-driver-300-v2`, invocation
+`1c9bad181f3c4b39ae71ec80dd79557e`, runs the same five 310 MHz SS40,
+40 ns/eight-event cases, including its own unshifted/centered active control.
+It uses the unchanged dispatcher, at most two workers and priority 1; lease
+availability determines concurrency. Its consumer additionally verifies the
+entire reconstructed source identity and exact bench-offset metadata. This
+producer and its dependencies are now captured and must remain immutable.
+
+Three new transformation tests pass (0.581 s), checking exact native terminal
+preservation and rejection of damaged observations or an already modified
+wrapper. Five pilot contract/stimulus tests pass (0.262 s). These tests do not
+qualify the new bank: range overlap, analog point gates and active numerical
+parity must pass first, followed by next-bank loading and full qualification.
