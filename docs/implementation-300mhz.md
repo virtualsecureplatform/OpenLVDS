@@ -1371,3 +1371,41 @@ for a normal slot handoff. Six native ngspice processes remain active;
 no existing solver was preempted or modified. Log:
 `build/ramped-current-center-300-v1.log`. The queued numerical trial remains
 unqualified and introduces no result or solver-speed claim.
+
+
+### Single-P40 fine-60 failure reproduced and localized
+
+Centered single-P40 case 1 completes without execution error, but rising
+history is **41.784717991 ps** and maximum period error **41.736209958 ps**,
+failing the unchanged 20 ps limits. Falling history is **0.221085226 ps**,
+maximum slew **127.725792240 ps**, and terminal/control/programming-gate
+checks pass. The zero-code repair is real but insufficient for qualification.
+Independent receipt
+`medium_pre_distributed_native_replay_300/b27c1c08c4db9ff7` reproduces every
+original metric and independent timing, terminal and control/gate check.
+Log: `build/medium-pre-distributed-fine60-native-replay-300.log`.
+
+New read-only `scripts/diagnose_medium_pre_stages_300.py` applies the same
+startup-inclusive fixed-epoch stage metrology to the exact new producer and
+observations. Actual zero/fine-60 cases 0/1 complete in
+`medium_pre_distributed_stage_diagnosis_300/623b3b7d2f4125eb`; all original
+outer delays reproduce and every eight-event stage sum has zero residual.
+Log: `build/medium-pre-distributed-stage-diagnosis-300.log`. No SPICE lease,
+changed source waveform, startup trimming or qualification relaxation is used.
+
+At fine 60, rising stage-history spans are **2.615800 / 26.808991 /
+16.794789 / 0.796050 ps** (selection / pre-driver / fine / output).
+First-to-last changes are approximately **+2.614951 / −26.808931 /
+−16.794604 / −0.796050 ps**, giving the observed total −41.784634 ps.
+Thus the observed pre-driver and fine-stage timing evolution dominates;
+the selection contribution partly cancels it. Stage timing alone does not
+measure MIM plate charge or prove a specific recovery mechanism. At zero,
+falling selection delay is about 315.24 ps versus 409.96 ps for the previous
+strong-pre split-one-cell bank, while falling pre-driver delay remains about
+291.07 ps. This localizes the measured zero-code benefit without assuming
+that weaker pre-drive can also satisfy fine-60 history and coverage.
+
+The existing campaign continues to fine-40/coarse-one and its unshifted
+active reference, preserving all failures. Further architecture selection
+must address this measured history tradeoff together with conservative
+code overlap and actual loading; no component or PHY admission is granted.
