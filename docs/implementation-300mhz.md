@@ -240,6 +240,16 @@ unchanged campaign's available worker has advanced to case 8, the smaller
 split candidate's zero-code/50%-duty quarter-headroom test. Neither a failure
 nor a passing fine-60 point changes coverage, loading, PVT or PHY gates.
 
+Independent case-7 replay completed in
+`distributed_bank_native_replay_300/d0a2b232ee31f56d`. Every original metric
+and independent timing, terminal envelope, control and programming-gate
+settling measurement reproduces, including the 179.211 ps rising-history
+and 178.832 ps period-error failures. The larger centered split is therefore
+rejected by both measurement paths. Its live unshifted reference and exact
+pair parity remain separate pending evidence; no failure is discarded or
+reclassified, and no physical limit or numerical parameter changes.
+Log: `build/distributed-split-c2-centered-native-replay-300.log`.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
