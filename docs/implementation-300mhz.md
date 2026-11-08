@@ -2970,3 +2970,19 @@ references, unchanged pair specifications and preservation of physical failures.
 Capture preparation has started with log
 `build/matched-entry-prepare-300-v1.log`; no matched-source native case has run.
 The existing simulations and captured V1 implementations are unchanged.
+
+`replay_tg2_loaded_native_300_v3.py` adds explicit matched-source support while
+retaining the strict/early loaded and original entry-domain producers. Matched
+cases use their own task specifications and V2 source metrology for both
+original and independent reconstruction. Complete native witness/input hashes
+are checked before and after analysis; failed points stay failed and all
+admission flags remain false. Existing V1/V2 readers and captured producers
+are unchanged.
+
+Three tests pass in 7.814 s: exact registry/case preflight, refusal of pending
+data before hashing, and complete synthetic 100 ps binary receipts through
+both real readers. The binary test preserves a changed-source physical failure,
+checks that task specifications are used, and rejects a subsequently changed
+raw witness. Only the synthetic producer-binding boundary is replaced. No
+actual matched-source native result or replay receipt exists yet; capture
+validation remains active.
