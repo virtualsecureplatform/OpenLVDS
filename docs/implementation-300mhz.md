@@ -1,5 +1,27 @@
 # 300 MHz implementation
 
+## Fresh DCC source campaign
+
+`scripts/dcc_source_300.py` adds a separate profile-bound source-cell matrix:
+810 fresh cases covering five process corners, 0/25/40 C, 290/300/310 MHz,
+40/50/60% complementary input duty, 20/250 ps slew, and 0/+/-140 ps input
+event-spacing error. The independently admitted historical clock-aware reset
+source selects the exact circuit/library bytes only; none of its 400 MHz
+timing results count toward this matrix. Fixed 1.8 V, original reset,
+18-cycle native integration, 20 fF load, tolerances, observations and event/
+reset-hold/50 ps balanced-half-cycle checks remain unchanged.
+
+The new runner uses one priority-2 worker through the unchanged six-slot
+dispatcher. It binds every transitive quoted model include across all library
+sections, source-selection receipts, circuit libraries, generated decks,
+profile, producer dependencies and native runtime. It refuses prior execution
+and retains all errors and failed cases. Four focused tests pass (0.674 s),
+covering the complete matrix, exact duty-only stimulus change, transitive
+model-file rejection, and event/reset/symmetry gates. Preparation is validating
+the historical source-selection receipt; no new source result is admitted yet.
+Even a passing source matrix will not qualify physical DCC RC, startup,
+device-terminal stress, a loaded DLL, or the complete PHY.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
