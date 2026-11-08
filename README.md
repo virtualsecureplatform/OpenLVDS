@@ -72,7 +72,7 @@ as a reference and is not required at run time.
 
 | Contract | Value |
 | --- | --- |
-| Data / parallel interface | 800 Mb/s DDR / 2 bits at 400 MHz |
+| Data / parallel interface | 600 Mb/s DDR / 2 bits at 300 MHz |
 | Supplies | fixed 3.3 V analog, 1.8 V digital; no supply sweep |
 | External reference | buffered 1.2 V VREF; 35 µA sink at each PHY IREF |
 | Process / temperature | tt, ff, ss, fs, sf; 0, 25, 40 °C |
@@ -80,7 +80,7 @@ as a reference and is not required at run time.
 | Termination | external 100 Ω across each receiver pair |
 | Board model | 20 cm, 100 Ω differential, 1.2 ns delay |
 | Per-pin model | 1 nH package inductance; 2 pF pad capacitance |
-| Stress | 390/400/410 MHz; 40/50/60% input duty; ±100 ps skew; 100 ps pp jitter |
+| Stress | 290/300/310 MHz; 40/50/60% input duty; ±100 ps skew; 100 ps pp jitter |
 | Sampling margin target | 200 ps |
 
 The hardware baseline is [requirements.json](requirements.json). The current

@@ -77,3 +77,19 @@ actual 300 MHz and next-load checks. Pair removal must not be assumed faster.
 New checks so far: two profile tests, seven drain safety tests, two clock
 contract tests and five native-pilot tests pass. None of these software checks
 admits a PHY. Global SPICE budget stays six, with at most two workers per campaign.
+
+## Physical OpenPLL source reconstruction
+
+The pinned source is being rebuilt in a private git-archive copy under
+`openpll_physical_300/20261108T011353Z`. Unit
+`openlvds-physical-openpll-300`, invocation
+`999e557c291241658eb1cbffe332560f`, runs the unchanged upstream DCO physical
+configuration and then its Magic extraction script. The source submodule and
+old captures are untouched. The manifest binds the archive, producer, profile,
+PDK and intended coarse2/fine12 operating point. Physical construction has
+reached routing; extracted waveform qualification has not started.
+
+Two tests verify that a wrong source pin cannot launch physical tools and
+that a failing physical flow retains its evidence without running extraction
+or producing a successful summary. Log: `build/physical-openpll-300-tests.log`.
+The physical rebuild alone will not admit a clock trace or a PHY.
