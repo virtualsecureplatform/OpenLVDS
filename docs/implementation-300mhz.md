@@ -1278,3 +1278,24 @@ isolate pre-driver sizing alone across these different capacitor architectures
 or prove the single-P40 follow-up will repair all gates. That fresh experiment
 remains live; a smaller input load and weaker output drive have competing
 consequences that require its complete native results.
+
+
+### Larger split bank zero-code failure independently reproduced
+
+Case 11 (`split_c2_c2`, centered zero code, SS40/310 MHz) completes without
+execution error. Worst rising delay is **696.455320273 ps**, worst falling
+delay **933.745892356 ps**, giving **−127.294279453 ps** fastest-quarter
+headroom against the unchanged 806.451613 ps limit. Rising/falling history
+are **1.051692956 / 0.002024939 ps**, maximum period error **1.051732632 ps**,
+and maximum slew **90.864925894 ps**. History, period, terminal, control/gate
+and slew screens pass, while zero-code quarter/current clock-interface gates
+fail. This zero-code range failure is separate from the larger bank's fine-60
+history/period failure; neither is discarded or relaxed.
+
+Independent receipt `distributed_bank_native_replay_300/ab2a9fda449922e2`
+reproduces every original metric plus independent timing, terminal envelopes
+and control/programming-gate settling. Log:
+`build/distributed-split-c2-zero-native-replay-300.log`. Fine-40/coarse-one
+coverage and unshifted active-pair evidence remain pending for this larger
+variant; it is not promoted to loaded-chain or PVT qualification. The
+single-P40 follow-up remains a separate running experiment.
