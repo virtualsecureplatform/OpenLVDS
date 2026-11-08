@@ -1884,3 +1884,55 @@ unavailable optional service probe. The first automatic child batch awaits
 container, but no automatic batch result is claimed yet. Runtime log:
 `build/dcc-source-watch-300-v3.log`. All earlier observer attempts, native
 source captures, dispatcher caps and running solvers remain unchanged.
+
+
+### Double-transmission-gate fine cell physically built and RC-qualified
+
+The remaining P40/N32 range deficit motivates a controlled switch-strength
+experiment: retain the 2×3 MIM, 2×2 control shunt and 0.42 µm discharge clamp,
+while changing only the transmission NFET/PFET widths from **0.42/0.84 µm**
+to **0.84/1.68 µm**. The hypothesis is that lower switch resistance may raise
+the effective edge load and reduce observed capacitor-side lag. Neither gain
+nor recovery improvement is assumed. Original units, models and running
+captures remain unchanged; the distinct macro is
+`openlvds_mim_switch_2x3_tg2_v1`.
+
+New versioned schematic, primitive-inspection, direct routing, DRC/LVS,
+extraction and independent-verification scripts use isolated artifact/model
+namespaces. Routing uses its own unit binding rather than changing an existing
+module's globals. Initial explicit placement is retained in
+`configs/mim_switch_2x3_tg2_placement_v1.json`. Two tests pass in 0.002 s,
+checking the exact two-width-only schematic difference and protection against
+overwriting a partial primitive attempt. Log:
+`build/mim-switch-2x3-tg2-v1-tests.log`.
+
+Actual PDK geometry inspection completes in
+`mim_switch_2x3_tg2_pcells_v1/304fca3dc4d5cd89`. Physical build
+`mim_switch_2x3_tg2_physical_v1/fb967f0440b1844a` passes with **zero DRC
+errors and independent LVS match**. Fresh GDS-derived extraction
+`mim_switch_2x3_tg2_rc_v1/a34dbc3ef82ace31` passes the wire-collapsed topology
+audit, with **235 raw resistors / 65 parasitic capacitors**, exactly reduced
+to **204 resistors**. Independent receipt
+`mim_switch_2x3_tg2_verification_v1/3b9096d4e7fd4aa9` binds the exact
+schematic scope, GDS and raw/reduced netlists and repeats the topology check.
+
+Component proof `mim_switch_2x3_tg2_rc_proof_300_v1/97729cdbade089d6`
+passes exact reduction regeneration, elementwise passivity, native parameter/
+topology preservation and independent Schur terminal-current equivalence.
+It confirms five native primitives with all native dimensions and supplied
+junction parameters preserved. This mathematical proof modifies no model
+bytes and performs no additional extraction. The first proof launch stopped
+before artifact creation because the general scientific environment lacked
+KLayout; its log is retained. The existing physical-verification environment
+completed the proof without changing any captured runtime or model.
+
+Logs: `build/mim-switch-2x3-tg2-pcells-v1.log`,
+`build/mim-switch-2x3-tg2-physical-v1.log`,
+`build/mim-switch-2x3-tg2-rc-v1.log`,
+`build/mim-switch-2x3-tg2-independent-rc-v1.log`, and
+`build/mim-switch-2x3-tg2-schur-proof-300-v1-physical-env.log`.
+The initial dependency failure is retained in
+`build/mim-switch-2x3-tg2-schur-proof-300-v1.log`.
+No bank timing simulation, electrical/PVT or PHY qualification is claimed;
+all new artifacts retain `qualified_phy:false`. The next step is exact bank
+substitution followed by fresh zero/fine/coarse and active-parity experiments.
