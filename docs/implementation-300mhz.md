@@ -1828,3 +1828,22 @@ missing executable, inaccessible service manager and valid service-state
 handling. Log: `build/dcc-source-watch-300-v2-tests.log`. Actual container
 preflight now returns `service_probe: None` without exception; log:
 `build/dcc-source-watch-300-v2-environment-preflight.log`.
+
+
+A second environment preflight confirmed that both `apptainer` and `systemctl`
+are absent inside the container. The V2 observer was intentionally stopped
+before relying on its nested `env.sh` child launcher; its incomplete attempt
+`dcc_source_watch_300_v2/dd00124064b85712` remains preserved, including its
+watching-state snapshot. Unit `openlvds-dcc-source-watch-300-v2`, invocation
+`b1f085483c0d4dc8abdb41b5930c9dcf`, is no longer running. No native SPICE
+process was stopped or restarted. Environment evidence:
+`build/dcc-source-watch-300-container-launcher-preflight.log`.
+
+`scripts/watch_dcc_source_300_v3.py` launches replay children with its current
+Python interpreter and inherited scientific environment, without nested
+container invocation. It reuses the tested V2 optional service probe and
+original immutable receipt/batch helpers, binding all three code files.
+Twelve combined tests pass in 0.340 s, including an actual consumer help
+subprocess in the container, explicit case forwarding and full-replay command
+selection. Log: `build/dcc-source-watch-300-v3-tests.log`. Previous observer
+attempts and source captures remain unchanged.
