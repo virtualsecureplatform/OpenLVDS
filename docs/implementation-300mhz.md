@@ -1087,3 +1087,35 @@ delay and fine-60 history; the net result requires fresh native measurement.
 Finish the existing fine-40/coarse-one coverage before selecting the next
 circuit experiment. This preparation does not modify any captured helper,
 running deck, dispatcher, worker cap, numerical tolerance or admission gate.
+
+
+### Evidence-gated runner for the medium pre-driver control
+
+`scripts/probe_medium_pre_distributed_300.py` adds the fresh five-case native
+experiment for the prepared single-P40 pre-driver. Order is zero-code/50%,
+centered fine-60, unshifted fine-60, fine-40, and coarse-one/50%. Each case
+retains SS40/310 MHz, all eight startup-inclusive events, 40 ns integration,
+20 fF loading, complete terminal/control/programming observations and the
+original measurement limits. Its single priority-1 worker uses the unchanged
+global dispatcher. The active fine-60 pair must meet the original complete-
+vector 2 mV / 0.25 ps numerical parity limits with every gate class preserved.
+Conservative overlap takes the minimum delay over both fine duty points
+against the maximum coarse-one delay, for each edge; all point checks and
+positive overlap are required for a component pilot pass. PHY admission is
+always false.
+
+Preparation requires complete unchanged predecessor cases 5/8/9/10, exact
+independent zero-code replay, and the two-case fixed-epoch stage diagnosis.
+It captures their witnesses along with the entire model/runtime/profile and
+qualified-material closure. The native topology, observations and all decks
+are reconstructed and checked before execution. It preserves prior or partial
+experiments rather than reusing them. Three focused tests pass in 0.991 s,
+including exact case coverage, pending-evidence rejection and all five native
+fixtures. Log: `build/medium-pre-distributed-pilot-300-tests-v2.log`.
+
+An actual preparation preflight correctly refuses at predecessor case 9,
+which is still running; case 10 is also pending. Log:
+`build/medium-pre-distributed-pilot-300-pending-preflight.log`. No experiment
+artifact or extra SPICE process was created. The runner is ready for use once
+those coverage witnesses complete, and does not bypass or restart either
+existing architecture worker.
