@@ -42,6 +42,28 @@ the first native ngspice process is confirmed live. Log:
 this new worker; existing campaign caps and dispatcher inodes are unchanged.
 No completed source result or source/PHY admission is claimed at launch.
 
+`scripts/replay_dcc_source_300.py` now verifies complete selected native cases
+without a SPICE lease. It binds the source manifest, libraries, model/runtime
+inputs, per-case summaries and every retained native witness; it reproduces
+the original measurements exactly, then independently checks observed input
+frequency/duty/phase spacing, one event and output transition per source
+event, reset hold, output swing and balanced mean half-cycle error. Deliberate
++/-140 ps input spacing cases test event handling; the 50 ps symmetry bound
+applies only to zero-error inputs, as in the original source contract.
+
+Native replay of cases 0 and 1 completed in
+`dcc_source_native_replay_300/aa26c26d52eee286`: both original measurements
+reproduce and both independent screens pass. The zero-error case has
+29.811819301 ps balanced mean half-cycle error. Log:
+`build/dcc-source-300-first-native-replay.log`. Four consumer tests pass
+(0.066 s), including missing-event, wrong-duty, reset-hold and incomplete/
+nonfinite-waveform rejection. The first test attempt's incomplete fixture
+still extended beyond the required stop time; its corrected fixture and
+passing run are retained in `build/dcc-source-300-replay-tests-v2.log`.
+Full source-matrix admission explicitly requires all 810 completed cases and
+fresh successful remeasurement; a selected replay cannot grant it. All PHY
+and physical-DCC qualifications remain false/open.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
