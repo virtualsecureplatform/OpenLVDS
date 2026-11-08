@@ -1521,3 +1521,17 @@ original remeasurement, parity result, terminal log and final state are retained
 in the content-addressed campaign. Runtime log:
 `build/ramped-current-center-300-v1.log`. Future circuit experiments may test
 this method but still require fresh active parity for their own full waveforms.
+
+
+### Single-P40 fine-40 point independently verified
+
+Centered fine-40 case 2 completes without execution error. Rising history
+is **1.483440728 ps**, falling **0.161789033 ps**, and the original point-level
+clock-interface screen passes. Independent receipt
+`medium_pre_distributed_native_replay_300/f145131864472508` reproduces every
+original measurement plus independent timing, terminal-envelope and control/
+programming-gate checks. Log:
+`build/medium-pre-distributed-fine40-native-replay-300.log`. Its pass does
+not override the separately reproduced fine-60 history/period failure.
+Coarse-one coverage and the unshifted numerical reference remain pending;
+no component or PHY admission is granted.
