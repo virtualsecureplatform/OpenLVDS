@@ -2656,3 +2656,18 @@ flattened native devices before/after renaming, and refusal of unknown leaves,
 changed ports or repeated attachment. This is fixture preparation only; no
 combined DCC/four-section simulation, calibrated phase or fanout timing result
 exists. The live serial-chain experiment remains byte-preserved and active.
+
+`dcc_chain_materials_300_v1.py` now captures and reconstructs both combined
+loading decks, using the exact validated chain and source-DCC libraries. It
+binds transitive code/model evidence and static parent fixtures without binding
+either active campaign's changing state. Library bytes, namespace conversion,
+complete observations, both fresh-reference cases and every captured hash are
+checked again before a `prepared_unqualified` record can be written. Source
+chain/DCC qualification, detector presence, shared routing and PHY flags are
+explicitly false; the material preparation performs zero simulations.
+
+The actual-library fixture test passes in 0.396 s. It checks centered/unshifted
+symmetry, unchanged original four-bank maps, both actual DCC connections and
+globally distinct device identities. Captured-input validation has started;
+log `build/dcc-four-section-materials-300-v1.log`. Combined simulation and its
+startup-inclusive event/terminal metrology remain to be implemented and run.
