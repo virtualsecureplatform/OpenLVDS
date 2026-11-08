@@ -120,6 +120,29 @@ passing source evidence: both SF0 and SF40 cover all three frequencies and
 the full approved duty/slew/spacing matrix. SF25 and the other process
 corners remain pending, together with all physical-DCC/DLL/PHY gates.
 
+### Separate complete-pair numerical receipts
+
+`scripts/replay_distributed_parity_300.py` can analyze a complete captured
+unshifted/centered distributed-bank pair while the unchanged 14-case campaign
+continues. It binds the full original campaign identity, every variant
+library, selected native files, per-case summaries and imported analysis
+scripts. It requires the exact same variant and stimulus with one unshifted
+and one centered run, reproduces all original measurements, then invokes the
+captured full-vector/crossing/classification parity calculation. Limits remain
+2 mV across all native voltages and 0.25 ps across all eight rising/falling
+input/output events, with every individual terminal/control/programming-gate
+classification preserved. Failed physical points remain failed regardless of
+numerical parity; no bank, coverage, loading, PVT or PHY admission is granted.
+
+Three pair-selection/rejection tests pass (0.002 s); log:
+`build/distributed-active-parity-300-tests.log`. The first actual complete-pair
+analysis targets the two-cell strong-pre-driver control and is reading its
+retained native evidence; log:
+`build/distributed-strong-pre-c2-active-parity-300.log`. No parity verdict is
+claimed before its receipt completes. This tool creates a separate receipt,
+takes no SPICE lease and does not edit captured producers, libraries, running
+decks, state files, queue tickets or dispatcher lock inodes.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
