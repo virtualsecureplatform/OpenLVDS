@@ -1409,3 +1409,18 @@ The existing campaign continues to fine-40/coarse-one and its unshifted
 active reference, preserving all failures. Further architecture selection
 must address this measured history tradeoff together with conservative
 code overlap and actual loading; no component or PHY admission is granted.
+
+
+### Larger split bank fine-40 point independently verified
+
+Predecessor case 12 (`split_c2_c2`, centered fine 31, 40% duty,
+SS40/310 MHz) completes without execution error. Rising history is
+**9.232725731 ps**, falling **0.378193232 ps**, and maximum period error
+**9.219609525 ps**. Its original point-level clock-interface screen passes.
+Independent receipt `distributed_bank_native_replay_300/df50c6ee09530ea7`
+reproduces every original metric and independent timing, terminal envelopes
+and control/programming-gate checks. Log:
+`build/distributed-split-c2-fine40-native-replay-300.log`. The larger bank's
+fine-60 history and zero-code quarter failures remain failed; this passing
+duty point does not admit the architecture or qualify the PHY. Coarse-one
+coverage and its still-live unshifted active reference remain separate.
