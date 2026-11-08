@@ -64,6 +64,18 @@ Full source-matrix admission explicitly requires all 810 completed cases and
 fresh successful remeasurement; a selected replay cannot grant it. All PHY
 and physical-DCC qualifications remain false/open.
 
+The first complete SF40/310 MHz DCC source cohort (cases 0--17) now passes
+both original and independent checks. Its exact 18-point coverage is
+40/50/60% duty x 20/250 ps slew x 0/+/-140 ps input-spacing error. Independent
+receipts are `dcc_source_native_replay_300/aa26c26d52eee286` (0--1),
+`409742ff0b289cf0` (2--8), and `3c66d98c6644361b` (9--17).
+All source-event/reset checks pass, and the worst zero-input-error balanced
+mean half-cycle error is 29.824359864 ps against the unchanged 50 ps limit.
+The final cohort replay log is `build/dcc-source-300-sf40-310-final-replay.log`.
+This establishes one source-only PVT/frequency cohort; the other 792 matrix
+cases and all physical-DCC/PHY gates remain required. The unchanged single
+worker continues at the next frequency.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
