@@ -394,3 +394,31 @@ the shorter clock phase; this is an inference from the stage history, not a
 terminal-current or charge-state proof. It supports keeping the stronger
 driver in the ongoing MIM trial. No new architecture is admitted from this
 diagnostic alone. Log: `build/bank-stage-history-300.log`.
+
+## Automatically replay completed counter cases
+
+Fresh counter case 2 (SS40, 310 MHz, 40% duty, stopped high) also replays
+successfully with all non-clear metrics unchanged. Its receipt is
+`counter_clear_replay_300/1bdd07415317b05a`; three fresh counter cases now have
+passing original-3-ns replay evidence. The 270-case matrix remains incomplete.
+
+`watch_counter_clear_300.py` runs on the host and invokes the pinned contained
+replay tool serially as original case summaries complete. It verifies the
+captured parent manifest and its own consumer sources, indexes only completed
+receipts with matching tasks, preserves real failed points and refuses to
+retry a case with partial replay evidence. Native errors are retained for
+inspection. It neither changes dispatcher tickets nor starts, stops or
+restarts SPICE. A terminal native coordinator with unfinished cases stops the
+watcher for inspection; an observation failure alone is not treated as
+terminal.
+
+Five watcher tests pass (0.006 s): completed/partial receipt handling,
+preservation of failed points, rejection of conflicting duplicate evidence
+and native error handling. Log: `build/watch-counter-clear-300-tests.log`.
+Unit `openlvds-counter-clear-watch-300`, invocation
+`a09581fcd91b48298b258200252a34d3`, is live with context
+`counter_clear_watch_300/6a76f5028c86c5c2`. It uses one replay worker, batches
+of at most six and 30 s polling; the initial index contains three completed,
+passing cases. Progress and child logs live within that context. Even a
+complete index remains explicitly unqualified: final whole-matrix evidence
+validation, all remaining clock/link gates and physical release stay open.
