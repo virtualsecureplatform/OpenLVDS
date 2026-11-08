@@ -1469,3 +1469,25 @@ or prove a new circuit will meet history, coverage and loading requirements.
 The next bounded control keeps total pre-driver P40 strength while using N32,
 assembled from retained cells, before considering another increase of both
 pull-up strength and input loading.
+
+
+### P40/N32 pre-driver recovery control prepared from retained components
+
+`scripts/p40n32_pre_distributed_bank_300.py` replaces only the single-P40/N16
+pre-driver call with the existing parallel wrapper of two verbatim qualified
+P20/N16 cells. This retains total P40 pull-up, increases pull-down to N32,
+and preserves pre/fine capacitor placement, P80/N32 fine driver, every other
+native leaf definition, and all 86 controls / 266 programming-gate observations.
+The complete native terminal map must match outside the replaced pre-driver;
+reachable inventory is **2056 MOS / 202 MIM**, including exactly **40 PFET /
+32 NFET** in the pre-driver. New shared wiring remains ideal/unqualified.
+
+Three tests pass in 3.005 s, covering retained topology/native maps, explicit
+pre-driver P/N census, source-map rejection and native translation of both
+numerical origins and all endpoint stimuli. Log:
+`build/p40n32-pre-distributed-bank-300-tests-v2.log`; the earlier structural
+run is retained separately. No simulation has been launched for this control.
+It tests the recovery hypothesis rather than assuming that nominal drive
+ratios predict native behavior. Fresh zero/fine-60/fine-40/coarse-one checks,
+active numerical parity, actual loading, routed RC and PVT remain required;
+component and PHY admission are false.
