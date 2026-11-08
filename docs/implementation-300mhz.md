@@ -1249,3 +1249,32 @@ preflight against the captured campaign correctly rejects still-running case
 The native solver remains live in operating-point initialization with no raw
 waveform yet. There is no completed native replay or timing claim for this
 new architecture; validation on actual data remains required after case 0.
+
+
+### Retained zero-code stage comparison narrows the delay tradeoff
+
+Existing immutable stage metrology completes a new two-case receipt
+`bank_stage_history_300_v2/14eec5976ea72bf3` for zero-code case 2 of the
+restored P80 baseline and MIM4 bank. Both complete eight-event outer delays
+reproduce exactly, with zero stage-sum residual. Log:
+`build/restored-zero-stage-comparison-300.log`. These are retained native
+waveforms; no new SPICE process or changed qualification gate is involved.
+
+Baseline zero-code rising stage ranges are approximately
+217.527–217.743 / 242.180–243.752 / 197.496–197.664 / 91.375–91.383 ps
+(selection / pre-driver / fine driver / output). Falling ranges are
+251.961–251.963 / 242.351–242.354 / 138.961–138.962 / 70.169–70.172 ps.
+MIM4 preserves essentially the same selection/pre-driver delays, while its
+fine stage rises to 232.171–232.346 ps rising and 163.862–163.863 ps falling;
+output delay rises to approximately 100.87 / 77.64 ps. Their worst outer
+zero-code delays are 750.541 / 794.841 ps, respectively, within the unchanged
+806.451613 ps fastest-quarter target.
+
+The separately measured split-one-cell strong-pre zero point instead has
+approximately 409.96 / 290.90 / 111.07 / 60.97 ps falling stage delays and
+872.902640 ps worst outer delay. This comparison shows why the zero-code
+failure must be tracked independently of fine range/history. It does not
+isolate pre-driver sizing alone across these different capacitor architectures
+or prove the single-P40 follow-up will repair all gates. That fresh experiment
+remains live; a smaller input load and weaker output drive have competing
+consequences that require its complete native results.
