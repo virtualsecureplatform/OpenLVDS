@@ -31,6 +31,17 @@ directives, then checks those captured hashes during execution. Four updated
 tests pass (0.609 s); log: `build/dcc-source-300-model-closure-tests.log`.
 The fresh preparation attempt uses `build/dcc-source-300-prepare-v2.log`.
 
+Preparation now succeeds as `dcc_source_300_v1/1a4f4e8eabb896e4`, capturing
+319 transitive model files (including the previously omitted Monte Carlo
+parameters) and all 810 freshly generated decks. Independent model-discovery
+preflight is retained in `build/dcc-source-300-model-closure-preflight.log`.
+Unit `openlvds-dcc-source-300-v1`, invocation
+`791b8814509f48519ae8093409efed40`, runs its single priority-2 worker;
+the first native ngspice process is confirmed live. Log:
+`build/dcc-source-300-v1.log`. There are six active SPICE processes including
+this new worker; existing campaign caps and dispatcher inodes are unchanged.
+No completed source result or source/PHY admission is claimed at launch.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
