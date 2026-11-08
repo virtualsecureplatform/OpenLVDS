@@ -156,6 +156,24 @@ or admitting it. The independent tool was validated against actual complete
 native evidence; the running 14-case producer and every physical limit are
 unchanged. Log: `build/distributed-strong-pre-c2-active-parity-300.log`.
 
+### Split candidate unshifted point completes
+
+Case 4 (`split_c1_c1`, unshifted SS40/310 MHz fine-60 stimulus) completed
+the full 40 ns native integration in 14744.703 s native elapsed time. The
+captured producer reports rising history variation 19.883750129 ps, falling
+0.020463603 ps, maximum period error 19.881242913 ps, and maximum output slew
+120.090599383 ps. All point-level event, terminal, control/programming-gate
+and current clock-interface checks pass. This agrees with the previously
+independently replayed centered point, but rising-history headroom remains
+only about 0.116 ps and does not establish PVT/load robustness.
+
+Fresh complete-pair numerical analysis of cases 4/5 is running separately
+through `replay_distributed_parity_300.py`; log:
+`build/distributed-split-c1-active-parity-300.log`. Numerical parity has no
+verdict yet. Independent unshifted-point metrology, zero-code headroom,
+fine-40 behavior, conservative coarse overlap, actual loading, common routed
+RC and full PVT remain required. No bank or PHY admission is granted.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
