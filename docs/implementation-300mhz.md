@@ -2223,3 +2223,32 @@ attributed to every stage having 0.13 ps variation. Rising stage spans are
 the original P40/N32 point, while their remaining variation is preserved in the
 receipt. Full bank, continuous DLL/DCC, common RC, PVT and PHY admission remain
 false.
+
+### Early actual-loading diagnostic prioritizes the remaining zero-code risk
+
+The verified +56.434756 ps zero-code headroom is sufficiently small that the
+actual next-bank input could reject this architecture even if its artificial
+20 fF endpoint coverage passes. The newly verified fine31/60% point improves
+recovery but does not answer that loading question. A separate versioned
+`probe_tg2_next_bank_early_300_v2.py` therefore permits an **unqualified early
+loading diagnostic** after the independent zero and fine-60 point receipts,
+without waiting for fine40/coarse-one coverage or the source's unshifted pair.
+The original V1 runner's full-source-feasibility gate remains unchanged.
+
+This changes experiment ordering, not acceptance of a bank. The early capture
+explicitly records `source_full_bank_coverage_qualified:false` and
+`source_active_numerical_parity_qualified:false`. It retains four complete
+40 ns/eight-event native cases and the same actual two-bank transistor maps,
+fixed supplies, stress, control, slew, period/history and quarter-budget checks.
+The order is centered next-fine0, centered next-fine31, unshifted next-fine0,
+unshifted next-fine31; both settings still require their own fresh bidirectional
+all-voltage/DC/crossing comparison. A centered result alone cannot pass the
+four-case diagnostic. One priority-two worker uses the unchanged six-slot
+aging dispatcher, with no preemption of existing native jobs.
+
+Four tests passed in 0.445 s: refusal of a missing source point before binding
+or capture, exact preservation of the two centered/unshifted material pairs,
+requirement for all four cases and both comparisons, and rejection of hidden
+internal-voltage, DC and programming-gate differences. Preparation is gated on
+both complete unchanged independent native point receipts; no source coverage,
+source numerical-parity or PHY certificate is inferred from this diagnostic.
