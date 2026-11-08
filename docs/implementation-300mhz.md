@@ -3207,3 +3207,39 @@ expensive binding. No SPICE experiment or existing captured dependency was
 changed. The actual input-current experiment is confirmed live and has no
 completed result yet, so no native replay receipt or convergence repair is
 claimed.
+
+### Gated combined input-current experiment
+
+`probe_dcc_chain_300_v2.py` prepares the next combined convergence test from
+corrected materials `dcc_four_section_materials_300_v2/64b5f8c41cb4eddd`.
+Preparation first requires a complete, passing independent receipt for the
+exact input-current reference trial. The gate verifies receipt identity,
+classification, every bound native witness and post-analysis evidence; it
+cannot use a pending or failing experiment as authorization to proceed.
+No such native receipt exists yet, so no combined V2 capture or simulation is
+claimed or launched.
+
+The centered trial adds only the declared DC-zero input-current bench load
+to the existing VDD-current numerical load; the fresh unmodified reference
+retains neither numerical load. All actual circuit/model bytes, stimulus
+voltage expressions and device/observation maps are preserved apart from
+library include paths. External input-bench power is excluded explicitly.
+Both complete 40 ns runs and the original full-vector bidirectional 2 mV,
+1 nV DC, 0.25 ps crossing and all-boolean-classification parity gates remain
+mandatory. Failure of either run remains failure, without substituting a
+previous trace. The runner retains one priority-2 worker and the global six
+SPICE slots. No native tolerances or physical criteria are changed.
+
+Five tests pass: actual corrected decks change only declared loads/include
+paths; complete binary pair checks retain internal-pulse/classification
+failures; pending and failing receipts block preparation before material
+validation; a changed native reference witness is rejected; and the fresh
+unmodified case cannot accidentally receive the intervention. A new version
+of the independent combined native replay consumer registers both original
+and V2 producers, retaining all independent terminal, timing and pulse checks.
+All source-chain/DCC, calibrated phase, detector, shared-RC and PHY admission
+flags remain false.
+The independent combined V2 replay consumer's three tests also pass, using
+complete binary passing/failing receipts, pending-case preflight and changed
+witness rejection. These tests verify the consumer; they do not constitute a
+native combined-circuit result.
