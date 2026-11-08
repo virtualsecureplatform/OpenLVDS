@@ -2507,3 +2507,24 @@ aging dispatcher. No existing solver was stopped or changed. Log:
 launch. This capture defines the entry transition in 10–90% units and validates
 its declared source; it does not retrofit that interpretation or a numerical
 allowance into any older captured producer.
+
+### Maximum-fine downstream loading independently reproduced
+
+Receipt `tg2_loaded_native_replay_300_v1/f7a87a45948cd4a3` is complete
+and passing for early-loading case 1: first bank at zero code, actual second
+bank at fine code 31, SS/40 °C/310 MHz, 100 ps entry and 50% duty. Both the
+original remeasurement and separate independent reader reproduce every saved
+metric across 4,112 MOS, 172 controls and 532 programming gates. No parameters
+changed. First-bank quarter headroom is 37.214261 ps; maximum output slew is
+197.534103 ps. The second bank's rise/fall history spans are 1.906520/0.038515 ps,
+maximum period error 3.920162 ps and maximum output slew 154.915795 ps.
+
+Together with the independently replayed downstream-zero case, this verifies
+two centered loading points. The fresh unshifted downstream-zero simulation is
+now running; both numerical reference pairs remain required. The entry-domain
+controller remains active behind the six-slot dispatcher, with no completed
+boundary result. These receipts do not admit the whole bank or PHY: source
+coverage/parity, four-section loading and fanout, shared routing, dense codes,
+15-PVT calibration and full-link verification remain open. Preserve the
+coarse-chain tail termination when investigating output loading; it terminates
+tap 15 and is not an output load.
