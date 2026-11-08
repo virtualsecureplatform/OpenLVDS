@@ -75,7 +75,7 @@ def evidence(full=True):
 def specifications():
     # Check the zero-code bottleneck first; retain both numerical origins at fine 60.
     old=predecessor.specifications()
-    tasks=deepcopy([old[k] for k in (8,5,4,9,10)])
+    tasks=deepcopy([old[k] for k in (8,5,9,10,4)])
     for task in tasks:
         task['variant']=VARIANT
         task['spec'].update(architecture='single_p40_pre_split_fine_control',
@@ -183,11 +183,11 @@ def run(out):
             row=dict(task=task,result=result,error=error,files={p.name:sha(p) for p in folder.iterdir() if p.is_file()})
             atomic(folder/'summary.json',row);return row
         with ThreadPoolExecutor(max_workers=1) as pool:rows=list(pool.map(execute,m['tasks']))
-        check=parity(out,rows,2,1)
+        check=parity(out,rows,4,1)
         complete=all(r['result'] is not None and all(len(r['result']['edge_delays_ps'][e])==8
                      for e in ('rise','fall')) for r in rows)
-        overlap={edge:min(v for k in (1,3) for v in rows[k]['result']['edge_delays_ps'][edge])
-                 -max(rows[4]['result']['edge_delays_ps'][edge]) for edge in ('rise','fall')} if complete else None
+        overlap={edge:min(v for k in (1,2) for v in rows[k]['result']['edge_delays_ps'][edge])
+                 -max(rows[3]['result']['edge_delays_ps'][edge]) for edge in ('rise','fall')} if complete else None
         passed=bool(check['passed'] and overlap and all(v>0 for v in overlap.values())
                     and all(r['result']['current_clock_interface_screen_passed'] for r in rows))
         checks={VARIANT:check}

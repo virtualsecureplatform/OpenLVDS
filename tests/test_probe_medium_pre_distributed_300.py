@@ -15,9 +15,9 @@ class MediumPrePilotTests(unittest.TestCase):
         self.assertEqual(len(tasks), 5)
         self.assertEqual([(t['spec']['coarse'], t['spec']['fine'], t['spec']['duty'])
                           for t in tasks], [(0, 0, .5), (0, 31, .6),
-                                           (0, 31, .6), (0, 31, .4), (1, 0, .5)])
-        self.assertEqual([t['centered'] for t in tasks], [True, True, False, True, True])
-        self.assertEqual(tasks[1]['spec'], tasks[2]['spec'])
+                                           (0, 31, .4), (1, 0, .5), (0, 31, .6)])
+        self.assertEqual([t['centered'] for t in tasks], [True, True, True, True, False])
+        self.assertEqual(tasks[1]['spec'], tasks[4]['spec'])
         for task in tasks:
             self.assertEqual(task['variant'], p.VARIANT)
             self.assertEqual((task['spec']['frequency_mhz'], task['spec']['stop_ns'],

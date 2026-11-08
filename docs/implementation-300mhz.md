@@ -1166,3 +1166,30 @@ history and 182.582 ps period failures are retained. Log:
 completed four-cell control's numerical-origin question without admitting
 its architecture or changing any limit. The remaining larger split pair is
 separate and still requires its live unshifted reference.
+
+
+### Smaller split bank endpoint coverage closes with two physical failures
+
+Coarse-one case 10 completes without execution error and passes its point
+screens: rising history **0.987502025 ps**, falling **0.001891767 ps**,
+maximum period error **0.986889388 ps**, and maximum slew **83.651549764 ps**.
+Independent replay `distributed_bank_native_replay_300/9968f97a350ae52d`
+reproduces all original measurements and independent timing, terminal and
+control/programming-gate checks. Log:
+`build/distributed-split-c1-coarse1-native-replay-300.log`.
+
+Using completed centered fine-60/fine-40/coarse-one cases 5/9/10 and the
+unchanged conservative formula (minimum across both fine duties minus maximum
+coarse-one delay) gives **−116.116961 ps rising / −33.819311 ps falling**.
+Thus this bank has discontinuous code coverage as well as the independently
+reproduced **−66.451027 ps** zero-code quarter headroom. Passing individual
+fine/coarse points and active pair parity does not override either failure.
+The larger variant's unshifted reference remains separate and live; this
+calculation does not claim the entire 14-case campaign is complete.
+
+Before any follow-up capture, the single-P40 pilot order was changed to zero,
+centered fine-60, fine-40, coarse-one, then unshifted fine-60. This obtains
+all centered range witnesses before the potentially slow active reference,
+while preserving every case and unchanged final parity/coverage requirements.
+The three updated tests pass in 1.010 s; log:
+`build/medium-pre-distributed-pilot-300-tests-v3.log`.
