@@ -2047,3 +2047,20 @@ programming, and refusal to load an already loaded fixture. Preparation and a
 separate `check` both passed. State is `prepared_unqualified`, simulations 0,
 `qualified_phy:false`. No loaded simulation has launched; the single-bank pilot
 must establish feasibility before spending solver slots on these diagnostics.
+
+### Fresh ramped-family numerical-pair consumer prepared
+
+`replay_distributed_pair_300_v1.py` accepts only the captured medium-pre,
+P40/N32-pre and double-TG producers. It requires the same-variant, same-stimulus
+unshifted case 4 and ramped case 1, reproduces each full original measurement,
+and independently checks each run's timing, terminal envelope and actual
+control/programming-gate settling. It then reruns the producer's bidirectional
+all-voltage parity, crossing, DC and gate-classification comparison. The receipt
+preserves failed physical point classifications and never admits a whole bank.
+
+Three registration/refusal tests passed in 1.934 s, including rejection of a
+pending reference before expensive binding or receipt creation and rejection of
+a mismatched pair stimulus. An actual preflight against the still-live P40/N32
+case 4 correctly refused with `Native active-pair case is still pending: 4`;
+no numerical-pair receipt or passing result was created. The references remain
+running and must finish naturally before this consumer can produce evidence.
