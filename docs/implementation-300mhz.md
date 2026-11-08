@@ -128,6 +128,14 @@ independently passing source evidence, including SF/310 MHz at all three
 requested temperatures. SF25 lower frequencies, the other four process
 corners and all physical-DCC/DLL/PHY gates remain pending.
 
+SF25/300 MHz cases 126--143 pass original and independent source checks in
+`dcc_source_native_replay_300/ba3b8ed3726dc0b9`. Exact 18-point duty/slew/
+spacing coverage has worst balanced mean half-cycle error 28.706494702 ps.
+Log: `build/dcc-source-300-sf25-nominal-replay.log`. Cases 0--143 now have
+independently passing source evidence, including SF/300 MHz at all three
+requested temperatures. SF25/290 MHz, the other process corners and all
+physical-DCC/DLL/PHY gates remain pending.
+
 ### Separate complete-pair numerical receipts
 
 `scripts/replay_distributed_parity_300.py` can analyze a complete captured
