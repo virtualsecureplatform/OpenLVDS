@@ -2064,3 +2064,44 @@ a mismatched pair stimulus. An actual preflight against the still-live P40/N32
 case 4 correctly refused with `Native active-pair case is still pending: 4`;
 no numerical-pair receipt or passing result was created. The references remain
 running and must finish naturally before this consumer can produce evidence.
+
+### Native two-bank transport metrology and evidence-gated runner
+
+`two_bank_native_measure_300_v1.py` evaluates the actual loaded first bank
+against the ideal bench input and the second bank against the **measured** first
+bank output. It preserves every startup pulse and all 10/50/90% crossings,
+checks full swing, pulse order, positive unwrapped delays, 20 ps period/history,
+250 ps input/output slew domains and the 300 MHz profile's fastest-quarter
+budget for each bank programmed to zero. The downstream reference is explicitly
+relative; it is not incorrectly required to match the ideal 2.1 ns bench epoch.
+Each bank's terminal envelope and control/programming-gate checks use that
+bank's own actual transistor map and programmed coarse/fine code. All samples,
+including DC and startup stress, remain included. Both banks and the fixed
+1.8 V supply check must pass the combined diagnostic.
+
+Seven metrology tests passed in 0.478 s, including complete synthetic binary-raw
+parsing and measurement, independent first/next control targets, the 700/750 ps
+relative-stage distinction, startup pulse loss, downstream quarter failure,
+startup terminal stress, supply error and missing DC sample. Synthetic unit
+traces validate the analyzer only and are not circuit simulation evidence.
+
+`probe_tg2_next_bank_300_v1.py` is the corresponding four-case native runner.
+Preparation requires the naturally completed five-case single-bank pilot with
+all original point screens passing, positive conservative overlap on both
+edges, fresh bidirectional/DC numerical parity, and its matching independent
+complete-pair receipt. It then binds the prepared actual next-bank decks and
+full source evidence into a new immutable experiment. One priority-one worker
+uses the existing global dispatcher. Both next-bank code settings require their
+own unshifted/ramped pair, with all saved native voltage vectors, 2 mV
+bidirectional interpolation, 0.25 ps crossing and 1 nV DC limits. Input, first
+output and second output events all participate; no internal vectors or failed
+gate classifications are excluded.
+
+Four runner tests passed in 1.709 s, including refusal of an unfinished source,
+refusal of negative overlap despite passing point screens, requirement for all
+four loaded cases and both pairs, and preservation of internal-voltage, DC and
+programming-gate differences. Actual preflight against the live pilot correctly
+refused with `Single-bank native pilot has not completed all five error-free
+cases`, before capture or solver launch. No actual loaded native result exists.
+The runner is a component diagnostic, not shared-wire RC, delay-table, DLL/PVT
+or PHY qualification; those gates remain open.
