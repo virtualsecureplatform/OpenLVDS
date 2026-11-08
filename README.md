@@ -1,8 +1,13 @@
 # OpenLVDS
 
-SKY130 source-synchronous LVDS prototype: one 800 Mb/s data lane, a forwarded
-400 MHz clock, and two-bit parallel ports. The receiver uses that clock directly;
+SKY130 source-synchronous LVDS prototype: one 600 Mb/s data lane, a forwarded
+300 MHz clock, and two-bit parallel ports. The receiver uses that clock directly;
 there is no CDR. OpenPLL supplies the transmitter clock.
+
+The active implementation target is now **300 MHz / 600 Mb/s DDR**, checked at
+290/300/310 MHz and 40/50/60% duty. See the [300 MHz implementation status](docs/implementation-300mhz.md).
+The historical 400 MHz results below remain retained evidence; the new target
+requires fresh qualification.
 
 The implementation includes synthesizable DDR logic, transistor circuits,
 generated analog GDS/LEF, digital place and route, DRC/LVS, GDS-based distributed
