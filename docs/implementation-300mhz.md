@@ -2931,3 +2931,27 @@ input/selection-path experiments more relevant than another fine-stage change
 for this specific margin. This is localization, not mechanism proof: source
 shape, slew and duty all differ between the two points. A controlled comparison
 and actual fanout/routing results are needed before selecting a circuit repair.
+
+### Matched-source isolation fixtures
+
+`bank_entry_waveform_300_v2.py` adds a declared 100 ps linear 10–90% entry
+to the versioned reference implementation. Existing 20/250 ps PWL points and
+source cards remain identical. `two_bank_entry_measure_300_v2.py` applies the
+same full waveform verification and original physical limits, retaining the
+independent reader. Running V1 sources and readers are unchanged.
+
+`matched_entry_materials_300_v1.py` constructs four additional diagnostic
+fixtures: 100 ps linear entry at 50% and 60% duty, followed by fresh unshifted
+references for both. Compared with the completed 250 ps/60% point, 100 ps/60%
+isolates entry slew within the same linear source family. The two 100 ps cases
+isolate duty, while the prior 100 ps/50% tanh fixture provides a separate shape
+comparison. All cases retain SS/40 °C/310 MHz, actual two-bank zero loading,
+40 ns, eight startup events and all 4,112 MOS maps. Only the known ideal source
+and declared external bench-current reference differ. No extra simulation has
+been launched and these fixtures are not a replacement for boundary coverage.
+
+Two source/fixture tests pass in 1.823 s, preserving every old boundary source,
+independent 100 ps reconstruction, complete maps and both reference pairs.
+A complete binary-reader test passes in 1.905 s: original/independent metrics
+agree at 100 ps, and a changed source voltage rejects the point. Captured
+materials, native runs and the controlled stage comparison remain outstanding.
