@@ -120,6 +120,14 @@ passing source evidence: both SF0 and SF40 cover all three frequencies and
 the full approved duty/slew/spacing matrix. SF25 and the other process
 corners remain pending, together with all physical-DCC/DLL/PHY gates.
 
+SF25/310 MHz cases 108--125 pass original and independent source checks in
+`dcc_source_native_replay_300/8ab55b0ebe48bde0`. Exact 18-point duty/slew/
+spacing coverage has worst balanced mean half-cycle error 28.699071613 ps.
+Log: `build/dcc-source-300-sf25-310-replay.log`. Cases 0--125 now have
+independently passing source evidence, including SF/310 MHz at all three
+requested temperatures. SF25 lower frequencies, the other four process
+corners and all physical-DCC/DLL/PHY gates remain pending.
+
 ### Separate complete-pair numerical receipts
 
 `scripts/replay_distributed_parity_300.py` can analyze a complete captured
