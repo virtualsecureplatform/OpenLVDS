@@ -1967,3 +1967,18 @@ fine reference at SS/40 °C/310 MHz. It retains the existing bidirectional
 events and original electrical gates. One worker uses the existing global
 six-slot dispatcher. Neither component construction nor pilot preparation
 admits whole-bank timing, shared routing, PVT coverage or the PHY.
+
+### Container-safe DCC watcher: first completed automatic batches
+
+The V3 watcher successfully launched its independent consumer directly in the
+captured scientific environment. Automatic batches 234–251
+(`dcc_source_native_replay_300/53837a6f083eb447`) and 252–269
+(`dcc_source_native_replay_300/d23c9b6d35678669`) both completed with all selected
+source screens passing. This verifies the actual child execution path after the
+prior container/systemd and nested-Apptainer observer failures. The watcher now
+owns new DCC replay scheduling. Its subsequent snapshot reached 289 native
+completions and 288 independent replays with no native errors, partial replay
+cases or failed replay cases. These are source-only point receipts; the fresh
+810-case full-matrix replay is still required, and no physical DLL/PHY admission
+is implied. The counter watcher separately reached 151 native completions and
+151 corrected protocol replays with no errors or failed replay cases.
