@@ -1014,3 +1014,39 @@ Independent replay `distributed_bank_native_replay_300/15a302da171a9d37` reprodu
 Centered case 5 (`split_c1_c1`, one qualified MIM cell per enabled code at each of the pre-output and fine nodes) completed 40 ns / 20,008 native points in **927.832 s** native elapsed time. Rising history variation is **19.883901035 ps**, falling **0.017394862 ps**, maximum period error **19.881014624 ps**, and maximum output slew **120.071981003 ps**. Its point-level clock-interface screen passes, including terminal and control/gate checks, at the unchanged 20 ps history/period limit. The rising-history headroom is only about **0.116 ps**; this is one SS40/310 MHz component point, not evidence of robustness across PVT or loading.
 
 Independent replay `distributed_bank_native_replay_300/02db153ac4cb62f2` reproduces every original measurement and independent timing, terminal envelope and control/programming-gate check. Log: `build/distributed-split-c1-fine60-replay-300.log`. Unshifted case 4 remains live and must establish active numerical parity. Zero-code quarter headroom, fine-40 behavior, next-coarse coverage, actual next-bank/shared-RC loading and all-PVT qualification remain open; `qualified_phy` remains false. The unchanged campaign has advanced its available worker to case 6, the next split-capacitance variant's unshifted reference.
+
+
+### Distributed zero code rejected; native stage diagnosis retained
+
+Centered case 8 (`split_c1_c1`, SS40/310 MHz, coarse/fine zero) completed
+40 ns and all eight native epochs. Rising delay is 643.335405–644.379752 ps;
+falling delay is 872.900611–872.902640 ps. Against the unchanged fastest
+quarter target of 806.451613 ps, conservative headroom is **−66.451027 ps**.
+History, period, slew, terminal and control/gate checks pass, but the zero-code
+quarter and current clock-interface checks fail. This architecture cannot be
+promoted unchanged, even though its fine-60 point passed narrowly.
+
+Independent replay `distributed_bank_native_replay_300/213842ed2311145d`
+reproduces every original metric plus independent timing, terminal envelope
+and control/programming-gate settling. Log:
+`build/distributed-split-c1-zero-native-replay-300.log`.
+
+New read-only `scripts/diagnose_distributed_stages_300.py` binds the complete
+captured campaign, every selected native witness and imported analysis code.
+It uses existing fixed-epoch stage metrology, rejects missing/noncausal events,
+reproduces original outer delays, and preserves all original gate results.
+Actual cases 5 and 8 pass this diagnostic in
+`distributed_bank_stage_diagnosis_300/98eca3f48ee1313e`; every stage sum has
+zero residual against the eight original outer delays. Log:
+`build/distributed-split-c1-stage-diagnosis-300.log`.
+
+At zero code, falling-edge stage delays are approximately 409.96 ps through
+selection, 290.90 ps through the pre-driver, 111.07 ps through the fine driver,
+and 60.97 ps through the output stage. Thus about 701 ps precedes the fine
+inverter; the zero-code failure is not a repeated-history failure. At fine 60,
+rising stage-history spans are 3.565/5.476/9.942/0.903 ps, respectively.
+These measurements identify selection/pre-driver delay and the fine-stage
+history tradeoff as redesign targets; they do not prove a particular resizing
+will repair both. Finish fine-40/coarse-one coverage before selecting the next
+circuit variant. The existing workers and physical/numerical limits remain
+unchanged; no loaded-chain, PVT, component or PHY admission is granted.
