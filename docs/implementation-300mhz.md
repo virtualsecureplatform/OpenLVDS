@@ -1535,3 +1535,40 @@ programming-gate checks. Log:
 not override the separately reproduced fine-60 history/period failure.
 Coarse-one coverage and the unshifted numerical reference remain pending;
 no component or PHY admission is granted.
+
+
+### Evidence-gated P40/N32 recovery pilot implemented
+
+`scripts/probe_p40n32_pre_distributed_300.py` tests the prepared two-P20/N16
+pre-driver while retaining the split-one-cell fine architecture. Its five
+SS40/310 MHz native cases are zero/50%, fine-60, fine-40, coarse-one/50%,
+then the unshifted fine-60 reference. All use the original 40 ns/eight startup
+cycles, 20 fF load, complete device/control observations and unchanged
+physical timing/stress/settling/overlap limits. A single priority-1 worker
+uses the existing global six-slot dispatcher.
+
+Preparation requires complete predecessor zero/fine-60/fine-40 cases and
+their independent timing, terminal and control/gate receipts; measured
+pre-driver low recovery change above 100 mV and fine-driver high recovery
+change above 50 mV in the topology-resolved voltage proof; and the exact
+completed DC-zero numerical trial with preserved physical failure and zero
+DC-voltage difference. It captures and checks all native witnesses and
+transitive source/material/model/runtime inputs. No pending predecessor
+unshifted result is reclassified or replaced by this separate experiment.
+
+Centered cases use the previously tested fixed DC-zero 2–4 ps / 1 mA bench
+ramp, while case 4 remains fully unshifted. The new circuit must establish
+its own active numerical parity: complete voltage comparison in both
+interpolation directions at 2 mV, all eight input/output crossings at
+0.25 ps, all aggregate and individual classifications identical, and DC
+voltages preserved within 1 nV. Existing ramp admission for another circuit
+cannot admit this one. Positive conservative rise/fall overlap across both
+fine duty points and every original point check remain required; PHY
+admission is always false.
+
+Three focused tests pass in 1.196 s, covering exact five-case coverage,
+all native fixtures and bench cards, plus rejection of DC drift or a reverse-
+direction voltage failure. Log:
+`build/p40n32-pre-distributed-pilot-300-tests-v2.log`. Preparation is running
+in `build/p40n32-pre-distributed-pilot-300-prepare.log`; no new native result
+or circuit admission is claimed at this stage.
