@@ -2005,3 +2005,19 @@ rising overlap (−116.116961 ps and −102.078546 ps respectively); split-one a
 fails falling overlap (−33.819311 ps), while split-two's positive falling overlap
 (+132.829063 ps) does not repair its rising coverage or history failure.
 This closes the long native numerical reference without admitting either bank.
+
+### Double-TG bank pilot captured and launched
+
+Preparation completed successfully in
+`tg2_p40n32_pilot_300_v1/aae4b31d0e77445c`. Its content-addressed identity and all
+five captured tasks were checked: centered zero/50%, fine/60%, fine/40%,
+coarse-one/50%, then unshifted fine/60%. The bank library SHA-256 is
+`2f2f1ab9cb83c9402377224eb5603e25e7b36fec0f4d979f9f9217186ed9572d`.
+The same full component proof and exact 2,056-MOS/202-MIM inventory bind this
+capture. The run was launched under user unit
+`openlvds-tg2-p40n32-300-v1`, invocation
+`429436ee81bc4327ab79e45b9629dd33`, with one worker and existing priority-one
+six-slot dispatch. At the launch check the unit was active in initial evidence
+validation; no native timing case had completed. The log is
+`build/tg2-p40n32-300-v1.log`. This is an experiment launch, not a passing bank
+or PHY result. Existing native reference and PVT jobs were not preempted.
