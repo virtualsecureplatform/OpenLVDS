@@ -1119,3 +1119,23 @@ which is still running; case 10 is also pending. Log:
 artifact or extra SPICE process was created. The runner is ready for use once
 those coverage witnesses complete, and does not bypass or restart either
 existing architecture worker.
+
+
+### Split-one-cell fine-40 point independently verified
+
+Predecessor case 9 (`split_c1_c1`, centered fine 31, 40% input duty,
+SS40/310 MHz) completed 40 ns / 20,008 native points in **965.805 s** native
+elapsed time. Rising history is **2.691822088 ps**, falling **0.073121098 ps**,
+maximum period error **2.691400161 ps**, and maximum slew **120.071981003 ps**.
+All original point-level clock-interface, terminal and control/gate screens
+pass. Rising delays span 764.362531–767.054353 ps; falling delays span
+1018.557497–1018.630619 ps. This is distinct from the fine-60 history result;
+both duty points remain required in the conservative overlap calculation.
+
+Independent receipt `distributed_bank_native_replay_300/dbb9119325deef83`
+reproduces every original metric and independent timing, terminal-envelope
+and control/programming-gate checks. Log:
+`build/distributed-split-c1-fine40-native-replay-300.log`. Coarse-one case 10
+has started normally in the existing worker. Its coverage result remains
+pending; the independently reproduced zero-code quarter failure still prevents
+admission of this unchanged bank. No PHY qualification is claimed.
