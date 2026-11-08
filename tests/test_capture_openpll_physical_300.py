@@ -1,4 +1,4 @@
-import sys,unittest
+import json,sys,tempfile,unittest
 from pathlib import Path
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
@@ -21,3 +21,13 @@ class PhysicalEdgesTests(unittest.TestCase):
         time=np.arange(0,70e-9,2e-12)
         for voltage in [.9+.2*np.sin(2*np.pi*300e6*time),1.+1.1*np.sin(2*np.pi*300e6*time)]:
             with self.assertRaises(ValueError):p.edges(time,voltage)
+    def test_partial_failure_is_retained_and_never_marked_complete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out=Path(tmp)
+            with self.assertRaisesRegex(RuntimeError,'waveform failed'):
+                with p.recording(out):
+                    (out/'partial.raw').write_bytes(b'partial')
+                    raise RuntimeError('waveform failed')
+            state=json.loads((out/'state.json').read_text())
+            self.assertEqual(state['status'],'failed');self.assertFalse(state['qualified_phy'])
+            self.assertEqual((out/'partial.raw').read_bytes(),b'partial')
