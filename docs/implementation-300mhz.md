@@ -1688,3 +1688,37 @@ single-P40 case. It does not establish fine-60 history, positive overlap,
 active numerical parity, actual loading, routed RC, PVT, DLL/DCC or PHY
 qualification. The one-worker campaign has acquired a normal dispatcher slot
 for fine-60 case 1; all remaining cases and original gates are retained.
+
+
+### Registered recovery metrology supports P40/N32 native waveforms
+
+`scripts/diagnose_distributed_recovery_300_v3.py` uses the shared registered
+producer selector and imports the unchanged V2 topology resolver and
+startup-inclusive voltage sampler. It adds P40/N32 support without modifying
+any captured producer or metrology helper. Exact native witnesses, imported
+code and source/model/runtime inputs remain bound in separate receipts;
+unsupported producers and pending cases are refused before output creation.
+Two integration tests pass in 0.380 s, checking actual P40/N32 capacitor-side
+attachments and representative enable coverage, unrecognized attachment
+rejection, and pending-data refusal. Log:
+`build/distributed-voltage-recovery-300-v3-tests.log`.
+
+Actual P40/N32 zero-code replay completes as
+`distributed_voltage_recovery_300_v3/c8e3fe8e7a032294`. All original eight-
+event outer delays reproduce and every stage sum has zero residual. Log:
+`build/p40n32-zero-voltage-recovery-300-v3.log`. Falling stage ranges are
+**333.364450–333.366667 ps** selection,
+**230.335698–230.337914 ps** pre-driver,
+**101.667530–101.668825 ps** fine driver, and
+**59.525469–59.527533 ps** output. The preceding single-P40 zero point had
+approximately 315.24 / 291.07 / 115.69 / 62.78 ps at these stages.
+Thus improved downstream stage delays outweigh the measured selection-delay
+increase for this exact zero-code comparison. This does not isolate the
+physical contribution of transistor sizing from the retained cells' differing
+local RC, or prove enabled-state fine-60 recovery.
+
+All eight zero-code pre-driver pre-transition low samples remain between
+**−3.565397 and −3.528717 mV**, while its high samples remain around
+**1.806941 V**. The report retains actual switch-side voltages, without
+inferring MIM plate charge. Fine-60, coverage, numerical parity, actual
+loading, PVT and PHY qualification remain open.
