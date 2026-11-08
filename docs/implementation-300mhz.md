@@ -3160,3 +3160,13 @@ Both fixture tests pass. Corrected serial capture and combined materials
 preparation are in progress; neither is a qualification result. Numerical
 parity, physical timing, full PVT/code coverage, routing and PHY requirements
 are unchanged.
+
+Corrected-fixture consumers are versioned as well. Independent four-section
+replay V2 explicitly registers the old and corrected serial producers, keeps
+full witness binding, and repeats both original and independent measurement
+without changing physical failure classifications. Four tests pass, including
+complete binary pass/failure preservation, witness tampering, registry and
+pending-case rejection. Captured phase diagnostic V2 accepts the corrected
+producer and preserves unwrapped phase measurement and original transport
+classification; its two binary receipt/tampering tests pass. The existing V1
+consumers and captured/running experiment dependencies remain unchanged.
