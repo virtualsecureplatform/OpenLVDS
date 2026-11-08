@@ -1631,3 +1631,15 @@ without creating a receipt; log:
 on a complete native dataset is running for single-P40 coarse-one case 3,
 whose replay was not previously executed through another consumer. This is
 read-only metrology with no SPICE lease or running-file mutation.
+
+
+### SS0/310 MHz DCC source cohort independently verified
+
+Fresh DCC source cases 216–233 complete without execution errors. Independent
+receipt `dcc_source_native_replay_300/dc4dd1d8931480a2` reproduces all 18
+original measurements and passes every independent source screen at SS0/
+310 MHz, 40/50/60% complementary duty, 20/250 ps slew and 0/±140 ps event
+spacing error. Log: `build/dcc-source-300-ss0-310-replay.log`. Independently
+replayed source coverage is now **234 cases**. Remaining SS0 frequencies,
+SS25 and other corners are pending; this source-only evidence does not
+qualify physical DCC RC/startup/stress, the loaded DLL or the complete PHY.
