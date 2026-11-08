@@ -93,3 +93,38 @@ Two tests verify that a wrong source pin cannot launch physical tools and
 that a failing physical flow retains its evidence without running extraction
 or producing a successful summary. Log: `build/physical-openpll-300-tests.log`.
 The physical rebuild alone will not admit a clock trace or a PHY.
+
+## Physical construction complete; extracted transient running
+
+The isolated DCO rebuild and extraction now complete. Final metrics report
+zero routing, Magic and KLayout DRC errors, zero unmapped instances, and zero
+LVS device/net/property differences or unmatched devices/nets/pins. These
+checks establish this source layout, not its electrical clock behavior.
+
+`capture_openpll_physical_300.py` checks all eleven physical metrics, verifies
+private source files against the pinned git objects and checks the mode table
+before preparing a fixed coarse2/fine12 transient. It fingerprints the GDS,
+extracted netlist, extraction settings, PDK model files, numerical runtime and
+producer dependencies. The 70 ns TT25/1.8 V transient uses a real reset pulse,
+2 ps maximum steps and one priority-1 lease under the existing six-slot budget.
+No current-centering offset or source waveform rescaling is applied here.
+
+The fresh trace context is `openpll_trace_300/20261108T013035Z`; unit
+`openlvds-extracted-clock-300`, invocation
+`33b06a6e8bb142839903a39b40370faf`. Its solver is live; waveform qualification
+is pending. The upstream extraction includes capacitance and omits route
+resistance, which is recorded explicitly. This source trace cannot certify
+full interconnect-R clock jitter or closed-loop PLL behavior.
+
+The capture requires alternating finite late edges, full swing on each
+complete high/low interval, and a -0.15--1.95 V digital-input screen before
+converting analog crossings into clock edges. Exact threshold samples count
+once. Six tests cover these checks, source physical-check completeness and
+failure retention; all pass in 0.011 s. Log:
+`build/capture-openpll-physical-300-tests.log`.
+
+The centered 310 MHz fine31/60% bank point also completes without execution
+errors. Its rising-history span is 1.165129 ps, falling span 0.001525 ps,
+and maximum period error 1.165169 ps. All individual native point gates pass.
+The unshifted comparison and the zero/fine40/coarse endpoints remain pending;
+this single centered point does not admit the bank or prove range overlap.
