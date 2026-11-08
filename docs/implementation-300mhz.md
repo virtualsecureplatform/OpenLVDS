@@ -1791,3 +1791,18 @@ batching and native-error exclusion. Log:
 **234 cases / 15 receipts**, with **no partial or failed receipts**; log:
 `build/dcc-source-watch-300-receipt-preflight.log`. Further DCC selected-case
 replays will be owned by this watcher to avoid concurrent duplicate attempts.
+
+
+### P40/N32 fine-40 point independently verified
+
+Case 2 completes without execution error and passes the original point-level
+clock-interface screen. Rising history is **3.393195911 ps** and falling
+**0.228084129 ps**. Independent receipt
+`distributed_family_native_replay_300_v2/a6a643d705854caf` reproduces every
+original metric plus independent timing, terminal envelopes and control/
+programming-gate checks. Log:
+`build/p40n32-pre-fine40-native-replay-300.log`. Zero, fine-60 and fine-40
+points now pass individually for this exact SS40/310 MHz component circuit.
+Coarse-one conservative overlap and the unshifted active numerical reference
+remain pending, together with actual loading, routed RC, PVT and PHY gates.
+No component pilot or PHY admission is granted.
