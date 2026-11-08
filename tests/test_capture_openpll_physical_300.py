@@ -31,3 +31,12 @@ class PhysicalEdgesTests(unittest.TestCase):
             state=json.loads((out/'state.json').read_text())
             self.assertEqual(state['status'],'failed');self.assertFalse(state['qualified_phy'])
             self.assertEqual((out/'partial.raw').read_bytes(),b'partial')
+    def test_physical_signoff_is_required_without_missing_metric_defaults(self):
+        keys=('design__instance_unmapped__count','route__drc_errors','magic__drc_error__count',
+              'klayout__drc_error__count','design__lvs_device_difference__count','design__lvs_net_difference__count',
+              'design__lvs_property_fail__count','design__lvs_error__count','design__lvs_unmatched_device__count',
+              'design__lvs_unmatched_net__count','design__lvs_unmatched_pin__count')
+        good=dict.fromkeys(keys,0);self.assertEqual(p.physical_checks(good),good)
+        for k in keys:
+            for bad in [dict(good,**{k:1}),{n:v for n,v in good.items() if n!=k}]:
+                with self.assertRaises(ValueError):p.physical_checks(bad)

@@ -53,6 +53,15 @@ def edges(time,voltage,threshold=.9):
             raise ValueError('Incomplete physical clock swing')
     return np.column_stack(((t-t[0])*1e9,level))
 
+def physical_checks(data):
+    keys=('design__instance_unmapped__count','route__drc_errors','magic__drc_error__count',
+          'klayout__drc_error__count','design__lvs_device_difference__count','design__lvs_net_difference__count',
+          'design__lvs_property_fail__count','design__lvs_error__count','design__lvs_unmatched_device__count',
+          'design__lvs_unmatched_net__count','design__lvs_unmatched_pin__count')
+    if any(data.get(k)!=0 for k in keys):raise ValueError('Physical DRC/LVS/unmapped checks are missing or failing')
+    return {k:data[k] for k in keys}
+
+
 def run(parent):
     p=load();parent=parent.resolve()
     if parent.parent!=ROOT/'build/diagnostics/openpll_physical_300':raise ValueError('Unexpected physical context')
@@ -64,6 +73,12 @@ def run(parent):
     rc=ROOT/proof['netlist']
     if not rc.is_relative_to(parent/'source') or sha(rc)!=proof['netlist_sha256']:raise ValueError('Extracted DCO changed')
     source=parent/'source'
+    flow=source/'openlane/IntegerPLL_DCO_EINVP_COARSE/runs/openlvds_300'
+    metrics_path=flow/'final/metrics.json';physical_metrics=physical_checks(json.loads(metrics_path.read_text()))
+    extraction_config=flow/'rcx-magic.config.json'
+    extraction=json.loads(extraction_config.read_text())
+    extraction_scope={k:extraction[k] for k in ('MAGIC_RCX_DO_RESISTANCE','MAGIC_RCX_DO_CAPACITANCE')}
+    if extraction_scope['MAGIC_RCX_DO_CAPACITANCE'] is not True:raise ValueError('Missing layout capacitance extraction')
     pinned=['scripts/spice_dco_postlayout.py','scripts/pll_verification.py','scripts/sky130_pdk.py','scripts/xyce_utils.py',
             'sky130/modern_25mhz_targets.json','sky130/IntegerPLL_DCO_einvp_coarse_modern_sky130.v',
             'sky130/sky130_fd_sc_hd_pll_blackbox.v','openlane/IntegerPLL_DCO_EINVP_COARSE/config_modern.json']
@@ -89,7 +104,7 @@ def run(parent):
     runtime=ROOT/'build/tools/ngspice.json';runtime_files=json.loads(runtime.read_text())['files']
     paths=[Path(__file__),ROOT/'clocking_300mhz.json',parent/'manifest.json',parent/'summary.json',parent/'state.json',rc,runtime,
            *[ROOT/n for n in runtime_files],out/'bench.cir']
-    paths += [source/name for name in pinned]
+    paths += [source/name for name in pinned]+[metrics_path,extraction_config,flow/'final/gds/IntegerPLL_DCO_EINVP_COARSE.gds']
     paths+=list((Path(args.pdk_root)/'sky130A/libs.tech/ngspice').rglob('*.spice'))
     paths+=list((Path(args.pdk_root)/'sky130A/libs.ref/sky130_fd_pr/spice').rglob('*.spice'))
     paths+=[Path(m.__file__).resolve() for m in list(sys.modules.values()) if getattr(m,'__file__',None)
@@ -112,7 +127,7 @@ def run(parent):
         np.savetxt(out/'clock.csv',clock,delimiter=',',header='time_ns,level',comments='',fmt=['%.9f','%d'])
         if any(sha(ROOT/n)!=v for n,v in inputs.items()):raise ValueError('Native evidence context changed')
         (out/'summary.json').write_text(json.dumps(dict(metrics=measured,inputs=inputs,clock_sha256=sha(out/'clock.csv'),
-            raw_sha256=sha(out/'bench.raw'),physical_parent=str(parent.relative_to(ROOT)),qualified_phy=False,
+            raw_sha256=sha(out/'bench.raw'),physical_parent=str(parent.relative_to(ROOT)),physical_metrics=physical_metrics,extraction_scope=extraction_scope,qualified_phy=False,
             scope='Fresh extracted fixed-code coarse2/fine12 DCO waveform at TT25/1.8V; no closed-loop PLL jitter or PHY admission'),indent=2)+'\n')
         if not measured['passed']:raise ValueError('Extracted DCO clock is outside the 300MHz contract')
     return out
