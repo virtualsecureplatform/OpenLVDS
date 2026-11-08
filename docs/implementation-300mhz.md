@@ -3132,3 +3132,31 @@ These remain narrow-margin actual two-bank points, without fresh unshifted
 parity, shared routing or detector/DCC loading. The 20 ps cases, matched-source
 isolation, all-PVT/code coverage, calibration and full-link release requirements
 are unchanged. The input-current diagnostic has no completed result yet.
+
+### Four-section observation defect and immutable correction
+
+The first centered four-section V1 simulation completed its full 40 ns
+transient in 6,981.504 s, but metrology correctly rejected it with missing
+requested native vectors. B1_OUT, B2_OUT and B3_OUT were omitted from the
+saved observation list. These public ports can connect through extracted R/C
+without appearing as MOS terminals; complete terminal coverage did not imply
+complete measurement coverage. This is a fixture defect, not a measured
+physical timing failure or pass. No missing waveform is reconstructed.
+
+Only the pending V1 serial controller was stopped, after verifying that its
+second native case had not started. The original result/state files remain
+unchanged; `controller_stop.json` in artifact
+`tg2_four_section_zero_pilot_300_v1/4bf88d17231064da` records the stop and
+`native_process_stopped:false`. The already-running combined V1 case remains
+untouched; its fixture is also missing B3_OUT.
+
+New immutable V2 fixtures explicitly save public phase ports. The actual
+serial fixture adds exactly three vectors; the actual combined DCC fixture
+adds exactly B3_OUT. All non-observation circuit statements and observation
+maps remain identical. New contract tests obtain vector requirements from
+the real measurement readers (including all three combined reader layers)
+and verify that the translated native deck saves every requested vector.
+Both fixture tests pass. Corrected serial capture and combined materials
+preparation are in progress; neither is a qualification result. Numerical
+parity, physical timing, full PVT/code coverage, routing and PHY requirements
+are unchanged.
