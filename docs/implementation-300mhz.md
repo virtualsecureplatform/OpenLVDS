@@ -111,6 +111,15 @@ duty/slew/spacing cohort has worst balanced mean half-cycle error
 Cases 0--89 now have independently passing source evidence. SF0/290 MHz,
 the remaining PVT conditions, and every physical-DCC/DLL/PHY gate remain open.
 
+SF0 source-frequency coverage is now complete: cases 90--107 at 290 MHz
+pass original and independent checks in
+`dcc_source_native_replay_300/8539391a90f49e61`, with worst balanced mean
+half-cycle error 26.625320636 ps. Log:
+`build/dcc-source-300-sf0-290-replay.log`. Cases 0--107 now have independently
+passing source evidence: both SF0 and SF40 cover all three frequencies and
+the full approved duty/slew/spacing matrix. SF25 and the other process
+corners remain pending, together with all physical-DCC/DLL/PHY gates.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
