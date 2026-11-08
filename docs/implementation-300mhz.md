@@ -1139,3 +1139,14 @@ and control/programming-gate checks. Log:
 has started normally in the existing worker. Its coverage result remains
 pending; the independently reproduced zero-code quarter failure still prevents
 admission of this unchanged bank. No PHY qualification is claimed.
+
+
+### SS40 nominal source cohort independently verified
+
+DCC source cases 180–197 (SS40, 300 MHz, 40/50/60% complementary duty,
+20/250 ps input slew, and 0/±140 ps event-spacing error) completed with no
+execution errors. Receipt `dcc_source_native_replay_300/08ece4f6dc6ee149`
+reproduces all 18 original measurements and passes every independent source
+screen. Log: `build/dcc-source-300-ss40-nominal-replay.log`. Independently
+replayed source coverage is now 198 cases. The full 810-case source matrix,
+physical DCC, loaded clock chain and complete PHY remain unqualified.
