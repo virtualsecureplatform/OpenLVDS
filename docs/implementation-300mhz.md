@@ -1299,3 +1299,29 @@ and control/programming-gate settling. Log:
 coverage and unshifted active-pair evidence remain pending for this larger
 variant; it is not promoted to loaded-chain or PVT qualification. The
 single-P40 follow-up remains a separate running experiment.
+
+
+### Single-P40 zero-code point passes and independently reproduces
+
+The new single-P40 pre-driver case 0 completes without execution error.
+Worst rising delay is **613.337921420 ps** and worst falling delay
+**784.774103926 ps**, giving **+21.677508977 ps** headroom against the
+unchanged 806.451613 ps fastest-quarter limit. Rising/falling history are
+**1.859507978 / 0.003333103 ps**, maximum period error **1.859532552 ps**,
+and maximum slew **84.894587745 ps**. All original point-level clock-interface,
+terminal and control/programming-gate screens pass at SS40/310 MHz.
+
+Independent receipt
+`medium_pre_distributed_native_replay_300/3d82eff834a0cc6a` reproduces every
+original metric and passes independent fixed-epoch timing, terminal-envelope
+and control/programming-gate checks. This validates the new consumer on its
+first actual native dataset, beyond its refusal tests. Log:
+`build/medium-pre-distributed-zero-native-replay-300.log`.
+
+Removing the second qualified P40 pre-driver branch repairs the measured
+zero-code quarter failure for this exact component point. It does not yet
+repair or prove fine-range overlap, fine-60 history, active numerical parity,
+actual next-bank/shared-RC loading, all-PVT behavior, DLL/DCC operation or PHY
+qualification. The existing one-worker campaign has advanced to centered
+fine-60 case 1; its native solver is confirmed live. No further topology or
+limit was changed after capture.
