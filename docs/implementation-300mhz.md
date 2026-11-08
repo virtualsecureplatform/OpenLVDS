@@ -2486,3 +2486,24 @@ retaining explicit support for the earlier loaded-bank producers. It reproduces
 each original result and independently reconstructs the entry waveform and
 native two-bank metrics. The immutable V1 reader and all running producers are
 retained.
+
+### Entry-domain capture passed and controller launched
+
+Preparation and full captured-input validation completed successfully for
+`tg2_entry_domain_pilot_300_v1/b98f2003774d19d6`. Its eight tasks are centered
+250 ps/60%, 250 ps/40%, 20 ps/60%, 20 ps/40%, followed by four exact unshifted
+repeats. Every case uses two complete zero-programmed native banks (4,112 MOS),
+the same qualified candidate library and full actual observation maps, fixed
+supplies, SS/40 °C/310 MHz, and all eight events over 40 ns. Source coverage,
+source active numerical parity, shared routing and PHY qualification remain
+false.
+
+The controller was launched under user unit
+`openlvds-tg2-entry-domain-300-v1`, invocation
+`6d5b797b6b1f49c2af7028dcbb2d9512`; it was confirmed active in initial input
+verification. It uses one priority-two worker under the unchanged six-slot
+aging dispatcher. No existing solver was stopped or changed. Log:
+`build/tg2-entry-domain-300-v1.log`. No native boundary-case result exists at
+launch. This capture defines the entry transition in 10–90% units and validates
+its declared source; it does not retrofit that interpretation or a numerical
+allowance into any older captured producer.
