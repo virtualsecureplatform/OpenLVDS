@@ -480,3 +480,31 @@ trial is selected; no threshold, supply or numerical tolerance is changed.
 The counter watcher has now indexed four completed cases, all passing the
 separate original-3-ns replay, with no failed replayed points. This remains
 partial evidence from the 270-case matrix.
+
+## MIM recovery failure independently reproduced
+
+`replay_bank_300_v2.py` and `bank_stage_history_300_v2.py` extend the immutable
+original helpers to the new MIM producer. The complete replay
+`bank_native_replay_300_v2/0c6d13870c127e06` reproduces every original metric,
+independent timing, terminal envelope and control/gate settling for centered
+MIM4 fine60. Stage/recovery context
+`bank_stage_history_300_v2/27d64d057235a80a` completes on the same unchanged
+native waveform. Three tests pass (0.037 s), including source-terminal
+provenance and rejection of incomplete recovery events.
+
+Of the rising-history failure, 139.193884 ps lies in pre_out -> fine_node:
+its delay changes from 435.129780 to 295.935896 ps. Before later pre-driver
+rising transitions, fine_node reaches only about 1.603927 V, versus 1.804770 V
+initially. Representative PFET/NFET capacitor-side switch terminals reach
+1.444119 / 1.436984 V, versus 1.800890 / 1.800646 V initially. Thus these
+observed nodes have not recovered to their initial voltages during the short
+clock phase. The final output regenerator masks the incomplete internal swing
+in the output-slew check, while the history gate correctly rejects it.
+The report measures actual saved MOS-terminal voltages, not charge on an
+unobserved MIM plate. Logs: `build/replay-mim4-failure-300.log` and
+`build/mim4-stage-recovery-300.log`.
+
+The centered MIM4 zero-code point subsequently passes, but with only
+11.610458 ps quarter-period margin under 20 fF. This makes zero latency and
+real loading mandatory gates for any new architecture; the failed fine60
+point remains disqualifying.
