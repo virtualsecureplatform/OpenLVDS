@@ -248,3 +248,33 @@ of flushed samples confirms progress (not qualification): baseline unshifted
 24.862 ns, baseline coarse endpoint 26.243 ns, single-driver centered
 34.699 ns and the first new counter point 14.914 ns. No healthy solver was
 stopped or restarted.
+
+## Independent fresh-bank replay and observed range failure
+
+`replay_bank_300.py` validates the captured producer context and completed
+case hashes, repeats every original metric, then independently measures native
+threshold crossings, complete pulse epochs, period/history/slew/duty,
+quarter-period margin, every transistor's terminal-voltage envelope and
+control/programming-gate settling from waveform extrema. It requires full
+40 ns data and never rewrites the original result or wraps event epochs.
+It also closes the baseline consumer's missing explicit source-identity
+comparison. Four synthetic metrology tests pass (0.044 s); tests do not admit
+hardware. Log: `build/replay-bank-300-tests.log`.
+
+Three replay receipts now complete with all selected original metrics and
+independent checks reproduced:
+
+- `bank_native_replay_300/19f78105cf672e13`: baseline zero/50%, case 2.
+- `bank_native_replay_300/17e33e8e2dafa5e4`: baseline fine60/fine40/coarse1,
+  cases 1/3/4.
+- `bank_native_replay_300/45db2f98e4e9256d`: single-driver fine60, case 1.
+
+All four centered baseline endpoints pass individual native gates. Its
+conservative overlap nevertheless fails at **-125.475676 ps rising /
+-114.675677 ps falling**. The single-driver fine60 case fails the unchanged
+20 ps history and period limits in both benches: rising history is
+24.349091 ps unshifted / 24.349046 ps centered, with period error
+24.338721 / 24.338685 ps. The replay preserves those failed classifications.
+Thus neither bank is admitted: the baseline needs more fine range and the
+weaker driver introduces a repeatability failure. Aggregate active numerical
+parity and full qualification are still required.
