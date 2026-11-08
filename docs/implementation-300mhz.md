@@ -1150,3 +1150,19 @@ reproduces all 18 original measurements and passes every independent source
 screen. Log: `build/dcc-source-300-ss40-nominal-replay.log`. Independently
 replayed source coverage is now 198 cases. The full 810-case source matrix,
 physical DCC, loaded clock chain and complete PHY remain unqualified.
+
+
+### Four-cell strong-pre control numerical parity independently verified
+
+Complete active-pair replay of predecessor cases 0/1 (`strong_pre_c4`)
+finishes in `distributed_bank_active_parity_300/7281d6bd825ec77d`.
+Every original measurement reproduces; all 7,638 native voltage vectors
+(including startup and internal nodes) meet numerical parity at a maximum
+**0.021277495 mV** difference, with maximum absolute clock-crossing error
+**0.000124846 ps** and every aggregate/individual gate class preserved.
+Both original point results remain false: the approximately 183.814 ps rising
+history and 182.582 ps period failures are retained. Log:
+`build/distributed-strong-pre-c4-active-parity-300.log`. This closes the
+completed four-cell control's numerical-origin question without admitting
+its architecture or changing any limit. The remaining larger split pair is
+separate and still requires its live unshifted reference.
