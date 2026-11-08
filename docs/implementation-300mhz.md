@@ -1722,3 +1722,42 @@ All eight zero-code pre-driver pre-transition low samples remain between
 **1.806941 V**. The report retains actual switch-side voltages, without
 inferring MIM plate charge. Fine-60, coverage, numerical parity, actual
 loading, PVT and PHY qualification remain open.
+
+
+### P40/N32 fine-60 history repair independently verified
+
+Case 1 completes without execution error and passes every original point-
+level clock-interface, terminal, slew and control/programming-gate check.
+Rising history is **6.719727885 ps**, falling **0.014604682 ps**, maximum
+period error **6.718512439 ps**, and maximum slew **127.760343499 ps**.
+Rising delays span 830.919836–837.639564 ps; falling delays span
+860.256736–860.271341 ps. This repairs the preceding single-P40 fine-60
+history/period failure at this exact SS40/310 MHz component point while
+retaining the independently verified zero-code headroom.
+
+Independent receipt
+`distributed_family_native_replay_300_v2/7a40cc9be4a06f92` reproduces every
+original metric and independent timing, terminal envelopes and control/gate
+checks. Log: `build/p40n32-pre-fine60-native-replay-300.log`.
+Topology-resolved recovery receipt
+`distributed_voltage_recovery_300_v3/6b5792e313a8636a` reproduces all outer
+delays with zero stage-sum residual; log:
+`build/p40n32-fine60-voltage-recovery-300-v3.log`.
+
+At the same pre-transition definitions used for the failed single-P40 point,
+pre-driver low voltage changes from **−2.733 mV** initially to **12.095 mV**
+on the last event (previously about 111.425 mV). Representative enabled
+pre-capacitor-side voltages reach about **30–32 mV** (previously 183–188 mV).
+Downstream fine-driver high recovery changes from **1.807988 V** to
+**1.787528 V** (previously 1.752652 V), with representative fine-capacitor-side
+voltages about **1.731–1.734 V** (previously 1.613–1.620 V).
+Rising stage-history spans are **2.368187 / 3.468418 / 5.503746 / 0.115832 ps**
+(selection / pre-driver / fine / output); the former pre/fine spans were
+26.808991 / 16.794789 ps. These observed voltage/timing changes support the
+recovery intervention, without inferring MIM charge or isolating every local-
+RC contribution of the different retained cell assembly.
+
+Fine-40/coarse-one coverage, the unshifted active reference and its fresh
+bidirectional/DC parity remain required. Actual next-bank/shared-RC loading,
+PVT, DLL/DCC and full PHY qualification remain open. No component-pilot or
+PHY admission is granted from the passing zero/fine-60 points alone.
