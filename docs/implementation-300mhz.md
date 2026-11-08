@@ -2859,3 +2859,20 @@ No actual native phase receipt exists yet. The dispatcher has granted the
 serial four-section case 0 its existing priority-two lease; initial guarded
 validation precedes solver launch. The combined controller remains active
 under the same dispatcher and no running job was changed.
+
+### Combined verification-tool regression
+
+At source revision `115d1df`, all 37 tests across the fifteen new chain/DCC
+fixture, material, metrology, independent-reader, replay/controller and phase
+diagnostic test modules pass together in one Python process (71.259 s).
+Log: `build/chain-dcc-integrated-tests-300-v1.log`. The run uses the existing
+exact-RC Python environment and workspace `TMPDIR`; it invokes no simulator.
+This checks cross-module import and temporary patch restoration in addition
+to the individually recorded tests. It is software/fixture verification only,
+not native circuit, physical or PHY evidence.
+
+The serial and combined four-section solver PIDs were independently confirmed
+live after the regression. The entry-boundary trace advanced to 26.235895 ns
+of its required 40 ns during this observation; no partial trace was promoted
+to a timing or electrical result. All captured model, solver and stimulus bytes
+remain unchanged, and all six SPICE slots remain occupied by existing jobs.
