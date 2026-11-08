@@ -2126,3 +2126,30 @@ observed capacitor-side terminal is refused. The fixed 20 ps pre-edge samples,
 all eight startup-inclusive events and voltage-only interpretation remain
 unchanged. Old diagnostics and captured experiments were not modified. This is
 metrology support, not a capacitor-charge or recovery-mechanism proof.
+
+### Wider fine switches preserve the zero-code quarter budget
+
+Double-TG pilot `tg2_p40n32_pilot_300_v1/aae4b31d0e77445c` case 0 naturally
+completed without execution error. At SS/40 °C/310 MHz/50% duty, its complete
+startup-inclusive zero-code screen passes: maximum rise delay 680.143119 ps,
+maximum fall delay 750.016857 ps, fastest-quarter headroom **+56.434756 ps**,
+rising/falling history spans 2.142949/0.003157 ps, maximum period error
+2.142885 ps and maximum output slew 88.606410 ps. Native elapsed time was
+1016.710 s. Compared with the original P40/N32 bank's +81.553246 ps headroom,
+the wider switches consume 25.118490 ps while preserving this zero-code gate.
+This comparison alone does not establish a fine-range gain or causal charge
+mechanism.
+
+Independent replay
+`distributed_family_native_replay_300_v3/631be7991c7707dc` completed and
+reproduced every original measurement plus independent timing, terminal envelope
+and control/programming-gate settling. It covers all 2,056 MOS, 86 controls and
+266 actual programming gates. The worst terminal envelope was 1.907318434 V
+against a 1.95 V limit, passing. Log:
+`build/tg2-p40n32-zero-native-replay-300-v3.log`.
+
+The unchanged producer advanced to centered fine31/60% case 1, confirmed live
+in native ngspice. Fine31/40%, coarse-one, both conservative overlap edges,
+fresh unshifted numerical parity, actual next-bank loading, common routing,
+15 PVT and DLL/PHY qualification remain open. No zero-code result admits a
+bank or authorizes the gated actual-next-bank experiment; `qualified_phy:false`.
