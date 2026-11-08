@@ -2842,3 +2842,20 @@ historical source evidence; routing, physical matching and integration at the
 new profile remain required. The serial-chain and combined controllers were
 confirmed active, with neither producing a completed native point at this
 observation. No captured experiment or active solver was modified.
+
+`diagnose_four_section_phase_300_v1.py` now consumes explicit completed native
+points from the serial or combined controller. It validates the original
+producer, all witness hashes and the full captured-input closure, retains
+native DC/startup samples, computes unwrapped phase errors and binds a new
+diagnostic receipt to its complete analysis inputs. Original transport pass/fail
+decisions are preserved separately, and input hashes are rechecked after
+analysis. Pending cases are refused before expensive hashing; changed binary
+witnesses are rejected before phase measurement.
+
+Two tests pass in 3.990 s, including a complete synthetic binary receipt whose
+transport passes but phase grid fails, and changed-witness rejection. Actual
+producer validation is replaced only at the synthetic fixture boundary.
+No actual native phase receipt exists yet. The dispatcher has granted the
+serial four-section case 0 its existing priority-two lease; initial guarded
+validation precedes solver launch. The combined controller remains active
+under the same dispatcher and no running job was changed.
