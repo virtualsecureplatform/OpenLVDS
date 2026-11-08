@@ -2184,3 +2184,42 @@ and fine_node's high level is 1.809315604…1.809337962 V (first-to-last change
 recovery, added fine span, capacitor charge or a complete causal mechanism.
 The pending fine31/60% run must supply that timing evidence; bank/PHY admission
 remains false.
+
+### Wider switches improve the native fine31/60% point
+
+Double-TG pilot case 1 completed without execution error (native elapsed
+1025.130 s) and passed its SS/40 °C/310 MHz/60% duty screen. All eight rising
+delays are 978.315046…978.445058 ps and falling delays
+977.283345…977.285504 ps. Rising/falling history spans are
+**0.130012/0.002159 ps**, maximum period error 0.129689 ps and maximum output
+slew 155.044901 ps. These are completed native point measurements, not a
+conservative-overlap result: fine31/40% and the new coarse-one delays remain
+required, together with fresh unshifted numerical parity and actual loading.
+
+Independent replay
+`distributed_family_native_replay_300_v3/22a131b8c09c7d4b` reproduces every
+original metric and independent timing, terminal envelope and control/gate
+settling checks for all 2,056 MOS, 86 controls and 266 programming gates. Its
+worst terminal envelope is 1.907314195 V against a 1.95 V limit, passing.
+Log: `build/tg2-p40n32-fine60-native-replay-300-v3.log`.
+
+Recovery diagnostic `distributed_voltage_recovery_300_v4/b46ab7521f92c3e6`
+reproduces the outer delays with 0 ps stage-sum residual and all eight events.
+Compared with the original P40/N32 fine-60 diagnostic
+`distributed_voltage_recovery_300_v3/6b5792e313a8636a`, the final pre_out low
+sample improves from 12.095 mV to 4.551101 mV and the final fine_node high sample
+from 1.787528 V to 1.797101093 V. The representative final pre capacitor-side
+samples are 8.125419…8.473281 mV (previously 30.456506…31.773950 mV), and fine
+capacitor-side samples are 1.784233575…1.784859054 V (previously
+1.731105767…1.734353350 V). These are fixed pre-edge voltages, not measured
+capacitor charge or an isolated causal proof. Log:
+`build/tg2-p40n32-fine60-recovery-300-v4.log`.
+
+The small total history span includes stage cancellation and must not be
+attributed to every stage having 0.13 ps variation. Rising stage spans are
+2.277995 ps (selection), 1.262957 ps (pre), 1.000101 ps (fine), and 0.114018 ps
+(output). The first-to-last changes have mixed signs: +2.277703, −1.262564,
+−0.999587 and +0.113835 ps. Pre/fine spans improve from 3.468418/5.503746 ps in
+the original P40/N32 point, while their remaining variation is preserved in the
+receipt. Full bank, continuous DLL/DCC, common RC, PVT and PHY admission remain
+false.
