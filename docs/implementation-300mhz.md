@@ -200,6 +200,18 @@ Zero/fine-40/coarse coverage, actual next-bank loading, common RC, PVT and PHY
 qualification remain open; the approximately 0.116 ps history margin remains
 unchanged and narrow.
 
+Independent unshifted-point replay completed in
+`distributed_bank_native_replay_300/8beb77a1a6770ff2`. Every original metric
+and independent timing, native terminal envelope, control and programming-gate
+settling measurement reproduces. All eight rising/falling input and output
+epochs are retained, including the first-event history shift; no startup
+event is discarded. Observations bind 2,096 native MOS devices, 86 controls
+and 266 programming gates. The completed centered-point replay plus this
+unshifted replay and passing active parity establish this fine-60 component
+point only. Zero-code quarter headroom, fine-40 behavior, next-coarse overlap,
+actual loading, routed RC, full PVT and PHY qualification remain open.
+Log: `build/distributed-split-c1-unshifted-native-replay-300.log`.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
