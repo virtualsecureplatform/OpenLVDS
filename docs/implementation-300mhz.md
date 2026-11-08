@@ -614,3 +614,41 @@ The live context is `openpll_long_trace_300_v1/7398cf894f0d9e4f`, unit
 pilot and priority 2 for the long capture, under the unchanged global six-slot
 budget. No healthy solver is interrupted. Log: `build/long-clock-300-v1.log`.
 The current stage is the parity pilot; long-capture results remain pending.
+
+## Full counter-matrix recomputation gate ready
+
+`qualify_counter_matrix_300.py` requires a naturally complete, zero-error
+270-case native campaign and exact completed replay coverage of every new
+290/300/310 MHz condition. It rejects missing/duplicate/mismatched tasks,
+legacy frequencies, changed clear deadlines and non-native provenance. It
+then validates all captured source/model/geometry/runtime/raw hashes,
+recomputes every original strict metric and corrected 3 ns metric from each
+actual 40 ns waveform, and requires exact agreement with the stored native
+results and corrected receipts. It does not accept the watcher's index as an
+electrical certificate.
+
+Only after all 270 traces are recomputed does it report complete 15-PVT
+coverage and a routed-counter matrix pass/fail, including genuine failed
+cases, minimum low-window margin and maximum terminal stress. Whole-clock
+and PHY qualification remain false. All old failure records are retained;
+no SPICE is restarted. Future output context:
+`build/diagnostics/counter_matrix_recomputed_300`.
+
+Four coverage-schema tests pass (0.041 s); their synthetic metadata creates
+no electrical artifact. The actual current campaign is correctly refused
+before creating a certificate because it is incomplete. Logs:
+`build/qualify-counter-matrix-300-tests.log` and
+`build/counter-matrix-300-incomplete-preflight.log`. When prerequisites are
+complete, run through the combined numerical/physical environment:
+
+```
+./scripts/env.sh --tools --ngspice build/tools/counter-physical-venv/bin/python scripts/qualify_counter_matrix_300.py
+```
+
+The counter watcher now indexes 14 completed passing replays. The first
+centered `strong_pre_c4` architecture control completes with native stress,
+control settling and slew passing, but rising history spans 183.813491 ps
+and period error reaches 182.581523 ps. Pre-driver strength alone therefore
+does not fix the observed recovery failure. The reduced-count and split-node
+trials remain pending; no new candidate is admitted from this control. The
+completed 40 ns result is retained unchanged.
