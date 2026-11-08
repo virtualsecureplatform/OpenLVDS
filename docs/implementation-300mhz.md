@@ -2795,3 +2795,31 @@ voltage vectors and 36,375 reference samples; maximum crossing difference is
 0.000528336 ps, and all gate classifications agree. Its physical fine-history
 failure is preserved and whole-bank/PHY admission remains false. The P40/N32
 pair replay and combined experiment capture validation are still active.
+
+### Combined capture dispatched; P40/N32 numerical reference verified
+
+Capture `dcc_four_section_pilot_300_v1/7c2674e516231ffb` completed full
+validation. The controller was launched as user unit
+`openlvds-dcc-four-section-300-v1`, invocation
+`824d41f36c4441fbbbf9bfcb8e720d2c`, and confirmed active (initial main PID
+2411091). Log: `build/dcc-four-section-300-v1.log`. Both cases retain all
+8,496 MOS, complete observations and all startup events. One priority-two
+worker uses the unchanged six-slot dispatcher after initial input validation.
+No existing job was preempted and no combined native result exists at launch.
+
+The combined replay suite now passes three tests in 11.865 s. Added integration
+coverage creates a complete receipt from synthetic binary data with both real
+measurement readers, repeats it with a physical internal-reset failure and
+preserves that failure, then changes the binary witness and verifies rejection
+before remeasurement. Only the synthetic producer-binding boundary is replaced;
+receipt hashing and both scientific algorithms remain active. These synthetic
+receipts do not qualify the actual combined circuit.
+
+P40/N32 reference receipt
+`distributed_family_active_pair_300_v1/217ad19334496545` is complete and
+passing for independent reproduction and numerical parity. Across 6,734
+voltage vectors, forward/reverse maximum differences are 0.187635/0.137324 mV;
+DC error is zero and maximum crossing difference is 0.000762805 ps. Every gate
+classification agrees. Its known endpoint-coverage failure remains unchanged;
+neither numerical parity nor the passing fine-60 point admits this family or
+the PHY. The newer TG2 candidate retains its separate pending reference gate.
