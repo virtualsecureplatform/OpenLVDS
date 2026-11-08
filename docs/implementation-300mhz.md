@@ -686,3 +686,9 @@ wait; no speed improvement is asserted before measurements. Log:
 Fifteen completed counter cases have passing corrected replay evidence. The
 main distributed-capacitance and long-clock parity trials remain live; no new
 physical candidate or matrix is admitted by this numerical experiment.
+
+### MIM4 coarse/fine coverage evidence
+
+The completed MIM4 coarse-one, zero-code and fine-40 cases were independently replayed in `build/diagnostics/bank_native_replay_300_v2/bbdcae2806f20b0c`. All original metrics, independent timing, terminal envelopes and control/gate settling reproduce without parameter changes. The coarse-one rising delay spans 1006.906320–1008.882041 ps; falling delay spans 915.313020–915.315699 ps. Comparing the minimum fine-60 delay against the maximum coarse-one delay gives conservative overlap of **−108.514845 ps rising / +4.243203 ps falling**.
+
+This centered pilot cannot provide continuous rising-edge coverage and already fails the 20 ps history/period gate at fine 60. It is not promoted to a loaded bank or full-PVT campaign. Its unshifted native reference continues unchanged to finish numerical parity evidence. The running distributed fine-capacitance experiment remains the next architecture test; neither its control results nor these component results qualify the PHY.
