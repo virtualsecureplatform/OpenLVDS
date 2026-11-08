@@ -1325,3 +1325,38 @@ actual next-bank/shared-RC loading, all-PVT behavior, DLL/DCC operation or PHY
 qualification. The existing one-worker campaign has advanced to centered
 fine-60 case 1; its native solver is confirmed live. No further topology or
 limit was changed after capture.
+
+
+### DC-zero transient bench-current experiment prepared
+
+`scripts/probe_ramped_center_300.py` tests a different numerical boundary
+condition rather than another constant-offset size. It uses the completed
+P40 unshifted fine-60 reference in `native_bank_300_v2/2d31edbabe113146`,
+whose constant-origin active parity failed at an internal decoder junction.
+The sole new bench source is
+`I_BENCH_CURRENT_CENTER VDD 0 DC 0 PWL(0 0 2p 0 4p 1m 40n 1m)`:
+zero during DC initialization, followed by one fixed 2–4 ps ramp to 1 mA.
+The ideal 1.8 V supply, native circuit, original 40 ns/eight-event stimulus,
+observations, solver and tolerances remain unchanged. The bench source has
+no circuit-current feedback and its maximum 1.8 mW power is excluded from
+chip power. No voltage or offset-size sweep is introduced.
+
+The hypothesis is that DC-zero initialization may preserve the original
+floating-node solution while centering the supply-source current during
+transient integration. It is not assumed valid. Admission for this exact
+reference requires original measurements to reproduce, all native voltages
+(including startup/internal nodes) within 2 mV in both interpolation
+directions, every input/output crossing within 0.25 ps, all aggregate and
+individual gate classifications preserved, and an additional all-voltage
+DC-sample difference at t=0 of at most 1 nV. The genuine physical history
+failure must remain failed. Even success cannot qualify another circuit or
+repair timing; each new circuit still needs its own active parity.
+
+Four tests pass in 0.106 s: exact single-card/library-only change, feedback/
+existing-offset rejection, unapproved supply/offset rejection, and rejection
+of 1 µV DC drift even when full-waveform error remains below 2 mV. Log:
+`build/ramped-current-center-300-tests.log`. Full preparation succeeds as
+`ramped_current_center_300_v1/4dd1b69e62d555ef`, capturing the complete
+reference/model/runtime/native inputs and one fresh deck; log:
+`build/ramped-current-center-300-prepare.log`. No native result or numerical
+admission is claimed at preparation.
