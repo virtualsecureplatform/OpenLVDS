@@ -202,3 +202,49 @@ manifest bound successfully. The live context is
 state; electrical results remain pending. The producer, protocol and captured
 dependencies are immutable for this campaign. Log:
 `build/counter-pvt-300-v1.log`.
+
+## Switched-MIM circuit materials prepared
+
+`mim_fine_bank_300.py` implements the approved bounded range-repair family:
+qualified 2x3 switched-MIM RC cells, two/four/eight copies per enable, and
+single/two-parallel P40/N16 fine drivers. It preserves the complete original
+coarse tree, pre-driver, output driver, controls and output load. The full
+retained physical/native/Schur proof bindings revalidate (94 material inputs);
+the numerical cell definition is reused verbatim, including its existing
+extracted programming-gate resistance.
+
+The immutable circuit bundle is
+`mim_fine_bank_materials_300_v1/3de6071016724809`. All six complete native
+libraries and observation maps regenerate from the captured source. It is
+explicitly `prepared_unqualified`, with zero simulations. Four copies are the
+planned first MIM point after the single-driver results establish need and
+which driver retains quarter-period margin. This bundle does not launch a
+parameter search or bypass the pending numerical parity/endpoint gates.
+
+| Fine driver | Copies/enable | Actual MOS | Actual MIM | Programming gates |
+| --- | ---: | ---: | ---: | ---: |
+| Single P40/N16 | 2 | 1946 | 200 | 266 |
+| Single P40/N16 | 4 | 2132 | 324 | 452 |
+| Single P40/N16 | 8 | 2504 | 572 | 824 |
+| Two parallel P40/N16 | 2 | 2002 | 201 | 266 |
+| Two parallel P40/N16 | 4 | 2188 | 325 | 452 |
+| Two parallel P40/N16 | 8 | 2560 | 573 | 824 |
+
+All variants retain 86 logical controls. Gate maps are rebuilt from actual
+native transistor terminals and resistor connectivity to EN/ENB. Every
+non-fine transistor connection and all 80 non-fine programming-gate records
+are preserved. The builder rejects changed numerical cells, shorts between
+programming controls, missing fine copies, damaged observation maps and
+choices outside the approved search bounds. Five tests pass (2.873 s),
+including all six complete native expansions. Preparation then validates the
+captured files and reconstructs all variants again. Logs:
+`build/mim-fine-bank-300-tests.log`,
+`build/mim-fine-bank-300-materials.log` and
+`build/mim-fine-bank-300-prepare.log`.
+
+The six occupied SPICE slots remain assigned to the live baseline,
+single-driver, extracted OpenPLL and fresh counter runs. Read-only inspection
+of flushed samples confirms progress (not qualification): baseline unshifted
+24.862 ns, baseline coarse endpoint 26.243 ns, single-driver centered
+34.699 ns and the first new counter point 14.914 ns. No healthy solver was
+stopped or restarted.
