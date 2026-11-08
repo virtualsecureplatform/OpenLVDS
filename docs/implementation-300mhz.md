@@ -3079,3 +3079,22 @@ rejecting complete-trace headers, partial records and nonfinite samples.
 The bound inspection is running separately with log
 `build/dcc-four-section-failed-prefix-bound-inspection-300-v1.log`; input-origin
 capture validation and healthy native jobs continue unchanged.
+
+### Input-current reference experiment dispatched
+
+Capture `input_current_origin_pilot_300_v1/9c9574a3140858b3` passed full
+input validation and fixture reconstruction. User unit
+`openlvds-input-current-origin-300-v1` was launched with invocation
+`e0e1092a575244a7a78be9b36b0c1789` and confirmed active (initial main PID
+2418020). Log: `build/input-current-origin-300-v1.log`. It remeasures the
+original complete two-bank reference before executing the new full 40 ns
+trial, using one priority-two worker under the unchanged six-slot dispatcher.
+No existing solver was stopped or preempted. No numerical-origin pass or
+combined-circuit recovery is claimed at launch.
+
+The bound failed-prefix inspection also completed successfully. After original
+producer and witness-hash validation it reproduced the six stored rows,
+8,496 MOS, 1.8 V maximum DC span, zero prefix stress violations and the original
+reset/output levels. `complete_qualification_trace` and `qualified_phy` remain
+false. The failed combined point remains failed, and its next original task
+and the healthy serial/entry-boundary runs remain under their own controllers.
