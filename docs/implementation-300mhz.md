@@ -220,6 +220,26 @@ point only. Zero-code quarter headroom, fine-40 behavior, next-coarse overlap,
 actual loading, routed RC, full PVT and PHY qualification remain open.
 Log: `build/distributed-split-c1-unshifted-native-replay-300.log`.
 
+### Larger split candidate fails the centered history screen
+
+Case 7 (`split_c2_c2`, two qualified MIM cells per enable at each of the
+pre-output and fine nodes) completed its full 40 ns centered SS40/310 MHz
+fine-60 run: 20,008 native points, 1135.439 s native elapsed time. Rising
+history variation is 179.211258659 ps and maximum period error
+178.831729531 ps, failing the unchanged 20 ps limits. Falling history is
+0.692412367 ps, output slew is 167.815204769 ps, and observed terminal/
+control/programming-gate checks pass. Doubling capacitance at both nodes
+does not preserve the smaller split candidate's passing centered history.
+No loaded-chain or PVT promotion is made from this failed point.
+
+Independent native replay is running through the existing consumer; log:
+`build/distributed-split-c2-centered-native-replay-300.log`. Its unshifted
+case 6 remains live and complete-pair numerical parity is still pending;
+this centered result alone does not close that separate comparison. The
+unchanged campaign's available worker has advanced to case 8, the smaller
+split candidate's zero-code/50%-duty quarter-headroom test. Neither a failure
+nor a passing fine-60 point changes coverage, loading, PVT or PHY gates.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
