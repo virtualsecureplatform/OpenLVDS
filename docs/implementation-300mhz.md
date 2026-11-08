@@ -2549,3 +2549,21 @@ An already loaded fixture and an incorrect section count are refused. This
 is fixture construction only: no four-section native simulation or timing
 result exists. Detector/DCC fanout, common routing, reference parity and
 calibrated phase accuracy remain separate required gates.
+
+`four_bank_native_measure_300_v1.py` now provides the corresponding full-trace
+reader. Every downstream section uses its actual preceding output as the
+timing reference; the first section alone checks the ideal source epoch.
+All sections retain their own code, quarter-cycle check at zero code,
+20 ps period/history limits, 250 ps input/output slew limits, every native
+terminal sample, settled internal controls and full-trace external controls.
+Supply checks and the native DC sample are mandatory. Missing section maps,
+duplicate device identities and inconsistent section wiring/codes are refused.
+The reader can use the existing separately implemented threshold and electrical
+algorithms for independent reconstruction. It never treats transport success
+as calibrated quarter/half phase accuracy or detector/DCC fanout qualification.
+
+Synthetic complete binary tests exercise all four sections and both reader
+implementations, including a failing third-section delay, a failing third-bank
+control and a fourth-bank startup terminal peak. These are reader checks only;
+native four-section simulations and fresh numerical-reference comparisons have
+not yet been performed.
