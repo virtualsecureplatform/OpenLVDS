@@ -136,6 +136,18 @@ independently passing source evidence, including SF/300 MHz at all three
 requested temperatures. SF25/290 MHz, the other process corners and all
 physical-DCC/DLL/PHY gates remain pending.
 
+The final SF25/290 MHz cohort, cases 144--161, passes original and independent
+checks in `dcc_source_native_replay_300/2a45695f6ffecee8`, with worst balanced
+mean half-cycle error 28.712639631 ps. Log:
+`build/dcc-source-300-sf25-290-replay.log`. The eleven completed replay
+receipts contain exactly 162 unique cases (0--161), without omissions or
+duplicates, covering the full SF x 0/25/40 C x 290/300/310 MHz x 40/50/60%
+duty x 20/250 ps slew x 0/+/-140 ps event-spacing matrix. Every selected
+original and independent source screen passes. All receipts remain source-only
+and `qualified_phy: false`; the complete 810-case matrix is not admitted.
+The unchanged one-worker campaign has advanced to SS; the other 648 source
+cases and all physical-DCC/DLL/PHY gates remain required.
+
 ### Separate complete-pair numerical receipts
 
 `scripts/replay_distributed_parity_300.py` can analyze a complete captured
