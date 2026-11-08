@@ -166,8 +166,10 @@ qualified 808-MOS/57-MIM loaded counter with 17087 shared-wire resistors and
 4407 capacitors. The new transient lasts 40 ns. REQUEST falls at 28 ns and
 reasserts at 32 ns, after the last possible 290 MHz/60% raw transition
 (<24.86 ns). The clock must remain stopped from 27 ns, and public outputs,
-armed and high1/low1 state must remain cleared from 30 ns through the
-second REQUEST assertion. The initial REQUEST assertion stays at 3.4 ns.
+armed and high1/low1 state are checked from 30 ns by the captured v1
+producer. This introduced a 2 ns clear allowance; the correction below
+restores the original 3 ns deadline at 31 ns through the second REQUEST
+assertion. The initial REQUEST assertion stays at 3.4 ns.
 
 The new measurement checks all seven raw and buffered clock epochs, exact
 raw frequency/duty, causal buffered events, two/three qualifying edges,
@@ -319,3 +321,51 @@ The first new counter case (SS40, 310 MHz, 60% duty, stopped high) completes
 with every native point gate passing and minimum remaining low window
 474.841681 ps. This is one of 270 fresh conditions, not full counter or PHY
 qualification.
+
+## Diagnose the fresh stopped-low counter clear failure
+
+The first SS40/310MHz/60%-duty stopped-low point completes with public clear,
+phase ordering, low-window timing and all terminal stress checks passing, but
+fails the captured producer's internal clear checks. Diagnosis
+`counter_reassertion_diagnosis_300/ba5c7205c882bcd2` repeats every original
+metric and preserves the original failure. Three diagnostic tests pass
+(0.003 s); log `build/counter-reassertion-diagnosis-300-tests.log`.
+
+The cause is an introduced metrology error: the original 26 ns protocol checks
+clear state from 24 ns after REQUEST falls at 21 ns, allowing 3 ns. The new
+40 ns producer checks from 30 ns after REQUEST falls at 28 ns, allowing only
+2 ns. At 30 ns the actual low1/armed nodes are still decaying at 0.378372 V /
+0.475650 V. Their maxima over the entire remaining trace from the original
+3 ns deadline (31 ns) are only 0.027994 V / 0.028505 V. There are no extra
+50% logic assertions after REQUEST reassertion. Public PREPARE/RESET_N stay
+below 0.030550 V / 0.023843 V throughout the stricter original new window.
+The diagnosis changes no gate and grants no electrical admission.
+
+`counter_protocol_300_v2.py` restores the original 3 ns clear allowance from
+the measured REQUEST falling edge, identically for public and internal state.
+It retains the actual captured 40 ns stimulus, 4 ns REQUEST-low interval,
+all event counts, 180 mV clear limit, phase/latency/window checks and every
+transistor stress limit. The source/model/runtime and the live 270-case
+producer are untouched. Four tests pass (0.152 s), including rejection of a
+real late clear failure and equivalence of all other timing metrics across
+all 18 clock/duty/stopped combinations.
+
+`replay_counter_clear_300.py` binds the actual legacy 21/24 ns source and
+stimulus, requires the completed diagnosis, repeats every original strict
+measurement, and permits changes only to clear-settling predicates and their
+aggregate flags. Three tests pass (0.002 s), including rejection of changed
+stress classification or an arbitrary 5 ns allowance. The separate replay
+retains both old gates and corrected results. It completes on fresh cases
+0/1 under unit `openlvds-counter-clear-replay-300`, invocation
+`8dfb88a82bdb4183afa00d0ad1fe7fab`; log
+`build/counter-clear-replay-300.log`. No full-matrix or PHY admission is implied.
+
+
+Replay `counter_clear_replay_300/87e00dff7df3cb45` completes both cases. The
+stopped-high point remains passing; the stopped-low point changes from the
+introduced 2 ns failure to passing the original 3 ns deadline. Every original
+strict metric reproduces, and every metric outside the declared clear
+predicates is identical. The original failed record is preserved. This closes
+the identified measurement-window bug for these two cases, not the entire
+270-case matrix. All future completed cases require the same separate replay
+before the counter matrix can be admitted.
