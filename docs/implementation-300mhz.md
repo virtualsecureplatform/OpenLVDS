@@ -2759,3 +2759,20 @@ replays were started for both completed references using the retained reader,
 with logs `build/medium-active-pair-independent-300-v1.log` and
 `build/p40n32-active-pair-independent-300-v1.log`. No replay result or family
 admission is asserted while those analyses are active.
+
+`dcc_independent_pulses_300_v1.py` reconstructs internal pulse hold/rearm
+with separate vectorized threshold crossings and indexed interval searches.
+Two tests pass in 0.059 s, comparing all metrics for valid histories,
+first-event retrigger/early-release/unarmed faults, and an explicitly empty
+held interval. Empty intervals remain failures.
+
+`dcc_chain_independent_measure_300_v1.py` combines the independent event/pulse
+algorithms with independent bank timing/electrical reconstruction and explicit
+six-pair terminal differences for each DCC MOS. It independently reconstructs
+the reset reference and complete combined result without calling either
+producer's DCC measurement function. A full synthetic binary test passes in
+5.042 s: every result field agrees for valid transport and an internal reset
+fault whose output waveform remains unchanged. Both readers reject that fault.
+This establishes reader agreement on the tested fixtures; actual completed
+combined native receipts, fresh-reference parity and full qualification remain
+outstanding. All captured experiment files and active solvers are unchanged.
