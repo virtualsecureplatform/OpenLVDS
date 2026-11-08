@@ -1982,3 +1982,10 @@ cases or failed replay cases. These are source-only point receipts; the fresh
 810-case full-matrix replay is still required, and no physical DLL/PHY admission
 is implied. The counter watcher separately reached 151 native completions and
 151 corrected protocol replays with no errors or failed replay cases.
+
+`replay_distributed_native_300_v3.py` adds the double-TG producer to the explicit
+registered native-bank replay family. It retains the same independent timing,
+terminal envelope and control/gate-settling checks and refuses incomplete,
+unknown, duplicate or errored selections. Five refusal/registration tests passed
+in 2.643 s. This new consumer does not alter the immutable V2 consumer used by
+already captured campaigns; native double-TG timing proof awaits completed cases.
