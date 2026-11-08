@@ -1989,3 +1989,19 @@ terminal envelope and control/gate-settling checks and refuses incomplete,
 unknown, duplicate or errored selections. Five refusal/registration tests passed
 in 2.643 s. This new consumer does not alter the immutable V2 consumer used by
 already captured campaigns; native double-TG timing proof awaits completed cases.
+
+### Original distributed-fine campaign: final unshifted case retained
+
+`distributed_fine_pilot_300_v1/f07675577cda70f9` naturally completed all 14 cases
+with zero execution errors. The final split-two-plus-two unshifted/centered pair
+(6/7) was independently reproduced in
+`distributed_bank_active_parity_300/4408d49075a86ec1`: all original measurements
+reproduced, all gate classifications matched, maximum all-voltage interpolation
+difference 0.718026 mV across 7,638 vectors and maximum crossing difference
+0.001352956 ps. Both physical point screens remain failed. No model, waveform,
+parameter or tolerance was changed to obtain parity. The completed campaign
+continues to reject split-one-plus-one and split-two-plus-two on conservative
+rising overlap (−116.116961 ps and −102.078546 ps respectively); split-one also
+fails falling overlap (−33.819311 ps), while split-two's positive falling overlap
+(+132.829063 ps) does not repair its rising coverage or history failure.
+This closes the long native numerical reference without admitting either bank.
