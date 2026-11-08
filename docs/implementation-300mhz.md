@@ -1664,3 +1664,27 @@ headroom. Its unshifted reference and numerical pair remain separate pending
 evidence. The P40/N32 experiment must still demonstrate positive overlap as
 well as recovery/history improvements; its first native run remains live.
 No component, loaded-chain, PVT or PHY qualification is claimed.
+
+
+### P40/N32 zero-code point passes with independently verified headroom
+
+Case 0 of `p40n32_pre_distributed_pilot_300_v1/3efd00e62550ef86`
+completes 40 ns / **20,015 native samples** without execution error in
+**979.031 s** native elapsed time. Worst rising delay is **650.984795547 ps**,
+worst falling delay **724.898367130 ps**, giving **+81.553245774 ps** headroom
+against the unchanged 806.451613 ps fastest-quarter target. Rising/falling
+history are **2.091798429 / 0.003113578 ps**, maximum period error
+**2.091812800 ps**, and maximum slew **85.261273094 ps**. Every original
+point-level clock-interface, terminal and control/programming-gate check
+passes.
+
+Independent receipt
+`distributed_family_native_replay_300_v2/a149f233bd8c9029` reproduces all
+original metrics and independent timing, terminal envelopes and control/
+programming-gate settling using the exact P40/N32 observations. Log:
+`build/p40n32-pre-zero-native-replay-300.log`. This validates shared producer
+dispatch/metrology on the new actual native dataset as well as the preceding
+single-P40 case. It does not establish fine-60 history, positive overlap,
+active numerical parity, actual loading, routed RC, PVT, DLL/DCC or PHY
+qualification. The one-worker campaign has acquired a normal dispatcher slot
+for fine-60 case 1; all remaining cases and original gates are retained.
