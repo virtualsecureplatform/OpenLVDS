@@ -76,6 +76,15 @@ This establishes one source-only PVT/frequency cohort; the other 792 matrix
 cases and all physical-DCC/PHY gates remain required. The unchanged single
 worker continues at the next frequency.
 
+The complete nominal SF40/300 MHz source cohort (cases 18--35) also passes
+original and independent checks in
+`dcc_source_native_replay_300/f470710605c64804`. Its exact 18-point duty/slew/
+spacing coverage matches the 310 MHz cohort, with worst balanced mean
+half-cycle error 29.831467650 ps. Log:
+`build/dcc-source-300-sf40-nominal-replay.log`. Thus cases 0--35 have independent
+passing source evidence at SF40 and both 300/310 MHz; 290 MHz and the other
+PVT conditions remain pending, as do all physical-DCC and PHY gates.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
