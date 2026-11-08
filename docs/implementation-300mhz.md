@@ -1936,3 +1936,34 @@ The initial dependency failure is retained in
 No bank timing simulation, electrical/PVT or PHY qualification is claimed;
 all new artifacts retain `qualified_phy:false`. The next step is exact bank
 substitution followed by fresh zero/fine/coarse and active-parity experiments.
+
+### Double-TG switch intervention: native bank preparation
+
+The P40/N32 split-one-plus-one baseline passes all four centered point screens,
+but its conservative code overlap is still negative on both edges
+(rise −35.944543 ps; fall −60.021195 ps). The next controlled intervention doubles
+only the transmission-gate widths in each fine unit, using the independently
+qualified `openlvds_mim_switch_2x3_tg2_v1` physical/native RC model. The off clamp,
+MIM dimensions, pre-driver and fine-driver architecture remain the baseline.
+Lower switch resistance is a hypothesis for more effective fine loading and
+better switch-side recovery; component RC qualification is not evidence of
+that timing effect.
+
+`tg2_p40n32_bank_300.py` substitutes the 62 fine-unit calls and reconstructs all
+actual native transistor and programming-gate observations. Its material loader
+runs the original physical/native/Schur binding in the CAD environment and
+requires the complete independent terminal-current witness and unchanged output
+files. A direct integration check passed that full material proof (67 retained
+paths). The transformed bank retains 2,056 MOS, 202 MIM, 86 controls and 266
+programming-gate observations. Three integration tests passed in 2.089 s,
+including rejection of changed split wiring and the requirement for a fresh
+unshifted numerical reference.
+
+`probe_tg2_p40n32_300.py` requires the exact four passing baseline points and their
+measured both-edge coverage failure before capture. It tests zero code, maximum
+fine code at 60% and 40% duty, the next coarse code, and a fresh unshifted 60%
+fine reference at SS/40 °C/310 MHz. It retains the existing bidirectional
+2 mV waveform / 0.25 ps crossing / 1 nV DC numerical-parity limits, all startup
+events and original electrical gates. One worker uses the existing global
+six-slot dispatcher. Neither component construction nor pilot preparation
+admits whole-bank timing, shared routing, PVT coverage or the PHY.
