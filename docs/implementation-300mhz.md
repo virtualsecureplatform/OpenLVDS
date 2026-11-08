@@ -278,3 +278,44 @@ conservative overlap nevertheless fails at **-125.475676 ps rising /
 Thus neither bank is admitted: the baseline needs more fine range and the
 weaker driver introduces a repeatability failure. Aggregate active numerical
 parity and full qualification are still required.
+
+## Evidence-gated strong-driver MIM4 pilot launched
+
+The observed failures select the next one-factor trial: retain the baseline's
+two parallel P40/N16 drivers and replace only the fine-cell implementation
+with four qualified 2x3 switched-MIM cells per enable. Coarse routing, group
+restoration, pre-driver, final driver, controls and 20 fF load stay unchanged.
+This is the prepared `p80_c4` circuit: 2188 MOS, 325 MIM, 86 controls and 452
+actual programming-gate observations. Its startup/range/slew/stress behavior
+is unproven until the new native points complete.
+
+`mim4_evidence_300.py` requires all three completed replay receipts, verifies
+their unchanged input hashes, requires passing baseline individual points and
+both negative conservative overlaps, and requires the single-driver history
+and period failures in both original/centered benches. It cannot select the
+trial from a truncated trace or a merely proposed range problem. Four new
+evidence/fixture tests pass (0.307 s), including refusal when proof is missing,
+quarter margin fails or range repair is unnecessary. Log:
+`build/native-bank-mim4-300-tests.log`.
+
+`native_bank_mim4_300_v1/a8105c49e52731af` binds those receipts and the full
+captured MIM-material proof, regenerates the exact circuit and all observation
+maps, and prepares five 310 MHz SS40 40 ns cases. The active original/centered
+pair is mandatory for this new circuit, before individual zero/fine40/coarse
+points can collectively admit even a component pilot. External bench-current
+power remains excluded; neither voltage nor device models are changed.
+Historical proof raw files are fully hashed at preparation, campaign start
+and finalization; per-lease guards retain every non-raw proof, source, model,
+fixture and circuit input. Current scientific result files are never reused
+or overwritten.
+
+Unit `openlvds-mim4-bank-300-v1`, invocation
+`3782b4bbc70a45e3880447978126dc9d`, uses at most two priority-1 workers under
+the unchanged six-slot dispatcher. Log: `build/mim4-bank-300-v1.log`.
+The existing healthy campaigns continue and lease availability determines
+when the new solvers start. Producer/helpers are now captured and immutable.
+
+The first new counter case (SS40, 310 MHz, 60% duty, stopped high) completes
+with every native point gate passing and minimum remaining low window
+474.841681 ps. This is one of 270 fresh conditions, not full counter or PHY
+qualification.
