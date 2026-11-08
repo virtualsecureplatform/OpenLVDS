@@ -2593,3 +2593,15 @@ Apptainer's 64 MB `/tmp` while writing two synthetic traces; the passing run
 used `TMPDIR=/work/OpenLVDS/build/test-tmp-four-section`, without changing any
 scientific setting or limit. Actual captured-input hashing is in progress via
 `build/tg2-four-section-prepare-300-v1.log`; no four-section native result exists.
+
+`replay_tg2_four_bank_native_300_v1.py` separately consumes explicit completed
+four-section cases. It validates producer closure, original task identity and
+every native witness hash, reproduces the complete original result exactly,
+then repeats all timing, terminal and control measurements with the independent
+algorithms. Failed physical points remain failed even if their measurements
+reproduce. The receipt binds all analysis inputs and rechecks their hashes
+after analysis; whole-bank, fanout and PHY admission remain false. Two preflight
+tests pass, requiring registered producers and unique case IDs, and refusing
+pending cases before expensive provenance hashing. No actual four-section
+replay receipt exists yet. The first native entry-domain boundary case has
+started under its existing controller while four-section capture continues.
