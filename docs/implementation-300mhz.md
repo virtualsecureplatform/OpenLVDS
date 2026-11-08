@@ -2252,3 +2252,25 @@ requirement for all four cases and both comparisons, and rejection of hidden
 internal-voltage, DC and programming-gate differences. Preparation is gated on
 both complete unchanged independent native point receipts; no source coverage,
 source numerical-parity or PHY certificate is inferred from this diagnostic.
+
+### Early actual-loading capture completed and controller launched
+
+Early loading preparation passed its complete source-point/native-input binding
+and captured `tg2_next_bank_early_zero_pilot_300_v2/23dee609d6ca5e51`.
+The identity hash, material-case mapping and all four actual observation maps
+were checked after preparation: each deck contains 4,112 MOS, with centered
+next-fine0/31 cases 0/1 followed by their unshifted references 2/3. The bank
+library remains byte-identical to the single-bank candidate, SHA-256
+`2f2f1ab9cb83c9402377224eb5603e25e7b36fec0f4d979f9f9217186ed9572d`.
+Both source full-bank coverage and source active numerical-parity qualification
+flags are explicitly false in the captured identity.
+
+The controller was launched under user unit
+`openlvds-tg2-next-bank-early-300-v2`, invocation
+`125073f504994a83bb7c5c1c033589ed`, one worker, priority two, with the unchanged
+global six-slot dispatcher. The unit was confirmed active in its initial
+captured-input verification; no loaded native result had completed at launch.
+Log: `build/tg2-next-bank-early-300-v2.log`. Existing source, counter, long-clock
+and numerical-reference jobs were not preempted or modified. A passing centered
+point will remain an unqualified diagnostic observation until both loaded pairs
+and the separate pending source/DLL/PVT/physical release gates are resolved.
