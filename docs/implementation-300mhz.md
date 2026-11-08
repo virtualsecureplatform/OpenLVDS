@@ -1847,3 +1847,40 @@ Twelve combined tests pass in 0.340 s, including an actual consumer help
 subprocess in the container, explicit case forwarding and full-replay command
 selection. Log: `build/dcc-source-watch-300-v3-tests.log`. Previous observer
 attempts and source captures remain unchanged.
+
+
+### P40/N32 centered endpoints complete; fine range remains insufficient
+
+Coarse-one case 3 completes without execution error and passes the original
+point-level clock-interface screen. Rising/falling history are
+**2.272336496 / 0.004120402 ps**, maximum period error **2.272350868 ps**,
+and maximum slew **85.264910163 ps**. Independent receipt
+`distributed_family_native_replay_300_v2/4fe4f7d0341a1e7d` reproduces every
+original metric and independent timing, terminal envelopes and control/
+programming-gate checks. Log:
+`build/p40n32-pre-coarse1-native-replay-300.log`.
+
+All four centered endpoint checks now pass for the exact P40/N32 circuit at
+SS40/310 MHz, including the repaired zero-code quarter and fine-60 history
+checks. The unchanged conservative overlap across fine-60/fine-40/coarse-one
+cases 1/2/3 is nevertheless **−35.944543 ps rising / −60.021195 ps falling**.
+The fine-delay range therefore remains insufficient on both edges; individual
+point passes do not qualify this architecture. The unshifted reference and
+fresh bidirectional/DC parity remain pending. This closes the centered
+coverage decision without stopping the live reference or changing any bound.
+The next fine-range intervention must preserve the demonstrated recovery and
+quarter-period headroom, followed by actual loading, routing, PVT and PHY
+qualification; no admission is granted here.
+
+### Container-safe DCC replay watcher confirmed live
+
+Unit `openlvds-dcc-source-watch-300-v3`, invocation
+`7cdd65b647cc4665b676fb00748d98bc`, is confirmed live as
+`dcc_source_watch_300_v3/d9c7e020af478d44`. Its actual verified index has
+**234 replayed / 249 native-completed cases**, **15 pending**, and no native,
+partial-replay or source-screen failures. It remains active through the
+unavailable optional service probe. The first automatic child batch awaits
+18 completed pending cases; direct child startup was tested in the actual
+container, but no automatic batch result is claimed yet. Runtime log:
+`build/dcc-source-watch-300-v3.log`. All earlier observer attempts, native
+source captures, dispatcher caps and running solvers remain unchanged.
