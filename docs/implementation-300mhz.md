@@ -422,3 +422,61 @@ of at most six and 30 s polling; the initial index contains three completed,
 passing cases. Progress and child logs live within that context. Even a
 complete index remains explicitly unqualified: final whole-matrix evidence
 validation, all remaining clock/link gates and physical release stay open.
+
+## Actual next-bank load fixture prepared, not launched
+
+`next_bank_fixture_300_v2.py` replaces the first bank's artificial 20 fF load
+with the complete native input of a second identical bank. Every native
+transistor, extracted component definition, model/limit and connection is
+retained; only instance/public-net names change. The second bank's output
+retains the 20 fF far load. Separate controls permit next-bank fine0/fine31,
+and the fixture saves every second-bank transistor terminal, logical control
+and actual programming gate. Shared interbank wires remain ideal; detector
+fanout, four-section DLL and whole-clock routing remain unqualified.
+
+The immutable material context is
+`next_bank_zero_materials_300_v2/3ccbbdcfc1410706`, based on the current MIM4
+zero/50% SS40/310MHz source fixture. It contains an unshifted/centered
+next-fine0 pair and a centered next-fine31 case, each with 4376 actual native
+MOS across both complete banks. The waveform, fixed supply, tolerances and
+first-bank controls are unchanged. All three decks and observation maps
+regenerate and pass the actual native runner's translation preflight.
+State is `prepared_unqualified`, simulations zero, and loaded active numerical
+parity is explicitly pending. No loaded simulation is launched before a
+candidate's component gates justify it.
+
+Four native-map/fixture tests pass (4.973 s) across baseline, single-driver
+and MIM4 circuits, including illegal codes, damaged maps and double loading.
+Three runner tests pass (8.455 s), checking translation and preservation of
+all saved names. Logs: `build/next-bank-fixture-300-tests.log`,
+`build/next-bank-fixture-300-v2-tests.log` and
+`build/next-bank-zero-materials-300-v2-prepare.log`.
+
+The retained first implementation/context
+`next_bank_zero_materials_300/0ee9ac03b06981fe` failed runner preflight because
+OUT/VDD were duplicated in the saved-vector list. It was never simulated.
+The captured v1 helper and files remain intact; v2 removes duplicate aliases
+without losing any observation and invokes runner preflight on every deck.
+Use the v2 helper/context, not the retained v1 artifact.
+
+## New endpoint results still reject both candidates
+
+The single-driver campaign now completes. Active numerical control fails its
+full-vector 2 mV requirement: maximum difference is 33.511180 mV on
+`v(xd.xdecode1_3.a_110_47#)`. Crossing difference is only 0.000779 ps and all
+gate classifications agree, but that does not override the vector failure.
+Its conservative overlaps also remain negative (-68.540655 / -62.116372 ps),
+and fine60 already fails history. The complete campaign is not admitted.
+
+The first centered MIM4 fine60 point completes with native terminal stress,
+control settling and 194.471299 ps maximum output slew passing. Its rising
+history span is 143.812567 ps and maximum period error 141.267880 ps, so it
+fails the unchanged 20 ps gates. The fresh paired unshifted run and other
+endpoints remain live. The current MIM4 bank cannot advance to loaded/PVT/DLL
+qualification from this point. Next work must inspect its stage/charge
+history and complete numerical control before another architecture/range
+trial is selected; no threshold, supply or numerical tolerance is changed.
+
+The counter watcher has now indexed four completed cases, all passing the
+separate original-3-ns replay, with no failed replayed points. This remains
+partial evidence from the 270-case matrix.
