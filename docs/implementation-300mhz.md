@@ -1360,3 +1360,14 @@ of 1 µV DC drift even when full-waveform error remains below 2 mV. Log:
 reference/model/runtime/native inputs and one fresh deck; log:
 `build/ramped-current-center-300-prepare.log`. No native result or numerical
 admission is claimed at preparation.
+
+
+The ramped-current controller is launched as unit
+`openlvds-ramped-current-center-300-v1`, invocation
+`aab2ff0591954adca9897f86e0f5c2dc`. Its original-reference remeasurement
+completed successfully before execution state; the live controller has
+registered a single priority-2 dispatcher ticket for case 0 and is waiting
+for a normal slot handoff. Six native ngspice processes remain active;
+no existing solver was preempted or modified. Log:
+`build/ramped-current-center-300-v1.log`. The queued numerical trial remains
+unqualified and introduces no result or solver-speed claim.
