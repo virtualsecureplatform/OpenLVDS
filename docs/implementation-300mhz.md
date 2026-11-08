@@ -2462,3 +2462,27 @@ boundary settings, a changed source voltage is rejected, and the registry
 refuses pending/unsupported cases. These synthetic fixtures test metrology and
 wiring only; no entry-boundary native circuit result exists yet. Existing live
 producers, waveforms and measurement code were not modified.
+
+### Actual two-bank entry-domain experiment prepared for capture
+
+`probe_tg2_entry_domain_300_v1.py` requires the passing independently replayed
+actual-loaded zero point before constructing new diagnostics. It uses the exact
+same bank library and two complete zero-programmed native banks, with the first
+output driving the actual second input and 20 fF remaining only at the far end.
+Four centered cases cover (250 ps,60%), (250 ps,40%), (20 ps,60%), (20 ps,40%)
+at SS/40 °C/310 MHz; four fresh unshifted cases repeat those exact settings.
+Every case retains 40 ns and all eight startup-inclusive events. All four
+bidirectional all-voltage/DC/crossing comparisons and all eight physical point
+screens are required for the diagnostic's aggregate pass.
+
+The original DC-zero/4 ps ramp to a 1 mA external bench load remains explicit
+and excluded from chip power. One priority-two worker uses the existing global
+six-slot aging dispatcher. Source full-bank coverage and source active
+numerical-parity qualification remain false in the identity and final report;
+these entry diagnostics cannot substitute for those source gates or for the
+four-section/fanout, common-RC, dense-code, 15-PVT and PHY requirements.
+`replay_tg2_loaded_native_300_v2.py` registers this eight-case producer while
+retaining explicit support for the earlier loaded-bank producers. It reproduces
+each original result and independently reconstructs the entry waveform and
+native two-bank metrics. The immutable V1 reader and all running producers are
+retained.
