@@ -1643,3 +1643,24 @@ spacing error. Log: `build/dcc-source-300-ss0-310-replay.log`. Independently
 replayed source coverage is now **234 cases**. Remaining SS0 frequencies,
 SS25 and other corners are pending; this source-only evidence does not
 qualify physical DCC RC/startup/stress, the loaded DLL or the complete PHY.
+
+
+### Single-P40 centered coverage closes; shared replay validated on native data
+
+Coarse-one case 3 completes without execution error and passes the original
+point-level clock-interface screen. Rising history is **2.143391111 ps**,
+falling **0.003566806 ps**. New shared-consumer receipt
+`distributed_family_native_replay_300_v2/c4ef85516ac1cae3` reproduces every
+original metric plus independent timing, terminal envelopes and control/
+programming-gate settling, validating producer dispatch and metrology on a
+complete actual dataset. Log:
+`build/medium-pre-coarse1-family-native-replay-300-v2.log`.
+
+The unchanged conservative overlap across centered fine-60/fine-40/coarse-one
+cases 1/2/3 is **−72.490802 ps rising / +15.918970 ps falling**. Together
+with the independently reproduced fine-60 history/period failure, this rejects
+the unchanged single-P40 architecture despite its repaired zero-code quarter
+headroom. Its unshifted reference and numerical pair remain separate pending
+evidence. The P40/N32 experiment must still demonstrate positive overlap as
+well as recovery/history improvements; its first native run remains live.
+No component, loaded-chain, PVT or PHY qualification is claimed.
