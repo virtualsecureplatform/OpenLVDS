@@ -2330,3 +2330,36 @@ continuous DLL/DCC operation and PHY qualification also remain required. The
 first early actual-next-bank case was confirmed live in native ngspice; no
 loaded timing result is yet available. All bank/PHY admission flags remain
 false.
+
+### Wider-switch centered endpoint coverage becomes positive on both edges
+
+Double-TG coarse-one case 3 naturally completed without execution error
+(native elapsed 999.280 s) and passed its SS/40 °C/310 MHz/50% duty screen.
+Rising delays are 893.736753…896.026045 ps and falling delays
+929.513651…929.518204 ps. Rising/falling history spans are 2.289292/0.004553 ps,
+maximum period error 2.289192 ps and maximum output slew 88.610180 ps.
+
+Fresh combined independent replay
+`distributed_family_native_replay_300_v3/e18df0801eda0298` completed all four
+centered cases 0/1/2/3. It reproduces each full original measurement plus
+independent timing, terminal envelope and control/gate settling for each case's
+2,056 MOS, 86 controls and 266 programming gates. Worst terminal envelopes in
+all four cases remain below 1.908 V against their 1.95 V limits. Log:
+`build/tg2-p40n32-centered-endpoints-native-replay-300-v3.log`.
+
+Using every measured delay from both fine31 duty points and the complete
+coarse-one point, the same conservative min(fine40/fine60) − max(coarse-one)
+calculation now gives:
+
+| Candidate | Rising overlap (ps) | Falling overlap (ps) |
+| --- | ---: | ---: |
+| Original P40/N32 split one-plus-one | −35.944543 | −60.021195 |
+| Qualified wider-switch component bank | **+82.289001** | **+39.093489** |
+
+The zero-code and all other centered point screens pass. This is the first
+positive complete **centered endpoint** coverage result for this intervention;
+it remains conditional on the fresh unshifted source comparison. It is not a
+dense-code monotonicity/gap, actual-loading, common-RC, all-PVT, DLL/DCC or PHY
+certificate. The producer has advanced to its fresh unshifted fine60 reference,
+confirmed live in native ngspice. The separate actual-next-bank native case is
+also live. No bank/PHY admission flag is promoted.
