@@ -1608,3 +1608,26 @@ its unshifted reference remains live, so the full 14-case campaign and active
 pair parity are still pending. The P40/N32 zero-code solver is now confirmed
 live following a normal dispatcher slot handoff; its separate circuit remains
 unqualified.
+
+
+### Shared independent replay supports the captured P40/N32 producer
+
+`scripts/replay_distributed_native_300_v2.py` selects only the registered
+original distributed, single-P40 and P40/N32 producer versions, then invokes
+the selected producer's complete bound verification. It checks exact selected
+tasks and all native witnesses, reproduces every original metric, and invokes
+the unchanged independent timing/terminal/control-and-gate metrology with
+the exact variant observations. Separate content-addressed receipts preserve
+failures and never admit a whole bank or PHY. Existing consumers and captures
+remain unchanged.
+
+Four tests pass in 2.238 s, covering producer dispatch, unsupported versions,
+empty/duplicate/unknown selections, execution failure, mismatched task and
+pending output. Log:
+`build/distributed-family-native-replay-300-v2-tests.log`. An actual preflight
+against the complete P40/N32 capture correctly refuses still-running case 0,
+without creating a receipt; log:
+`build/p40n32-native-replay-300-v2-pending-preflight.log`. First validation
+on a complete native dataset is running for single-P40 coarse-one case 3,
+whose replay was not previously executed through another consumer. This is
+read-only metrology with no SPICE lease or running-file mutation.
