@@ -2955,3 +2955,18 @@ independent 100 ps reconstruction, complete maps and both reference pairs.
 A complete binary-reader test passes in 1.905 s: original/independent metrics
 agree at 100 ps, and a changed source voltage rejects the point. Captured
 materials, native runs and the controlled stage comparison remain outstanding.
+
+`probe_matched_entry_300_v1.py` captures and runs those four matched-source
+cases under one priority-two worker and the existing six-slot dispatcher.
+Preparation requires both the original independently verified actual-loaded
+zero point and the exact passing independent 250 ps/60% entry receipt. All
+proof inputs, new V2 source/reader bytes, circuit libraries and reconstructed
+fixtures are bound to the capture. Its aggregate gate requires all four point
+screens and both fresh bidirectional numerical pairs. It keeps source
+coverage/parity and PHY qualification false and refuses partial-run overwrite.
+
+Two controller tests pass, requiring exact 100 ps/50–60% coverage, both fresh
+references, unchanged pair specifications and preservation of physical failures.
+Capture preparation has started with log
+`build/matched-entry-prepare-300-v1.log`; no matched-source native case has run.
+The existing simulations and captured V1 implementations are unchanged.
