@@ -1050,3 +1050,15 @@ history tradeoff as redesign targets; they do not prove a particular resizing
 will repair both. Finish fine-40/coarse-one coverage before selecting the next
 circuit variant. The existing workers and physical/numerical limits remain
 unchanged; no loaded-chain, PVT, component or PHY admission is granted.
+
+
+### First SS source cohort independently verified
+
+Fresh DCC source cases 162–179 (SS40, 310 MHz, 40/50/60% duty,
+20/250 ps input slew, and 0/±140 ps event-spacing error) completed with no
+execution errors. Independent replay
+`dcc_source_native_replay_300/14d8c908460ecc33` reproduces all 18 original
+measurements and passes every independent source screen. Log:
+`build/dcc-source-300-ss40-310-replay.log`. Together with the complete SF
+corner receipts, independently replayed source coverage is now 180 cases.
+The remaining source matrix, physical DCC and full PHY remain unqualified.
