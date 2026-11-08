@@ -558,3 +558,25 @@ existing healthy jobs continue. Log: `build/distributed-fine-300-v1.log`.
 Even a passing component candidate still requires actual next-bank loading,
 common monotonic all-PVT codes, new routed shared RC, full clock/DLL/DCC/link
 qualification and qualified area/power comparison before release.
+
+## Extracted 300 MHz clock source completed and verified
+
+The original `openpll_trace_300/20261108T013035Z` transient completes naturally.
+Its measured frequency is **301.151834 MHz**, duty 50.852331--50.852474%, with
+12 late rising edges. All eleven required physical construction metrics
+remain zero. The extracted source includes capacitance, not interconnect
+resistance; its 0.002458 ps measured period spread is a deterministic native
+simulation result, not physical noise/jitter statistics or closed-loop PLL
+qualification. This fixed-code TT25/1.8 V source remains distinct from the
+RTL/controller/calibrated-DCO source at 300.430287 MHz.
+
+`verify_clock_sources_300.py` independently checks frequency, duty, edge
+counts and period spread for both source traces, verifies every captured
+input and the unchanged OpenPLL pin, revalidates physical metrics/extraction
+scope, and regenerates the physical CSV byte-for-byte from the original
+70 ns native waveform. No edges are scaled, synthesized or tiled. Four tests
+pass (0.006 s). The verified source bundle is
+`verified_clock_sources_300/b919a47f1f6cefea`; log
+`build/verify-clock-sources-300.log`. It is source evidence only. The physical
+trace has only 11 complete late periods (22 complete DDR bit intervals),
+so it cannot satisfy the 4096-bit native payload budget.
