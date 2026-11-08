@@ -3034,3 +3034,22 @@ No diagnostic simulation has been launched and no convergence fix is claimed.
 Full native voltage/DC/crossing parity and all original gates remain required;
 the failed combined point and every source/physical/PHY qualification flag stay
 unqualified. Serial-chain and entry-boundary simulations continue unchanged.
+
+`probe_input_current_origin_300_v1.py` prepares a bounded native validation
+against the complete independently verified actual two-bank zero reference.
+Only the new DC-zero input-current card and library include path change.
+Before simulation the original result must reproduce. The trial then requires
+agreement of both full native readers, bidirectional all-voltage error <=2 mV,
+DC error <=1 nV, all eight input/intermediate/output crossings <=0.25 ps, and
+every original gate classification unchanged. No samples or observations are
+discarded. One priority-two worker uses the existing dispatcher and partial
+execution cannot be overwritten.
+
+Even a pass validates only this exact completed reference case; the controller
+explicitly leaves the combined circuit and PHY unadmitted. Input-bench current
+and power are excluded from chip power, and no solver tolerance or source
+voltage expression changes. Two tests pass in 3.712 s, checking exact native
+deck preservation and complete synthetic binary parity with rejection of a
+changed DC sample or electrical classification. Capture preparation is running;
+log `build/input-current-origin-prepare-300-v1.log`. No new origin trial has
+executed yet, and the combined startup failure remains unresolved.
