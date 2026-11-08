@@ -2605,3 +2605,25 @@ tests pass, requiring registered producers and unique case IDs, and refusing
 pending cases before expensive provenance hashing. No actual four-section
 replay receipt exists yet. The first native entry-domain boundary case has
 started under its existing controller while four-section capture continues.
+
+### Four-section capture validated and controller active
+
+Capture `tg2_four_section_zero_pilot_300_v1/4bf88d17231064da` completed full
+input hashing and reconstruction successfully. User unit
+`openlvds-tg2-four-section-300-v1` was launched with invocation
+`91eedc2f3cd04a7db2106d6d9bf1dcca` and confirmed active (initial main PID
+2407741). Log: `build/tg2-four-section-300-v1.log`. The two 8,224-MOS cases
+retain all eight startup-inclusive events and fresh centered/unshifted control.
+The controller first validates captured inputs, then acquires one priority-two
+lease under the unchanged six-slot dispatcher. No four-section native result
+exists at launch and no running solver was interrupted.
+
+The replay suite now passes four tests in 8.946 s. Added integration coverage
+runs the complete original and independent measurement algorithms on synthetic
+binary witnesses, verifies that a late-section physical failure remains false
+in a successfully reproduced receipt, and rejects a modified raw witness by
+hash before either reader runs. Only the producer-binding boundary is replaced
+for these synthetic tests; actual producer closure was checked during capture.
+Temporary binary fixtures use workspace storage because of the container's
+64 MB `/tmp` limit. Native four-section replay, fresh numerical parity, fanout,
+shared routing, calibrated phase accuracy and full PHY remain required.
