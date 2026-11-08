@@ -2274,3 +2274,33 @@ Log: `build/tg2-next-bank-early-300-v2.log`. Existing source, counter, long-cloc
 and numerical-reference jobs were not preempted or modified. A passing centered
 point will remain an unqualified diagnostic observation until both loaded pairs
 and the separate pending source/DLL/PVT/physical release gates are resolved.
+
+### Independent actual-next-bank waveform reader prepared
+
+`two_bank_independent_measure_300_v1.py` provides a second implementation of the
+loaded-bank measurements: NumPy threshold interpolation and event arrays for
+both stage references, all input/output 10/50/90% events, period/history,
+quarter budgets and slew; pairwise terminal-voltage differences for stress;
+and min/max extrema for each bank's own programmed controls and fixed supply.
+It reads the complete native binary waveform including DC/startup. The second
+bank is referenced to measured OUT, not the ideal IN epoch. Both passing and
+failing point classifications must reproduce; no failed startup event is
+removed and no native parameter is changed.
+
+`replay_tg2_loaded_native_300_v1.py` accepts only the strict V1 and early V2
+actual-next-bank producers. It binds the producer, captured library, actual
+observation maps and every selected native witness; exactly remeasures the
+original result; then independently compares the complete result and each gate
+classification with the existing replay tolerance. Explicit completed case IDs
+are required, and all inputs are rehashed after analysis. The receipt can only
+prove selected point measurements, never numerical-pair, source coverage,
+shared-RC, DLL/PVT or PHY qualification.
+
+Four new checks passed in 1.020 s: complete binary-reader agreement for next
+fine0/fine31 and a failed fixed supply; preservation of startup pulse loss;
+refusal of missing native points before expensive binding or receipt creation;
+and rejection of unknown, duplicate or empty selections. The agreement test
+also refuses a modified recorded downstream delay. Synthetic binary fixtures
+are analyzer unit tests, not circuit evidence. Actual preflight against the
+running early loading case 0 correctly refused `Loaded native case is still
+pending: 0`. No loaded timing receipt or admitted bank has been created.
