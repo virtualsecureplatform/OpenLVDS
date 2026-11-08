@@ -2823,3 +2823,22 @@ DC error is zero and maximum crossing difference is 0.000762805 ps. Every gate
 classification agrees. Its known endpoint-coverage failure remains unchanged;
 neither numerical parity nor the passing fine-60 point admits this family or
 the PHY. The newer TG2 candidate retains its separate pending reference gate.
+
+### Direct four-section phase diagnostics
+
+`four_bank_phase_measure_300_v1.py` reports all startup-inclusive rise/fall
+phases relative to the original input without modulo reduction. It records
+each section's measured delay, per-event section spread, errors at the
+quarter/half/three-quarter/full-period taps and full-period closure error.
+Observed 50 ps phase-grid and 20 ps closure predicates are separate from
+transport, and calibration/PHY flags remain false even if both are observed.
+Missing events and nonpositive section ordering cannot pass the phase grid.
+This is a measurement helper; no actual phase-grid result exists yet.
+
+Three tests pass in 0.147 s: exact quarter spacing, an incorrect intermediate
+phase despite correct full-period closure, and missing startup/full-cycle alias
+failures. The retained detector's completed 540-point source proof remains
+historical source evidence; routing, physical matching and integration at the
+new profile remain required. The serial-chain and combined controllers were
+confirmed active, with neither producing a completed native point at this
+observation. No captured experiment or active solver was modified.
