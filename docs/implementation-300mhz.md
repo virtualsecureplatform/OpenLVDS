@@ -2428,3 +2428,37 @@ wire RC, dense legal codes, PVT and PHY release remain open. The second bank's
 far capacitor does not establish the load of a third bank. Source coverage and
 source active numerical-parity qualification flags remain false in this early
 experiment, and no bank/PHY admission is inferred.
+
+### Explicit 10–90% entry reference and boundary metrology
+
+The verified loaded zero point uses a 100 ps nominal entry slew and leaves
+32.089517 ps of second-stage quarter margin. It does not cover the specified
+20–250 ps entry range or 40/60% duty boundaries. New
+`bank_entry_waveform_300_v1.py` defines eight linear pulses with explicit
+10/50/90% breakpoints, 50% rising epochs at 2.1 ns plus each requested period,
+and exact threshold-to-threshold duty. Its 20/250 ps settings mean **10–90%**,
+not the full 0–100% ramp duration. This distinction must be retained when using
+older source tests whose PULSE rise/fall argument denotes the full ramp.
+
+`two_bank_entry_measure_300_v1.py` retains the full existing two-bank metrics
+and verifies the ideal IN samples against this declared piecewise-linear
+source within 1 nV, with no sample gap above the declared 2 ps step (apart from
+floating-point roundoff). At the exactly 250 ps boundary, subtraction of
+floating-point crossing epochs can exceed 250 by a few ULPs. A **1e-6 ps**
+comparison allowance applies only to that verified ideal entry's slew-domain
+predicate. All measured slew values remain unrounded and unclipped. Native
+downstream input, every output slew, quarter budget, period/history, terminal
+stress, control and supply comparisons retain their original limits. A changed
+source waveform or a 250.01 ps measured entry is refused. Independent
+reconstruction evaluates clipped linear ramps separately from the producer's
+PWL interpolation.
+
+Five fixture/reference checks passed in 2.219 s, including all eight source
+events, independent voltage reconstruction, unchanged complete 4,112-MOS maps,
+runner translation, preservation of every centered/unshifted pair, and
+requirement for all domain settings and references. Three binary-reader checks
+passed in 1.326 s: both implementations agree on every metric at all four
+boundary settings, a changed source voltage is rejected, and the registry
+refuses pending/unsupported cases. These synthetic fixtures test metrology and
+wiring only; no entry-boundary native circuit result exists yet. Existing live
+producers, waveforms and measurement code were not modified.
