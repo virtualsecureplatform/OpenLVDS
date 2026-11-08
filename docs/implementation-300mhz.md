@@ -2385,3 +2385,46 @@ bottleneck. No solver, model, tolerance, native waveform or live producer was
 changed. The prototype and benchmark are retained for reproducibility, with
 all bank/PHY admission flags false. Log:
 `build/native-terminal-block-benchmark-300-v1.log`.
+
+### First actual-next-bank zero point passes independent verification
+
+Early loading case 0 in
+`tg2_next_bank_early_zero_pilot_300_v2/23dee609d6ca5e51` naturally completed
+without execution error (native elapsed 2534.042 s). It contains two complete
+native banks, both programmed to zero, at SS/40 °C/310 MHz/50% duty. The first
+bank's artificial 20 fF capacitor is replaced by the actual second-bank input;
+the second bank retains the 20 fF far load. All eight startup-inclusive events,
+transistor terminals, separate controls and fixed supply checks pass.
+
+| Measured property | First bank, actual next input | Second bank, 20 fF far load |
+| --- | ---: | ---: |
+| Maximum rising delay (ps) | 720.614827 | 716.041667 |
+| Maximum falling delay (ps) | 769.239163 | 774.362096 |
+| Fastest-quarter headroom (ps) | **+37.212450** | **+32.089517** |
+| Rising history span (ps) | 2.023074 | 2.248569 |
+| Falling history span (ps) | 0.002201 | 0.015564 |
+| Maximum output period error (ps) | 2.021787 | 4.270356 |
+| Maximum output slew (ps) | 197.534143 | 88.615882 |
+| Maximum input slew (ps) | 100.035137 | 197.534143 |
+
+The second bank is measured relative to actual OUT, not the ideal IN epoch.
+The native supply error is 0 V. Worst terminal envelopes are 1.907318426 V
+(first) and 1.907316928 V (second), each below its 1.95 V limit. Relative to the
+single-bank artificial-load result, the real next input consumes 19.222306 ps
+of the first bank's falling-edge quarter margin and increases its output slew
+substantially, while preserving the 250 ps downstream domain at this point.
+
+Independent receipt
+`tg2_loaded_native_replay_300_v1/5a13c2fa7eabefdd` completed and exactly
+reproduced the original complete measurement plus independent two-bank timing,
+terminal envelope, separate control/gate settling and supply checks. It covers
+all 4,112 MOS, 172 controls and 532 programming gates. Log:
+`build/tg2-loaded-zero-native-replay-300-v1.log`.
+
+This is one passing centered loaded point. The next-fine31 case is live; both
+fresh loaded numerical pairs, source unshifted parity, the 20–250 ps entry
+slew domain and duty extremes, complete four-section/fanout loading, common
+wire RC, dense legal codes, PVT and PHY release remain open. The second bank's
+far capacitor does not establish the load of a third bank. Source coverage and
+source active numerical-parity qualification flags remain false in this early
+experiment, and no bank/PHY admission is inferred.
