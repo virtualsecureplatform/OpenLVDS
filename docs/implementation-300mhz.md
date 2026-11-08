@@ -2718,3 +2718,26 @@ first-event retrigger/early release/unarmed failures, and complete synthetic
 binary analysis showing an internal reset fault overrides unchanged correct
 output transport. These remain reader tests; the combined native simulation,
 fresh numerical pair and independent replay are still outstanding.
+
+### Combined native controller and fresh-reference comparison
+
+`probe_dcc_chain_300_v1.py` captures the validated combined materials and V2
+internal-pulse metrology as a new two-case native experiment. Centered and
+fresh unshifted cases retain all devices, observations and 40 ns stimuli;
+only captured library paths change. One priority-two worker uses the existing
+six-slot dispatcher. It refuses any prior/partial execution and preserves
+every native witness and failed point. Both physical transport screens and
+the numerical reference must pass the aggregate diagnostic gate.
+
+The fresh comparison uses bidirectional all-voltage interpolation (2 mV),
+all DC voltages (1 nV), chain/DCC/internal pulse crossings (0.25 ps, eight
+rise/fall events at every checked node), and every boolean classification in
+the full combined result, including each internal hold/rearm event. A numerical
+agreement cannot erase a physical failure. Calibration, detector fanout,
+shared routing and PHY qualification remain false regardless of transport.
+
+Two tests pass in 9.374 s: exact material preservation apart from include paths,
+fresh-reference symmetry, complete synthetic binary comparison, rejection of a
+changed internal pulse classification, failed transport, missing case and
+native error. Experiment preparation is running; log
+`build/dcc-four-section-prepare-300-v1.log`. No combined native result exists.
