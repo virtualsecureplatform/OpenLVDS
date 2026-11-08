@@ -18,9 +18,10 @@ All new results must bind the new profile; legacy results cannot qualify it.
   Evidence is in `build/openpll_300`; this is not a physical jitter certificate.
 - The namespace-safe 400 MHz drainer preserves solver children and archives
   only tickets whose owner-lock inodes belong to the verified coordinator.
-  The remaining old counter coordinator PID 2178341 is draining under
-  `frequency_migration_300/2178341_469977845`. Its original state/files are
-  preserved; the partial campaign must not be called complete.
+  The old counter coordinator PID 2178341 has retired after its solver children
+  finished naturally. `frequency_migration_300/2178341_469977845` records
+  178 completed summaries and 180 retained cases as `archived_incomplete`,
+  with the original artifact unchanged. This does not qualify the old campaign.
 - The numerical current-centering control completes all three cases without
   errors or guarded runs. Active native voltage parity is 0.875368 mV maximum,
   crossing parity 0.001964 ps, with the original real history failure retained.
@@ -156,3 +157,39 @@ preservation and rejection of damaged observations or an already modified
 wrapper. Five pilot contract/stimulus tests pass (0.262 s). These tests do not
 qualify the new bank: range overlap, analog point gates and active numerical
 parity must pass first, followed by next-bank loading and full qualification.
+
+
+## Fresh counter protocol and 270-case campaign
+
+`counter_protocol_300.py` retains the seven actual raw-clock pulses and the
+qualified 808-MOS/57-MIM loaded counter with 17087 shared-wire resistors and
+4407 capacitors. The new transient lasts 40 ns. REQUEST falls at 28 ns and
+reasserts at 32 ns, after the last possible 290 MHz/60% raw transition
+(<24.86 ns). The clock must remain stopped from 27 ns, and public outputs,
+armed and high1/low1 state must remain cleared from 30 ns through the
+second REQUEST assertion. The initial REQUEST assertion stays at 3.4 ns.
+
+The new measurement checks all seven raw and buffered clock epochs, exact
+raw frequency/duty, causal buffered events, two/three qualifying edges,
+positive bounded release latency, phase order, guaranteed-low assertion
+windows, stopped-clock asynchronous clear/reassertion and every original
+transistor terminal-pair stress limit. Waveforms and device models are not
+rescaled; supplies stay fixed at 1.8 V. The unchanged generic seven-cycle
+low-window algorithm is applied only after validating the full 40 ns trace.
+
+`counter_pvt_300_v1.py` prepares 270 fresh native traces: five process corners
+at 0/25/40 C, three clock frequencies, three duties and two stopped levels.
+It binds the new profile and the existing qualified actual shared-RC libraries,
+reconstructs all 808 native terminal maps, verifies the original topology
+certificate and reuses zero old timing cases. Historical 400 MHz traces cannot
+satisfy any new point. Two workers use priority 2 and the unchanged global
+six-slot dispatcher. All qualification flags remain false until the relevant
+new electrical gates pass; this campaign alone cannot admit the whole clock
+or PHY.
+
+Eight synthetic metrology/matrix/fixture tests pass (0.130 s), including all
+18 frequency/duty/stopped-level combinations and rejection of truncated,
+missing-clock, wrong-frequency/duty and unintended release cases. Synthetic
+signals verify the measurement, not the hardware. The initial test invocation
+used an environment without KLayout and failed at import; the successful runs
+use `build/tools/counter-physical-venv/bin/python` through `scripts/env.sh`.
