@@ -3003,3 +3003,34 @@ matched-source native point or independent receipt exists at dispatch; the
 controlled delay comparison and all previous source, routing, calibration and
 PHY gates remain open. The two four-section solvers were separately confirmed
 live throughout capture validation and were not changed or restarted.
+
+### Combined DCC/chain startup convergence failure
+
+Case 0 of `dcc_four_section_pilot_300_v1/7c2674e516231ffb` terminated with
+`TRAN: Timestep too small` at 4.10937e-14 s (0.041094 ps), reporting trouble
+with `bin#branch`; final attempted timestep was 2.5e-24 s. Total reported
+elapsed/analysis times are 3379.332/194.053 s. The original failed files and
+error record are preserved. No physical timing result exists for this case.
+The controller remains active for its original next task; healthy jobs were
+not stopped or restarted.
+
+The failure precedes every clock edge (first at 2.1 ns), reset release (1 ns)
+and the existing supply bench-current ramp (starts at 2 ps). A source-branch
+convergence issue is therefore worth testing, but the reported trouble node
+alone does not prove the mechanism or a DCC functional fault.
+
+`input_current_origin_300_v1.py` prepares a separate diagnostic by adding only
+`I_BENCH_INPUT_CENTER IN 0 DC 0 PWL(0 0 2p 1m 40n 1m)` at the ideal input.
+It leaves BIN's voltage expression, every model/device, the existing supply
+card and the complete 40 ns stimulus unchanged. It refuses current feedback,
+duplicate attachment and a shortened fixture, then checks actual runner
+translation. The new external load's current/power must be excluded from chip
+power; it is not a physical input-driver change. DC-zero construction and
+ideal-source reasoning do not substitute for native numerical parity.
+
+Two tests pass in 0.415 s against actual two-bank and combined decks, verifying
+exact single-card insertion and refusal of current feedback/incomplete traces.
+No diagnostic simulation has been launched and no convergence fix is claimed.
+Full native voltage/DC/crossing parity and all original gates remain required;
+the failed combined point and every source/physical/PHY qualification flag stay
+unqualified. Serial-chain and entry-boundary simulations continue unchanged.
