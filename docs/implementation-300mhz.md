@@ -1572,3 +1572,18 @@ direction voltage failure. Log:
 `build/p40n32-pre-distributed-pilot-300-tests-v2.log`. Preparation is running
 in `build/p40n32-pre-distributed-pilot-300-prepare.log`; no new native result
 or circuit admission is claimed at this stage.
+
+
+P40/N32 preparation now succeeds as
+`p40n32_pre_distributed_pilot_300_v1/3efd00e62550ef86`. The captured native
+library, complete observations, model/runtime/evidence closure and all five
+decks pass reconstruction and binding; log:
+`build/p40n32-pre-distributed-pilot-300-prepare.log`.
+
+Unit `openlvds-p40n32-pre-distributed-300-v1`, invocation
+`7f01f91d9b164ba9bba9f6d8134c73ff`, is confirmed live after initial complete-
+input verification, with its first single-worker priority-1 ticket queued
+through the unchanged dispatcher. No existing solver is preempted, and all
+running/captured helpers and worker caps are preserved. Runtime log:
+`build/p40n32-pre-distributed-300-v1.log`. This launch does not claim a native
+result, speed benefit or component/PHY admission.
