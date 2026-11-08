@@ -2528,3 +2528,24 @@ coverage/parity, four-section loading and fanout, shared routing, dense codes,
 15-PVT calibration and full-link verification remain open. Preserve the
 coarse-chain tail termination when investigating output loading; it terminates
 tap 15 and is not an output load.
+
+### Four-section native fixture construction
+
+`four_bank_fixture_300_v1.py` constructs the next chain-loading experiment
+from an untouched single-bank fixture and its exact native library. Three
+complete independently coded banks replace the original output capacitor;
+each intermediate output drives the actual following input, with 20 fF only
+at the fourth output. Each added bank's flattened transistor map is checked
+against a separate native-library traversal. All terminal, internal control
+and programming-gate observations are retained, and canonical saved vectors
+are unique and accepted by the actual binary runner's translation preflight.
+The coarse-chain tail terminations and original source are preserved.
+
+Two tests passed against the captured TG2 library: 8,224 distinct MOS devices,
+344 controls and 1,064 programming gates; sequential input/output wiring;
+independent mixed downstream codes; complete terminal probes; and identical
+centered/unshifted decks except for the declared external bench-current card.
+An already loaded fixture and an incorrect section count are refused. This
+is fixture construction only: no four-section native simulation or timing
+result exists. Detector/DCC fanout, common routing, reference parity and
+calibrated phase accuracy remain separate required gates.
