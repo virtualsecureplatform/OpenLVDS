@@ -1207,3 +1207,23 @@ spacing error. Independently replayed source coverage is 216 cases, including
 the complete SF corner. Other SS temperatures and remaining corners are
 pending; physical DCC, the loaded clock chain and complete PHY remain
 unqualified.
+
+
+### Single-P40 follow-up prepared and launched
+
+Preparation now succeeds as
+`medium_pre_distributed_pilot_300_v1/42cbec6c352fbe01`, validating the
+completed predecessor endpoint witnesses, independent zero-code replay,
+stage diagnosis, qualified component materials, all model/runtime inputs,
+complete observations and all five native decks. Log:
+`build/medium-pre-distributed-pilot-300-prepare.log`.
+
+Unit `openlvds-medium-pre-distributed-300-v1`, invocation
+`a2948e69d1634cd083b0e819028f9a9c`, runs one priority-1 worker through the
+unchanged six-slot dispatcher. It acquired slot 2 after DCC case 223 released
+it normally; the first native zero-code process is confirmed live. The DCC
+worker waits normally rather than exceeding the global budget. No existing
+solver was preempted and neither campaign/dispatcher caps nor captured
+helpers were changed. Runtime log: `build/medium-pre-distributed-300-v1.log`.
+This is an unqualified architecture experiment; no result or electrical,
+component, PVT, loaded-chain or PHY admission is claimed at launch.
