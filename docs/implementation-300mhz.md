@@ -2627,3 +2627,32 @@ for these synthetic tests; actual producer closure was checked during capture.
 Temporary binary fixtures use workspace storage because of the container's
 64 MB `/tmp` limit. Native four-section replay, fresh numerical parity, fanout,
 shared routing, calibrated phase accuracy and full PHY remain required.
+
+### Actual source-DCC fanout fixture
+
+`dcc_chain_fanout_300_v1.py` prepares the next loading topology by attaching
+two complete clock-aware source DCCs to the four-section chain. Intended
+phase-pair connections are IN/B1_OUT (0/180 degrees) and OUT/B2_OUT (90/270
+degrees); B3_OUT remains the full-period endpoint. Those phase names describe
+the intended calibrated roles, not achieved timing at zero code. Both DCC
+outputs have their own 20 fF loads. The original far-chain 20 fF load remains,
+and intermediate inputs retain their actual downstream bank loads. A common
+ideal reset is held low to 1 ns and released over 20 ps, before the first
+source event. Detector inputs and shared wire RC are still absent.
+
+The fixture uses the captured source DCC cells and hold1 topology from
+`dcc_source_300_v1/1a4f4e8eabb896e4`; it does not claim admission from the
+unfinished source matrix. A namespace adapter changes subcircuit names only
+to avoid collisions with bank standard cells. All primitive models, numeric
+parameters, nodes and instance order are preserved. A separate mapper handles
+the source library's explicit SKY130 polysilicon resistor leaves, retaining
+their voltage nodes as well as every MOS terminal; existing bank mappers and
+captured simulation libraries are unchanged.
+
+Three tests pass in 0.342 s against the actual captured libraries: both phase
+connections and all observation nodes, runner translation with unique saved
+vectors, namespace preservation of every primitive and parameter, identical
+flattened native devices before/after renaming, and refusal of unknown leaves,
+changed ports or repeated attachment. This is fixture preparation only; no
+combined DCC/four-section simulation, calibrated phase or fanout timing result
+exists. The live serial-chain experiment remains byte-preserved and active.
