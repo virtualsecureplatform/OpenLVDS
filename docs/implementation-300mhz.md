@@ -2776,3 +2776,22 @@ fault whose output waveform remains unchanged. Both readers reject that fault.
 This establishes reader agreement on the tested fixtures; actual completed
 combined native receipts, fresh-reference parity and full qualification remain
 outstanding. All captured experiment files and active solvers are unchanged.
+
+`replay_dcc_chain_native_300_v1.py` now records independently reproduced
+completed combined native points. Explicit unique case IDs and a registered
+producer are required; pending cases are refused before large input hashing.
+It binds both native libraries, every witness and analysis source, exactly
+remeasures the original result, compares the complete independent result and
+rechecks all input hashes afterward. Receipts preserve physical failures and
+keep bank/fanout/PHY admission false. Two preflight tests pass in 0.002 s.
+The complete reader algorithms were tested separately on binary fixtures;
+no combined native replay receipt exists yet.
+
+The medium-pre fresh-pair receipt
+`distributed_family_active_pair_300_v1/7a92865c6008483c` is now complete and
+passing for numerical parity. Original and independent metrics reproduce for
+both native cases. Maximum all-vector difference is 0.310641 mV across 6,670
+voltage vectors and 36,375 reference samples; maximum crossing difference is
+0.000528336 ps, and all gate classifications agree. Its physical fine-history
+failure is preserved and whole-bank/PHY admission remains false. The P40/N32
+pair replay and combined experiment capture validation are still active.
