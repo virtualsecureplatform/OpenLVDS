@@ -193,3 +193,12 @@ missing-clock, wrong-frequency/duty and unintended release cases. Synthetic
 signals verify the measurement, not the hardware. The initial test invocation
 used an environment without KLayout and failed at import; the successful runs
 use `build/tools/counter-physical-venv/bin/python` through `scripts/env.sh`.
+
+All 270 counter benches and library copies have now been prepared and their
+manifest bound successfully. The live context is
+`counter_pvt_300_v1/eec2546717d211ee`, unit
+`openlvds-counter-pvt-300-v1`, invocation
+`d5a929bffc7f478bbea7ecad802aa2e9`. The coordinator has entered its running
+state; electrical results remain pending. The producer, protocol and captured
+dependencies are immutable for this campaign. Log:
+`build/counter-pvt-300-v1.log`.
