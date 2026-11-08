@@ -94,6 +94,16 @@ Log: `build/dcc-source-300-sf40-290-replay.log`. All 54 SF40 source cases at
 conditions and all physical-DCC/PHY gates remain open. No captured circuit,
 runner, numerical tolerance, load, dispatcher or qualification bound changed.
 
+The first cold source cohort, SF0/310 MHz cases 54--71, also passes both
+original and independent checks in
+`dcc_source_native_replay_300/4ad93fd7a1068f7b`. Exact coverage remains all
+three approved duties, both slew limits and all three spacing errors;
+worst balanced mean half-cycle error is 26.613362856 ps. Log:
+`build/dcc-source-300-sf0-310-replay.log`. Cases 0--71 now have independent
+passing source evidence, with the SF0 lower frequencies and remaining PVT
+conditions still pending. This is still ideal-input, source-cell evidence;
+no physical DCC, DLL or PHY admission is granted.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
