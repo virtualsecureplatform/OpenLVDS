@@ -2741,3 +2741,21 @@ fresh-reference symmetry, complete synthetic binary comparison, rejection of a
 changed internal pulse classification, failed transport, missing case and
 native error. Experiment preparation is running; log
 `build/dcc-four-section-prepare-300-v1.log`. No combined native result exists.
+
+`dcc_independent_events_300_v1.py` adds a separately implemented vectorized
+threshold/event witness. It reconstructs source ordering, alternating output
+events, every latency, 10/50/90% swing and slew, high/low widths, mean half-cycle
+errors and period errors without calling the producer's event algorithm. Two
+tests pass in 0.140 s and compare every result field for balanced and unbalanced
+phases, missing startup events, incorrect initial output and transitions after
+the next source event. Independent pulse-hold and complete combined replay
+remain to be added; this helper alone is not an independent native receipt.
+
+The older medium-pre and P40/N32 unshifted reference simulations have now
+finished with error-free native point records. Medium retains its failing
+physical screen; P40/N32's unshifted fine-60 point passes, while that family's
+known endpoint coverage failure remains unchanged. Independent fresh-pair
+replays were started for both completed references using the retained reader,
+with logs `build/medium-active-pair-independent-300-v1.log` and
+`build/p40n32-active-pair-independent-300-v1.log`. No replay result or family
+admission is asserted while those analyses are active.
