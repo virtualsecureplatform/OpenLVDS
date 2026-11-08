@@ -2693,3 +2693,28 @@ still fail mean-half-cycle accuracy; missing initial events are rejected.
 These are measurement tests, not combined native circuit results. Captured
 combined material validation remains active and no combined simulation has
 been launched.
+
+### Combined materials validated; internal pulse integrity added
+
+Material capture `dcc_four_section_materials_300_v1/30fcd6cff3a7457d`
+completed validation and is `prepared_unqualified`, with zero simulations.
+Its two fresh-reference decks include 8,224 bank MOS and 272 DCC MOS, plus
+the four source tie-cell resistor leaves. All eight internal pulse/reset nodes
+required by the new reader are present in the captured native observations.
+No source-chain or DCC timing admission is implied by preparation.
+
+`dcc_chain_measure_300_v2.py` retains V1 and adds both pulse generators in
+both DCCs to the combined transport gate. All eight rising/falling input and
+internal pulse events must be present. Each pulse must rise and end after its
+own source edge and before that clock falls, without retriggering before the
+next edge. Reset must be high over the 40–20 ps pre-edge interval and low
+through a nonempty interval from 20 ps after pulse end to 20 ps before the
+source clock falls. Missing intervals cannot pass vacuously. First events are
+included, and every pulse-generator failure rejects combined transport even
+when final output transitions look correct. Phase/routing/PHY flags stay false.
+
+Three tests pass in 4.656 s: complete startup-inclusive internal histories,
+first-event retrigger/early release/unarmed failures, and complete synthetic
+binary analysis showing an internal reset fault overrides unchanged correct
+output transport. These remain reader tests; the combined native simulation,
+fresh numerical pair and independent replay are still outstanding.
