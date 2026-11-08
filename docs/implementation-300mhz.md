@@ -104,6 +104,13 @@ passing source evidence, with the SF0 lower frequencies and remaining PVT
 conditions still pending. This is still ideal-input, source-cell evidence;
 no physical DCC, DLL or PHY admission is granted.
 
+Cold nominal SF0/300 MHz cases 72--89 also pass original and independent
+checks in `dcc_source_native_replay_300/9e42b9ea25063836`. The exact 18-point
+duty/slew/spacing cohort has worst balanced mean half-cycle error
+26.619931678 ps. Log: `build/dcc-source-300-sf0-nominal-replay.log`.
+Cases 0--89 now have independently passing source evidence. SF0/290 MHz,
+the remaining PVT conditions, and every physical-DCC/DLL/PHY gate remain open.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
