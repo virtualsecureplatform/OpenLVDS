@@ -1062,3 +1062,28 @@ measurements and passes every independent source screen. Log:
 `build/dcc-source-300-ss40-310-replay.log`. Together with the complete SF
 corner receipts, independently replayed source coverage is now 180 cases.
 The remaining source matrix, physical DCC and full PHY remain unqualified.
+
+
+### Prepared single-P40 pre-driver architecture control
+
+`scripts/medium_pre_distributed_bank_300.py` prepares a bounded follow-up to
+the independently reproduced zero-code failure. Starting from the exact
+split-one-cell architecture, it replaces only the two-parallel P40/N16
+pre-driver wrapper with one verbatim qualified extracted P40/N16 cell.
+The fine driver remains two parallel cells, both fine-capacitor attachments
+and all qualified leaf definitions remain unchanged. Full native terminal
+maps must match except for the removed 56-MOS pre-driver branch; inventory
+is 2040 MOS / 201 MIM, with all 86 controls and 266 programming-gate
+observations retained. It rejects unexpected source wiring or native maps.
+
+Three tests pass in 2.396 s, covering complete topology/observation invariants,
+changed-source rejection, and native runner translation for both active
+numerical controls and all three candidate endpoint decks. Log:
+`build/medium-pre-distributed-bank-300-tests-v2.log`. The earlier two-test
+structural run is retained separately. No SPICE experiment has been launched
+for this candidate and no timing claim is made. Lower pre-driver input load
+may improve selection delay, while weaker pre-drive may increase its own
+delay and fine-60 history; the net result requires fresh native measurement.
+Finish the existing fine-40/coarse-one coverage before selecting the next
+circuit experiment. This preparation does not modify any captured helper,
+running deck, dispatcher, worker cap, numerical tolerance or admission gate.
