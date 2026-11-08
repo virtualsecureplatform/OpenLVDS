@@ -2567,3 +2567,29 @@ implementations, including a failing third-section delay, a failing third-bank
 control and a fourth-bank startup terminal peak. These are reader checks only;
 native four-section simulations and fresh numerical-reference comparisons have
 not yet been performed.
+
+### Four-section diagnostic controller and fresh-reference gate
+
+`probe_tg2_four_bank_300_v1.py` captures two complete zero-code four-section
+cases at SS/40 °C/310 MHz, 100 ps entry, 50% duty and 40 ns: centered first,
+then an exact fresh unshifted reference. Preparation requires the existing
+passing independent actual two-bank zero receipt and binds its evidence,
+the native library, code, model inputs and reconstructed observation maps.
+One priority-two worker uses the unchanged global dispatcher. Partial runs
+cannot be overwritten or restarted by this controller.
+
+`four_bank_numerical_pair_300_v1.py` checks both directions of all saved-voltage
+interpolation (2 mV), every DC voltage (1 nV), eight rise/fall crossings at all
+five clock nodes (0.25 ps), and every section's timing/electrical pass/fail
+classification. Both physical point screens and this fresh pair are mandatory.
+Source coverage/parity, detector/DCC fanout, shared routing and PHY flags remain
+false. This experiment diagnoses serial loading; it is not a calibrated DLL.
+
+Three tests passed in 8.277 s, covering actual 8,224-MOS fixture reconstruction,
+fresh centered/unshifted symmetry, complete synthetic binary pair comparison,
+preservation of fourth-section failure classifications, and refusal of a
+missing case or native execution failure. The first test invocation exceeded
+Apptainer's 64 MB `/tmp` while writing two synthetic traces; the passing run
+used `TMPDIR=/work/OpenLVDS/build/test-tmp-four-section`, without changing any
+scientific setting or limit. Actual captured-input hashing is in progress via
+`build/tg2-four-section-prepare-300-v1.log`; no four-section native result exists.
