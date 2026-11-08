@@ -34,9 +34,11 @@ class Source300Tests(unittest.TestCase):
 
     def test_transitive_models_cannot_be_omitted_or_changed(self):
         with tempfile.TemporaryDirectory() as name:
-            root=Path(name);a=root/'a';b=root/'b'
-            a.write_text('.lib tt\n.include "b"\n.endl tt\n');b.write_text('* primitive\n')
-            known={str(p):target.sha(p) for p in [a,b]}
+            root=Path(name);a=root/'a';b=root/'b';c=root/'c'
+            a.write_text('.lib tt\n.include "b"\n.lib c tt\n.endl tt\n')
+            b.write_text('.inc c\n');c.write_text('* primitive\n')
+            known={str(p):target.sha(p) for p in [a,b,c]}
+            self.assertEqual(target.model_closure(a),known)
             self.assertEqual(target.model_closure(a,known),known)
             with self.assertRaises(ValueError):target.model_closure(a,{str(a):known[str(a)]})
             b.write_text('* changed\n')

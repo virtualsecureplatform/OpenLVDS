@@ -12,7 +12,7 @@ timing results count toward this matrix. Fixed 1.8 V, original reset,
 reset-hold/50 ps balanced-half-cycle checks remain unchanged.
 
 The new runner uses one priority-2 worker through the unchanged six-slot
-dispatcher. It binds every transitive quoted model include across all library
+dispatcher. It binds every transitive model include across all library
 sections, source-selection receipts, circuit libraries, generated decks,
 profile, producer dependencies and native runtime. It refuses prior execution
 and retains all errors and failed cases. Four focused tests pass (0.674 s),
@@ -21,6 +21,15 @@ model-file rejection, and event/reset/symmetry gates. Preparation is validating
 the historical source-selection receipt; no new source result is admitted yet.
 Even a passing source matrix will not qualify physical DCC RC, startup,
 device-terminal stress, a loaded DLL, or the complete PHY.
+
+The first preparation refused to proceed because the inherited counter model
+list omitted `parameters/montecarlo.spice`, referenced by the top-level model
+library. No campaign or transient was created. The failed log is retained as
+`build/dcc-source-300-prepare.log`. Preparation now discovers and hashes its
+own complete model graph, including quoted/unquoted include and library-file
+directives, then checks those captured hashes during execution. Four updated
+tests pass (0.609 s); log: `build/dcc-source-300-model-closure-tests.log`.
+The fresh preparation attempt uses `build/dcc-source-300-prepare-v2.log`.
 
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and

@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import sys
 import clocking_profile_300 as policy
@@ -20,7 +21,6 @@ ROOT=policy.ROOT
 VERSION='clock-aware-dcc-source-300-v1'
 CONTEXT='dcc_source_300_v1'
 PARENT=ROOT/'build/diagnostics/dcc_clock_hold_pvt_v2/8b83d935bd2d01f3'
-MODEL_CONTEXT=ROOT/'build/diagnostics/counter_pvt_300_v1/eec2546717d211ee/manifest.json'
 sha=source.base.sha
 atomic=source.base.atomic
 SCOPE='Fresh source-cell DCC event/reset/half-cycle screen only; ideal input phases, 20fF load; no physical RC, terminal-stress, DLL or PHY admission'
@@ -49,19 +49,24 @@ def fixture(out,spec):
     return text.replace('OpenLVDS '+source.base.VERSION,'OpenLVDS '+VERSION,1)
 
 
-def model_closure(model,known):
-    """Check every quoted model include, across all library sections."""
-    pending=[model.resolve()];seen=set()
+def model_closure(model,known=None):
+    """Discover or check every model include, across all library sections."""
+    pending=[model.resolve()];seen=set();observed={}
     while pending:
         path=pending.pop()
         if path in seen:continue
         seen.add(path)
-        if str(path) not in known or sha(path)!=known[str(path)]:
+        digest=sha(path)
+        if known is not None and (str(path) not in known or digest!=known[str(path)]):
             raise ValueError('Missing or changed transitive PDK file: '+str(path))
+        observed[str(path)]=digest
         for line in path.read_text().splitlines():
-            match=re.match(r'(?i)^\s*\.(?:include|inc|lib)\s+["\']([^"\']+)["\']',line)
-            if match:pending.append((path.parent/match[1]).resolve())
-    return {str(p):known[str(p)] for p in sorted(seen)}
+            if not re.match(r'(?i)^\s*\.(?:include|inc|lib)\s+',line):continue
+            words=shlex.split(line)
+            if words[0].lower()=='.lib' and len(words)==2:continue  # Local section.
+            if len(words)<2:raise ValueError('Incomplete model include')
+            pending.append((path.parent/words[1]).resolve())
+    return {str(p):observed[str(p)] for p in sorted(seen)}
 
 
 def prepare():
@@ -71,10 +76,9 @@ def prepare():
     receipt=admission.source_admission(PARENT)
     model=Path(os.environ['PDK_ROOT'])/'sky130A/libs.tech/ngspice/sky130.lib.spice'
     cell=Path(os.environ['PDK_ROOT'])/'sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice'
-    known=json.loads(MODEL_CONTEXT.read_text())['identity']['pdk_files']
-    models=model_closure(model,known)
+    models=model_closure(model)
     paths=[PARENT/n for n in ['manifest.json','summary.json','state.json','cells.spice','hold1.spice']]
-    paths += [receipt,MODEL_CONTEXT,ROOT/'clocking_300mhz.json',ROOT/'build/tools/ngspice.json',cell]
+    paths += [receipt,ROOT/'clocking_300mhz.json',ROOT/'build/tools/ngspice.json',cell]
     paths += sorted({Path(m.__file__).resolve() for m in list(sys.modules.values())
         if getattr(m,'__file__',None) and Path(m.__file__).resolve().parent==ROOT/'scripts'})
     paths += [ROOT/n for n in json.loads((ROOT/'build/tools/ngspice.json').read_text())['files']]
