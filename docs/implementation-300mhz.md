@@ -2021,3 +2021,29 @@ six-slot dispatch. At the launch check the unit was active in initial evidence
 validation; no native timing case had completed. The log is
 `build/tg2-p40n32-300-v1.log`. This is an experiment launch, not a passing bank
 or PHY result. Existing native reference and PVT jobs were not preempted.
+
+### Actual next-bank materials bind the double-TG architecture
+
+`next_bank_tg2_materials_300_v1.py` prepares the captured double-TG bank's
+SS/40 °C/310 MHz zero-code diagnostic with a complete second bank attached to
+its output. It uses the actual captured variant library and its 2,056 native
+transistor maps, rather than the older restored-bank observations or a fitted
+input capacitance. The original 20 fF first-bank capacitor is removed; the
+second bank retains the 20 fF far-end load. Common inter-bank wiring is ideal,
+so these materials cannot establish routed DLL loading or shared RC.
+
+The material set is
+`tg2_next_bank_zero_materials_300_v1/e0fb1a825657793f`. Four decks cover next-bank
+fine codes 0 and 31, each with its own fresh unshifted/ramped current pair.
+Every deck observes both banks (4,112 MOS total), independent next-bank control
+nets, 172 logical control observations and 532 actual programming-gate
+observations. Runner translation checks unique saved-vector names while retaining
+all transistor-terminal probes. The unchanged first-bank controls remain zero
+when the next bank is programmed to fine31.
+
+Four integration tests passed in 5.415 s: full native probe coverage and runner
+translation, exact pair stimulus/current-card equivalence, separate control
+programming, and refusal to load an already loaded fixture. Preparation and a
+separate `check` both passed. State is `prepared_unqualified`, simulations 0,
+`qualified_phy:false`. No loaded simulation has launched; the single-bank pilot
+must establish feasibility before spending solver slots on these diagnostics.
