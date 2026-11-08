@@ -1806,3 +1806,25 @@ points now pass individually for this exact SS40/310 MHz component circuit.
 Coarse-one conservative overlap and the unshifted active numerical reference
 remain pending, together with actual loading, routed RC, PVT and PHY gates.
 No component pilot or PHY admission is granted.
+
+
+### DCC watcher container-service probe corrected in a separate version
+
+The first watcher unit `openlvds-dcc-source-watch-300-v1`, invocation
+`89fa54ef0c9a48898cb95c3f0b9ee7d5`, completed receipt indexing but stopped
+when its optional service probe attempted the unavailable `systemctl` binary
+inside the simulation container. Attempt
+`dcc_source_watch_300/a01eaafecba45c0b` remains retained with the full error
+and progress snapshot (246 native completions / 234 verified cases, no native,
+partial-replay or source-screen failures). No native solver was stopped,
+restarted or modified. Log: `build/dcc-source-watch-300-v1.log`.
+
+`scripts/watch_dcc_source_300_v2.py` treats an unavailable optional host-service
+probe as unknown and continues using the native campaign's recorded state.
+It reuses the unchanged first version's receipt verifier, native-case reader
+and batch planner, and binds both code files. The original failed helper and
+artifact remain unchanged. Ten combined tests pass in 0.017 s, including
+missing executable, inaccessible service manager and valid service-state
+handling. Log: `build/dcc-source-watch-300-v2-tests.log`. Actual container
+preflight now returns `service_probe: None` without exception; log:
+`build/dcc-source-watch-300-v2-environment-preflight.log`.
