@@ -1424,3 +1424,48 @@ and control/programming-gate checks. Log:
 fine-60 history and zero-code quarter failures remain failed; this passing
 duty point does not admit the architecture or qualify the PHY. Coarse-one
 coverage and its still-live unshifted active reference remain separate.
+
+
+### Native voltage recovery motivates a pull-down-specific control
+
+`diagnose_distributed_recovery_300_v2.py` binds complete native cases and
+resolves each representative capacitor's actual pre/fine attachment from
+the captured top-level netlist. It samples the actual extracted switch-side
+MOS nodes for fine enables 0/15/30 and both driver outputs 20 ps before
+all eight causal input transitions (rising 10%, falling 90%), retaining
+startup and reproducing the complete original stage/outer delays. It reports
+voltages only, without inferring MIM plate charge or granting qualification.
+Three tests pass in 0.112 s, including all four existing topologies, missing
+events, truncated traces and nonfinite observations. Log:
+`build/distributed-voltage-recovery-300-v2-tests.log`.
+
+The first immutable diagnostic uses the original split-one-cell copy
+assignment and is retained as `diagnose_distributed_recovery_300.py` with
+receipt `distributed_voltage_recovery_300/c74bb64fca8ef547` for single-P40
+cases 0/1. V2 replaces that assumption with actual native attachments and
+also handles unsplit/four-cell controls. Its single-P40 receipt is
+`distributed_voltage_recovery_300_v2/58bb46bef11400bf`; all recovery values
+for those two cases agree exactly with the first probe. Strong-pre split-one
+case 5 completes separately in
+`distributed_voltage_recovery_300_v2/dad5f1a139f2ea3b`. Both V2 receipts
+reproduce original delays with zero stage-sum residual. Logs:
+`build/medium-pre-distributed-voltage-recovery-300-v2.log` and
+`build/strong-pre-split-voltage-recovery-300-v2.log`.
+
+For the failed single-P40 fine-60 point, pre-driver output before its rising
+output stimulus changes from **−2.302 mV** initially to **111.425 mV** on
+the last event; representative enabled capacitor-side nodes change from
+about zero to **183–188 mV**. The fine-driver output before discharge changes
+from **1.808180 V** to **1.752652 V**, with representative capacitor-side
+nodes falling from about 1.802 V to **1.613–1.620 V**. At zero code, these
+driver recovery values repeat closely across all eight events. The stronger
+pre-driver's fine-60 low recovery is **40.262 mV**, and its downstream high
+recovery **1.767182 V**, at the same respective sample definitions.
+
+The qualified fine cell already contains a transmission gate and an off-state
+discharge clamp. These measured enabled-state recovery differences support
+a pre-driver pull-down intervention; they do not establish a unique mechanism
+or prove a new circuit will meet history, coverage and loading requirements.
+The next bounded control keeps total pre-driver P40 strength while using N32,
+assembled from retained cells, before considering another increase of both
+pull-up strength and input loading.
