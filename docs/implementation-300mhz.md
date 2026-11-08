@@ -652,3 +652,37 @@ and period error reaches 182.581523 ps. Pre-driver strength alone therefore
 does not fix the observed recovery failure. The reduced-count and split-node
 trials remain pending; no new candidate is admitted from this control. The
 completed 40 ns result is retained unchanged.
+
+## Smaller current-origin numerical control queued
+
+`probe_small_center_300.py` tests 10 uA, then 1 uA only if the first offset is
+not admissible, against the complete unshifted single-driver fine60 SS40 /
+310 MHz / 40 ns reference. This responds to the observed 33.511 mV full-vector
+failure of the previous 1 mA offset; it does not reinterpret that failure as
+passing. All circuit/model parameters, fixed 1.8 V supply, stimuli, timestep
+and tolerances remain unchanged. The current is an external ideal-supply
+bench load, not an analog device-bias or voltage sweep. Its 18 uW / 1.8 uW
+contributions are excluded from chip power.
+
+The macro/bench must have no feedback from I(VDD), and the generated deck
+must pass the actual native runner's translation. The original unshifted
+measurement must reproduce exactly before the new test. Both directions of
+full native voltage interpolation must remain within 2 mV, all input/output
+crossings within 0.25 ps, and every aggregate and individual stress/control/
+programming-gate classification must match. The original physical history
+failure must remain a failure. This tests numerical equivalence only, not a
+circuit fix; every new circuit still requires its own active control.
+
+Three tests pass (0.059 s), including exact deck restoration, fixed supply
+and feedback/offset rejection. Log: `build/probe-small-center-300-tests.log`.
+The immutable context is `small_current_center_300_v1/91f5a0b6b1bc4219`, unit
+`openlvds-small-current-center-300`, invocation
+`4be78c19c8c04f13ae0b1dbca85b492e`. One priority-2 worker uses the unchanged
+six-slot dispatcher. Existing simulations and tickets are untouched. Native
+engine elapsed time is recorded separately from wall time including queue
+wait; no speed improvement is asserted before measurements. Log:
+`build/small-current-center-300.log`.
+
+Fifteen completed counter cases have passing corrected replay evidence. The
+main distributed-capacitance and long-clock parity trials remain live; no new
+physical candidate or matrix is admitted by this numerical experiment.
