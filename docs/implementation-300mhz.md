@@ -1587,3 +1587,24 @@ through the unchanged dispatcher. No existing solver is preempted, and all
 running/captured helpers and worker caps are preserved. Runtime log:
 `build/p40n32-pre-distributed-300-v1.log`. This launch does not claim a native
 result, speed benefit or component/PHY admission.
+
+
+### Larger split bank coverage closes with rising-edge discontinuity
+
+Coarse-one case 13 of the original distributed campaign completes without
+execution error. Rising history is **0.934440533 ps**, falling
+**0.002192702 ps**, and the original point-level clock-interface screen passes.
+Independent receipt `distributed_bank_native_replay_300/cda55dc74b1e8436`
+reproduces every original metric and independent timing, terminal envelopes
+and control/programming-gate checks. Log:
+`build/distributed-split-c2-coarse1-native-replay-300.log`.
+
+Using completed centered fine-60/fine-40/coarse-one cases 7/12/13, the original
+conservative overlap is **−102.078546 ps rising / +132.829063 ps falling**.
+The positive falling result cannot admit the rising discontinuity or override
+the independently reproduced fine-60 history and zero-code quarter failures.
+All centered endpoints for this larger candidate are complete and rejected;
+its unshifted reference remains live, so the full 14-case campaign and active
+pair parity are still pending. The P40/N32 zero-code solver is now confirmed
+live following a normal dispatcher slot handoff; its separate circuit remains
+unqualified.
