@@ -182,6 +182,24 @@ verdict yet. Independent unshifted-point metrology, zero-code headroom,
 fine-40 behavior, conservative coarse overlap, actual loading, common routed
 RC and full PVT remain required. No bank or PHY admission is granted.
 
+The exact split-c1 pair (cases 4/5) now passes full active numerical parity in
+`distributed_bank_active_parity_300/e2cd3e35bae30ea2`. All original metrics
+reproduce and both point classifications remain passing. Maximum all-vector
+difference is 1.411157975 mV across 6,894 vectors / 34,050 unshifted samples;
+the worst vector is `v(xd.xtail_load.xb.u_inv1.gate.vnb.t26)`. Maximum absolute
+input/output crossing difference is 0.002788677 ps, and every individual
+terminal/control/programming-gate classification is preserved. No startup
+trimming, alignment, tolerance change or voltage-node exclusion was applied.
+Log: `build/distributed-split-c1-active-parity-300.log`.
+
+Independent unshifted-point metrology is running through the existing
+`replay_distributed_bank_300.py`; log:
+`build/distributed-split-c1-unshifted-native-replay-300.log`. This numerical
+receipt closes the active origin-equivalence check for this exact pair only.
+Zero/fine-40/coarse coverage, actual next-bank loading, common RC, PVT and PHY
+qualification remain open; the approximately 0.116 ps history margin remains
+unchanged and narrow.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
