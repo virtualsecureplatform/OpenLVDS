@@ -1761,3 +1761,33 @@ Fine-40/coarse-one coverage, the unshifted active reference and its fresh
 bidirectional/DC parity remain required. Actual next-bank/shared-RC loading,
 PVT, DLL/DCC and full PHY qualification remain open. No component-pilot or
 PHY admission is granted from the passing zero/fine-60 points alone.
+
+
+### Serial DCC source replay watcher implemented and preflighted
+
+`scripts/watch_dcc_source_300.py` adopts the counter watcher's serial replay
+pattern for the existing 810-case DCC source campaign. It verifies receipt
+identity/content addressing, exact case coverage, original-source predicates,
+every bound native/model/code input, native summary and witness inclusion,
+and independent result/aggregate consistency before indexing existing proof.
+Source failures remain failed, native execution errors remain non-replayable,
+and partial replay evidence prevents an automatic retry of the same cases.
+Immutable inputs are hashed once per watcher process; final matrix admission
+still requires a fresh full consumer remeasurement of all 810 native cases.
+
+The watcher accumulates completed cases into batches of at most 18, runs one
+consumer at a time, and polls every 30 seconds. It uses no SPICE lease and
+never changes, preempts or restarts a native solver. After the native parent
+is complete and all 810 selected-case receipts are indexed, it invokes the
+existing consumer's `--full` path, which independently rechecks all original
+and source-event measurements. Its terminal result remains source-only;
+physical DCC, loaded DLL and PHY admission cannot be granted by the watcher.
+
+Seven focused tests pass in 0.012 s: complete bound receipt adoption,
+changed-native rejection, partial receipt protection, original failure
+preservation, conflicting independent-result rejection, cohort/terminal
+batching and native-error exclusion. Log:
+`build/dcc-source-watch-300-tests-v2.log`. Actual read-only preflight verifies
+**234 cases / 15 receipts**, with **no partial or failed receipts**; log:
+`build/dcc-source-watch-300-receipt-preflight.log`. Further DCC selected-case
+replays will be owned by this watcher to avoid concurrent duplicate attempts.
