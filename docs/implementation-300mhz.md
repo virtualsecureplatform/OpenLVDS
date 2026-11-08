@@ -369,3 +369,28 @@ predicates is identical. The original failed record is preserved. This closes
 the identified measurement-window bug for these two cases, not the entire
 270-case matrix. All future completed cases require the same separate replay
 before the counter matrix can be admitted.
+
+## Complete native stage diagnosis
+
+`bank_stage_history_300.py` captures complete fixed-epoch histories for both
+baseline and single-driver fine31 endpoints at 60% and 40% duty. It checks all
+eight stage events, the known inversion polarity, causal ordering, input
+stimulus epochs and exact agreement with the recorded outer delay arrays.
+The original failed gates remain in the report. Three tests pass (0.031 s),
+including rejection of missing/noncausal stages, changed outer delays and
+missing startup. Log: `build/bank-stage-history-300-tests.log`.
+
+`bank_stage_history_300/dd8ea5d1d99002a7` completes all four cases. At 60% duty,
+the single-driver pre_out -> fine_node delay changes by -27.051040 ps from
+first to last event; the strong-driver baseline changes by only -2.024483 ps.
+The other stage changes are similar: coarse/selected about +4.09 ps and
+pre-driver about -1.10 ps in the weak case. The weak fine driver therefore
+dominates its measured 24.349046 ps total history failure. At 40% duty the
+weak fine-stage change is only -1.995531 ps and total history spans 1.435642 ps.
+All stage sums reproduce the outer delays with zero reported residual.
+
+The duty dependence is consistent with incomplete fine-node recovery during
+the shorter clock phase; this is an inference from the stage history, not a
+terminal-current or charge-state proof. It supports keeping the stronger
+driver in the ongoing MIM trial. No new architecture is admitted from this
+diagnostic alone. Log: `build/bank-stage-history-300.log`.
