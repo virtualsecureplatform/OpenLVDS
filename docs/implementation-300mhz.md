@@ -85,6 +85,15 @@ half-cycle error 29.831467650 ps. Log:
 passing source evidence at SF40 and both 300/310 MHz; 290 MHz and the other
 PVT conditions remain pending, as do all physical-DCC and PHY gates.
 
+SF40 source-frequency coverage is now complete: cases 36--53 at 290 MHz
+also pass original and independent checks in
+`dcc_source_native_replay_300/3456c116dbc6d4eb`. The exact 18-point duty/slew/
+spacing cohort has worst balanced mean half-cycle error 29.837616202 ps.
+Log: `build/dcc-source-300-sf40-290-replay.log`. All 54 SF40 source cases at
+290/300/310 MHz now have independent passing evidence; the remaining 14 PVT
+conditions and all physical-DCC/PHY gates remain open. No captured circuit,
+runner, numerical tolerance, load, dispatcher or qualification bound changed.
+
 The active target is 600 Mb/s DDR with a 300 MHz forwarded clock. The
 versioned `clocking_300mhz.json` profile supplies 290/300/310 MHz and
 40/50/60% duty, fixed supplies and five process corners at 0/25/40 C.
