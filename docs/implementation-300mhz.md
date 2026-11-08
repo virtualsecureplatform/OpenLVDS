@@ -2986,3 +2986,20 @@ checks that task specifications are used, and rejects a subsequently changed
 raw witness. Only the synthetic producer-binding boundary is replaced. No
 actual matched-source native result or replay receipt exists yet; capture
 validation remains active.
+
+### Matched-source capture validated and dispatched
+
+Capture `matched_entry_pilot_300_v1/c852a81c96f1e17c` completed full input
+validation and fixture reconstruction. The four cases are 100 ps linear entry
+at 50%/60% duty, followed by the corresponding fresh unshifted references,
+with the unchanged actual two-bank circuit and 4,112 MOS observations.
+The controller was launched as user unit `openlvds-matched-entry-300-v1`,
+invocation `3dc1a6f7ccdf4ae19ccddaa0590c058e`, and confirmed active (initial
+main PID 2414840). Log: `build/matched-entry-300-v1.log`.
+
+It validates captured inputs before acquiring a single priority-two lease in
+the existing six-slot dispatcher. No existing native job was preempted. No
+matched-source native point or independent receipt exists at dispatch; the
+controlled delay comparison and all previous source, routing, calibration and
+PHY gates remain open. The two four-section solvers were separately confirmed
+live throughout capture validation and were not changed or restarted.
