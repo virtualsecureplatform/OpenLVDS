@@ -2363,3 +2363,25 @@ dense-code monotonicity/gap, actual-loading, common-RC, all-PVT, DLL/DCC or PHY
 certificate. The producer has advanced to its fresh unshifted fine60 reference,
 confirmed live in native ngspice. The separate actual-next-bank native case is
 also live. No bank/PHY admission flag is promoted.
+
+### All-sample terminal-reader prototype measured; production reader retained
+
+`native_terminal_blocks_300_v1.py` computes the same four-terminal voltage
+span in bounded row blocks, without node or time exclusions. It resolves every
+actual terminal and its own device limit, substitutes only literal ground, and
+refuses missing/ambiguous maps, nonfinite samples and invalid limits. Three
+checks passed in 0.439 s: exact six-pair envelope agreement across block sizes,
+input immutability, DC/last-sample threshold handling, and invalid-input refusal.
+
+A real completed-waveform comparison in
+`native_terminal_block_benchmark_300_v1/99df59f7d8900fa6` exactly reproduces all
+original terminal metrics and pass/fail flags for 2,056 MOS and all 20,015
+samples, including DC/startup. The per-device scan took 5.539990 s and the
+block scan 4.899911 s (recorded ratio 1.130631). The block scan ran second after
+cache warming; this is a case-specific diagnostic, not a standardized speed
+claim. The modest observed difference does not justify replacing the captured
+production readers, and it does not establish the main full-closure validation
+bottleneck. No solver, model, tolerance, native waveform or live producer was
+changed. The prototype and benchmark are retained for reproducibility, with
+all bank/PHY admission flags false. Log:
+`build/native-terminal-block-benchmark-300-v1.log`.
