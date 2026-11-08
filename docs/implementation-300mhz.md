@@ -3119,3 +3119,16 @@ Independent V2 replay was started for case 1; log
 asserted yet. The 20 ps boundary points, fresh unshifted references, source
 coverage, calibration and full PHY remain open. All other running jobs and
 captured circuit/model bytes are unchanged.
+
+Independent receipt `tg2_loaded_native_replay_300_v2/99e7e94c5dd6b1a5`
+is complete and passing for entry case 1. The original full result reproduces
+exactly, and the independent reader reproduces timing, all 4,112 MOS terminal
+checks, 172 controls and 532 programming gates. Parameters are unchanged and
+the source point passes; whole-bank/PHY admission remains false.
+
+Both 250 ps entry duty extremes now have independent passing point receipts:
+6.206228 ps first-bank quarter headroom at 60% and 6.378762 ps at 40%.
+These remain narrow-margin actual two-bank points, without fresh unshifted
+parity, shared routing or detector/DCC loading. The 20 ps cases, matched-source
+isolation, all-PVT/code coverage, calibration and full-link release requirements
+are unchanged. The input-current diagnostic has no completed result yet.
