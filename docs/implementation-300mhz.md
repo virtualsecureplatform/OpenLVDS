@@ -1227,3 +1227,25 @@ solver was preempted and neither campaign/dispatcher caps nor captured
 helpers were changed. Runtime log: `build/medium-pre-distributed-300-v1.log`.
 This is an unqualified architecture experiment; no result or electrical,
 component, PVT, loaded-chain or PHY admission is claimed at launch.
+
+
+### Independent consumer ready for single-P40 native results
+
+`scripts/replay_medium_pre_distributed_300.py` binds the new producer,
+complete captured topology/profile/model/runtime inputs, all variant libraries,
+and explicitly selected complete native witnesses. It reproduces every
+original metric exactly, then runs the existing independent fixed-epoch timing,
+terminal-envelope and control/programming-gate metrology with the new exact
+observations. It uses separate content-addressed receipts, preserves failures,
+rejects changed/duplicate/unknown/incomplete cases and never grants whole-bank
+or PHY admission. No SPICE lease or running-file mutation is performed.
+
+Three refusal tests pass in 1.180 s, covering invalid selections, pending
+native output, execution failure and mismatched task identity. Log:
+`build/medium-pre-distributed-native-replay-300-tests.log`. An actual bound
+preflight against the captured campaign correctly rejects still-running case
+0 before creating a receipt; log:
+`build/medium-pre-distributed-native-replay-300-pending-preflight.log`.
+The native solver remains live in operating-point initialization with no raw
+waveform yet. There is no completed native replay or timing claim for this
+new architecture; validation on actual data remains required after case 0.
