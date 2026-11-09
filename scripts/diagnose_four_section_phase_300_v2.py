@@ -9,13 +9,14 @@ import sys
 import probe_tg2_four_bank_300_v1 as legacy
 import probe_tg2_four_bank_300_v2 as chain
 import probe_dcc_chain_300_v1 as combined
+import probe_dcc_chain_300_v2 as corrected_combined
 import four_bank_phase_measure_300_v1 as phase
 from native_binary_raw_v2 import validate
 
 ROOT=chain.ROOT
 VERSION='captured-four-section-native-phase-diagnostic-300-v2'
 CONTEXT='four_section_phase_diagnostic_300_v2'
-PRODUCERS={p.VERSION:p for p in (legacy,chain,combined)}
+PRODUCERS={p.VERSION:p for p in (legacy,chain,combined,corrected_combined)}
 
 
 def run(parent,numbers):
@@ -29,7 +30,7 @@ def run(parent,numbers):
     tasks={t['id']:t for t in m['tasks']};selected=[]
     def retain(path):inputs[str(path.relative_to(ROOT))]=producer.sha(path)
     retain(parent/'manifest.json');retain(parent/'bank.spice')
-    if producer is combined:retain(parent/'dcc.spice')
+    if producer in (combined,corrected_combined):retain(parent/'dcc.spice')
     for n in numbers:
         folder=parent/n;row=json.loads((folder/'summary.json').read_text())
         if (row['task']!=tasks[n] or row['error'] is not None or not isinstance(row['result'],dict)

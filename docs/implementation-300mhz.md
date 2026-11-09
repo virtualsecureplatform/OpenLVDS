@@ -3268,3 +3268,19 @@ invocation `5cf0598d33484fd489be044231475e0a`, initial host MainPID
 `waiting_for_native_trial`; log `build/input-current-followup-300-v1.log`.
 All six existing native solvers remain live; the waiting follow-up holds no
 native slot and has launched no combined simulation.
+
+### Phase-diagnostic support for the gated combined producer
+
+The existing phase diagnostic V2 now explicitly accepts combined producer V2
+as well as both serial producers and combined V1. It binds both native
+libraries for either combined producer and preserves the saved combined
+transport verdict while independently measuring all five unwrapped phase
+nodes. Before modification, a search of captured diagnostic manifests found
+no dependency on this V2 diagnostic file; no captured/running dependency was
+changed.
+
+All three phase-consumer tests pass, including a corrected-combined binary
+fixture that retains a failing transport classification and failing phase
+grid while binding both libraries. This closes a consumer integration gap;
+it supplies no native combined phase result or calibrated-phase admission.
+The input-current native trial and its waiting follow-up remain live.
