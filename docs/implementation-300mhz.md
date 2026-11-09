@@ -3469,3 +3469,34 @@ DC-only violation and nonfinite rejection, missing-tail/incorrect-variant
 rejection, and a real binary-reader test of verdict override. This adds a
 necessary gate for the candidate circuitry; it provides no native repair
 result or timing admission.
+
+### Native repair pilot with complete fresh numerical controls
+
+`probe_fast_entry_damping_300_v1.py` prepares 12 fresh cases: combined repair
+at 20/250 ps, each separate factor at both entry extremes, then a fresh
+unmodified control for each of those six cases. Conditions remain SS/40 C,
+310 MHz, 60% duty, coarse/fine zero, actual two-bank loading and 40 ns.
+The trial decks retain only the original DC-zero VDD-current centering; the
+fresh controls contain no bench-current intervention. The input PWL voltage
+source remains byte-identical. An initial runner test correctly rejected
+attempted use of the separate BIN-specific input-current adapter; it is not
+used in this campaign.
+
+Preparation requires the exact independent fast-failure and slow-pass
+receipts, binds their native witnesses and complete profile/model/runtime
+closure, and repeats physical/native/math binding of the reused shunt unit.
+It reconstructs every bank, source deck and observation map. Execution uses
+one priority-2 worker through the unchanged global six-slot dispatcher and
+retains all prior/partial evidence. Every point repeats original and
+independent complete metrology. All six fresh numerical pairs must satisfy
+bidirectional 2 mV, 1 nV DC, 0.25 ps event and every boolean classification,
+including the new fixed-gate checks. Each variant's pilot verdict requires
+both entry extremes and both fresh controls; numerical agreement cannot turn
+a physical failure into a pass.
+
+Three controller tests pass, covering the actual 12 decks (including exact
+PWL preservation, both added-gate observation sets and current-load removal),
+complete per-variant coverage, and added-gate classification disagreement.
+Capture validation is running; no repair simulation is claimed yet. Coarse/
+fine overlap, dynamic update, full PVT/code coverage, common physical RC,
+calibrated DLL/DCC and full PHY remain required even if this pilot passes.
