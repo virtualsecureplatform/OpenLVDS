@@ -3284,3 +3284,43 @@ fixture that retains a failing transport classification and failing phase
 grid while binding both libraries. This closes a consumer integration gap;
 it supplies no native combined phase result or calibrated-phase admission.
 The input-current native trial and its waiting follow-up remain live.
+
+### Both combined KLU origins fail; hold the identical repeat
+
+Combined V1 is now terminal: two cases, two execution errors. Its unmodified
+reference also collapsed at 4.10937e-14 s with final timestep 2.5e-24 s and
+`bin#branch`, after 3,501.045 s elapsed. It did not reach a clock edge or
+produce a timing result. The dedicated bound failed-prefix inspection retains
+six complete rows through 4.109375e-14 s, 8,496 MOS, maximum DC terminal span
+1.8 V, no observed prefix stress violations, and peak 1.8000000000000007 V.
+This is only the failed startup prefix, not full stress/functional evidence.
+Log: `build/dcc-four-section-unshifted-failed-prefix-inspection-300-v1.log`.
+
+The waiting input-current follow-up was stopped before it launched any native
+child. Its original state remains intact and a `controller_stop.json` sidecar
+records the decision and `native_process_stopped:false`. All other native
+jobs remain untouched. The input-current reference continues, but a passing
+result will no longer automatically queue another known-failing unmodified
+KLU combined run. The captured V2 controller/follow-up files remain unchanged.
+
+The pinned ngspice source's `NIconvTest` tests branch-current changes against
+`reltol*max(abs(old),abs(new))+abstol`; voltage nodes instead use `voltTol`.
+This supports investigation of near-zero branch-current sensitivity but does
+not establish the failure mechanism from the trouble-node label. No engine
+patch, tolerance relaxation, nodeset, initial condition or stress bypass is
+introduced.
+
+`run_native_smp_binary_300_v1.py` retains the pinned runtime and complete binary
+validation, changing only the translated KLU-selection line to default SMP.
+The pinned source initializes the task's KLU mode to `CKTkluOFF` in
+`src/spicelib/analysis/cktntask.c`. Two translation tests pass against the
+actual completed two-bank deck, including conflicting-solver rejection.
+`probe_smp_origin_300_v1.py` tests both centered and unmodified SMP runs against
+the exact completed KLU two-bank baseline. Each needs all 40 ns, original and
+independent measurements, bidirectional all-voltage 2 mV, DC 1 nV, event
+0.25 ps and all-classification parity. Both complete cases are mandatory.
+Two controller/fixture tests pass. Preparation is validating the existing
+independent baseline before capture. This grants no backend transfer to the
+combined circuit or PHY; a combined unmodified SMP control is considered only
+after successful full-reference evidence, and would still require fresh
+combined-circuit parity.
