@@ -3420,3 +3420,34 @@ first coarse midpoint and selected decoded ENB net during fast input rises;
 it is not a causal proof or full-bank admission. Logs:
 `build/tg2-entry-20ps-duty60-independent-300-v1.log` and
 `build/fast-entry-stress-diagnostic-300-v1.log`.
+
+### Separate native interventions for the fast-entry failures
+
+`fast_entry_damping_bank_300_v1.py` constructs three unqualified variants:
+coarse midpoint shunts only, decoded ENB drive only, and both together. The
+coarse intervention adds the exact qualified extracted double-TG/MIM unit at
+the midpoint of all 15 coarse stages and the retained tail termination, with
+EN tied to VPWR and ENB/clamp tied to VGND. It introduces no fitted ideal
+capacitor or new primitive model. The drive intervention parallels each of
+the eight existing decoded ENB inverters with an identical qualified standard
+cell. All original definitions, MOS parameters/maps and programming-control
+maps remain unchanged. Per-bank MOS counts are 2,104 / 2,120 / 2,168 versus
+2,056 originally; every added MOS terminal is observed. Shunt gates are fixed
+rails, not newly programmable controls.
+
+`fast_entry_damping_fixture_300_v1.py` wires two complete copies for each
+variant, preserving the original source voltage, supplies, controls, far load,
+tail termination and 40 ns duration. It explicitly saves all added MOS
+terminals and public coarse midpoints. Three tests pass: preservation of
+original native inventory/control maps with exact qualified-unit topology,
+rejection of missing tail/unknown variants, and the actual measurement
+reader's complete requested-vector contract across all three variants at both
+20 ps and 250 ps entry. No native intervention simulation has run yet.
+
+These are topology candidates for isolating and repairing the two observed
+failures, not established fixes. Required experiments include the full fast
+edge stress/control checks, the slow-edge quarter margin, coarse/fine overlap,
+fresh numerical parity, update behavior, full PVT/code coverage and common
+physical routing/DRC/LVS/RC. In particular the roughly 6 ps slow-entry headroom
+must remain a hard gate. Whole-bank, calibrated DLL and PHY admission remain
+false.
