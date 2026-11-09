@@ -4221,3 +4221,25 @@ example, 290 MHz/40% measures 3.448 ns period, 1.379 ns high width and
 0.862/1.724/2.586 ns phase offsets. The source audit stops before training;
 it is separate from the full protocol run and cannot qualify an analog clock.
 All analog/delay-model/PHY admission flags remain false in both receipts.
+
+
+### Frozen HIGH/LOW delivered-clock loss at the 300 MHz profile
+
+`tb_rx_frozen_clock_loss_300_v1.v` freezes each delivered HDL DCC clock at
+its current level, instead of forcing a falling edge when stopping it. The
+independent source generators exactly match the separately verified protocol
+bench. Both HIGH and LOW holds are required for each delivered clock at each
+290/300/310 MHz and 40/50/60% source-duty setting. The actual RX startup,
+watchdog, public failure and DCC-reset RTL remains connected, without forcing
+internal readiness or status. Stops occur during initial warmup.
+
+`verify_rx_frozen_loss_300_v1.py` binds the completed protocol/source-clock
+receipts and hashes all inputs before and after the run. Receipt
+`rx_frozen_clock_loss_300_v1/77fdeb747a33d18b` completes all nine settings,
+160 stop offsets each, for **1,440 trials**. Every setting covers both held
+levels on both clocks, asserts failure code 1 and both DCC resets, keeps public
+ready/valid low, and meets the **eight-management-cycle** deadline. Eight is
+the observed worst case at every setting. These results qualify this
+functional warmup fault path only: ideal phases, HDL DCCs, synthetic backend
+and supplied DLL lock do not establish native clock quality, analog settling,
+real DLL calibration, physical training or full PHY qualification.
