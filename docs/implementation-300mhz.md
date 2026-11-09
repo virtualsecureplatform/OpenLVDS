@@ -3389,3 +3389,34 @@ comparison retained its `KeyError` because the old task stores its spec in the
 manifest; V2 reads the producer-appropriate location without changing data or
 measurement criteria. These internal delays are diagnostic, not calibration
 or common-routing proof.
+
+### Input-current replay complete; fast-entry electrical failure reproduced
+
+Independent receipt
+`input_current_origin_native_replay_300_v1/493d880713724b94` is complete and
+passing. It reproduces the original baseline/candidate metrics, independent
+candidate metrics and full numerical comparison, including 0.175886968 mV
+maximum voltage difference, zero DC difference, 0.000114073 ps crossing error
+and all gate classifications. Parameters are unchanged. This still admits
+neither the combined circuit nor PHY.
+
+Entry case 2 (20 ps linear / 60% duty) completed native integration in
+2,578.687 s but **fails electrical screening**. Independent receipt
+`tg2_loaded_native_replay_300_v2/22f07da7ba55bc1c` reproduces every metric across
+4,112 MOS, 172 controls and 532 programming gates and preserves the failed
+source-point classification. Timing passes: first/next quarter headrooms are
+57.52931114107423/37.40861877616544 ps. The first bank has 16 terminal-span
+failures in `Xdelay1:Xb`, worst 1.9526360411778072 V against 1.95 V, plus two
+programming-gate failures at `Xswitch0_0_0` and `Xleaf_parallel0_0`, both
+226.39917766224749 mV deviation against 180 mV. The next bank passes its
+screens. Neither stress nor control limits change.
+
+The full-trace extrema diagnostic reproduces each failing recorded maximum.
+The worst device's gate reaches 1.952660791973691 V at 15006.225806451614 ps
+while its body is about 24.75 microvolts; the external input is 1.116 V.
+Both failing ENB gates should be at 0 V and instead reach 0.22639917766224749 V
+at 2112.5 ps as the input reaches 1.8 V. This localizes the two problems to the
+first coarse midpoint and selected decoded ENB net during fast input rises;
+it is not a causal proof or full-bank admission. Logs:
+`build/tg2-entry-20ps-duty60-independent-300-v1.log` and
+`build/fast-entry-stress-diagnostic-300-v1.log`.
