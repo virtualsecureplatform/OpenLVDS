@@ -4093,3 +4093,10 @@ mandatory pilot coverage. Capture validation completes as
 `routed_dcc_pilot_300_v2/c82001afdf0fe1ff`. The model remains electrically
 unqualified until actual new results are available; sparse pilot success
 would still not qualify full PVT, actual release, loaded DLL or PHY.
+
+Routed pilot unit `openlvds-routed-dcc-300-v2` is confirmed active, invocation
+`052bb38cd8bb48a6abf95bb760bae15e`, initial MainPID 2446377. Log:
+`build/routed-dcc-300-v2.log`. One priority-2 worker queues under the unchanged
+global six-process cap. The original dual-contact bank pilot is now confirmed
+inside native execution (initial host native PID 2444129); other healthy jobs
+remain untouched. No fresh routed electrical result is admitted at dispatch.
