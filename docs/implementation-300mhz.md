@@ -3361,3 +3361,31 @@ terminal result. The stopped combined follow-up remains stopped; future
 combined work awaits an independently verified viable unmodified control
 rather than repeating the two known-failing KLU origins. SMP reference and
 matched-source campaigns continue under the existing dispatcher.
+
+### Independently verified matched 100 ps / 50% entry point
+
+Matched-source case 0 completed and independently reproduces in
+`tg2_loaded_native_replay_300_v3/b664b8974c44ad43`. All original and independent
+metrics pass across 4,112 MOS, 172 controls and 532 programming gates.
+Parameters are unchanged, and bank/PHY admission remain false. First-bank
+quarter headroom is 38.28345227123327 ps and next-bank headroom is
+32.08246883528 ps. The comparable nominal-100 ps tanh / 50% point has
+37.21244958273974 and 32.08951671244131 ps respectively. Actual maximum input
+10–90% slews are 100.00000000000182 ps for linear and 100.03513677050069 ps
+for tanh; this small measured difference remains explicit.
+
+The same-bank-library stage comparison reproduces original complete edge
+delays exactly with zero stage-sum residual. At the final falling event,
+input-to-selected delay changes from 333.3051958581891 to
+332.27743959397776 ps; the following pre, fine and output stages change from
+243.44151968956066/111.09095022409383/81.40072751463231 ps to
+243.3759540481733/111.11112164255974/81.40364534676701 ps. The nominal-shape
+comparison changes quarter headroom by about 1.071 ps; it does not establish
+the cause of the much smaller headroom at 250 ps entry. The matched 100 ps /
+60% case is still required to isolate duty and slew consistently.
+Logs: `build/matched-entry-100ps-duty50-independent-300-v1.log` and
+`build/matched-entry-stage-comparison-300-v2.log`. The first ad hoc stage
+comparison retained its `KeyError` because the old task stores its spec in the
+manifest; V2 reads the producer-appropriate location without changing data or
+measurement criteria. These internal delays are diagnostic, not calibration
+or common-routing proof.
