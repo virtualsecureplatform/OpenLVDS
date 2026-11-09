@@ -4175,3 +4175,10 @@ coverage and refusal to pass native or electrical failures. All seven tests
 pass. Capture validation completes as
 `dcc_inv8_output_pilot_300_v1/2644642a8fe621b9`. The baseline source, full-native
 and routed DCC campaigns remain unchanged.
+
+INV8 output pilot unit `openlvds-dcc-inv8-output-300-v1` is confirmed active,
+invocation `dbae91433559468090969d10fe56222f`, initial MainPID 2448100.
+Log: `build/dcc-inv8-output-300-v1.log`. One priority-2 worker queues under
+the unchanged six-process cap. No source timing/stress repair, physical output
+driver or broader qualification is admitted at dispatch. Healthy baseline and
+routed native jobs remain untouched.
