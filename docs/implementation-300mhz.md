@@ -3571,3 +3571,35 @@ headroom by 4.520488 ps. With duty held at 60%, changing entry slew from
 contrasts, not a linear model or proof of intermediate-domain behavior. The
 fresh unmodified matched-source controls remain required. The observed
 20 ps electrical failure and the 12-case repair pilot are unchanged.
+
+### Corrected independent source-DCC input construction
+
+The retained source-DCC V1 fixture uses PULSE parameters 20/250 ps as full
+0–100% ramps: its actual linear 10–90% slews are 16/200 ps. Its phase duties
+are complementary. Those traces retain that declared stimulus meaning; they
+do not establish a 250 ps 10–90% endpoint or independent input-duty/slew
+coverage. The running captured producer and its watchers remain unchanged.
+
+`dcc_input_waveforms_300_v2.py` adds separate fixture construction with explicit
+20/250 ps 10–90% slew for each phase, all independent 40/50/60% duty pairs,
+and zero/+/-140 ps rising-event spacing errors. It holds the first P0 50%
+crossing at 2100 ps and each P180 crossing at exactly half a period plus the
+declared error, even with unequal slews; ramp changes cannot silently add
+phase error. All 18 rising and falling events per input are explicit finite
+PWL pulses. Capture extends through both complete final falling ramps and a
+1 ns quiet tail, avoiding a truncated last fall for two wide input phases or
+an unintended extra rising event from continuous PULSE sources.
+
+The candidate stimulus matrix has 4,860 unique points: 15 PVT x 3 frequencies
+x 9 duty pairs x 4 slew pairs x 3 spacing errors. This module does not prepare
+or dispatch a new native campaign and grants no source/PHY admission. Each
+fixture retains the same source-cell circuit, reset, supply, loads and
+observations; only the two input waveforms, required capture tail and title
+change. A new native pilot/consumer must verify these stimuli and the original
+event/reset/half-cycle criteria before source qualification.
+
+Four tests pass: complete unique matrix coverage; all 18 startup-inclusive
+edge counts, true rise/fall slew, duty and phase epochs over mixed boundary
+settings; agreement of vertex interpolation with a separate clipped-ramp
+formula; actual circuit/observation preservation; and out-of-profile rejection.
+No native results or backend transfer are inferred from waveform construction.
