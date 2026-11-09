@@ -3745,3 +3745,22 @@ Four tests pass over the real decks: complete terminal/gate reader vectors,
 rebuilt extracted gate mappings, unchanged stimulus and fresh control pairs,
 complete verdict coverage, and rejection when an added gate classification
 changes. Full entry-duty/PVT/code coverage and common routing remain open.
+
+### First corrected four-section transport point independently reproduced
+
+Case 0 of `tg2_four_section_zero_pilot_300_v2/ab47d513bae05d29` completes
+40 ns at SS40/310 MHz, 50% duty and nominal 100 ps source slew. All four
+sections pass complete pulse transport, timing, native terminal stress and
+programming-control checks. Zero-code quarter headroom by section is
+37.21360, 12.87134, 12.88602 and 32.89559 ps. Independent full native replay
+reproduces every metric in
+`tg2_four_section_native_replay_300_v2/e01c4cda126315b9`; it does not admit
+a bank or loaded DCC. The fresh unmodified companion remains required.
+
+Direct startup-inclusive phase measurement in
+`four_section_phase_diagnostic_300_v2/0209dfa0413e5dfa` finds every event
+present and positively ordered. It deliberately fails the uncalibrated
+50 ps phase-grid and 20 ps period-closure checks: maximum full-period
+shortfall is 284.65132 ps rising and 96.11317 ps falling. Zero-code transport
+is not calibrated phase closure. Legal code selection, DLL feedback,
+loaded detector/DCC, shared routing and full PVT qualification remain open.
