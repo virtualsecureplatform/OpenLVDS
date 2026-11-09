@@ -4136,3 +4136,25 @@ The evidence motivates a one-factor stronger output inverter experiment,
 retaining pulse/hold/reset topology, inputs, supply, limits and complete native
 stress observations. This is a hypothesis, not a demonstrated repair; the
 routed and full-native baseline pilots remain unchanged.
+
+### One-factor INV8 output-driver repair experiment
+
+`dcc_inv8_output_300_v1.py` selects the exact PDK INV8 definition and changes
+only the clock-hold source's final INV4 instance to INV8. All original cell
+definitions remain unchanged; every non-output MOS and resistor map is
+identical. The output cell has sixteen native MOS versus eight previously,
+so the complete assembly has 144 MOS and two passive resistors. No source
+voltage, waveform, load, pulse/hold/reset logic, primitive size or native model
+is fitted or substituted. This standard-cell drive change increases the actual
+load on QT as well as output drive; measured improvement cannot be inferred
+by scaling the old inverter delay alone.
+
+`dcc_inv8_fixture_300_v1.py` and `dcc_inv8_measure_300_v1.py` retain every
+corrected input event, exact reset, startup/pulse/order/full-swing/timing test
+and all native terminal limits from DC through the final tail. Both independent
+measurement paths remain active with the original 50 ps symmetry, 20 ps period,
+250 ps output slew and 1.95 V MOS limits. Five architecture/fixture/measurement
+tests pass, including actual PDK/native topology preservation, complete probes,
+DC internal stress/reset failures, unknown model/interface rejection and
+unchanged final-output negative controls. This is a source experiment; no new
+physical output-driver or macro qualification is claimed.
