@@ -3943,3 +3943,9 @@ preservation of native/health failures. Together with the three measurement
 and fixture tests, all five tests pass. Capture validation completes as
 `dcc_full_native_pilot_300_v3/67ceb7ac19c753cf`. The existing corrected-input
 V2 source campaign is neither edited nor stopped.
+
+Full-native source DCC unit `openlvds-dcc-full-native-300-v3` is confirmed
+active, invocation `1b1de6f1275c40d89b64a16a347c7d28`, initial MainPID 2442174.
+Log: `build/dcc-full-native-300-v3.log`. Its one priority-2 worker queues under
+the unchanged six-process cap; existing healthy jobs are untouched. No full
+native source-DCC point or broader qualification is admitted at dispatch.
