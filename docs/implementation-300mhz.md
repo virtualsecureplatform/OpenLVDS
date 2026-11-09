@@ -3949,3 +3949,40 @@ active, invocation `1b1de6f1275c40d89b64a16a347c7d28`, initial MainPID 2442174.
 Log: `build/dcc-full-native-300-v3.log`. Its one priority-2 worker queues under
 the unchanged six-process cap; existing healthy jobs are untouched. No full
 native source-DCC point or broader qualification is admitted at dispatch.
+
+### Reprove the retained routed DCC before testing the new profile
+
+Inspection finds the archived routed clock-hold macro implements the same
+symmetric source topology, with placement-added tie/decap cells. Its archived
+410 MHz, 30/70% native tests fail event integrity and stress; those results
+cannot be promoted to 300 MHz evidence. A fresh model proof is now retained
+without rerunning or modifying the physical producer or old electrical tests.
+
+`qualify_retained_dcc_rc_300_v1.py` binds the exact GDS/recovery/topology
+witnesses and PDK source, checks both raw/reduced passivity, reconstitutes exact
+reduction and rechecks native geometry against the physical reference. It
+compares all **192 MOS** (84 NFET, 12 special NFET and 96 HVT PFET) plus all
+four native generic-poly resistor dimensions. The generic resistors have two
+terminals; the old synthesis-oriented inventory parser assumes three and
+refuses them, so this proof uses a separate strict reader for these actual
+native leaves. No model alias, missing substrate or resistor replacement is
+introduced. Unknown leaves and wrong terminal counts are refused.
+
+The model proof regenerates 2,234 reduced resistors from 6,890 raw resistors,
+retaining all 734 capacitors. A fresh strict Netgen LVS passes. Independent
+clamped-terminal current witnesses at 1,068 boundaries pass, with maximum
+current discrepancy 2.689915e-11 A, normalized maximum 0.004212 and solver
+residual below 2.6e-16. Native model/dimension comparison preserves every MOS
+and all four resistor dimensions. The initial read-only inventory audit's
+three-terminal parser rejection is retained separately; it does not indicate
+an error in the two-terminal native circuit.
+
+Three tests pass on the actual retained reference/model: full native census
+and parameters; refusal of a changed MOS width or resistor length; and refusal
+of unknown leaves or an added resistor terminal. Campaign proof completes as
+`retained_dcc_rc_proof_300_v1/fdc34b71008b5c20`. This certifies model provenance,
+geometry parameters, native topology and passive reduction only. It does not
+resolve the archived electrical failure, prove 300 MHz native timing/stress,
+or admit source/full-PVT, release, loaded DLL or PHY operation. The next routed
+DCC test must use fresh 300-profile clocks and explicitly check phase-correct
+reset release; source timing is not substituted for routed behavior.
