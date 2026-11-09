@@ -3839,3 +3839,31 @@ pilot verdicts and the retained V1 duplicate-alias refusal.
 Capture `detector_corrected_input_pilot_300_v2/d077705d5d1dac3d` completes
 validation. The full 900-point source matrix, physical matching, updates,
 periodic loaded operation and integration remain required.
+
+Corrected detector unit `openlvds-detector-corrected-input-300-v2` is confirmed
+active, invocation `bd7f6ef7a27143ca8966c3fc298e504a`, initial MainPID 2440267.
+Its captured source map contains 296 MOS. Log:
+`build/detector-corrected-input-300-v2.log`. One priority-2 worker queues under
+the unchanged global six-process cap; no existing solver is preempted.
+
+### First complete SMP reference rejects backend transfer on DC parity
+
+Case 0 of `smp_origin_pilot_300_v1/9585a6f64e2cd7c3` completes without a
+native error and reproduces original/independent timing and electrical
+classifications. Bidirectional maximum voltage difference against the KLU
+reference is 62.482683 uV and maximum crossing difference is 0.000000520016 ps.
+The original 1 nV all-vector DC criterion nevertheless fails: four internal
+AND2 decoder stack nodes differ by 62.482683 uV. Both public outputs and all
+other saved nodes remain within 1 nV at DC; this localization does not waive
+the failing gate or admit the combined circuit. The pending unmodified SMP
+companion remains untouched.
+
+A read-only DC diagnostic (`build/smp-reference-dc-diagnostic-300-v1.log`)
+localizes each failure to `a_110_47#` in Xdecode0_2/Xdecode1_2 of each bank,
+between X2 drain and X4 source. The KLU/SMP values are approximately
+1.33659758/1.33666006 V, rather than a public logic-level failure. This is an
+internal series-NFET node of the captured `sky130_fd_sc_hd__and2_4` source
+cell. Weak-current convergence sensitivity is a hypothesis to test with an
+isolated exact-source DC fixture and tighter numerical tolerances; it is not
+proof that the combined preclock failure is solved. No timing, voltage or DC
+parity limit is relaxed.
