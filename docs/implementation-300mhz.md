@@ -3804,3 +3804,38 @@ unique complete coverage, every rise/fall threshold and width, independent
 clipped-ramp reconstruction and actual fixture preservation. This retains
 four isolated decisions at 10 ns cadence after a 20 ns prefix; it is not a
 300 MHz periodic clock or loaded detector qualification.
+
+### Corrected detector source reader and complete MOS observations
+
+`detector_native_observations_300_v1.py` traverses the actual source bias,
+frontend, signed threshold and arbiter hierarchy. Every MOS drain/gate/source/
+body is observed, including standard-cell devices and the extracted bias
+circuit. Known MIM and high-poly resistor leaves stay unchanged in the circuit;
+unknown leaves or changed top-level instances are refused.
+`detector_measure_300_v1.py` checks the complete binary trace from DC through
+62 ns, every input crossing/epoch/width/true slew, all four decisions and tag
+retention/clear, conditioned/threshold events, fixed supplies and controls,
+local reference ripple and every observed MOS terminal envelope. A separate
+crossing/interpolation and pairwise stress implementation must reproduce all
+metrics and classifications. Source-only scope is explicit; physical detector,
+full-matrix, loaded periodic clock and DLL admission remain false.
+
+The initial expanded observation map repeats legacy appended RTH/FTH/POS
+aliases. Binary translation tests reject that map. Preparation was started
+before those tests finished; the retained V1 capture
+`detector_corrected_input_pilot_300_v1/c900769275ac3145` is marked not dispatched
+and is unusable for native simulation. No detector SPICE process used it.
+`detector_fixture_300_v2.py` canonicalizes voltage aliases without dropping a
+unique node and validates native translation before capture. The V2 controller
+prepares 36 fresh SS40 source points: 20/250, 250/20 and 250/250 ps, both swaps,
+all -20/0/+20 ps offsets and both threshold selections. It copies exact donor
+circuit bytes, binds the full model/runtime/code closure, reconstitutes every
+fixture and requires original/independent measurements of every native point.
+No historical timing result is reused. Ten tests pass, including full binary
+measurement, DC stress and internal-tag failures, bad slew/epoch/tail/nonfinite
+rejection, actual native terminal probes, missing hierarchy rejection, complete
+pilot verdicts and the retained V1 duplicate-alias refusal.
+
+Capture `detector_corrected_input_pilot_300_v2/d077705d5d1dac3d` completes
+validation. The full 900-point source matrix, physical matching, updates,
+periodic loaded operation and integration remain required.
