@@ -4182,3 +4182,23 @@ Log: `build/dcc-inv8-output-300-v1.log`. One priority-2 worker queues under
 the unchanged six-process cap. No source timing/stress repair, physical output
 driver or broader qualification is admitted at dispatch. Healthy baseline and
 routed native jobs remain untouched.
+
+### Fresh 300-profile RX startup/training protocol regression
+
+`tb_rx_training_300_v1.v` preserves the actual v3 scan/transaction/startup/
+framing RTL and fault checks, with explicit synthetic eye/settling and supplied
+DLL-lock fixtures. Independent raw 0/90/180/270-degree clocks now follow each
+290/300/310 MHz, 40/50/60% duty setting. In particular, phase180 is not inferred
+by inverting a duty-distorted phase0. The HDL DCC and real release/warmup/CDC
+logic remain connected; no internal readiness or scan status is forced.
+
+`verify_rx_protocol_300_v1.py` captures source/tool/profile hashes and completes
+**135** clock/duty/fault cases plus three existing 160-stop-phase warmup tests.
+All 138 pass in `rx_protocol_functional_300_v1/977a49966bd55b53`. The 480
+warmup stop trials cover both delivered clocks at all three rates, at 50%
+source duty, and detect loss within eight management cycles. The 135-case
+cohort checks complete scan/payload entry, missing/wrong settling tags,
+unadmitted models, missing/revoked/failed DLL lock, deadline, clock loss,
+retrain cancellation, table revocation, final revalidation and no-eye failures.
+These are protocol fixtures; actual analog eye/settling, native clocks, real
+DLL calibration, full physical training and PHY qualification remain open.
