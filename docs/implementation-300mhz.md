@@ -4202,3 +4202,22 @@ unadmitted models, missing/revoked/failed DLL lock, deadline, clock loss,
 retrain cancellation, table revocation, final revalidation and no-eye failures.
 These are protocol fixtures; actual analog eye/settling, native clocks, real
 DLL calibration, full physical training and PHY qualification remain open.
+
+A separate source-waveform witness rechecks all 138 original result logs and
+binds their files to nine independently monitored frequency/duty settings.
+At least 31 rising events of every ideal raw phase are measured, checking
+period, high width and quarter offsets within 3 ps (including 1 ps simulator
+granularity). Wrong frequency, wrong duty and a complemented duty-distorted
+phase180 are all rejected. The first V1 monitor does not compile because its
+Verilog real literal omitted the leading zero; that failed context is retained
+as `rx_protocol_clock_verification_300_v1/0b6aade7dadaf408`. V2 corrects syntax,
+keeps the same numeric bound and records the actual first violated property
+for each negative control; a wrong frequency can first violate phase or duty.
+
+`verify_rx_phase_contract_300_v2.py` completes as
+`rx_protocol_clock_verification_300_v2/920c2f6d766c7faf`: all nine real source
+settings and all three negative controls pass their respective checks. For
+example, 290 MHz/40% measures 3.448 ns period, 1.379 ns high width and
+0.862/1.724/2.586 ns phase offsets. The source audit stops before training;
+it is separate from the full protocol run and cannot qualify an analog clock.
+All analog/delay-model/PHY admission flags remain false in both receipts.
