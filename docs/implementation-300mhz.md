@@ -3986,3 +3986,32 @@ resolve the archived electrical failure, prove 300 MHz native timing/stress,
 or admit source/full-PVT, release, loaded DLL or PHY operation. The next routed
 DCC test must use fresh 300-profile clocks and explicitly check phase-correct
 reset release; source timing is not substituted for routed behavior.
+
+### Combined repair slow-entry result and compact-contact follow-up
+
+Case 1 of `fast_entry_damping_pilot_300_v1/4324d220e73da216` completes with
+no native error. At SS40/310 MHz, both-bank zero code, 60% duty and true
+250 ps input, original and independent readers agree that timing, all native
+terminal spans, programmable controls and all fixed shunt gates pass. Quarter
+headroom is **5.26339948 ps first / 38.41092853 ps next**. This preserves a
+positive slow-entry margin for the combined repair, but its fast-entry case
+still fails the local programmable-gate limit; fresh unmodified companions
+and the broader factorial cases remain required.
+
+A separate compact dual-contact primitive V4 restores 0.6 um data columns,
+2.1 um data access height and 4.8 um P-device placement, using short gate
+contact escapes and an external body tap. It retains unchanged MOS dimensions
+and junctions. `dual_contact_tg_300_v4/5c991a9ef1dcd971` passes zero-error DRC,
+strict LVS and fresh RC topology. Independent GDS/mask/placement, native
+geometry, exact reduction and Schur-current proof completes as
+`dual_contact_tg_rc_proof_300_v2/9d361e62db60af22`. The reduced model has
+208 resistors and all 60 capacitors. This is component evidence only, with
+no bank timing or electrical repair admission.
+
+Shorter routing does not by itself prove lower loading: explicit wire-only
+upper tallies (excluding native MOS capacitance) are A/Z=4.18788/4.48934 fF
+for V4 versus 4.10144/4.23298 fF for V3. V4 Z-to-VPWR coupling rises from
+0.45516 to 0.63420 fF because its body LI connection crosses the data route.
+The V3 bank pilot remains unchanged. A separate side-body-tap V5 experiment
+targets this physical crossing before any decision to run another bank pilot;
+neither extracted capacitance tally predicts or replaces native bank timing.
