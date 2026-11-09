@@ -3324,3 +3324,18 @@ independent baseline before capture. This grants no backend transfer to the
 combined circuit or PHY; a combined unmodified SMP control is considered only
 after successful full-reference evidence, and would still require fresh
 combined-circuit parity.
+
+The two original failed combined prefixes have identical sample times and
+exactly zero maximum difference across all 27,043 common saved voltage
+vectors in all six rows. This is strictly a pre-clock failure comparison;
+no complete waveform/timing result exists. Log:
+`build/dcc-failed-prefix-comparison-300-v1.log`.
+
+SMP reference capture validated as
+`smp_origin_pilot_300_v1/9585a6f64e2cd7c3`. Unit
+`openlvds-smp-origin-300-v1`, invocation
+`685f52da06a04553bdb2b2543edf8849`, dispatches the centered and unmodified
+complete-reference cases with one priority-2 worker under the unchanged
+six-slot limit. Log: `build/smp-origin-300-v1.log`. Dispatch is not a numerical
+parity result or backend admission. The separate input-current trial remains
+live and has advanced to 37.7944 ns of 40 ns; its complete result is pending.
