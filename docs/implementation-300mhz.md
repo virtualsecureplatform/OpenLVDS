@@ -3654,3 +3654,11 @@ complete eight-case failure/coverage gates. Together with the input/source
 measurement tests, all nine new tests pass. Capture validation completed as
 `dcc_corrected_input_pilot_300_v2/bef3db10942b26f2`; no native corrected-input
 result is claimed at preparation.
+
+Corrected source pilot unit `openlvds-dcc-corrected-input-300-v2` is confirmed
+active, invocation `9f85715b3d2944d39237592239c1e3a3`, initial host MainPID
+2433544. Log: `build/dcc-corrected-input-300-v2.log`. It queues one priority-2
+worker under the unchanged six-slot limit; source, repair, four-section and
+SMP native jobs remain untouched. No corrected-source result is admitted at
+dispatch. The README now distinguishes the retained full-ramp source campaign
+from corrected 10–90% input coverage.

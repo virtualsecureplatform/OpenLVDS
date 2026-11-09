@@ -41,8 +41,10 @@ Four-section native transport, combined DCC loading, and SMP numerical-control
 experiments remain in progress. The first two combined runs failed numerically
 before the clock started. A separate complete two-bank input-current reference
 passes independent numerical parity; transfer to the combined circuit still
-requires its own fresh control. Fresh 270-point counter and 810-point source-DCC
-campaigns cover the 300 MHz profile.
+requires its own fresh control. The fresh 270-point counter campaign continues. The retained 810-point
+source-DCC campaign uses complementary duties and 16/200 ps 10–90% slews; a
+new eight-case native pilot checks independent duties and true 20/250 ps
+inputs. Full corrected source-DCC coverage remains open.
 
 Common monotonic legal codes, complete delay range, all PVT, shared physical RC,
 calibrated clock-chain integration, startup training and full-link qualification
