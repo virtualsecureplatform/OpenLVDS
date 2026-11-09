@@ -4035,3 +4035,35 @@ fallback rather than a demonstrated timing improvement or replacement for
 the active V3 bank pilot. Intrinsic MOS capacitance and actual coupled bank
 transients are not represented by these wire-only scalar comparisons. No
 additional bank SPICE campaign is launched from this result alone.
+
+### True unequal-slew source DCC point exposes a symmetry failure
+
+Corrected-input V2 case 1 completes without a numerical error at SF40/310 MHz,
+both duties 60%, P0 true slew 20 ps and P180 true slew 250 ps, zero spacing
+error. Original and independent source readers agree: all events, pulse/reset
+checks, initial state, alternation and full output swing pass. Maximum output
+slew is 114.93996 ps and period error 0.38983 ps. Balanced mean-half-cycle
+error is **53.90145236 ps**, exceeding the unchanged 50 ps bound. This point
+fails source admission. The remaining source/full-native cases continue;
+neither voltage, slew, symmetry nor coverage bounds are loosened.
+
+### Fresh routed DCC fixture and full phase-correct startup reader
+
+`routed_dcc_fixture_300_v1.py` uses the exact newly proved routed model, keeping
+all corrected finite input PWL clocks, fixed supply/load and full capture tail.
+It saves every terminal of 192 MOS and four native resistors plus actual pulse,
+event and reset signal labels. It schedules ideal global reset release 150 ps
+after the fourth P0 edge, so the following P180 event must be captured first
+and delivered rising edges must follow P0. This is a test stimulus, not the
+actual release controller. Its explicit metadata never qualifies that circuit.
+
+`routed_dcc_measure_300_v1.py` validates every input edge from DC, the exact
+reset waveform, all 29 active output/events after release, their direction,
+initial quiet output, complete full-swing pulses, reset arming/held windows,
+20 ps period/50 ps mean-half-cycle/250 ps output-slew limits and all 192 MOS
+terminal envelopes. Independent crossing/window and pairwise-stress readers
+must reproduce all metrics and classifications. Complemented output, an
+internal DC stress failure, or late reset arming cannot pass even when other
+output metrics appear correct. Missing source events, native probes or a full
+capture tail remain failures. Full PVT, actual release, loaded DLL and PHY
+admission stay false.
