@@ -3867,3 +3867,24 @@ cell. Weak-current convergence sensitivity is a hypothesis to test with an
 isolated exact-source DC fixture and tighter numerical tolerances; it is not
 proof that the combined preclock failure is solved. No timing, voltage or DC
 parity limit is relaxed.
+
+### Exact-source decoder experiment for the DC discrepancy
+
+`probe_decoder_dc_solver_300_v1.py` prepares an isolated static decoder and
+its inverse driver from the exact captured AND2_4/INV4 definitions. The two
+constant input values come from the completed failing SMP reference's DC
+sample; 1.8 V and SS40 remain fixed. It neither sweeps supply nor resizes a
+primitive. All actual MOS terminal voltages in the isolated assembly are saved.
+Six cases compare pinned native KLU and default SMP at original tolerances,
+tighter absolute-current/voltage tolerances, and tighter relative/current/
+voltage tolerances. All six must complete before a comparison can be reported;
+the existing 1 nV DC bound is retained. The short 2 ps capture is explicitly a
+static diagnostic, not a bank/combined-chain transient or backend admission.
+No initial conditions, UIC, bench current offsets or model changes are used.
+
+Two tests pass: exact native cell/parameter preservation, fixed sources,
+backend translation, complete internal probes, explicit precision-only deck
+changes, complete six-case coverage and preservation of native/DC failures.
+The producer binds the completed SMP failure, full model/runtime/code closure
+and unchanged source cells. One priority-2 worker uses the existing six-slot
+limit; its result cannot waive or replace the pending full SMP companion.
