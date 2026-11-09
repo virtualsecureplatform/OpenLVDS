@@ -22,6 +22,11 @@ The selected [digital clocking v2](docs/digital-clocking-v2.md) architecture is
 under implementation: calibrated four-phase clock generation, symmetric DCC,
 RX deskew and explicit framed startup training.
 
+A corrected detector source pilot checks true 20/250 ps input slew, both swaps
+and signed thresholds, observing all 296 source MOS. The historical 540-case
+proof used full-ramp slew values and does not qualify those true 10–90% limits.
+Physical matching and loaded DLL qualification remain required.
+
 The current delay-bank candidate uses doubled transmission gates and split fine
 capacitors. Its five-case SS/40 C, 310 MHz source pilot passes the original
 zero-code, fine-duty, coarse/fine-overlap and fresh numerical-pair checks.
