@@ -3764,3 +3764,15 @@ present and positively ordered. It deliberately fails the uncalibrated
 shortfall is 284.65132 ps rising and 96.11317 ps falling. Zero-code transport
 is not calibrated phase closure. Legal code selection, DLL feedback,
 loaded detector/DCC, shared routing and full PVT qualification remain open.
+
+### First corrected true-250 ps source-DCC boundary point passes
+
+Case 0 of `dcc_corrected_input_pilot_300_v2/bef3db10942b26f2` completes at
+SF40/310 MHz, both duties 60%, both true 10–90% slews 250 ps and zero injected
+phase error. Original and independent full measurements agree with no native
+error. All 36 events, both complete final pulses, initial state, alternation,
+full swing and reset arming/hold checks pass. Maximum output slew is
+114.93826 ps, maximum period error 0.48214 ps and balanced mean-half-cycle
+error 29.80744 ps, within unchanged 250/20/50 ps limits. All eight boundary
+cases remain mandatory; this one result does not admit the full 4,860-point
+source matrix, physical terminal stress, shared RC, loaded DLL or PHY.
