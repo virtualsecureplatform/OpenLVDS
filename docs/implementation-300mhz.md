@@ -3500,3 +3500,13 @@ complete per-variant coverage, and added-gate classification disagreement.
 Capture validation is running; no repair simulation is claimed yet. Coarse/
 fine overlap, dynamic update, full PVT/code coverage, common physical RC,
 calibrated DLL/DCC and full PHY remain required even if this pilot passes.
+
+Repair capture validation completed as
+`fast_entry_damping_pilot_300_v1/4324d220e73da216`, retaining three exact native
+libraries and all 12 decks/observation maps. Unit
+`openlvds-fast-entry-damping-300-v1` is confirmed active, invocation
+`fda92356083c4708a656ba648f337a3c`, initial host MainPID 2429898.
+Log: `build/fast-entry-damping-300-v1.log`. It uses one priority-2 native worker
+under the unchanged six-slot limit. No existing native solver was stopped,
+no captured model/code bytes were changed, and no repair result is admitted
+at dispatch.
