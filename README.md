@@ -25,7 +25,7 @@ RX deskew and explicit framed startup training.
 The current delay-bank candidate uses doubled transmission gates and split fine
 capacitors. Its five-case SS/40 C, 310 MHz source pilot passes the original
 zero-code, fine-duty, coarse/fine-overlap and fresh numerical-pair checks.
-Independent replay of the complete fresh pair is running. This is sparse source
+Independent replay reproduces the complete fresh pair. This is sparse source
 proof, with full code/PVT and common-routing qualification still required.
 
 Actual two-bank loading exposes an electrical failure at 20 ps entry: the

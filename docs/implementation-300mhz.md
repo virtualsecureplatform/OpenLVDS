@@ -3532,3 +3532,21 @@ The README's obsolete descriptions of ongoing 400 MHz experiments are replaced
 with the current 300 MHz source results, independently reproduced entry-edge
 failure, dispatched repair matrix and outstanding clock-chain qualification.
 Historical receipts remain linked rather than presented as current work.
+
+Independent source-pair receipt
+`distributed_family_active_pair_300_v1/37d11122f2343cf0` is complete and passing.
+It reproduces all original and independent selected native metrics and the
+complete bidirectional numerical comparison, including the 1.3645112063942885 mV
+worst voltage difference, zero DC error, 0.002288227738972637 ps crossing error
+and all gate classifications. Parameters are unchanged; whole-bank and PHY
+admission remain false. Log: `build/tg2-active-pair-independent-300-v1.log`.
+The README now records this completed replay rather than a pending analysis.
+
+Matched-source case 1 (100 ps linear / 60% duty) also completed with no execution
+error and passes its original point checks. First/next quarter headrooms are
+42.80394040533656/37.38410999247981 ps and maximum period errors are
+2.5716736696181215/7.229188474968396 ps. Its independent replay is now running
+in `build/matched-entry-100ps-duty60-independent-300-v1.log`. This source point
+is retained without promoting the family or attributing a cause before that
+independent result is checked. The 12-case repair pilot remains dispatched
+under the unchanged six-slot limit, with its full fresh controls required.
