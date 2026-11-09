@@ -3662,3 +3662,32 @@ worker under the unchanged six-slot limit; source, repair, four-section and
 SMP native jobs remain untouched. No corrected-source result is admitted at
 dispatch. The README now distinguishes the retained full-ramp source campaign
 from corrected 10–90% input coverage.
+
+### Fast-entry repair narrows the remaining failure to the local gate path
+
+Combined coarse midpoint shunts and doubled decoder drive completed case 0
+(SS40, 310 MHz, 60% duty, true 20 ps linear input) in
+`fast_entry_damping_pilot_300_v1/4324d220e73da216`. Original and independent
+measurement agree. Both banks pass timing and native terminal stress; quarter
+headroom is 57.58994/38.28538 ps and maximum terminal span is
+1.941690/1.898635 V. All fixed shunt gate controls pass. The first bank still
+fails two programming-gate controls at 0.200627 V deviation against the
+unchanged 0.18 V limit; the next bank passes at 0.061316 V. This is a failed
+pilot point, not an admitted bank or proof of either individual intervention.
+
+At 2112.5 ps, the failing first-bank PFET gate is 0.200627 V while its decoded
+root is 0.062551 V. The extracted primitive contains a 765.747 ohm resistor
+between ENB and ENB.t0; the simultaneous local/root difference is 0.138077 V.
+The original fast-entry 40% duty point also independently reproduces its
+terminal/control failure in `tg2_loaded_native_replay_300_v2/0eb4e2f1f7c84295`.
+Both fast duty boundaries therefore remain failed for the original bank.
+
+A new geometry-only inspection, `inspect_dual_gate_contact_pcells_300_v1.py`,
+compares native top-only and top/bottom gate contacts for the existing
+1.68 um NFET-LVT and 3.36 um PFET, each at 0.15 um length. Fresh GDS extraction
+in `dual_gate_contact_pcells_300_v1/9b7095ed94b4e7b6` confirms identical W/L,
+AD/AS and PD/PS for both contact choices. Raw labels are retained alongside
+PCell geometry because Magic labels only the top gate contact even when both
+contacts exist. This result qualifies neither routed connectivity nor RC or
+bank timing. The next physical experiment straps both contacts in metal.
+Existing captured producers and healthy native processes remain unchanged.
