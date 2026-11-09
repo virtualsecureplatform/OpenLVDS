@@ -3603,3 +3603,31 @@ edge counts, true rise/fall slew, duty and phase epochs over mixed boundary
 settings; agreement of vertex interpolation with a separate clipped-ramp
 formula; actual circuit/observation preservation; and out-of-profile rejection.
 No native results or backend transfer are inferred from waveform construction.
+
+### Complete corrected-input and source-DCC measurement
+
+`dcc_input_measure_300_v2.py` validates complete native input traces against
+the corrected finite-clock construction: DC/startup, all 18 rising/falling
+10/50/90% crossings per phase, true slew, high width, unwrapped epochs,
+period, independent phase spacing, a maximum 1 ps sampling step, and the final
+capture tail. Vertex interpolation and a separate clipped-ramp reconstruction
+must agree with the observed ideal sources within 1 nV. It cannot admit a
+DCC cell or PHY from input checks alone.
+
+`dcc_source_measure_300_v2.py` checks all 36 source events and output
+transitions, both complete 18-pulse generators, nonempty reset-hold windows,
+reset arming before every input edge, full swing, output order and fixed supply.
+The 50 ps balanced mean-half-cycle limit applies to zero injected spacing
+error; intentional +/-140 ps cases remain distinct. Output period error stays
+within 20 ps and output slew within 250 ps. Initial high output is checked
+before the first input ramp, while event timing uses 50% crossings; a valid
+slow output edge can begin during the input ramp. Independent crossing/window
+calculations preserve the same criteria. Native stress, physical RC and loaded
+DLL/PHY qualification remain separate.
+
+Nine tests pass across the two measurement modules and the native pilot
+controller. They reject missing startup events or final falls, wrong phase,
+incomplete/nonfinite or coarsely sampled data, missing internal pulses despite
+unchanged final output, premature reset release, and excessive balanced
+half-cycle error. A synthetic time-grid issue was corrected in the test
+fixture by using a strict 1 ps grid; the trace-validity check was not relaxed.
