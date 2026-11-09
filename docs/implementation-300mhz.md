@@ -3451,3 +3451,21 @@ fresh numerical parity, update behavior, full PVT/code coverage and common
 physical routing/DRC/LVS/RC. In particular the roughly 6 ps slow-entry headroom
 must remain a hard gate. Whole-bank, calibrated DLL and PHY admission remain
 false.
+
+### Full-trace checks for fixed shunt controls
+
+`fast_entry_damping_measure_300_v1.py` retains the complete original entry,
+waveform, terminal-stress, timing and programmed-control measurements. It adds
+explicit checks for all 96 fixed shunt MOS gates across two banks, resolving
+their EN/ENB roles through the qualified extracted unit's resistor graph and
+verifying every actual device/terminal map. Fixed gate voltages must remain
+within 180 mV of their declared 0/1.8 V rails from DC through all 40 ns; they
+cannot use the ordinary programmable-control settling mask.
+
+Original and independent fixed-gate calculations use waveform deviations and
+extrema respectively. A failing fixed gate overrides an otherwise passing
+bank and point verdict. Three tests pass, including actual mapped units,
+DC-only violation and nonfinite rejection, missing-tail/incorrect-variant
+rejection, and a real binary-reader test of verdict override. This adds a
+necessary gate for the candidate circuitry; it provides no native repair
+result or timing admission.
