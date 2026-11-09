@@ -3776,3 +3776,12 @@ full swing and reset arming/hold checks pass. Maximum output slew is
 error 29.80744 ps, within unchanged 250/20/50 ps limits. All eight boundary
 cases remain mandatory; this one result does not admit the full 4,860-point
 source matrix, physical terminal stress, shared RC, loaded DLL or PHY.
+
+Dual-contact pilot capture validation completes as
+`dual_contact_gate_pilot_300_v1/43ecbdd74fdce0d8` with all four reconstructed
+native fixtures and component/source witness hashes checked. Unit
+`openlvds-dual-contact-gate-300-v1` is active, invocation
+`37a7cc23b2f148b7a4f6480fe38c54d1`, initial MainPID 2438384. Log:
+`build/dual-contact-gate-300-v1.log`. It queues one priority-2 worker under
+the existing six-process limit; no healthy native process is preempted.
+No dual-contact bank electrical result is admitted at dispatch.
