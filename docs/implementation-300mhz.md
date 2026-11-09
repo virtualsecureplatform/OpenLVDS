@@ -3510,3 +3510,25 @@ Log: `build/fast-entry-damping-300-v1.log`. It uses one priority-2 native worker
 under the unchanged six-slot limit. No existing native solver was stopped,
 no captured model/code bytes were changed, and no repair result is admitted
 at dispatch.
+
+### Complete five-case TG2 source pilot
+
+The final unmodified fine31 / 60% source reference completed all 40 ns with
+36,142 native rows in 18,712.017 s elapsed. Its original point checks pass,
+with rising/falling repeated spans 0.12944747450501382/0.0013387148956098827 ps,
+maximum period error 0.12897636398611212 ps and maximum output slew
+155.04406888958874 ps. The producer is now terminal: five cases, zero errors.
+
+Its original complete numerical pair passes across 6,734 saved voltage vectors:
+forward/reverse maxima 1.3049805766595988/1.3645112063942885 mV, zero DC error,
+0.002288227738972637 ps maximum crossing difference, and all gate
+classifications preserved. The original component pilot passes with
+82.2890008355048/39.09348887885062 ps conservative rising/falling overlap.
+This remains sparse SS40/310 source evidence. Independent fresh-pair replay
+is running (`build/tg2-active-pair-independent-300-v1.log`); full-bank/code/PVT,
+common routing, and the separately observed 20 ps entry failure remain open.
+
+The README's obsolete descriptions of ongoing 400 MHz experiments are replaced
+with the current 300 MHz source results, independently reproduced entry-edge
+failure, dispatched repair matrix and outstanding clock-chain qualification.
+Historical receipts remain linked rather than presented as current work.

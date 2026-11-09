@@ -6,7 +6,7 @@ there is no CDR. OpenPLL supplies the transmitter clock.
 
 The active implementation target is now **300 MHz / 600 Mb/s DDR**, checked at
 290/300/310 MHz and 40/50/60% duty. See the [300 MHz implementation status](docs/implementation-300mhz.md).
-The historical 400 MHz results below remain retained evidence; the new target
+Historical 400 MHz evidence remains in the implementation notes; the new target
 requires fresh qualification.
 
 The implementation includes synthesizable DDR logic, transistor circuits,
@@ -22,49 +22,34 @@ The selected [digital clocking v2](docs/digital-clocking-v2.md) architecture is
 under implementation: calibrated four-phase clock generation, symmetric DCC,
 RX deskew and explicit framed startup training.
 
-The current delay-bank experiment adds restoration before the fine stage,
-balances coarse and fine drive, and doubles the fine units per enable.
-It uses qualified native component RC, retains a noninverting four-inversion
-path. Its completed fine31/60% test fails the 20 ps timing-history limit
-with a 52.168 ps span, localized mainly to incomplete fine-stage recovery.
-A retained live zero-code snapshot captures all eight events and already
-shows a separate quarter-period latency miss: 702.041 ps maximum delay
-against 609.756 ps at 410 MHz. Its complete native run remains pending.
-A baseline-parity-gated native experiment passes with stronger fine pull-up:
-15.528 ps history span, 137.643 ps output slew and 1.857343 V peak terminal
-difference, independently replayed. That same change is now in a complete
-bank undergoing the original zero/duty/coarse and overlap checks. A fixture
-metadata error prevented the first launch from simulating; the corrected
-campaign preserves the PDK library path and has six regression checks.
-The next native experiment removes the group-restorer/pre-driver pair while
-keeping the verified fine pull-up and balanced coarse cells. Its complete
-four-point screen is queued with the original timing and voltage limits.
-Earlier simulations continue. The retained
-two-stage P40/N16 bank passes both fine-duty endpoints but fails zero-code
-quarter headroom at −63.862 ps and conservative coarse overlap at
-−156.507/−180.349 ps (rise/fall). It is not an admitted bank.
+The current delay-bank candidate uses doubled transmission gates and split fine
+capacitors. Its five-case SS/40 C, 310 MHz source pilot passes the original
+zero-code, fine-duty, coarse/fine-overlap and fresh numerical-pair checks.
+Independent replay of the complete fresh pair is running. This is sparse source
+proof, with full code/PVT and common-routing qualification still required.
 
-The counter startup repair adds a native 5×5 µm MIM shunt. All twelve
-SS0/SS40, 40/50/60% duty and stopped-clock boundary points now pass with
-independent full native replays. The added capacitor passes DRC, strict LVS
-and fresh actual-GDS local RC. The boundary campaign completes with zero errors;
-the complete physical reference passes strict topology/parameter preflight.
-Actual shared wiring exposed a 15.758 ps first-startup window miss at SS40/60%.
-A direct local setter-output route now passes DRC, strict LVS and fresh RC
-certification. All twelve new boundary points pass full native simulation and
-independent replay, with at least 146.981 ps remaining window and at most
-1.913718 V terminal difference. A 270-point counter PVT/clock campaign now
-retains those twelve traces and simulates the other 258 combinations.
-Later PVT results and clock-chain integration checks remain required.
-Earlier physical and simulation artifacts, including failures, remain available
-in the implementation notes.
+Actual two-bank loading exposes an electrical failure at 20 ps entry: the
+first coarse cell exceeds its 1.95 V terminal-span limit, and the selected ENB
+control exceeds its 180 mV deviation limit. Independent replay preserves both
+failures despite passing timing. Three candidate repairs test coarse midpoint
+shunts, stronger decoded ENB drive, and their combination. Their 12-case native
+pilot checks 20/250 ps entry and fresh unmodified controls, including every
+added fixed shunt gate from DC through the complete trace. Repair results are
+pending; the roughly 6 ps slow-entry quarter headroom remains a hard gate.
 
-Input-clock checks use **40/50/60% duty at 390/400/410 MHz**. Whole-bank coarse/fine timing,
-dense common legal codes, complete delay range, all PVT, calibrated clock-chain
-integration and full-link qualification remain open. The broad regression and separate CAD tests
-pass; software and physical/RC passes do not establish electrical PHY release.
-Retained experiment results and exact receipts are in the implementation status
-and digital-clocking notes.
+Four-section native transport, combined DCC loading, and SMP numerical-control
+experiments remain in progress. The first two combined runs failed numerically
+before the clock started. A separate complete two-bank input-current reference
+passes independent numerical parity; transfer to the combined circuit still
+requires its own fresh control. Fresh 270-point counter and 810-point source-DCC
+campaigns cover the 300 MHz profile.
+
+Common monotonic legal codes, complete delay range, all PVT, shared physical RC,
+calibrated clock-chain integration, startup training and full-link qualification
+remain required. Exact receipts and retained failures are recorded in the
+[300 MHz implementation status](docs/implementation-300mhz.md); historical
+experiments remain in the [implementation notes](docs/implementation-status.md)
+and [digital-clocking notes](docs/digital-clocking-v2.md).
 
 All project implementation and generated artifacts stay in this repository.
 `thirdparties/OpenPLL` is the pinned clock-source dependency; OpenSERDES was used
