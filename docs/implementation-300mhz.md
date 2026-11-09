@@ -3631,3 +3631,26 @@ incomplete/nonfinite or coarsely sampled data, missing internal pulses despite
 unchanged final output, premature reset release, and excessive balanced
 half-cycle error. A synthetic time-grid issue was corrected in the test
 fixture by using a strict 1 ps grid; the trace-validity check was not relaxed.
+
+### Corrected DCC input native boundary pilot
+
+`probe_dcc_inputs_300_v2.py` prepares eight fresh SF40/310 MHz source cases:
+both inputs at 60% or both at 40% duty, with all four 20/250 ps true 10–90%
+slew pairs and zero injected phase-spacing error. It selects only exact
+circuit/library bytes from the retained source donor, binds the complete
+model/runtime/code closure and reconstructs all new decks. No historical
+waveform or timing result counts toward this pilot.
+
+The pinned native binary runner saves the original source observations and
+validates the complete finite trace. Every result repeats original and
+independent corrected-input/source measurement, including all startup events
+and final pulses. All eight cases are mandatory; any native error or failed
+source criterion remains failed. One priority-2 worker uses the unchanged
+six-slot dispatcher. Full 4,860-point matrix, native terminal stress, physical
+RC, loaded DLL and PHY admission remain false.
+
+Two controller tests pass with actual native-runner deck translation and
+complete eight-case failure/coverage gates. Together with the input/source
+measurement tests, all nine new tests pass. Capture validation completed as
+`dcc_corrected_input_pilot_300_v2/bef3db10942b26f2`; no native corrected-input
+result is claimed at preparation.
