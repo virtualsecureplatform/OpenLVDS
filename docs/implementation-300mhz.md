@@ -3785,3 +3785,22 @@ native fixtures and component/source witness hashes checked. Unit
 `build/dual-contact-gate-300-v1.log`. It queues one priority-2 worker under
 the existing six-process limit; no healthy native process is preempted.
 No dual-contact bank electrical result is admitted at dispatch.
+
+### Correct detector slew units before using the retained source proof
+
+The retained detector fixture also uses `reference_slew_ps` and
+`feedback_slew_ps` as full PULSE ramp durations. Its completed 540-case receipt
+`phase_threshold_pvt_verification_v2/443b12b369f72e2a` therefore characterizes
+80/80 ps matched and 16/200 or 200/16 ps unequal **10–90%** slew. The historical
+threshold/health decisions remain unchanged; this does not establish true
+20/250 ps input coverage. No captured source fixture or native witness is edited.
+
+`detector_inputs_300_v1.py` defines explicit finite PWL ramps with true 10–90%
+slew, fixed 50% reference epochs, exact -20/0/+20 ps feedback spacing and
+1250 ps high width. Its full 900-point source contract spans fifteen PVT,
+five slew pairs (100/100, 20/20, 20/250, 250/20 and 250/250 ps), both swaps,
+all three offsets and both signed-threshold selections. Three tests verify
+unique complete coverage, every rise/fall threshold and width, independent
+clipped-ramp reconstruction and actual fixture preservation. This retains
+four isolated decisions at 10 ns cadence after a 20 ns prefix; it is not a
+300 MHz periodic clock or loaded detector qualification.
