@@ -4100,3 +4100,39 @@ Routed pilot unit `openlvds-routed-dcc-300-v2` is confirmed active, invocation
 global six-process cap. The original dual-contact bank pilot is now confirmed
 inside native execution (initial host native PID 2444129); other healthy jobs
 remain untouched. No fresh routed electrical result is admitted at dispatch.
+
+### Unequal-slew DCC error decomposed through every native event
+
+`dcc_path_timing_300_v1.py` follows source -> pulse -> OR -> actual toggle-FF
+output QT -> delivered Q for all eighteen events per phase, including startup.
+Every path sum and reconstructed signed high/low interval mean must close to
+the original measurement. Separate crossing implementations reproduce all
+metrics. The source fixture captures P0 first, so its delivered rising edges
+follow P180; this is explicitly recorded and is not the phase-correct routed
+release experiment. A negative individual 50%-crossing delay is not silently
+removed or changed. No waveform is translated or resampled.
+
+`diagnose_dcc_paths_300_v1.py` binds complete explicit corrected-source cases,
+all native witness/model/code hashes and original/independent remeasurement.
+It preserves source failures. Receipt
+`dcc_path_diagnostic_300_v1/988e8d528baf5be7` reproduces cases 0 and 1, including
+29.80743929 ps passing and 53.90145236 ps failing mean-half-cycle errors.
+Two tests pass for a known output-stage delay, complete startup/path accounting,
+preservation of the resulting timing failure and rejection of a missing toggle
+startup event despite unchanged final clock. A test mask was corrected to
+remove the complete first toggle event rather than merely delay it inside its
+still-valid event window; the reader was not relaxed.
+
+At SF40/310 MHz, changing only P0 slew from true 250 to 20 ps changes its mean
+source-to-pulse delay from 223.36789 to 199.28179 ps. P180 stays about
+223.412 ps. The P180-minus-P0 mean contributions in the failed case are
++24.13029 ps source-to-pulse, -2.91094 ps pulse-to-OR, -32.90861 ps OR-to-QT,
+and +65.56821 ps QT-to-output. The latter inverter difference is already
++65.56805 ps in the matched passing case. Thus input-slew asymmetry adds about
+24.1 ps to a substantial existing rise/fall cancellation; no new missing pulse
+or reset failure is needed to explain the symmetry failure.
+
+The evidence motivates a one-factor stronger output inverter experiment,
+retaining pulse/hold/reset topology, inputs, supply, limits and complete native
+stress observations. This is a hypothesis, not a demonstrated repair; the
+routed and full-native baseline pilots remain unchanged.
