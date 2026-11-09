@@ -4243,3 +4243,31 @@ the observed worst case at every setting. These results qualify this
 functional warmup fault path only: ideal phases, HDL DCCs, synthetic backend
 and supplied DLL lock do not establish native clock quality, analog settling,
 real DLL calibration, physical training or full PHY qualification.
+
+
+### Dual-contact fast-entry repair: first native electrical pass
+
+Case 0 of `dual_contact_gate_pilot_300_v1/43ecbdd74fdce0d8` completes
+without native or measurement errors at SS/40 C, 310 MHz, 60% source duty,
+20 ps input slew, zero code. This is the centered combined shunt/decoder
+repair using the DRC/LVS/RC-proved V3 dual-contact coarse TG. Both complete
+measurement readers produce identical results. All six terminal native
+artifacts match the SHA-256 values recorded in the case summary.
+
+The first bank now passes every timing, terminal-stress, programmed-control,
+external-control and fixed-shunt screen. Its maximum programmed-gate
+excursion is **0.137995949 V**, below the unchanged 0.180 V limit; the
+single-contact combined repair failed that screen at 0.200627443 V. Maximum
+MOS terminal difference is **1.941583629 V**, below 1.95 V. Quarter-period
+headroom is **51.077569100 ps**. The next bank also passes all screens:
+maximum programmed-gate excursion 0.050202877 V, maximum terminal difference
+1.898651643 V and quarter headroom 30.928827839 ps. Both banks include all
+2,168 MOS devices and 266 programmed gates per bank in their checks.
+
+This is evidence that the extracted gate-contact repair can resolve the
+observed fast-entry failure in this diagnostic. Acceptance still requires
+the queued slow-entry condition and both fresh unmodified controls, complete
+trace/DC/classification parity, then the broader code/PVT/update and common
+routing work. The campaign remains active; its captured sources and healthy
+native jobs are unchanged. No bank family, calibrated DLL, shared routing or
+PHY qualification is admitted from this single centered point.
