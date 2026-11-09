@@ -3888,3 +3888,11 @@ changes, complete six-case coverage and preservation of native/DC failures.
 The producer binds the completed SMP failure, full model/runtime/code closure
 and unchanged source cells. One priority-2 worker uses the existing six-slot
 limit; its result cannot waive or replace the pending full SMP companion.
+
+Decoder DC capture `decoder_dc_solver_pilot_300_v1/a8f1fd4d723330a0`
+completes validation. Unit `openlvds-decoder-dc-solver-300-v1` is confirmed
+active, invocation `b0a4fce94e8c4d74b93854b0413a6033`, initial MainPID 2440840.
+Log: `build/decoder-dc-solver-300-v1.log`. One priority-2 worker queues under
+the same global six-slot limit. All prior healthy solver processes remain
+untouched. No isolated result, backend transfer or combined repair is admitted
+at dispatch.
