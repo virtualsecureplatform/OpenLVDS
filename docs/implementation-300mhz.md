@@ -4015,3 +4015,23 @@ for V4 versus 4.10144/4.23298 fF for V3. V4 Z-to-VPWR coupling rises from
 The V3 bank pilot remains unchanged. A separate side-body-tap V5 experiment
 targets this physical crossing before any decision to run another bank pilot;
 neither extracted capacitance tally predicts or replaces native bank timing.
+
+### Side-guard body tap reduces the compact TG routing penalty
+
+V5 `dual_contact_tg_300_v5/e429a9714efbcdbf` connects to the existing side
+guard contact instead of crossing data with LI. Native LVS passes, but eight
+LI-spacing errors remain around its outer pad. The separate V6 revision moves
+the outer tap from +/-1.2 to +/-1.3 um; no captured V5 or running bank bytes
+are edited. `dual_contact_tg_300_v6/3d7c8718538a285b` passes zero-error DRC,
+strict native LVS and fresh passive RC topology with original dimensions and
+junctions. Independent mask/placement, fresh-GDS/native, regenerated reduction
+and Schur-current proof completes as
+`dual_contact_tg_rc_proof_300_v3/91783108cb2d96d8`. It retains all 61 capacitors
+and reduces 238 raw resistors to 211, eliminating 55 algebraic nodes.
+
+Wire-only A/Z upper tallies become 4.18654/4.32063 fF, improving V4's Z tally
+by 0.16871 fF. They remain above V3's 4.10144/4.23298 fF, so this is a physical
+fallback rather than a demonstrated timing improvement or replacement for
+the active V3 bank pilot. Intrinsic MOS capacitance and actual coupled bank
+transients are not represented by these wire-only scalar comparisons. No
+additional bank SPICE campaign is launched from this result alone.
