@@ -34,8 +34,11 @@ control exceeds its 180 mV deviation limit. Independent replay preserves both
 failures despite passing timing. Three candidate repairs test coarse midpoint
 shunts, stronger decoded ENB drive, and their combination. Their 12-case native
 pilot checks 20/250 ps entry and fresh unmodified controls, including every
-added fixed shunt gate from DC through the complete trace. Repair results are
-pending; the roughly 6 ps slow-entry quarter headroom remains a hard gate.
+added fixed shunt gate from DC through the complete trace. The first combined
+point passes terminal stress but still fails local gate control at 200.6 mV.
+A dual-contact coarse TG now passes component DRC/LVS, fresh-GDS and exact RC
+proof; a separate bank pilot must establish its electrical effect. The roughly
+6 ps original slow-entry quarter headroom remains a hard gate.
 
 Four-section native transport, combined DCC loading, and SMP numerical-control
 experiments remain in progress. The first two combined runs failed numerically

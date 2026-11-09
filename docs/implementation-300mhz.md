@@ -3718,3 +3718,30 @@ algebraic nodes. The PFET gate path is 383.226 ohms plus 4.36236 ohms of
 parallel access routing, versus 765.747 ohms in the previous primitive.
 This extracted change requires a fresh bank transient and numerical control;
 no gate-excursion improvement or bank admission is inferred from resistance.
+
+### Complete bank observations for the dual-contact repair pilot
+
+`dual_contact_bank_300_v1.py` replaces only the coarse TG component definition
+inside the combined shunt/decoder-drive candidate. Native GDS extraction
+reorders its NFET/PFET instance numbers, so programming-gate observations are
+rebuilt by component hierarchy and model, preserving each logical control.
+All 40 coarse TGs, including root and leaf parallel copies, are covered. Other
+transistor maps, the retained coarse tail load, and all fixed shunt controls
+remain present. The bank has 2168 MOS and 266 programmable gates per section;
+these counts are not physical whole-bank qualification.
+
+`dual_contact_fixture_300_v1.py` reconstructs actual two-bank decks and saves
+every true terminal, control and gate node. `probe_dual_contact_gate_300_v1.py`
+requires the component current proof and both independently retained original
+entry extremes. Four fresh cases cover true 20/250 ps input at SS40/310 MHz,
+60% duty, plus a fresh unmodified numerical control for each. It retains
+full-trace independent measurement, 180 mV programmable/fixed-gate limits,
+1.95 V native stress, timing limits, complete bidirectional voltage/DC/epoch
+parity and identical boolean classifications. All four cases and both pairs
+are mandatory. One priority-2 worker uses the existing six-slot dispatcher.
+The broader original repair campaign is not stopped or replaced.
+
+Four tests pass over the real decks: complete terminal/gate reader vectors,
+rebuilt extracted gate mappings, unchanged stimulus and fresh control pairs,
+complete verdict coverage, and rejection when an added gate classification
+changes. Full entry-duty/PVT/code coverage and common routing remain open.
