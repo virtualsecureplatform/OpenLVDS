@@ -3691,3 +3691,30 @@ PCell geometry because Magic labels only the top gate contact even when both
 contacts exist. This result qualifies neither routed connectivity nor RC or
 bank timing. The next physical experiment straps both contacts in metal.
 Existing captured producers and healthy native processes remain unchanged.
+
+### Dual-contact coarse TG physical implementation
+
+Three immutable routing attempts are retained. V1
+`dual_contact_tg_300_v1/6e5d07abc9bc147c` fails DRC/LVS: the EN public route
+contacts a data route. V2 `dual_contact_tg_300_v2/7a3119ebb376f331` passes LVS
+but fails metal3 spacing. V3 `dual_contact_tg_300_v3/aeb4d8e09b8fdc6f` moves
+the supply port clear of that route and passes zero-error DRC and strict LVS.
+Both top and bottom gate contacts connect through metal2 straps; the wider
+placement preserves both native transistor dimensions and junctions. Existing
+captured models were not edited. These are component experiments, not a bank
+layout or a verified electrical repair.
+
+`verify_dual_contact_tg_300_v1.py` independently verifies the native child
+masks/placements, fresh-GDS DRC/LVS, exact regenerated RC reduction and rejected
+wrong-gate/wrong-junction negative controls. Receipt:
+`dual_contact_tg_verification_300_v1/71b086dddfd21fc9`.
+`qualify_dual_contact_tg_rc_300_v1.py` completes the native inventory/topology,
+passivity and independent Schur terminal-current proof in
+`dual_contact_tg_rc_proof_300_v1/51037b99d9110009`. Use the physical Python
+venv for this proof; the scientific-only venv lacks KLayout and its failed
+launch log is retained. The component has 240 raw resistors/60 capacitors;
+exact reduction retains 207 resistors and all 60 capacitors, eliminating 58
+algebraic nodes. The PFET gate path is 383.226 ohms plus 4.36236 ohms of
+parallel access routing, versus 765.747 ohms in the previous primitive.
+This extracted change requires a fresh bank transient and numerical control;
+no gate-excursion improvement or bank admission is inferred from resistance.
