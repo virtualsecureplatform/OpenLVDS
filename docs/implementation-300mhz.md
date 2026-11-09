@@ -3243,3 +3243,21 @@ The independent combined V2 replay consumer's three tests also pass, using
 complete binary passing/failing receipts, pending-case preflight and changed
 witness rejection. These tests verify the consumer; they do not constitute a
 native combined-circuit result.
+
+### Single follow-up for the live input-current experiment
+
+`watch_input_current_followup_300_v1.py` connects the live reference trial to
+the already-gated combined V2 experiment. It waits without holding a SPICE
+lease, replays the complete terminal native trial, stops on a failed reference
+comparison, and only then calls combined preparation and execution. Combined
+preparation independently rechecks the receipt before creating an experiment.
+The combined runner still requires its fresh unmodified reference and full
+parity/physical checks. A completed failing combined pilot remains failing.
+
+The follow-up uses a stable exclusive lock inode, refuses existing output,
+binds its imported code, polls every 30 seconds and never edits or restarts the
+source trial. Two orchestration tests pass: only a passing replay reaches the
+combined producer, a failed combined result remains false, and replay errors
+cannot launch simulations. These are handoff tests, not physical evidence.
+The verified native input-current trial has advanced to 12.4564 ns of 40 ns;
+no completed reference receipt or combined V2 simulation exists yet.
