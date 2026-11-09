@@ -3339,3 +3339,25 @@ complete-reference cases with one priority-2 worker under the unchanged
 six-slot limit. Log: `build/smp-origin-300-v1.log`. Dispatch is not a numerical
 parity result or backend admission. The separate input-current trial remains
 live and has advanced to 37.7944 ns of 40 ns; its complete result is pending.
+
+### Complete input-current reference passes its original numerical comparison
+
+`input_current_origin_pilot_300_v1/9c9574a3140858b3` is now terminal with one
+case and zero execution errors. Native integration completed all 40 ns in
+2,515.024 s elapsed (1,751.79 s analysis). Original and independent candidate
+measurement agree; full bidirectional comparison against the completed
+unmodified-input two-bank reference passes across 13,459 saved vectors and
+20,024 samples. Maximum voltage difference is 0.00017588696795722836 V,
+maximum DC difference is zero, and maximum clock-crossing difference is
+0.00011407264901208691 ps. All gate classifications are preserved.
+First/next zero-code quarter headrooms are 37.212475244067264 and
+32.08952282856308 ps; maximum period errors are 2.0217728795132643 and
+4.270346483770027 ps. No physical failure is hidden by the comparison.
+
+This establishes the declared DC-zero input-current intervention for this
+exact complete two-bank case only; combined-circuit and PHY admission remain
+false. The separate independent replay consumer is now running against this
+terminal result. The stopped combined follow-up remains stopped; future
+combined work awaits an independently verified viable unmodified control
+rather than repeating the two known-failing KLU origins. SMP reference and
+matched-source campaigns continue under the existing dispatcher.
