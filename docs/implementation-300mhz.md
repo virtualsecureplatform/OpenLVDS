@@ -3924,3 +3924,22 @@ source clocks, including an internal DC overstress while final output remains
 unchanged, a reset-source error, missing probes, and unknown model/interface
 rejection. The actual hierarchy corrects an initial doubled-device-count
 assumption before any capture; no producer or existing native job is changed.
+
+### Fresh complete-native DCC source boundary pilot
+
+`probe_dcc_full_native_300_v3.py` requires the completed true-250/250 ps,
+SF40/310 MHz, both-60%-duty V2 source point. Its complete native witness hashes
+are checked and its original measurement is reproduced before preparing new
+work. The new eight-case pilot reconstructs the same corrected clock/profile
+boundaries with full native observations, copies exact donor circuit bytes and
+binds all models, runtime, code and source evidence. Every new native case must
+pass complete original and independent event/reset/timing/MOS screening.
+All eight are mandatory; a failure remains a failure. There is no broad source,
+physical, loaded-DLL or PHY admission from preparation or partial results.
+
+Two additional controller tests pass for all eight real fixtures, every native
+terminal probe, canonical 71-vector translation, complete verdict coverage and
+preservation of native/health failures. Together with the three measurement
+and fixture tests, all five tests pass. Capture validation completes as
+`dcc_full_native_pilot_300_v3/67ceb7ac19c753cf`. The existing corrected-input
+V2 source campaign is neither edited nor stopped.
