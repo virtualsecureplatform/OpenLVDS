@@ -4067,3 +4067,29 @@ internal DC stress failure, or late reset arming cannot pass even when other
 output metrics appear correct. Missing source events, native probes or a full
 capture tail remain failures. Full PVT, actual release, loaded DLL and PHY
 admission stay false.
+
+### Routed 300-profile pilot expands to include the new SF failure
+
+The seven-case V1 capture `routed_dcc_pilot_300_v1/755fcf55bb4e3807` finishes
+validation but is not dispatched. Newly completed source data motivates adding
+both SF40 mixed-slew directions with phase-correct release. The V1 capture and
+its code remain unchanged, with a not-dispatched sidecar. There is no healthy
+native process to stop or restart.
+
+`probe_routed_dcc_300_v2.py` captures nine fresh routed cases: SS40/310 MHz
+both 40/60% duties at true 250/250 ps, both unequal-slew directions at 60%;
+SF40 equivalents including both unequal-slew directions; and TT25/300 MHz,
+50% duty, true 20/20 ps. Each requires original and independent complete input,
+phase-specific first-event/pulse/reset/timing and all-MOS stress measurement.
+It binds the complete retained model proof, model graph/runtime/code and exact
+routed RC bytes. No historical waveform or timing result counts as a new case.
+All nine are mandatory. One priority-2 worker uses the unchanged six-slot cap.
+
+Nine tests pass across both retained/current controller contracts, actual
+native fixture/terminal/phase-source preservation, every permitted numeric
+release schedule, complete synthetic startup/metrology, negative output
+polarity, internal DC stress, late reset arming, missing vectors/tail and
+mandatory pilot coverage. Capture validation completes as
+`routed_dcc_pilot_300_v2/c82001afdf0fe1ff`. The model remains electrically
+unqualified until actual new results are available; sparse pilot success
+would still not qualify full PVT, actual release, loaded DLL or PHY.
