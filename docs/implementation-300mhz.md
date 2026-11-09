@@ -3896,3 +3896,31 @@ Log: `build/decoder-dc-solver-300-v1.log`. One priority-2 worker queues under
 the same global six-slot limit. All prior healthy solver processes remain
 untouched. No isolated result, backend transfer or combined repair is admitted
 at dispatch.
+
+### Complete corrected-input DCC source MOS and reset screening
+
+The corrected-input V2 source pilot saves thirteen event/clock observations;
+its timing result alone cannot establish full transistor stress. New
+`dcc_full_native_fixture_300_v3.py` resolves the actual unchanged source
+hierarchy: **136 MOS and two passive resistors per DCC instance**. The earlier
+four-section combined circuit has two DCCs, hence 272 added MOS in total.
+The fixture saves all actual drain/gate/source/body nodes, passive terminals
+and RESET_N (71 unique voltage vectors), canonicalizes aliases and validates
+native binary translation. Every other deck line, source waveform, model,
+load, supply and transient duration is unchanged.
+
+`dcc_full_native_measure_300_v3.py` preserves the complete corrected input,
+36-event, pulse/reset, full-swing and timing criteria, and adds exact reset-input
+PWL validation plus all 136 native MOS terminal envelopes from DC through the
+complete final tail. The 1.95 V MOS limit remains unchanged. Independent
+pairwise terminal differences must reproduce the max-minus-min implementation;
+original and independent source measurements remain active. Missing nodes,
+changed voltage domains or duplicate/incomplete maps are refused. Passive
+resistors stay in the source circuit; no fitted capacitor or resized primitive
+is introduced. Physical RC, loaded DLL and PHY qualification remain false.
+
+Three fixture/measurement tests pass with actual source maps and full synthetic
+source clocks, including an internal DC overstress while final output remains
+unchanged, a reset-source error, missing probes, and unknown model/interface
+rejection. The actual hierarchy corrects an initial doubled-device-count
+assumption before any capture; no producer or existing native job is changed.
