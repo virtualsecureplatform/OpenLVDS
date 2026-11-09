@@ -4158,3 +4158,20 @@ tests pass, including actual PDK/native topology preservation, complete probes,
 DC internal stress/reset failures, unknown model/interface rejection and
 unchanged final-output negative controls. This is a source experiment; no new
 physical output-driver or macro qualification is claimed.
+
+`probe_dcc_inv8_output_300_v1.py` requires the complete independently reproduced
+passing/failing path receipt before preparing work. It binds the exact PDK
+INV8, original source circuit, all diagnostic witnesses, full model/runtime/code
+closure and reconstructed native fixtures. The eight fresh SF40/310 MHz cases
+retain both 40/60% duties and all four 20/250 ps slew pairs. Every case repeats
+original/independent full native stress, reset, event and timing measurements;
+complete path accounting is also retained whenever event integrity permits it.
+All eight cases are mandatory. No historical native result is reused as a
+new-circuit result, and full matrix/physical/loaded DLL/PHY flags stay false.
+
+Two controller tests pass in addition to the five architecture/measurement
+tests: exact eight-case contract, all actual INV8 probes, complete verdict
+coverage and refusal to pass native or electrical failures. All seven tests
+pass. Capture validation completes as
+`dcc_inv8_output_pilot_300_v1/2644642a8fe621b9`. The baseline source, full-native
+and routed DCC campaigns remain unchanged.
