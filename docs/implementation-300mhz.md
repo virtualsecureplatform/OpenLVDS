@@ -3550,3 +3550,24 @@ in `build/matched-entry-100ps-duty60-independent-300-v1.log`. This source point
 is retained without promoting the family or attributing a cause before that
 independent result is checked. The 12-case repair pilot remains dispatched
 under the unchanged six-slot limit, with its full fresh controls required.
+
+### Matched duty/slew contrast independently reproduced
+
+Matched-source case 1 independently passes in
+`tg2_loaded_native_replay_300_v3/3745e337796bb53f`: original and independent
+metrics reproduce across 4,112 MOS, 172 controls and 532 programming gates,
+with unchanged parameters and no bank/PHY admission. All three retained
+linear-source points now have independent receipts:
+
+| Entry 10–90% / duty | First-bank quarter headroom | Next-bank quarter headroom |
+| --- | ---: | ---: |
+| 100 ps / 50% | 38.283452 ps | 32.082469 ps |
+| 100 ps / 60% | 42.803940 ps | 37.384110 ps |
+| 250 ps / 60% | 6.206228 ps | 37.384497 ps |
+
+At 100 ps, changing duty from 50% to 60% increases observed first-bank
+headroom by 4.520488 ps. With duty held at 60%, changing entry slew from
+100 ps to 250 ps reduces it by 36.597712 ps. These are measured endpoint
+contrasts, not a linear model or proof of intermediate-domain behavior. The
+fresh unmodified matched-source controls remain required. The observed
+20 ps electrical failure and the 12-case repair pilot are unchanged.
