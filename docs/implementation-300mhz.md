@@ -3261,3 +3261,10 @@ combined producer, a failed combined result remains false, and replay errors
 cannot launch simulations. These are handoff tests, not physical evidence.
 The verified native input-current trial has advanced to 12.4564 ns of 40 ns;
 no completed reference receipt or combined V2 simulation exists yet.
+
+Follow-up unit `openlvds-input-current-followup-300-v1` is confirmed live,
+invocation `5cf0598d33484fd489be044231475e0a`, initial host MainPID
+2423878/controller 2423983. Its captured state is
+`waiting_for_native_trial`; log `build/input-current-followup-300-v1.log`.
+All six existing native solvers remain live; the waiting follow-up holds no
+native slot and has launched no combined simulation.
