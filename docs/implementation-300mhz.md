@@ -4341,3 +4341,22 @@ BSIM4 junction issue and does not cover OpenPLL or other fixtures. The previousl
 completed observer still establishes Newton-limit rejection as the immediate
 slowdown mechanism; the actual failing convergence equation remains pending
 in the new instrumented experiment.
+
+A direct quiet-bank comparison is now also queued through
+`scripts/probe_bank_convergence_cause_300_v1.py`. Artifact
+`build/diagnostics/bank_convergence_cause_300_v1/c8567c8e71b2e6cb` captures the
+completed 200 ps logging-off reference's exact circuit and model closure.
+Its full reference raw validates before preparation; all 6,854 voltage vectors
+are required in each new terminal trace. Three sequential priority-2 cases use
+production ngspice42, the new observation-only binary with logging off, and
+that same binary with logging on. Clock stimulus, circuit bytes, tolerances,
+SS/40 C, fixed supply and maximum step are preserved. Every diagnostic case
+compares all voltages and DC values with the fresh production control after
+both traces finish. No live prefix is qualified. This experiment uses the
+already completed observer build independently of the pending diode-only
+build; its binary SHA-256 is
+`d1b12cbc508792ef461f05b4b5029a4035e6b3f03cc3f690d190f40c9165b0ec`.
+Unit `openlvds-bank-convergence-cause-300-v1`, invocation
+`7e4e5cb801aa4a7993e6d4932141b27f`, runs one worker through the existing six-slot
+dispatcher. Results remain pending; source preparation does not establish the
+root cause or admit a simulator/circuit change.
