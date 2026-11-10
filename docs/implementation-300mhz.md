@@ -4410,3 +4410,63 @@ campaign were retained and have now launched three native simulator processes.
 No dispatcher budget increase was made; the proposed temporary seventh slot
 is no longer required. Electrical results and the root-cause conclusion remain
 pending.
+
+## Completed direct convergence diagnosis
+
+All three retained diagnostic campaigns are now terminal; no OpenLVDS
+simulation unit remains running. The decoder/diode comparison completed its
+six cases, the full-bank comparison its three cases, and the decoder
+precision screen its six cases. Native decoder KLU/SMP cases complete;
+tight-current and tight-all cases fail at the initial timepoint rather than
+providing usable higher-precision references.
+
+`scripts/replay_convergence_cause_300_v1.py` independently rehashes retained
+case files and PDK inputs, validates complete raw traces, checks observation
+parity, recomputes each logged positive-time convergence tolerance and
+rechecks the prior current-centering control on the byte-identical bank.
+Receipt: `build/reports/convergence_cause_replay_300_v1/summary.json`.
+Production, observer-off and observer-on full-bank runs each complete 200 ps
+with 1,429 records. All saved voltages and time grids are exactly identical
+across those three runs. Measured wall times including startup are
+1,002.499 / 957.520 / 982.388 seconds; these small differences do not establish
+a simulator speedup.
+
+The observation-only run directly logs 49,964 positive-time failed
+`NIconvTest` equations, all type-4 `vdd#branch`. The 50,000-record cap includes
+36 operating-point failures and stops direct equation logging at
+150.328066 ps, so this count is a lower bound for the complete interval.
+Failure/tolerance ratios range from 1.0315 to 2,011.13, median 401.89.
+A representative failure changes I(VDD) by 1.16835 nA against a 1.36866 pA
+tolerance. The independently logged complete 200 ps interval has 458 paired
+Newton-limit/rejected steps, each at iteration 101, with no charge-truncation
+cuts or truncation rejections. Of 75,837 logged positive-time Newton solves,
+46,258 (61.0%) belong to rejected attempts. This identifies repeated failure
+of the supply-source current iterate norm as the dominant immediate numerical
+bottleneck, rather than relying on a cached trouble-node label.
+
+The prior ideal-supply current-centering intervention uses the same bank
+bytes and a fixed external 1 mA sink across the ideal voltage source. Its
+retained inputs still rehash correctly. Independent comparison against the
+fresh production control finds zero DC voltage difference and at most
+1.36686e-10 V transient difference across all 6,854 voltage vectors. Both
+centered quiet traces have 108 records and no positive-time iteration limits
+or rejected steps. This causal control supports the current-norm diagnosis;
+it is not permission to adopt current centering across newer architectures,
+where other experiments found meaningful DC changes. The underlying source
+of current-iterate variation (conditioning, cancellation, model behavior or
+threading) remains unestablished. No universal numerical fix or PHY admission
+is claimed.
+
+The diode reproducer aborts with timestep-too-small at approximately
+1.26497 ns on the original standalone diode model and completes 5 ns with
+5,104 records on the diode-only patch. All four complete isolated-decoder
+traces are identical, with no positive-time convergence failures; that
+minimal decoder does not reproduce the bank bottleneck. The specific diode
+bug is real but absent from the captured bank's audited device path.
+
+The original decoder producer has a reporting bug: its baseline row
+accesses `rows[0]` before appending the first row and retains
+`validation_error: list index out of range` after validating its raw data.
+The read-only replay preserves this historical report and independently
+verifies complete baseline data and exact four-way waveform parity. No
+captured producer script or electrical artifact was rewritten.
