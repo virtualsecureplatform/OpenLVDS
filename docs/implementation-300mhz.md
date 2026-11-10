@@ -4316,3 +4316,13 @@ log `build/convergence-cause-300-v2.log`.
 Build and electrical results are pending. Source recovery, single-expression
 patch scope, charge/derivative continuity and log parser tests pass; these tests
 do not establish a simulator speedup or the full-bank root cause.
+
+The fresh read-only model-path receipt
+`build/reports/decoder_device_path_300_v1/summary.json` binds the exact captured
+AND2_4/INV4 library and SS PDK wrapper hashes. Its two leaf types,
+`sky130_fd_pr__nfet_01v8` and `sky130_fd_pr__pfet_01v8_hvt`, each expand directly
+to one M primitive, level 54/version 4.5, with no standalone D instance. Thus
+the standalone `dioload.c` continuation bug is not on this isolated decoder's
+model path. This is a structural exclusion for the decoder, not proof of the
+full bank's numerical cause. The controlled transient comparison remains
+pending.
