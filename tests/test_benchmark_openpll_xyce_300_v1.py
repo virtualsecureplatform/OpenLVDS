@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-only
-import sys,tempfile,unittest
+import json,sys,tempfile,unittest
 from pathlib import Path
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 import benchmark_openpll_xyce_300_v1 as b
+import assess_openpll_xyce_300_v1 as assessment
 
 def raw(path,names,data):
  header='Title: test\nPlotname: Transient Analysis\nFlags: real\nNo. Variables: '+str(len(names))+'\nNo. Points: '+str(len(data))+'\nVariables:\n'
@@ -11,6 +12,13 @@ def raw(path,names,data):
  path.write_bytes((header+'Binary:\n').encode()+np.asarray(data,dtype='<f8').tobytes())
 
 class Tests(unittest.TestCase):
+ def test_collector_rejects_live_producer_without_writing_assessment(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   p=Path(tmp)
+   for name,data in [('manifest.json',dict(identity={},tasks=[])),('summary.json',dict(rows=[])),('state.json',dict(status='running'))]:
+    (p/name).write_text(json.dumps(data))
+   with self.assertRaisesRegex(ValueError,'not terminal'):assessment.report(p)
+   self.assertFalse((p/'assessment.json').exists())
  def test_comment_adapter_keeps_signed_physical_cards(self):
   text='R1 a b 0.003 $ annotation\nC1 a 0 -2e-18\nX1 a 0 cell w=1\n'
   self.assertEqual(b.library_adapter(text),'R1 a b 0.003\nC1 a 0 -2e-18\nX1 a 0 cell w=1\n')

@@ -4598,3 +4598,23 @@ are not transient speed results.
 Campaign: `build/diagnostics/openpll_xyce_benchmark_300_v1/dc5c16e8fbe6f061`.
 Unit: `openlvds-openpll-xyce-benchmark-300-v1`, invocation
 `d81ba4ff91dc411792024941be0601ec`. Electrical results remain pending.
+
+The first three quiet cases have completed. At numeric ABSTOL 1e-12, fresh
+ngspice/KLU takes 361.633 s, stock Xyce/KLU 8.863 s and OpenPLL's modified
+UMFPACK reuse build 10.633 s, all including startup. Each complete trace
+contains all required voltages. The ngspice result exactly reproduces the
+retained tight reference; each Xyce result differs by at most 62.482718 uV
+in DC and the quiet transient, at the weak decoder stack node. Both report
+the BSIM4 4.5-to-4.6.1 substitution. These are encouraging one-point quiet
+observations, not active timing results or model/backend equivalence.
+
+`scripts/assess_openpll_xyce_300_v1.py` follows the original host producer PID
+and birth ticks, then invokes a container-side terminal-data replay. It checks
+captured sources/models/runtime/deck/file hashes, independently validates
+complete native traces and reproduces voltage/edge metrics before writing
+`assessment.json` beside the campaign manifest. The follower never launches
+or retries a native simulation. Unit `openlvds-openpll-xyce-assessment-300-v1`,
+invocation `57ef0c07a1534beebe648acaafe0a875`. Four targeted tests now pass,
+including rejection of a live producer without creating an assessment.
+The remaining quiet tolerance cases and 300 MHz active comparisons are still
+running; no engine default or production circuit has changed.
