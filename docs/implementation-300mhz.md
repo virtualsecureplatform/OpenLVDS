@@ -4488,3 +4488,16 @@ required. Two bracketing two-thread controls help distinguish setting effects
 from a single-run difference. No PHY admission follows. Unit
 `openlvds-convergence-threads-300-v1`, invocation
 `843f7448394749da88c8da06dcdd9db0`; electrical results remain pending.
+
+The first two-thread localization case is terminal: 318.325 s including
+startup, 322 complete records ending at 20 ps, and 104 paired positive-time
+Newton-limit/rejection events. The numeric frontend marker is 2 and process
+sampling observes at most two threads. Its producer reports `Vector order
+differs`: explicit control-command writing sorts vectors differently from the
+original batch writer. Independent native validation confirms all 6,854
+voltage vectors are present and finite and the trace is complete; this is a
+reporting-order issue, not missing electrical data. The captured producer and
+report remain unchanged. `scripts/replay_convergence_threads_300_v1.py`
+will independently rehash and compare the terminal three-case experiment by
+vector name. The one-thread and repeated two-thread cases remain pending;
+no threading conclusion is admitted from the first case alone.
