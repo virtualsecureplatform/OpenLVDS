@@ -4394,3 +4394,19 @@ Its first production-control case is queued at priority 2, ticket
 retains ticket `401dc892b14945f89831d48ede454a37`. No electrical case has
 completed yet, and no numerical root cause or speedup is admitted from build
 completion.
+
+The user subsequently authorized stopping the older runs that held the six
+slots. The six native processes belonged to the long OpenPLL SMP capture,
+early-next-bank control, matched-entry control, entry-domain control,
+four-section control and SMP-origin control, not the new direct convergence
+campaigns. Eighteen older implementation/capture/watch/queue units were stopped
+together so queued follow-ups could not immediately refill the slots. Their
+logs and partial waveforms are retained; interrupted traces are not completed
+qualification evidence, and historical running-state files must not be used
+as proof of live execution. The stop receipt is
+`build/reports/stop_superseded_for_convergence_20261110/result.json`.
+The two direct convergence campaigns and the related decoder DC solver
+campaign were retained and have now launched three native simulator processes.
+No dispatcher budget increase was made; the proposed temporary seventh slot
+is no longer required. Electrical results and the root-cause conclusion remain
+pending.
