@@ -4470,3 +4470,21 @@ accesses `rows[0]` before appending the first row and retains
 The read-only replay preserves this historical report and independently
 verifies complete baseline data and exact four-way waveform parity. No
 captured producer script or electrical artifact was rewritten.
+
+A fresh controlled threading localization is now running via
+`scripts/probe_convergence_threads_300_v1.py`, artifact
+`build/diagnostics/convergence_threads_300_v1/23caa08dd7cb678f`.
+The sequence is numeric frontend `num_threads` 2 / 1 / 2, one sequential
+priority-2 worker. A common `.control` sequence sets the numeric variable,
+runs the simulation and explicitly writes binary data. This avoids both the
+OMP environment override and the string-typed command-line `-D` shortcut.
+The process thread-count histogram independently checks the requested setting.
+Each case must finish its full declared 20 ps interval before all-vector/DC
+comparison. The shorter stop time also affects ngspice startup-step selection,
+so these are matched localization tests, not replacements for the completed
+200 ps controls. The bank bytes, models, fixed supplies, original tolerances,
+2 ps maximum step and logging are shared. All 6,854 voltage vectors remain
+required. Two bracketing two-thread controls help distinguish setting effects
+from a single-run difference. No PHY admission follows. Unit
+`openlvds-convergence-threads-300-v1`, invocation
+`843f7448394749da88c8da06dcdd9db0`; electrical results remain pending.
