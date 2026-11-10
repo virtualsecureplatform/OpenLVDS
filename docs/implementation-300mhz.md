@@ -4360,3 +4360,21 @@ Unit `openlvds-bank-convergence-cause-300-v1`, invocation
 `7e4e5cb801aa4a7993e6d4932141b27f`, runs one worker through the existing six-slot
 dispatcher. Results remain pending; source preparation does not establish the
 root cause or admit a simulator/circuit change.
+
+A read-only host interval in
+`build/reports/convergence_threads_300_v1/summary.json` found two threads in
+each of the six retained native jobs despite `OMP_NUM_THREADS=1` and
+`OPENBLAS_NUM_THREADS=1`. Over 62.924 s, each main thread consumed about one
+CPU core; its second thread consumed 0.130--0.687 cores. This is compatible
+with the earlier process-level CPU measurements and is not evidence that
+storage waits dominate these runs.
+The pinned ngspice42 `src/spicelib/analysis/cktsetup.c` explains the thread
+count: absent a numeric frontend `num_threads` variable it defaults to 2,
+then explicitly calls `omp_set_num_threads(nthreads)`. The environment alone
+therefore does not enforce one simulator thread. Existing captured cases
+retain the common original setting; their relative comparisons are still
+controlled. A future one-versus-two-thread experiment must explicitly set and
+verify the frontend variable, compare complete traces, and measure wall time.
+The second thread may perform useful model evaluation or incur overhead;
+these observations alone prove neither a speed benefit nor a convergence
+cause. No live job, captured script or simulator setting was changed.
