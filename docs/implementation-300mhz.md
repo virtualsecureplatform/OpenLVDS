@@ -4271,3 +4271,48 @@ trace/DC/classification parity, then the broader code/PVT/update and common
 routing work. The campaign remains active; its captured sources and healthy
 native jobs are unchanged. No bank family, calibrated DLL, shared routing or
 PHY qualification is admitted from this single centered point.
+
+## Direct convergence-cause experiment (2026-11-10)
+
+The slow-run cause remains under investigation. Xyce PR #182 and ngspice
+bug #870 concern the standalone diode sidewall charge continuation. The
+pinned ngspice42 diode source also contains the old bottom-junction constant,
+but that observation does not establish that this code limits the MOS bank.
+The retained v363 quiet-bank observer reports 458 Newton-limit rejections
+and no charge-truncation cuts; its cached trouble-node label alone does not
+identify the actual failing convergence equation.
+
+`scripts/setup_convergence_observer_300_v1.py` builds two separate diagnostic
+executables from the retained ngspice42 observer source. Both add direct
+`NIconvTest` failure observations: node/type, old/new iterate, absolute iterate
+change, actual tolerance and their ratio. The additions strip back to the
+original convergence source exactly. These are convergence-test differences,
+not independently measured KCL residuals. The second executable changes only
+the standalone diode sidewall continuation integral at its existing transition;
+PDK parameters, capacitance expressions and BSIM4 code remain unchanged. This
+local diagnostic backport is not a production-runtime update.
+
+`probe_convergence_cause_300_v1.py` prepares four 200 ps static tests using the
+exact retained AND2_4/INV4 definitions and captured decoder input voltages at
+SS/40 C and fixed 1.8 V: production; observer logging off; observer logging on;
+diode-patched observer logging on. They share a 2 ps maximum step and original
+numerical tolerances. Complete native traces are required before voltage/DC
+comparison. Two additional standalone-diode cases compare the original and
+patched continuation using the PR's unequal-junction reproducer. Transient
+completion is checked from native data, not solely process exit status.
+All tasks run sequentially through priority-2 dispatcher leases. No existing
+native process is stopped, restarted or replaced; no full-PHY admission follows.
+
+Build unit: `openlvds-convergence-observer-build-300-v1`, invocation
+`46917eaea0294a82a85babc7e816c6b3`; artifact
+`build/tools/convergence-observer-300-v1/1afd9c670a5c8f42`.
+The first follower failed because the container cannot observe the host PID;
+`build/convergence-cause-300-v1.log` retains that orchestration failure.
+The host-identity-aware replacement is
+`scripts/run_convergence_after_build_300_v2.py`, unit
+`openlvds-convergence-cause-300-v2`, invocation
+`452dcc4fa8e94070952478de73c7e5fe`;
+log `build/convergence-cause-300-v2.log`.
+Build and electrical results are pending. Source recovery, single-expression
+patch scope, charge/derivative continuity and log parser tests pass; these tests
+do not establish a simulator speedup or the full-bank root cause.
