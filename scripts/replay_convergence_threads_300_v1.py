@@ -35,7 +35,7 @@ def replay():
   if stored['returncode'] or not stored['observed_thread_count_matches'] or not stored['frontend_threads_reported']:raise ValueError('Thread request not verified')
   if stored.get('validation_error') not in (None,'Vector order differs'):raise ValueError('Unexpected producer error')
   log=(folder/'ngspice.log').read_text();events=analyze(log)
-  if events!=stored['steps']:raise ValueError('Step replay differs')
+  if json.loads(json.dumps(events))!=stored['steps']:raise ValueError('Step replay differs')
   failures=[]
   for line in log.splitlines():
    if not line.startswith('OLVDS_CONV '):continue

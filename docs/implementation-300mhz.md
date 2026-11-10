@@ -4501,3 +4501,44 @@ report remain unchanged. `scripts/replay_convergence_threads_300_v1.py`
 will independently rehash and compare the terminal three-case experiment by
 vector name. The one-thread and repeated two-thread cases remain pending;
 no threading conclusion is admitted from the first case alone.
+
+## Thread localization completed and diagnostic conclusion
+
+The full 2 / 1 / 2-thread sequence is complete. Actual process thread counts
+and numeric frontend markers verify each requested setting. The read-only
+replay now normalizes JSON histogram key types before comparing metadata;
+its initial attempt failed on integer-versus-string keys, without changing
+any electrical artifact. Receipt:
+`build/reports/convergence_threads_replay_300_v1/summary.json`.
+All three traces independently validate through their declared 20 ps stop,
+contain 322 points and all 6,854 voltage vectors, and are exactly identical
+by vector name, including DC and time grids. Each has 104 positive-time
+Newton-limit/rejection pairs and 15,974 direct positive-time current-test
+failures, all on `vdd#branch`. A separate complete-log comparison also finds
+all 16,823 positive-time convergence/step records byte-identical in all three
+runs. Thus threading is unnecessary for this failure and does not explain
+its trajectory in the tested fixture. Wall times including startup were
+318.325 / 359.135 / 325.335 s; this small sample does not justify a general
+thread-performance recommendation. No simulation remains running.
+
+The diagnosis requested for excessive evaluation time is supported by three
+independent lines of evidence: direct failed-equation observations with
+recomputed current tolerances; the complete voltage-preserving current-norm
+intervention that removes rejected steps; and the matched thread controls.
+The dominant immediate cause is ngspice repeatedly rejecting its ideal
+supply-source current unknown against a roughly pA convergence threshold
+while that estimate varies at a roughly sub-nA scale. It performs 100-iteration
+attempts and shrinks the timestep despite stationary, reproducible voltage
+solutions. The standalone diode continuation bug is separately reproduced
+and repaired by its diagnostic patch, but is not instantiated in this bank.
+The minimal decoder is stable and does not reproduce the bank problem.
+
+This establishes the runtime bottleneck and excludes the proposed diode
+explanation for the audited bank. It does not establish the exact arithmetic
+origin of the current variation, prove a general simulator bug, qualify the
+PHY or select a production fix. Matrix conditioning/cancellation and model
+bypass behavior remain possible deeper explanations. Any subsequent fix
+should target current-norm/solver behavior with fresh full-voltage, DC and
+timing controls; the diagnostic 1 mA sink must not be silently adopted for
+architectures where prior tests changed DC voltages. No supply/model/analog
+architecture change is justified solely by this numerical diagnosis.
