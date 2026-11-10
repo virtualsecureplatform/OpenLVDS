@@ -4326,3 +4326,18 @@ the standalone `dioload.c` continuation bug is not on this isolated decoder's
 model path. This is a structural exclusion for the decoder, not proof of the
 full bank's numerical cause. The controlled transient comparison remains
 pending.
+
+The model-path inspection now also covers the captured v356 200 ps quiet-bank
+fixture, independently of the decoder. The circuit include traversal is retained
+in `build/reports/quiet_bank_device_path_300_v1/summary.json`; all five unresolved
+PDK leaf wrappers were then inspected in
+`build/reports/quiet_bank_device_path_300_v2/leaf_inspection.json`.
+The circuit files contain V/B/X/C/R cards and no D cards. Four leaf wrappers
+expand directly to level-54/version-4.5 MOS devices; the fifth, MIM capacitor,
+contains one capacitor and two resistors. No leaf introduces a standalone diode.
+Thus the specific standalone diode sidewall continuation bug is also absent
+from this captured quiet bank's model path. This does not exclude a distinct
+BSIM4 junction issue and does not cover OpenPLL or other fixtures. The previously
+completed observer still establishes Newton-limit rejection as the immediate
+slowdown mechanism; the actual failing convergence equation remains pending
+in the new instrumented experiment.
