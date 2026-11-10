@@ -4378,3 +4378,19 @@ verify the frontend variable, compare complete traces, and measure wall time.
 The second thread may perform useful model evaluation or incur overhead;
 these observations alone prove neither a speed benefit nor a convergence
 cause. No live job, captured script or simulator setting was changed.
+
+Both diagnostic builds have now completed successfully. The observation-only
+binary hashes to `d1b12cbc508792ef461f05b4b5029a4035e6b3f03cc3f690d190f40c9165b0ec`;
+the diode-only patched observer hashes to
+`e703c6727ae6dbc0255be3355c95772086dd03bde11e5dc9d6f6034e945ce097`.
+Both hashes were independently rechecked against the completed build receipt;
+the recorded proof preserves the original convergence source beneath logging
+and reports no MOS model changes. The build unit exited successfully.
+The existing host follower prepared and started the six-case decoder/diode
+comparison at
+`build/diagnostics/convergence_cause_300_v1/dfc0ac82cef11ba4`.
+Its first production-control case is queued at priority 2, ticket
+`c43b01aa19c742efbe87f0cb75a5ebc1`; the independently queued full-bank control
+retains ticket `401dc892b14945f89831d48ede454a37`. No electrical case has
+completed yet, and no numerical root cause or speedup is admitted from build
+completion.
