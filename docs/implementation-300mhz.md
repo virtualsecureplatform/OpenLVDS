@@ -4542,3 +4542,59 @@ should target current-norm/solver behavior with fresh full-voltage, DC and
 timing controls; the diagnostic 1 mA sink must not be silently adopted for
 architectures where prior tests changed DC voltages. No supply/model/analog
 architecture change is justified solely by this numerical diagnosis.
+
+## OpenPLL Xyce backend comparison
+
+The user requested an actual comparison using OpenPLL's Xyce flow. OpenPLL
+itself is read-only and retains main pin `36a66f7f12653f77f55f48dbf3d2c984fc495e15`.
+`scripts/setup_openpll_xyce_300_v1.py` copies its existing checked-reuse
+UMFPACK/value-gather binary and build metadata into OpenLVDS. An initial copy
+attempt failed only in the repository-metadata lookup; its copied files,
+failed setup source and failure receipt are retained under the unsuffixed
+binary-hash directory. The corrected fresh `-r2` capture is
+`build/tools/openpll-xyce-300-v1/e07a45abe62b01ea-r2`.
+Both binaries start in the existing OpenLVDS container. Stock Xyce 7.10 hashes
+to `a8a679da37cd5da306745acaf1bd178cccc63cd0776d531eb15c5ecdff8e83bf`;
+OpenPLL's modified checked-reuse build hashes to
+`e07a45abe62b01ea1c47a470facf0da02e9de3cfb8a7448ce4cd7e5febf64816`.
+Runtime library hashes, versions and capabilities are captured. The latter
+build includes solver-factory/nonlinear-context changes and the standalone
+diode charge correction; it is explicitly distinct from stock Xyce, not a
+claim that upstream stock includes UMFPACK reuse or native BSIM4 4.5.
+
+`scripts/benchmark_openpll_xyce_300_v1.py` prepares a six-case quiet-bank
+matrix: ngspice/KLU, stock Xyce/KLU, and OpenPLL Xyce/UMFPACK reuse, each with
+ABSTOL 1e-12 and 1e-9. Original RELTOL 1e-4 is retained. Both engines request
+Gear; equal option names/numbers are not assumed to define identical
+integration or acceptance policies. All cases preserve the original bank,
+SS/40 C, fixed 1.8 V, a complete 20 ps interval and 2 ps maximum step. Only
+inline comments are removed for Xyce, with token preservation checked.
+
+Three additional active cases use the same macro and common eight-cycle
+300 MHz, 60% duty, 250 ps 10--90% input stimulus, starting at 2.1 ns and
+running through 30 ns. They all use ABSTOL 1e-9; the fresh ngspice active
+case is their timing reference. Therefore this active comparison does not
+prove agreement with a tight-tolerance active 300 MHz baseline. It reports
+all 6,854 voltages, DC differences, every rising/falling IN/OUT crossing,
+missing pulses, peak voltage error and observed time ratios. Diagnostic
+screens are 2 mV DC agreement and 10 ps edge agreement, not PHY admission;
+pointwise transient peak error is retained separately. Model substitution
+and ignored-parameter warnings remain explicit.
+
+The campaign is serial on one captured CPU, with one-thread environment,
+explicit numeric ngspice frontend setting, 16 GiB address-space limit and
+priority-2 leases through the unchanged six-slot dispatcher. Wall times
+include parsing/startup; child CPU times are also recorded. External machine
+load is not controlled, so ratios are observations rather than standardized
+benchmarks. The historical completed tight-reference 20 ps trace remains
+read-only. All source, simulator, library, model and deck hashes are captured.
+
+Three targeted tests pass: signed physical-card/comment preservation,
+name-based waveform/edge comparison with interpolation, and retention of a
+missing output pulse as a failed timing screen. Both Xyce syntax checks pass,
+parse 62,476 instantiated devices, and take 4.76 / 4.32 s; their receipt is
+`build/reports/openpll_xyce_syntax_300_v1/summary.json`. These parser timings
+are not transient speed results.
+Campaign: `build/diagnostics/openpll_xyce_benchmark_300_v1/dc5c16e8fbe6f061`.
+Unit: `openlvds-openpll-xyce-benchmark-300-v1`, invocation
+`d81ba4ff91dc411792024941be0601ec`. Electrical results remain pending.
