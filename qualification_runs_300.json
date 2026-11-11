@@ -49,6 +49,24 @@
       "artifact": "build/diagnostics/dcc_inv8_physical_300_v1/c88cfb35d76fa88f",
       "role": "physical_diagnostic",
       "expected_cases": 0
+    },
+    {
+      "id": "generic_poly_adapter_first",
+      "artifact": "build/diagnostics/model_switching_xyce_300_v4/714be1c666dfb942",
+      "role": "diagnostic",
+      "expected_cases": 30
+    },
+    {
+      "id": "generic_poly_ng42_adapter",
+      "artifact": "build/diagnostics/model_switching_xyce_300_v5/291b4176c56acf59",
+      "role": "diagnostic",
+      "expected_cases": 30
+    },
+    {
+      "id": "dcc_inv8_native_pex",
+      "artifact": "build/diagnostics/dcc_inv8_pex_300_v3/723d0d1965d3f452",
+      "role": "diagnostic",
+      "expected_cases": 5
     }
   ]
 }

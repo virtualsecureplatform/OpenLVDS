@@ -4618,3 +4618,20 @@ invocation `57ef0c07a1534beebe648acaafe0a875`. Four targeted tests now pass,
 including rejection of a live producer without creating an assessment.
 The remaining quiet tolerance cases and 300 MHz active comparisons are still
 running; no engine default or production circuit has changed.
+
+## 2026-11-11: tapeout-macro implementation with Xyce
+
+The active implementation is tracked in [the macro handoff work](tapeout-300.md)
+and `qualification_runs_300.json`. Separate TX/RX macros retain fixed supplies,
+290/300/310 MHz, 40/50/60 percent duty and 0/25/40 C. OpenPLL main/pin is unchanged.
+New release inventory and frozen-candidate checks are independent of legacy OTA
+release. Stock Xyce/KLU is explicitly pinned; historical captured helpers remain
+unchanged. Numerical and model compatibility are active qualification gates.
+
+A fresh 48-case source DCC baseline/INV8 numerical comparison and paired native
+controls are retained. INV8 fixes the original failing timing direction, but
+source-only internal stress is still unqualified. The INV8 routed diagnostic
+passes physical checks and RC topology; full/reduced native PEX tests are running.
+Fixed-supply smooth device controls completed 30/30 across 15 PVT. The generic
+poly parameter incompatibility has an isolated adapter under comparison; high
+poly and BSIM substitutions remain open. None of these results admit a PHY.

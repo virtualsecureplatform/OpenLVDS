@@ -126,3 +126,43 @@ requires fresh DRC/LVS/antenna/topology and full RC extraction. It deliberately
 does not claim source-matrix, device-stress, STA or PHY admission. A physical
 candidate is needed to distinguish missing source interconnect capacitance from
 a stress problem that requires a circuit change.
+
+## Routed candidate and passive-model compatibility
+
+The INV8 physical diagnostic completed with zero final route/Magic/KLayout DRC,
+LVS and antenna violations. Its topology retained the exact INV8 pulse/hold/toggle
+island; extracted RC passed strict topology/property comparison. GDS SHA256 is
+`6944e60df74f8334c7e170eaf815483e22492e09b704b70bab95f61e0122d858`.
+The full extraction has 6956 resistors and 773 capacitors; positive-conductance
+reduction retains 2328 resistors. Reduction timing equivalence and native stress
+remain separate electrical requirements.
+
+PEX preflight captures v1/v2 were never simulated: each rejected an observation
+alias absent from this routed netlist. V3 uses the actual second hold gate contact
+`second_hold.A2.t2` for the second reset observation. The fresh native campaign
+is `dcc_inv8_pex_300_v3/723d0d1965d3f452`, with full/reduced RC for both unequal-
+slew directions and a matched control. The native input, reset, output and all
+MOS terminal samples remain actual circuit observations.
+
+Xyce's generic-poly warnings identify ignored TC1R, TC2R and DW parameters.
+Its NARROW semantics also shorten length, so renaming DW cannot reproduce the
+PDK resistor. [Xyce resistor implementation](https://github.com/Xyce/Xyce/blob/master/src/DeviceModelPKG/OpenModels/N_DEV_Resistor.C)
+provides the supported parameters and geometry equation. Importantly, the pinned
+ngspice **42** local `src/spicelib/devices/res/restemp.c` applies **2*DW** to width;
+current upstream source must not be substituted for that pinned behavior.
+
+The first explicit adapter (v4 matrix `714be1c666dfb942`) left a 9.287 mV TT0
+DC mismatch at w=0.5/l=1. The parameter diagnosis
+`poly_parameters_300_v1/90fe835bfb4933d2` independently reads the same rp1, DW
+components, temperature coefficients and temperature in both engines, while the
+native ngspice nominal resistor is 108.559 ohm. The corrected isolated adapter
+`generic_poly_xyce_300_v2.py` implements pinned ngspice 42 geometry and explicit
+temperature correction. V5 matrix `291b4176c56acf59` compares three geometries,
+including actual w=0.48/l=0.5 tie resistors, over 15 PVT. Neither adapter edits the
+PDK or establishes noise/statistical qualification. High-poly's separate
+1.1–1.5 mV mismatch remains open.
+
+Release receipts now also require the same `candidate.json` digest, frozen
+source/tool receipt hashes, matching PDK/contract, and published-view manifest.
+The Liberty inventory requires distinct files tagged with all 15 process/temperature
+points. No candidate exists yet; signoff deliberately remains closed.

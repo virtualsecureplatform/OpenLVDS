@@ -55,7 +55,9 @@ def status(root=ROOT,verify=False):
         outcome='interrupted' if interrupted else 'missing'
         if complete:
             outcome='fail' if errors or count!=entry['expected_cases'] else 'pass'
-        elif recorded=='running':
+        elif recorded in ['failed','held_physical_failed','held_rc_failed']:
+            outcome='fail'
+        elif recorded in ['running','hardening','extracting']:
             outcome='in_progress'
         if entry['role']=='obsolete':
             outcome='obsolete'
