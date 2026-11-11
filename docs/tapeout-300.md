@@ -166,3 +166,28 @@ Release receipts now also require the same `candidate.json` digest, frozen
 source/tool receipt hashes, matching PDK/contract, and published-view manifest.
 The Liberty inventory requires distinct files tagged with all 15 process/temperature
 points. No candidate exists yet; signoff deliberately remains closed.
+
+## Complete pilot decisions
+
+The source study completed 48/48 native cases without execution errors. All 16
+baseline/INV8 numerical-refinement groups pass the 1 ps / 1 mV pilot criteria;
+maximum crossing displacement is 0.182 ps. INV8 strict source half-cycle errors
+range from 1.961 to 45.268 ps across the eight conditions; all pass timing, while
+all still fail the source terminal-stress screen.
+
+Full and reduced INV8 PEX complete both unequal-slew directions. The formerly
+failing direction improves to roughly 8.18 ps, but the opposite direction fails
+at 84.38 ps. Both have maximum terminal spans near 2.071 V. Thus INV8 is not a
+qualified routed repair. The complete five-case replay/equivalence assessment
+is `build/reports/dcc_inv8_pex_assessment_300_v1/ff52a7642f66e57a`. New INV4/INV6
+physical diagnostics compare actual routed output drive; no source-only result
+selects the final physical circuit. If fixed drive cannot center the routed
+error across PVT/slew, DCC output-balance trim/calibration becomes necessary.
+
+The generic-poly v2 adapter comparison completed all 30 runs. Across all 15 PVT
+points and three geometries, maximum generic-poly DC difference is 2.23e-16 V.
+This admits only the tested deterministic equation equivalence, not noise,
+statistical variation or the entire PDK. The explicit high-poly temperature-law
+trial (v6) did not reduce its discrepancy and is not adopted. A separate signed-
+cubic trial (v7) tests expansion of the potentially negative cube in the PDK end
+resistance. All original model files and failed/superseded experiments remain.

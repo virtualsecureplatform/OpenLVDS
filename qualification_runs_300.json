@@ -67,6 +67,12 @@
       "artifact": "build/diagnostics/dcc_inv8_pex_300_v3/723d0d1965d3f452",
       "role": "diagnostic",
       "expected_cases": 5
+    },
+    {
+      "id": "high_poly_adapter",
+      "artifact": "build/diagnostics/model_switching_xyce_300_v6/6c524e3af4606864",
+      "role": "diagnostic",
+      "expected_cases": 30
     }
   ]
 }
