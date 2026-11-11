@@ -73,6 +73,36 @@
       "artifact": "build/diagnostics/model_switching_xyce_300_v6/6c524e3af4606864",
       "role": "diagnostic",
       "expected_cases": 30
+    },
+    {
+      "id": "high_poly_signed_cube",
+      "artifact": "build/diagnostics/model_switching_xyce_300_v7/c4ff6a4141a2f006",
+      "role": "diagnostic",
+      "expected_cases": 30
+    },
+    {
+      "id": "dcc_inv4_physical",
+      "artifact": "build/diagnostics/dcc_drive_physical_300_v1/765cc05631f448e0",
+      "role": "physical_diagnostic",
+      "expected_cases": 0
+    },
+    {
+      "id": "dcc_inv6_physical",
+      "artifact": "build/diagnostics/dcc_drive_physical_300_v1/9182ca24a190e3d0",
+      "role": "physical_diagnostic",
+      "expected_cases": 0
+    },
+    {
+      "id": "dcc_inv4_native_pex",
+      "artifact": "build/diagnostics/dcc_drive_pex_300_v1/8aa653a0b5d4ec46",
+      "role": "diagnostic",
+      "expected_cases": 5
+    },
+    {
+      "id": "dcc_inv6_native_pex",
+      "artifact": "build/diagnostics/dcc_drive_pex_300_v1/836a54bbf0571437",
+      "role": "diagnostic",
+      "expected_cases": 5
     }
   ]
 }

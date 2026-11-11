@@ -191,3 +191,25 @@ statistical variation or the entire PDK. The explicit high-poly temperature-law
 trial (v6) did not reduce its discrepancy and is not adopted. A separate signed-
 cubic trial (v7) tests expansion of the potentially negative cube in the PDK end
 resistance. All original model files and failed/superseded experiments remain.
+
+INV4 (`dcc_drive_physical_300_v1/765cc05631f448e0`) and INV6
+(`dcc_drive_physical_300_v1/9182ca24a190e3d0`) both completed physical checks and
+strict RC topology verification. Their fresh native pilot captures are
+`dcc_drive_pex_300_v1/8aa653a0b5d4ec46` and
+`dcc_drive_pex_300_v1/836a54bbf0571437`. Observation contacts are selected from
+actual extracted nets and bound in each identity. Each pilot has five complete
+native cases and at most two workers; two pilots share the six-slot dispatcher.
+These are drive comparisons, not qualified macro views.
+
+The INV8 five-case assessment replays all native metrics independently. Full/
+reduced maximum edge displacement is 0.001824 ps and 0.002984 ps in the two
+unequal-slew directions; final sample differences remain below 1.8 uV. The
+84.38 ps timing failure therefore does not arise from this exact RC reduction.
+The matched-slew pilot has 46.36 ps half-cycle error and the same stress failure.
+
+The signed-cubic high-poly trial completed 30/30 without execution errors but
+left the original mismatch unchanged; it is not adopted. Generic-poly matching
+remains at machine precision. Fifteen targeted tests passed, including replay of
+all paired native generic-poly traces and the retained clock/reset topology.
+The remaining implementation proceeds from measured electrical failures, not
+from release-inventory success.
