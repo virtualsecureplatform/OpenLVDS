@@ -1,0 +1,20 @@
+{
+  "schema": "openlvds-qualification-300-v1",
+  "contract": "clocking_300mhz.json",
+  "macros": ["openlvds_tx_300", "openlvds_rx_300"],
+  "primary_engine": "stock_xyce_7.10_klu",
+  "external": ["OpenPLL", "buffered_VREF", "IREF_sinks", "pads_ESD", "package"],
+  "gates": [
+    "model_compatibility", "numerical_refinement", "exact_rc_equivalence",
+    "source_primitive_15pvt", "detector_unequal_slew", "dcc_event_spacing",
+    "calibration_epoch_and_range", "training_all_rotations", "management_cdc_and_faults",
+    "native_drc_lvs_rc", "device_stress", "native_selected_and_boundary_codes",
+    "full_link_45cases", "two_openpll_traces", "million_behavioral_bits",
+    "fresh_joint_rc_and_release", "analog_tx_rx_15pvt", "offset_and_mismatch",
+    "clock_stop_and_restart", "antenna_density_erc", "timing_library_15pvt",
+    "published_views_integration"
+  ],
+  "states": ["pass", "fail", "interrupted", "obsolete", "missing"],
+  "evidence": {},
+  "release_views": ["gds", "lef", "cdl", "schematic_spice", "extracted_spice", "verilog_blackbox", "verilog_functional", "liberty", "sdc", "integration_guide", "electrical_tables", "test_guide"]
+}

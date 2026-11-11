@@ -48,3 +48,11 @@ release-current:
 	./scripts/env.sh --ngspice python3 scripts/released_phy.py check
 release-library:
 	./scripts/env.sh --ngspice python3 scripts/released_phy.py inspect
+
+.PHONY: qualify-300 signoff-300 release-300
+qualify-300:
+	python3 scripts/check_release_300.py --inventory
+signoff-300:
+	python3 scripts/check_release_300.py
+release-300: signoff-300
+	@echo '300 MHz published-view gates passed; host/foundry acceptance remains external.'
