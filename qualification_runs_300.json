@@ -2,10 +2,53 @@
   "schema": "openlvds-experiment-ledger-300-v1",
   "contract": "clocking_300mhz.json",
   "runs": [
-    {"id": "backend_comparison", "artifact": "build/diagnostics/openpll_xyce_benchmark_300_v1/dc5c16e8fbe6f061", "role": "diagnostic", "expected_cases": 9},
-    {"id": "dcc_xyce_repair", "artifact": "build/diagnostics/dcc_xyce_300_v1/b12dc12b493548ab", "role": "diagnostic", "expected_cases": 48},
-    {"id": "model_fixture_superseded", "artifact": "build/diagnostics/model_switching_xyce_300_v1/23adadf823af90c0", "role": "obsolete", "expected_cases": 30},
-    {"id": "model_switching", "artifact": "build/diagnostics/model_switching_xyce_300_v2/763096f288bc9069", "role": "diagnostic", "expected_cases": 30},
-    {"id": "dcc_native_reference", "artifact": "build/diagnostics/dcc_ng_reference_300_v1/e2f8b3c2c305dc26", "role": "diagnostic", "expected_cases": 4}
+    {
+      "id": "backend_comparison",
+      "artifact": "build/diagnostics/openpll_xyce_benchmark_300_v1/dc5c16e8fbe6f061",
+      "role": "diagnostic",
+      "expected_cases": 9
+    },
+    {
+      "id": "dcc_xyce_repair",
+      "artifact": "build/diagnostics/dcc_xyce_300_v1/b12dc12b493548ab",
+      "role": "diagnostic",
+      "expected_cases": 48
+    },
+    {
+      "id": "model_fixture_superseded",
+      "artifact": "build/diagnostics/model_switching_xyce_300_v1/23adadf823af90c0",
+      "role": "obsolete",
+      "expected_cases": 30
+    },
+    {
+      "id": "model_switching",
+      "artifact": "build/diagnostics/model_switching_xyce_300_v2/763096f288bc9069",
+      "role": "obsolete",
+      "expected_cases": 30
+    },
+    {
+      "id": "dcc_native_reference",
+      "artifact": "build/diagnostics/dcc_ng_reference_300_v1/e2f8b3c2c305dc26",
+      "role": "diagnostic",
+      "expected_cases": 4
+    },
+    {
+      "id": "model_numerics",
+      "artifact": "build/diagnostics/model_numerics_300_v1/4dfa5bf48f9c37db",
+      "role": "diagnostic",
+      "expected_cases": 14
+    },
+    {
+      "id": "model_switching_smooth",
+      "artifact": "build/diagnostics/model_switching_xyce_300_v3/6b72fd5c248c35f6",
+      "role": "diagnostic",
+      "expected_cases": 30
+    },
+    {
+      "id": "dcc_inv8_physical",
+      "artifact": "build/diagnostics/dcc_inv8_physical_300_v1/c88cfb35d76fa88f",
+      "role": "physical_diagnostic",
+      "expected_cases": 0
+    }
   ]
 }

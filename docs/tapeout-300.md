@@ -89,3 +89,40 @@ Each campaign uses at most two workers and shares the six-slot dispatcher.
 A running campaign is never release evidence. Timeout/error/partial results are
 retained and cannot pass. Numerical refinement and model comparison are distinct
 from physical/source admission.
+
+## Numerical diagnosis and early repair evidence
+
+The strict PWL model matrix v2 is interrupted and superseded. In the 14-case
+`model_numerics_300_v1/4dfa5bf48f9c37db` isolation, all four tight nonlinear Xyce
+PWL controls failed near the first ramp, even with time-integration ABSTOL relaxed
+from 1e-12 to 1e-8. The baseline numerical PWL control passed. All seven smooth
+controls, including strict Xyce and ngspice, completed. Smooth controls retain
+50% edge epochs and 20/250 ps 10–90 slews, with fixed supply rails. This diagnoses
+stimulus/numerical sensitivity; it does not establish a simulator source bug.
+
+`model_switching_xyce_300_v3/6b72fd5c248c35f6` completed all 30 runs, giving 15
+paired PVT comparisons. Representative MOS midpoint-crossing differences are
+below 0.159 ps, and MIM differences below 0.003 ps. This limited geometry/load
+screen does not resolve the full model qualification. In particular, generic
+poly DC output differs by up to 19.44 mV and high-poly by 1.485 mV, so passive
+model semantics need investigation before admission. Peak pointwise voltage
+error is distinct from settled error and edge displacement.
+
+The complete strict ngspice 310 MHz/SF40/60% unequal-slew control shows INV8
+reduces half-cycle error from 53.874 ps to 2.189 ps. Reverse-slew strict ngspice
+controls failed at input-source breakpoints and remain failures. Complete native
+Xyce controls independently reproduce the timing improvement. Both source-only
+versions fail the current terminal screen. The separate native diagnosis
+`build/reports/dcc_stress_300_v1/27a117cdad8754ca` identifies up to 2.334 V drain-to-
+source and roughly 2.032 V gate-related differences in standard-cell internal
+nodes. No stress limit was relaxed. Source-only diffusion-node bootstrapping must
+be compared with actual extracted cell/routing capacitance before adding shunts
+or replacing flop architecture.
+
+`dcc_inv8_physical_300_v1/c88cfb35d76fa88f` is a fresh diagnostic routed INV8
+candidate. It preserves the pulse/hold/toggle topology, checks INV8 explicitly,
+uses 310 MHz constraints without the old broad input/output false path, and
+requires fresh DRC/LVS/antenna/topology and full RC extraction. It deliberately
+does not claim source-matrix, device-stress, STA or PHY admission. A physical
+candidate is needed to distinguish missing source interconnect capacitance from
+a stress problem that requires a circuit change.
