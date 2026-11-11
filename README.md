@@ -6,6 +6,9 @@ there is no CDR. OpenPLL supplies the transmitter clock.
 
 The active implementation target is now **300 MHz / 600 Mb/s DDR**, checked at
 290/300/310 MHz and 40/50/60% duty. See the [300 MHz implementation status](docs/implementation-300mhz.md).
+The [macro handoff implementation](docs/tapeout-300.md) defines the current release gates.
+Use `python3 scripts/status_300.py` for the explicit experiment ledger and
+`make qualify-300` for the release evidence inventory. No macro is currently qualified.
 Historical 400 MHz evidence remains in the implementation notes; the new target
 requires fresh qualification.
 
