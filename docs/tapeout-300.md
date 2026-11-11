@@ -69,3 +69,23 @@ UMFPACK took 1038.3 s on the active case. Stock Xyce is selected within Xyce;
 there is no general speedup claim. Active edge displacement reached 8.215 ps;
 its ngspice reference used relaxed ABSTOL=1e-9. BSIM4 4.5-to-4.6.1 substitution
 and parameter clamps remain open model-compatibility issues. No PHY is qualified.
+
+## Fresh implementation campaigns
+
+- `dcc_xyce_300_v1/b12dc12b493548ab`: 48 native source cases; baseline/INV8,
+  both unequal-slew directions and matched controls, 40/60% duty, three numerical
+  profiles. Each variant binds its own full native inventory (136/144 MOS).
+  First baseline half-cycle error is 53.685 ps, reproducing the timing failure.
+  Initial native terminal screens also exceed 1.95 V; investigate before admission.
+- `model_switching_xyce_300_v1/23adadf823af90c0`: interrupted after detecting an
+  incorrect three-terminal generic-poly fixture. Xyce rejected it; preserve logs.
+- `model_switching_xyce_300_v2/763096f288bc9069`: corrected two-terminal generic
+  poly, paired Xyce/ngspice fixed-supply representative MOS/poly/MIM controls at
+  all 15 PVT. Input waveforms exercise switching; supplies remain fixed.
+- `dcc_ng_reference_300_v1/e2f8b3c2c305dc26`: four strict native reference cases
+  for cross-engine investigation of unequal-slew timing and internal stress.
+
+Each campaign uses at most two workers and shares the six-slot dispatcher.
+A running campaign is never release evidence. Timeout/error/partial results are
+retained and cannot pass. Numerical refinement and model comparison are distinct
+from physical/source admission.
