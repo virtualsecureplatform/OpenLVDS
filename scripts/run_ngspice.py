@@ -23,6 +23,18 @@ def read_raw(path):
     if len(values)!=n*count:raise ValueError('Incomplete raw data')
     return names,values.reshape(count,n)
 
+def delay_ramps(text):
+    """Hold a from-zero supply ramp at zero for its first 0.1 ns.
+
+    ngspice 42 cannot take its first transient step on the SKY130 driver when
+    every source starts moving at t=0 ("timestep too small" at 1e-14 s). The
+    ramp still ends at the same time and level."""
+    return re.sub(r'(?i)PWL\(0 0 1n ',' PWL(0 0 0.1n 0 1n '[1:],text)
+
+def trapezoidal(text):
+    """The deck with ngspice's default trapezoidal integration instead of Gear."""
+    return re.sub(r'(?im)^(\.options\b.*?)\s+method=gear\b',r'\1',text)
+
 def main():
     p=argparse.ArgumentParser();p.add_argument('-l',type=Path,required=True);p.add_argument('deck',type=Path)
     a=p.parse_args();deck=a.deck.resolve();text=deck.read_text()
@@ -34,6 +46,7 @@ def main():
     translated=re.sub(r'(?i)V\(([^)]+)\)',lambda m:'V('+m[1].replace(':','.')+')',translated)
     translated=re.sub(r'(?im)^\.options\s+device\s+temp=(\S+)',r'.temp \1',translated)
     translated=re.sub(r'(?im)^\.options\s+timeint\s+',r'.options ',translated)
+    translated=delay_ramps(translated)
     first,rest=translated.split('\n',1)
     translated=first+'\n.options klu\n'+rest
     path=deck.with_suffix('.ngspice.cir');path.write_text(translated)
@@ -48,6 +61,13 @@ def main():
     output=Path(str(deck)+'.prn');output.unlink(missing_ok=True)
     command=[str(loader),'--library-path',str(runtime),str(binary),'-n','-b','-r',str(raw),'-o',str(a.l.resolve()),str(path)]
     result=subprocess.run(command,cwd=deck.parent,capture_output=True,text=True)
+    note=deck.with_name('numerics_retry.txt');note.unlink(missing_ok=True)
+    if result.returncode and 'Timestep too small' in a.l.read_text(errors='replace') and trapezoidal(translated)!=translated:
+        # Gear occasionally collapses the step on a 5 V device body node. The
+        # same deck (same mismatch seed) is retried once with trapezoidal
+        # integration, and the retry is recorded beside the result.
+        path.write_text(trapezoidal(translated));note.write_text('Gear: timestep too small. Rerun with trapezoidal integration.\n')
+        result=subprocess.run(command,cwd=deck.parent,capture_output=True,text=True)
     sys.stdout.write(result.stdout);sys.stderr.write(result.stderr)
     if result.returncode:return result.returncode
     variables,wave=read_raw(raw);index={n:i for i,n in enumerate(variables)}

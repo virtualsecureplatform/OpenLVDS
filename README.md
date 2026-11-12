@@ -8,9 +8,27 @@ The active implementation target is now **300 MHz / 600 Mb/s DDR**, checked at
 290/300/310 MHz and 40/50/60% duty. See the [300 MHz implementation status](docs/implementation-300mhz.md).
 The [macro handoff implementation](docs/tapeout-300.md) defines the current release gates.
 Use `python3 scripts/status_300.py` for the explicit experiment ledger and
-`make qualify-300` for the release evidence inventory. No macro is currently qualified.
+`make qualify-300` for the release evidence inventory. No PHY macro is currently qualified.
 Historical 400 MHz evidence remains in the implementation notes; the new target
 requires fresh qualification.
+
+Release is staged. The first stage is the two asynchronous LVDS I/O hard
+macros, `openlvds_io_tx` and `openlvds_io_rx`, with their own contract
+([io_300.json](io_300.json)) and release policy
+([qualification_io_300.json](qualification_io_300.json)). They have no
+clocking; the DDR PHY above is the second stage and will instantiate them.
+`make qualify-io-300` prints their gate status, and the
+[integration guide](docs/io-300-integration.md) and
+[test guide](docs/io-300-test.md) describe how to use and re-qualify them.
+All twelve I/O gates pass on simulation evidence for tt/ff/ss/fs/sf at 0 to
+40 C and fixed 3.3 V / 1.8 V supplies. The evidence and the published views
+live under the ignored `build/` tree and are bound by hash to the working
+tree, so a fresh checkout must rerun the steps in the test guide before
+`make release-io-300` passes. There is no silicon measurement, and pads, ESD,
+termination and bias generation remain outside the macros.
+The canonical driver and receiver in `analog/openlvds.spice` are now these
+released circuits, so earlier evidence and experiment receipts bound to the
+previous driver, receiver or `scripts/layout.py` no longer match.
 
 The implementation includes synthesizable DDR logic, transistor circuits,
 generated analog GDS/LEF, digital place and route, DRC/LVS, GDS-based distributed

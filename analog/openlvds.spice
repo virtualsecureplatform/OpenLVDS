@@ -20,8 +20,9 @@ XN Y A VSS VSS sky130_fd_pr__nfet_01v8 w=32 l=0.15
 
 .subckt lvds_inv33 A Y VDD VSS
 * Threshold balances the CML drain swing, preserving complementary duty.
-XP Y A VDD VDD sky130_fd_pr__pfet_g5v0d10v5 w=48 l=0.5
-XN Y A VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
+* Sized to drive the four switch-gate drivers and their extracted wiring.
+XP Y A VDD VDD sky130_fd_pr__pfet_g5v0d10v5 w=72 l=0.5
+XN Y A VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=60 l=0.5
 .ends lvds_inv33
 
 .subckt lvds_inv33_small A Y VDD VSS
@@ -29,16 +30,42 @@ XP Y A VDD VDD sky130_fd_pr__pfet_g5v0d10v5 w=64 l=0.5
 XN Y A VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=16 l=0.5
 .ends lvds_inv33_small
 
+* Second-stage switch-gate drivers. The output PMOS and NMOS switch pairs need
+* different gate crossing levels to stay make-before-break: PMOS gates fall
+* fast and rise slowly (cross low); NMOS gates rise fast and fall slowly
+* (cross high). A single shared gate signal starves one tail source on every
+* edge, which accumulates as pattern-dependent common-mode wander. The slow
+* sides are sized for the extracted gate-net wiring load, which is larger
+* than the switch gates themselves.
+.subckt lvds_inv33_plow A Y VDD VSS
+XP Y A VDD VDD sky130_fd_pr__pfet_g5v0d10v5 w=8 l=0.5
+XN Y A VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=64 l=0.5
+.ends lvds_inv33_plow
+
+.subckt lvds_inv33_nhigh A Y VDD VSS
+XP Y A VDD VDD sky130_fd_pr__pfet_g5v0d10v5 w=48 l=0.5
+XN Y A VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=8 l=0.5
+.ends lvds_inv33_nhigh
+
 .subckt lvds_shift18_33 A Q QB NB VDDIO VDDD VSS
 * Differential current-mode level conversion avoids a regenerative latch's
 * unequal recovery times at 800 Mb/s. Every 3.3 V node uses thick-oxide FETs.
 XIN0 A INB VDDD VSS lvds_inv18_drive
 XIN1 INB AD VDDD VSS lvds_inv18_boost
 XI AD AB VDDD VSS lvds_inv18_boost
+* Devices are listed in placement order: the generated layout places them
+* in this order, so each drain net (L, R) stays local.
 XNA0 L AD T VSS sky130_fd_pr__nfet_g5v0d10v5 w=80 l=0.5
 XNA1 L AD T VSS sky130_fd_pr__nfet_g5v0d10v5 w=80 l=0.5
+* Two approximately 2 kohm resistors in parallel on each drain.
+XRL0 VDDIO L VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRL1 VDDIO L VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XB0 L Q VDDIO VSS lvds_inv33
 XNB0 R AB T VSS sky130_fd_pr__nfet_g5v0d10v5 w=80 l=0.5
 XNB1 R AB T VSS sky130_fd_pr__nfet_g5v0d10v5 w=80 l=0.5
+XRR0 VDDIO R VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XRR1 VDDIO R VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
+XB1 R QB VDDIO VSS lvds_inv33
 XTAIL0 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
 XTAIL1 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
 XTAIL2 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
@@ -51,15 +78,9 @@ XTAIL8 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
 XTAIL9 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
 XTAIL10 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
 XTAIL11 T NB VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
-* Two approximately 2 kohm resistors in parallel on each drain.
-XRL0 VDDIO L VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
-XRL1 VDDIO L VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
-XRR0 VDDIO R VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
-XRR1 VDDIO R VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=1.25
-XB0 L Q VDDIO VSS lvds_inv33
-XB1 R QB VDDIO VSS lvds_inv33
-XCDP Q VSS sky130_fd_pr__cap_mim_m3_1 w=4 l=4.5
-XCDN QB VSS sky130_fd_pr__cap_mim_m3_1 w=4 l=4.5
+* AB lacks the inverter gate load that AD has. Matching it bounds the
+* feedthrough overshoot on this 1.8 V node to the thin-oxide terminal limit.
+XCAB AB VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
 .ends lvds_shift18_33
 
 .subckt lvds_bias IREF NB VDDIO VSS
@@ -87,6 +108,19 @@ XCCOMP5 OUT VSS sky130_fd_pr__cap_mim_m3_1 w=29 l=29
 
 .subckt openlvds_driver_core D OUTP OUTN VREF PB NB VDDIO VDDD VSS
 XLS D DP DN NB VDDIO VDDD VSS lvds_shift18_33
+* Each switch group sits next to its own gate drivers (placement follows
+* this order), which keeps the gate nets short. Two PMOS switches per side
+* keep the PMOS mirror out of triode.
+XGPL DP GPL VDDIO VSS lvds_inv33_plow
+XPL OUTP GPL TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XPL1 OUTP GPL TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XGNL DP GNL VDDIO VSS lvds_inv33_nhigh
+XNL OUTP GNL BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
+XGPR DN GPR VDDIO VSS lvds_inv33_plow
+XPR OUTN GPR TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XPR1 OUTN GPR TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
+XGNR DN GNR VDDIO VSS lvds_inv33_nhigh
+XNR OUTN GNR BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
 * 100:1 PMOS mirror establishes approximately 3.5 mA steering current.
 XIT0 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
 XIT1 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
@@ -98,10 +132,6 @@ XIT6 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
 XIT7 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
 XIT8 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
 XIT9 TOP PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=1
-XPL OUTP DN TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
-XPR OUTN DP TOP VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=60 l=0.5
-XNL OUTP DN BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
-XNR OUTN DP BOT VSS sky130_fd_pr__nfet_g5v0d10v5 w=40 l=0.5
 XIB0 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
 XIB1 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
 XIB2 BOT SINK VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=20 l=1
@@ -117,9 +147,14 @@ XRCP OUTP CM VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=10.25
 XRCN OUTN CM VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=10.25
 XRCM0 CM CMS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=60
 XRCM1 CMS VSS VSS sky130_fd_pr__res_high_po_0p35 w=0.35 l=60
-* Local symmetric MIM loads bound switch-feedthrough common-mode ripple.
-XCOUTP OUTP VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
-XCOUTN OUTN VSS sky130_fd_pr__cap_mim_m3_1 w=10 l=10
+* Local symmetric MIM loads bound switch-feedthrough common-mode ripple and,
+* with the 100 ohm termination, the 2 pF pin load and about 0.85 pF of
+* extracted output wiring, set the 20-80% edges inside the TIA/EIA-644-A
+* window of 260 ps to 0.3 tui at 580-620 Mb/s.
+XCOUTP OUTP VSS sky130_fd_pr__cap_mim_m3_1 w=24 l=24
+XCOUTP1 OUTP VSS sky130_fd_pr__cap_mim_m3_1 w=24 l=24
+XCOUTN OUTN VSS sky130_fd_pr__cap_mim_m3_1 w=24 l=24
+XCOUTN1 OUTN VSS sky130_fd_pr__cap_mim_m3_1 w=24 l=24
 XCM CM VREF SINK NB VDDIO VSS lvds_cmfb
 .ends openlvds_driver_core
 
@@ -139,8 +174,11 @@ XNDR NR NR VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=10 l=0.5
 XNML PP NL VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=10 l=0.5
 XNMR PN NR VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=10 l=0.5
 XPT PT PB VDDIO VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=12 l=1
-XPP PL INP PT VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
-XPN PR INN PT VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=20 l=0.5
+* Below about 0.8 V common mode only this PMOS pair is active. Its
+* transconductance sets how later-stage mismatch refers to the input: 80 um
+* holds the 3-sigma input offset near 60 mV, inside the 100 mV threshold.
+XPP PL INP PT VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=80 l=0.5
+XPN PR INN PT VDDIO sky130_fd_pr__pfet_g5v0d10v5 w=80 l=0.5
 XPDL PL PL VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=10 l=0.5
 XPDR PR PR VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=10 l=0.5
 XPML PP PL VSS VSS sky130_fd_pr__nfet_g5v0d10v5 w=10 l=0.5
@@ -409,3 +447,13 @@ XPFD PD_REF PH180 RESET_N PD_ENABLE UP DN ERR VDDD VSS QREF QFB QWIN lvds_pfd
 XB IREF NB VDDIO VSS lvds_bias
 XCORE CLK RESET_N PD_ENABLE PH0 PH90 PH180 PH270 FB PHASE_BAD UP DN IREF VDDIO VDDD VSS openlvds_dll_core
 .ends openlvds_dll
+
+* Released asynchronous I/O macros (io_300.json). Each is one hard macro with
+* its own bias mirror: every instance needs its own 35 uA IREF sink.
+.subckt openlvds_io_tx D OUTP OUTN VREF IREF VDDIO VDDD VSS
+XTX D OUTP OUTN VREF IREF VDDIO VDDD VSS openlvds_driver
+.ends openlvds_io_tx
+
+.subckt openlvds_io_rx INP INN Q VREF IREF VDDIO VDDD VSS
+XRX INP INN Q VREF IREF VDDIO VDDD VSS openlvds_receiver
+.ends openlvds_io_rx

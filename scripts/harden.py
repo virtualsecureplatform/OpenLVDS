@@ -14,9 +14,101 @@ from physical_policy import delay_cells_absent,pfd_paths_retained,tx_cells_retai
 
 ROOT=Path(__file__).resolve().parents[1]
 
+def harden_io_ref(tag):
+    """Reference top built only from the published I/O macro views.
+
+    The I/O macros have two supplies over one ground. LibreLane pairs each
+    power net with a ground net, so the shared ground is listed once per pair.
+    """
+    release=ROOT/'build/release_io_300';views=json.loads((release/'views.json').read_text())
+    digest=lambda path:hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    out=ROOT/'build/physical/io_ref';out.mkdir(parents=True,exist_ok=True)
+    lock=(out/'.run.lock').open('a')
+    try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    except BlockingIOError:raise RuntimeError('io-ref: physical flow is already running')
+    design='openlvds_io_ref_top';sources=[ROOT/'examples/openlvds_io_ref_top.v'];sdc=ROOT/'constraints/io_ref_top.sdc'
+    tt=str(Path(os.environ['PDK_ROOT'])/'sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib')
+    # Floorplan: the macros abut the left and right core edges, so no
+    # standard-cell row sliver is left beside a macro without a power strap or
+    # well tap. Logic sits in the full-width band below and the gap between.
+    candidate=json.loads((release/'candidate.json').read_text()) if (release/'candidate.json').exists() else None
+    layout=json.loads((ROOT/'build/layout/current.json').read_text())['designs']
+    size={m:(layout[m]['width_um'],layout[m]['height_um']) for m in ['openlvds_io_tx','openlvds_io_rx']}
+    # Sized from the macros: a 190 um gap between them carries a power-strap
+    # set and the logic, with a 180 um full-width row band below.
+    import math
+    band=200.;width=math.ceil((size['openlvds_io_tx'][0]+size['openlvds_io_rx'][0]+190)/10)*10
+    height=math.ceil((max(v[1] for v in size.values())+band+25)/10)*10
+    core=[20.,20.,20.+width,float(height)];die=[0,0,core[2]+20,core[3]+20]
+    places=[('openlvds_io_tx','tx_macro',[core[0],band]),('openlvds_io_rx','rx_macro',[round(core[2]-size['openlvds_io_rx'][0],2),band])]
+    macros={};used=[];lefs={}
+    for macro,instance,location in places:
+        view=views[macro]
+        def path(kind):
+            entry=view[kind]
+            if digest(ROOT/entry['path'])!=entry['sha256']:raise ValueError(f'{macro}: published {kind} changed')
+            used.append(ROOT/entry['path']);return str(ROOT/entry['path'])
+        nominal=next(x for x in view['liberty'] if (x['process'],x['temperature_c'])==('tt',25))
+        if digest(ROOT/nominal['path'])!=nominal['sha256']:raise ValueError(macro+': published Liberty changed')
+        used.append(ROOT/nominal['path'])
+        lefs[macro]=ROOT/view['lef']['path']
+        macros[macro]=dict(instances={instance:dict(location=location,orientation='N')},gds=[path('gds')],lef=[path('lef')],
+            vh=[path('verilog_blackbox')],spice=[path('cdl')],lib={'*':[str(ROOT/nominal['path'])]})
+    config=dict(DESIGN_NAME=design,VERILOG_FILES=list(map(str,sources)),VERILOG_DEFINES=['USE_POWER_PINS'],
+        CLOCK_PORT='clk',CLOCK_PERIOD=10.0,PNR_SDC_FILE=str(sdc),SIGNOFF_SDC_FILE=str(sdc),
+        FP_SIZING='absolute',DIE_AREA=die,CORE_AREA=core,FP_CORE_UTIL=5,PL_TARGET_DENSITY_PCT=20,
+        FP_MACRO_HORIZONTAL_HALO=10,FP_MACRO_VERTICAL_HALO=10,RT_MAX_LAYER='met5',
+        VDD_NETS=['VDDD','VDDIO'],GND_NETS=['VSS','VSS'],PDN_CONNECT_MACROS_TO_GRID=True,
+        PDN_MACRO_CONNECTIONS=['tx_macro VDDD VSS VDDD VSS','tx_macro VDDIO VSS VDDIO VSS',
+                               'rx_macro VDDD VSS VDDD VSS','rx_macro VDDIO VSS VDDIO VSS'],
+        MACROS=macros,PAD_LIBS=None,DECAP_CELLS=[],RUN_EQY=False,RUN_IRDROP_REPORT=False,
+        LINTER_DISABLE_WARNINGS_BLACKBOX=['UNDRIVEN','UNUSEDSIGNAL','PINMISSING','TIMESCALEMOD'],
+        meta=dict(flow='Classic'))
+    config['LIB']={'nom_':[tt],'*_tt_025C_1v80':[tt]}
+    config['STA_CORNERS']=['nom_tt_025C_1v80','min_tt_025C_1v80','max_tt_025C_1v80']
+    # Top-level Magic DRC sees each macro as its LEF abstract. Magic derives the
+    # resistor implant (RPM) from poly instead of reading it from GDS, so it
+    # would re-flag the widened implant that the macro's own full Magic DRC
+    # (with mask hints) and KLayout DRC already prove correct.
+    abstract=out/'maglef';abstract.mkdir(exist_ok=True)
+    script=abstract/'maglef.tcl'
+    script.write_text('crashbackups disable\nlocking disable\n'+''.join(f'lef read {lef}\nload {macro}\nsave {abstract}/{macro}.mag\n' for macro,lef in lefs.items())+'quit -noprompt\n')
+    rc=Path(os.environ['PDK_ROOT'])/'sky130A/libs.tech/magic/sky130A.magicrc'
+    with (abstract/'maglef.log').open('w') as log:
+        made=subprocess.run(['magic','-dnull','-noconsole','-rcfile',str(rc),str(script)],cwd=abstract,stdout=log,stderr=subprocess.STDOUT)
+    if made.returncode or not all((abstract/(m+'.mag')).exists() for m in lefs):raise RuntimeError('io-ref: could not create macro abstracts')
+    config['MAGIC_DRC_MAGLEFS']=[str(abstract/(m+'.mag')) for m in lefs]
+    cfg=out/'config.json';cfg.write_text(json.dumps(config,indent=2)+'\n')
+    inputs=sources+[sdc,cfg,release/'views.json']+used
+    captured={path:path.read_bytes() for path in inputs}
+    stamp=hashlib.sha256(b''.join(captured.values())).hexdigest();tag=tag+'-'+stamp[:12]
+    command=['python3','-m','librelane','--manual-pdk','--pdk-root',os.environ['PDK_ROOT'],
+             '-p','sky130A','-s','sky130_fd_sc_hd','--condensed','--hide-progress-bar','--run-tag',tag,str(cfg)]
+    with (out/'flow.log').open('w') as log:
+        result=subprocess.run(command,cwd=out,stdout=log,stderr=subprocess.STDOUT)
+    runs=out/'runs'/tag;metrics=runs/'final/metrics.json'
+    data=json.loads(metrics.read_text()) if metrics.exists() else {}
+    # Reuse the OpenPLL zero-violation and required-view policy for a macro top.
+    check=subprocess.run([sys.executable,str(ROOT/'thirdparties/OpenPLL/scripts/check_librelane_signoff.py'),
+        '--final-dir',str(runs/'final'),'--design-name',design,
+        # The checker resolves sources against the OpenPLL checkout.
+        '--source-file','../../examples/openlvds_io_ref_top.v','--source-file','../../constraints/io_ref_top.sdc'],
+        cwd=ROOT,capture_output=True,text=True)
+    failures=[line for line in (check.stdout+check.stderr).splitlines() if line.strip()] if check.returncode else []
+    unchanged=all(path.read_bytes()==data_ for path,data_ in captured.items())
+    summary=dict(passed=result.returncode==0 and check.returncode==0 and unchanged,returncode=result.returncode,
+        run=str(runs.relative_to(ROOT)),metrics=data,source_sha256=stamp,inputs_unchanged=unchanged,
+        views_sha256=digest(release/'views.json'),signoff_failures=failures,
+        scope='Integration proof of the published views at a relaxed 100 MHz clock; not a link-rate result')
+    (out/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+    print('io-ref','PASS' if summary['passed'] else 'FAIL',str(out/'flow.log'),flush=True)
+    for line in failures[:20]:print('  ',line)
+    lock.close()
+    return 0 if summary['passed'] else 1
+
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument('--design',choices=['tx','rx','pfd','both'],default='both')
+    p.add_argument('--design',choices=['tx','rx','pfd','both','io-ref'],default='both')
     p.add_argument('--tag',default='lab')
     p.add_argument('--pfd-source',type=Path,help='Isolated PFD candidate source')
     p.add_argument('--artifact-dir',type=Path,help='Isolated physical output directory; never changes active evidence')
@@ -25,6 +117,7 @@ def main():
     p.add_argument('--tx-ddr-source',type=Path)
     p.add_argument('--tx-buffer-strength',type=int,choices=[4,8])
     a=p.parse_args()
+    if a.design=='io-ref':return harden_io_ref(a.tag)
     if (a.pfd_source or a.pfd_policy!='legacy') and a.design!='pfd':p.error('PFD candidate options require --design pfd')
     if (a.tx_core_source or a.tx_ddr_source or a.tx_buffer_strength) and a.design!='tx':p.error('TX candidate options require --design tx')
     if (a.tx_core_source or a.tx_ddr_source or a.tx_buffer_strength) and not (a.tx_core_source and a.tx_ddr_source and a.tx_buffer_strength and a.artifact_dir):p.error('Provide both TX sources, buffer strength, and artifact directory')

@@ -56,3 +56,41 @@ signoff-300:
 	python3 scripts/check_release_300.py
 release-300: signoff-300
 	@echo '300 MHz published-view gates passed; host/foundry acceptance remains external.'
+
+.PHONY: qualify-io-300 signoff-io-300 release-io-300
+qualify-io-300:
+	python3 scripts/check_release_300.py --policy qualification_io_300.json --inventory
+signoff-io-300:
+	python3 scripts/check_release_300.py --policy qualification_io_300.json
+release-io-300: signoff-io-300
+	@echo 'Asynchronous LVDS I/O macro gates passed; host/foundry acceptance remains external.'
+
+.PHONY: io-layout io-extract io-signoff io-analog io-analog-extracted io-mismatch io-compare io-publish io-ref-top io-fresh-rc io-receipts
+io-layout:
+	./scripts/env.sh --tools python3 scripts/layout.py --design openlvds_io_tx,openlvds_io_rx
+io-extract:
+	./scripts/env.sh --tools python3 scripts/extract.py --design openlvds_io_tx,openlvds_io_rx
+io-signoff:
+	./scripts/env.sh --tools python3 scripts/layout.py --signoff
+io-analog:
+	./scripts/env.sh python3 scripts/verify_analog.py --contract io_300.json --corners --resume
+io-analog-extracted:
+	./scripts/env.sh python3 scripts/verify_analog.py --contract io_300.json --extracted --corners --resume
+# Mismatch decks are short, so they start from a solved DC point (ngspice).
+io-mismatch:
+	./scripts/env.sh --ngspice python3 scripts/verify_analog.py --contract io_300.json --corners --settled-start --resume --test receiver-mc
+	./scripts/env.sh --ngspice python3 scripts/verify_analog.py --contract io_300.json --corners --settled-start --resume --test driver-mc
+# Nominal comparison runs behind the model, numerical and RC-equivalence gates.
+io-compare:
+	./scripts/env.sh python3 scripts/verify_analog.py --contract io_300.json --resume
+	for t in driver receiver receiver-rate; do ./scripts/env.sh python3 scripts/verify_analog.py --contract io_300.json --resume --raw-rc --test $$t || exit 1; done
+	for t in driver receiver receiver-rate; do ./scripts/env.sh --ngspice python3 scripts/verify_analog.py --contract io_300.json --resume --test $$t || exit 1; done
+	for t in driver receiver receiver-rate; do ./scripts/env.sh python3 scripts/verify_analog.py --contract io_300.json --resume --profile refined --test $$t || exit 1; done
+io-publish:
+	./scripts/env.sh python3 scripts/release_io_300.py publish
+io-ref-top:
+	./scripts/env.sh --tools python3 scripts/harden.py --design io-ref --tag release
+io-fresh-rc:
+	./scripts/env.sh --tools python3 scripts/release_io_300.py fresh-rc
+io-receipts:
+	./scripts/env.sh python3 scripts/release_io_300.py receipts

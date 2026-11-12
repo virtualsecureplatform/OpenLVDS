@@ -1,0 +1,101 @@
+{
+  "schema": "openlvds-qualification-io-300-v1",
+  "contract": "io_300.json",
+  "macros": [
+    "openlvds_io_tx",
+    "openlvds_io_rx"
+  ],
+  "primary_engine": "stock_xyce_7.10_klu",
+  "external": [
+    "buffered_VREF",
+    "IREF_sinks",
+    "pads_ESD",
+    "termination",
+    "package"
+  ],
+  "gates": [
+    "model_compatibility",
+    "numerical_refinement",
+    "exact_rc_equivalence",
+    "native_drc_lvs_rc",
+    "device_stress",
+    "analog_tx_rx_15pvt",
+    "offset_and_mismatch",
+    "async_link_eye",
+    "antenna_density_erc",
+    "timing_library_15pvt",
+    "published_views_integration",
+    "fresh_joint_rc_and_release"
+  ],
+  "states": [
+    "pass",
+    "fail",
+    "interrupted",
+    "obsolete",
+    "missing"
+  ],
+  "evidence": {
+    "model_compatibility": {
+      "path": "build/release_io_300/receipts/model_compatibility.json",
+      "sha256": "80be76580a968316a8ed6e7e2413aca033cf0c51a14f9124d9f0d3f1a3da9cb0"
+    },
+    "numerical_refinement": {
+      "path": "build/release_io_300/receipts/numerical_refinement.json",
+      "sha256": "06aebda314a462618130ee6ca8bafa9caa14d49ddc15885336f2ab545d8c2e05"
+    },
+    "exact_rc_equivalence": {
+      "path": "build/release_io_300/receipts/exact_rc_equivalence.json",
+      "sha256": "4c48dd5a4e4f56644f9c46bb1f8355c83c92750634ad81370b9a14ac1d083618"
+    },
+    "native_drc_lvs_rc": {
+      "path": "build/release_io_300/receipts/native_drc_lvs_rc.json",
+      "sha256": "7afc4c5f9986ee609cbbe133ec33f8c2c053106e92a9689eedc1b0918b802713"
+    },
+    "device_stress": {
+      "path": "build/release_io_300/receipts/device_stress.json",
+      "sha256": "6bacd0bbb75950582a8cc3d26d32b011e69afec9ed72ffc23dcc3e3a31b441a2"
+    },
+    "analog_tx_rx_15pvt": {
+      "path": "build/release_io_300/receipts/analog_tx_rx_15pvt.json",
+      "sha256": "54df8addae92a2bdce55dc9600285fe6c61e60b75bed04f705c5477abd0b2cec"
+    },
+    "offset_and_mismatch": {
+      "path": "build/release_io_300/receipts/offset_and_mismatch.json",
+      "sha256": "62be94a95db89806149ffb8aa736b801798be6308b444129c394bc9b44e4fe08"
+    },
+    "async_link_eye": {
+      "path": "build/release_io_300/receipts/async_link_eye.json",
+      "sha256": "9f6107257ba77b7c2b4e9369048ce097a16d03515b39bd6e579ebe48e285df07"
+    },
+    "antenna_density_erc": {
+      "path": "build/release_io_300/receipts/antenna_density_erc.json",
+      "sha256": "9d69901258fe112356f0c93f6e2b04c425c0254dd4e5332fd469f2b18e25444e"
+    },
+    "timing_library_15pvt": {
+      "path": "build/release_io_300/receipts/timing_library_15pvt.json",
+      "sha256": "9f42fb7ada0810d92b8c737645b183493adcdbf307d324cb49fbabcc753a34c6"
+    },
+    "published_views_integration": {
+      "path": "build/release_io_300/receipts/published_views_integration.json",
+      "sha256": "6d300c0132aa1b34ba73aa956799f495cdf28ff6a6ede19f28831bc1aa35ca7b"
+    },
+    "fresh_joint_rc_and_release": {
+      "path": "build/release_io_300/receipts/fresh_joint_rc_and_release.json",
+      "sha256": "0c66750e5e556046d79aff3c0ed9e7c00d61d632868beb1aba5ba9d4f1c184ec"
+    }
+  },
+  "release_views": [
+    "gds",
+    "lef",
+    "cdl",
+    "schematic_spice",
+    "extracted_spice",
+    "verilog_blackbox",
+    "verilog_functional",
+    "liberty",
+    "sdc",
+    "integration_guide",
+    "electrical_tables",
+    "test_guide"
+  ]
+}

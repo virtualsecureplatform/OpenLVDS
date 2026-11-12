@@ -24,6 +24,7 @@ args=(exec --userns --writable-tmpfs --cleanenv --containall
     --env PDK_ROOT=/opt/pdk/ciel/sky130/versions/1689ac3f2dc763876eaf967227c7dfe831b031ae
     --env PDK=sky130A --env OPENBLAS_NUM_THREADS=1 --env OMP_NUM_THREADS=1
     --env OPENLVDS_SPICE="$spice"
+    --env OPENLVDS_SPICE_SLOTS="${OPENLVDS_SPICE_SLOTS:-6}"
     "$image")
 if (( tools )); then
     printf -v command '%q ' "$@"

@@ -37,7 +37,7 @@ def digital_current(name,info):
         raise ValueError(name+': digital RC extraction is stale')
     return info
 
-def library(extracted=False,digital=False,fast=False,designs=None):
+def library(extracted=False,digital=False,fast=False,designs=None,raw=False):
     source=(ROOT/'analog/openlvds.spice').read_bytes();text=source.decode();inputs={};models={}
     source_hash=hashlib.sha256(source).hexdigest()
     fast_models=json.loads((ROOT/'build/extracted/fast.json').read_text())['designs'] if fast else {}
@@ -67,6 +67,10 @@ def library(extracted=False,digital=False,fast=False,designs=None):
             if info['source_sha256']!=source_hash and info.get('source_scope_sha256')!=expected['lvs_source_sha256']:
                 raise ValueError(f'{name}: extracted GDS belongs to another schematic')
             info=selected(name,info)
+            if raw:
+                # Unreduced extraction, to prove the exact reduction changes nothing.
+                if fast:raise ValueError('Raw and fast RC are mutually exclusive')
+                info=dict(info,netlist=info['raw_netlist'],netlist_sha256=hashlib.sha256((ROOT/info['raw_netlist']).read_bytes()).hexdigest())
             text=replace(text,name,checked_netlist(info));inputs[name]=info['netlist_sha256']
         # PFD layout pins use VPWR/VGND; the analog schematic interface uses
         # VDDD/VSS. Bind by NAME, never assume extracted positional order.
